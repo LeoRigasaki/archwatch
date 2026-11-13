@@ -1,10 +1,16 @@
 name: daily
 on:
-  # Enable discovery only after the watcher has passed a manual run.
+  # Keep cron disabled until the user explicitly approves it after manual acceptance.
   # Weekly Gemini generation will use a separate bounded queue; it is not wired here.
   # schedule:
   #   - cron: "17 2 * * *"   # 07:17 Asia/Karachi
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Fixed-list smoke test, discovery only, or bounded watcher analysis
+        type: choice
+        options: [fixed, discover, process]
+        default: fixed
 permissions:
   contents: write
   pull-requests: write
@@ -22,17 +28,39 @@ jobs:
           version: "0.11.8"
       - run: uv sync --locked --python 3.12
       - name: Analyze watched models
+        if: inputs.mode == 'fixed' || inputs.mode == ''
         run: uv run --frozen python run.py $(cat watchlist.txt)
+      - name: Discover or process Hub candidates
+        if: inputs.mode == 'discover' || inputs.mode == 'process'
+        env:
+          ARCHWATCH_MODE: ${{ inputs.mode }}
+        run: |
+          if [ "$ARCHWATCH_MODE" = "process" ]; then
+            uv run --frozen python watch.py --process
+          else
+            uv run --frozen python watch.py
+          fi
       - run: uv run --frozen python build_site.py
       - run: uv run --frozen pytest -q
       - name: Count conflicts
         id: conflicts
         run: |
-          n=$(uv run --frozen python -c "import json,glob;print(sum(len(json.load(open(f))['review_queue']) for f in glob.glob('data/models/*.json')))")
+          n=$(uv run --frozen python - <<'PY'
+          import json
+          from pathlib import Path
+          count = sum(len(json.loads(p.read_text())["review_queue"]) for p in Path("data/models").glob("*.json"))
+          seen = Path("data/seen.json")
+          if seen.exists():
+              state = json.loads(seen.read_text())
+              count += len(state.get("discovery_errors", []))
+              count += sum(e["status"] in ("review", "error") for e in state["models"].values())
+          print(count)
+          PY
+          )
           echo "n=$n" >> "$GITHUB_OUTPUT"
       - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         with:
           branch: daily-update
-          title: "ArchWatch daily update (${{ steps.conflicts.outputs.n }} fields in review)"
+          title: "ArchWatch daily update (${{ steps.conflicts.outputs.n }} items in review)"
           labels: ${{ steps.conflicts.outputs.n != '0' && 'needs-review' || 'auto-merge' }}
           body: Records rebuilt from the Hub. Fields in review are listed in each model's YAML.

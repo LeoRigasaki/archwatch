@@ -2,7 +2,7 @@
 
 ArchWatch extracts architecture facts from a model's own Hugging Face config, tensor headers, Python code and model card, checks their agreement, and generates an architecture page with evidence. Conflicting fields are withheld from the record's `published` dictionary and from architecture views.
 
-The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core has been run live on four models. Discovery, LLM readers, independent evaluation and the review queue remain open.
+The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core has been run live on four models. Bounded Hub discovery and analysis are implemented. LLM readers, independent evaluation and the issue review queue remain open.
 
 ## Local demo
 
@@ -27,9 +27,10 @@ The earlier third-party-gallery reconstruction is private research material, sep
 | Verifier | Verified/single-source/conflict decisions; conflicts withheld; rendering inputs carry explicit publication decisions |
 | Diff | Published-field and tensor-group diffs against an explicitly supplied predecessor |
 | Diagram/site | Published inputs only; verified weight-kind layer pattern required; site cache estimates and field comparisons recomputed |
+| Watcher | Ten core publishers plus outside trending/recent discovery, pinned admission/analysis, duplicate architecture withholding, predecessor selection and restartable seen state |
 | Tooling | uv lock, ruff, pre-commit and offline PR CI configured; source-only ZIP exporter |
 
-The input list is fixed in `watchlist.txt`. The watcher and LLM code/report readers are not implemented.
+The fixed list in `watchlist.txt` remains the reproducible smoke test. `watch.py` adds discovery and optional bounded processing; LLM code/report readers are not implemented. [Watcher operation](docs/WATCHER.md) documents admission, state, retries and limitations.
 
 ## Validation
 
@@ -38,7 +39,7 @@ The input list is fixed in `watchlist.txt`. The watcher and LLM code/report read
 - `moonshotai/Kimi-K3` and `moonshotai/Kimi-K3.1-Pro`;
 - `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM3-1.7B`.
 
-On 13 November 2026, a fresh primary-source run reproduced all four source commits and exact parameter totals. The original 81 core verdicts were unchanged except for the resolved LFM FFN field. With added decisions for rendering inputs, the records now contain **61 verified checks, 67 single-source checks and zero conflicts**. These are agreement counts, not independent accuracy scores. The offline suite has **41 passing tests**.
+On 13 November 2026, a fresh primary-source run reproduced all four source commits and exact parameter totals. The original 81 core verdicts were unchanged except for the resolved LFM FFN field. With added decisions for rendering inputs, the records now contain **61 verified checks, 67 single-source checks and zero conflicts**. These are agreement counts, not independent accuracy scores. The offline suite has **66 passing tests**.
 
 The Kimi diff still identifies exactly **178,526,208 added DSA-indexer parameters**. The LFM2.5 config's nominal 12,288-wide FFN becomes **8,192** under its explicit auto-adjust convention, agreeing with the tensors. The extractor now handles that rule; the initial flag was an extractor gap, not evidence of a mistake by Liquid AI. See [the LFM investigation](docs/LFM_FINDINGS.md).
 
@@ -76,9 +77,9 @@ The output is `dist/archwatch-source.zip`.
 
 The GitHub remote is configured. `.github/workflows/ci.yml` runs offline lint, formatting, tests and the site build on pull requests and pushes to main. [Foundations PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) merged after [remote CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541); main CI also passed.
 
-The existing `daily.yml` supports manual dispatch over the fixed watchlist. Its schedule remains commented out. Its PR label does not enable auto-merge. Discovery and controlled publication must be exercised manually before unattended runs.
+The existing `daily.yml` supports manual `fixed` (default), `discover` and `process` modes. Its schedule remains commented out. Its PR label does not enable auto-merge. Discovery and controlled publication must be exercised manually before unattended runs.
 
-The next patch is the watcher: the ten preferred labs plus a discovery route for promising outside models. The proposed cadence is daily metadata discovery and a bounded weekly Gemini generation batch. [Model selection](docs/MODEL_SELECTION.md), [provider constraints](docs/PROVIDER_LIMITS.md) and [next steps](docs/NEXT_STEPS.md) record the choices and remaining work. No Gemini integration or recurring task is enabled yet.
+The watcher uses the ten preferred labs plus outside discovery. A live temporary-root run processed the four known models with both expected predecessors; a second pass changed no artifact bytes or mtimes. A separate 80-candidate discovery scan did not publish new models. The proposed cadence remains daily metadata discovery and a bounded weekly Gemini batch, with cron disabled pending approval. [Model selection](docs/MODEL_SELECTION.md), [provider constraints](docs/PROVIDER_LIMITS.md) and [next steps](docs/NEXT_STEPS.md) record the choices and remaining work. No Gemini integration or recurring task is enabled yet.
 
 ## Limits of the evidence
 
@@ -87,6 +88,6 @@ The next patch is the watcher: the ten preferred labs plus a discovery route for
 - Weight-kind pattern agreement cannot independently distinguish sliding from global attention when their tensor layouts are identical. Effective mechanisms need config/code/report evidence and broader family tests.
 - Public renderers reject unverified patterns, missing required inputs and unsupported cache rules. Unknown families can remain withheld until supported.
 - Cache formulas estimate cache state under stated dtype/kernel assumptions; they do not measure full runtime VRAM.
-- Watcher/seen state, typed schema, LLM readers, report retrieval/page citations, issue review, tracing, MCP, own RSS, full collection UI and production deployment remain open.
+- Typed schema, LLM readers, report retrieval/page citations, issue review, tracing, MCP, own RSS, full collection UI and production deployment remain open.
 
 [PROGRESS.md](PROGRESS.md) tracks acceptance. [The import manifest](docs/prototype-import.json) records the original archive. Private spot checks are neither production inputs nor the independent gold set.
