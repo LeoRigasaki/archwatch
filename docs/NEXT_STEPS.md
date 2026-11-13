@@ -42,4 +42,4 @@ For each new model with a predecessor, generate what-changed text from the compu
 
 As core models are processed, manually inspect their primary `config.json`, safetensors headers and model card to write independent YAML labels in `evals/gold/`. Never derive labels from pipeline output or another gallery. Target ten models in this phase, with pinned source links and explicit uncertainty. Report per-field exact match in `results/`; agreement counts are not gold-set accuracy. The longer-term independent set can expand to 30 later. Add evaluation/fixture tests and prevent pipeline output from silently becoming ground truth.
 
-The watcher, route evaluation, provider adapter, weekly queue, explainer and ten-model gold set remain unimplemented. Current provider evidence is in [PROVIDER_LIMITS.md](PROVIDER_LIMITS.md).
+The watcher is implemented and locally/live tested (see [WATCHER.md](WATCHER.md)). Route evaluation, provider adapter, weekly queue, explainer and the ten-model gold set remain unimplemented. Current provider evidence is in [PROVIDER_LIMITS.md](PROVIDER_LIMITS.md).

@@ -1,0 +1,91 @@
+{
+  "checked_on": "2026-11-14",
+  "timezone": "Asia/Karachi",
+  "repository": "LeoRigasaki/archwatch",
+  "foundations": {
+    "pr": "https://github.com/LeoRigasaki/archwatch/pull/1",
+    "merged": true,
+    "head_sha": "c9a14c35c6613645bc5fa120093b2d9fe8b60a19",
+    "ci": "https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541",
+    "ci_conclusion": "success",
+    "merge_commit": "a10f153a705bdcdadf355f1ceba0de828e31c263"
+  },
+  "compatibility_fix": {
+    "pr": "https://github.com/LeoRigasaki/archwatch/pull/2",
+    "merged": true,
+    "head_sha": "63767a7732b09c0636fb86b3d0bb603cd70edc3c",
+    "ci": "https://github.com/LeoRigasaki/archwatch/actions/runs/43490644888",
+    "ci_conclusion": "success",
+    "merge_commit": "f93be2c1a6fb1b333b335358d36daa606a095d18",
+    "change": "Disable checkout credential persistence and pin create-pull-request v8.1.3 to avoid duplicate Authorization headers."
+  },
+  "manual_runs": [
+    {
+      "url": "https://github.com/LeoRigasaki/archwatch/actions/runs/43490110097",
+      "conclusion": "failure",
+      "reason": "Duplicate Git authorization headers in PR creation; extraction, build and 38 tests passed."
+    },
+    {
+      "url": "https://github.com/LeoRigasaki/archwatch/actions/runs/43490777972",
+      "conclusion": "success",
+      "event": "workflow_dispatch",
+      "source_commit": "f93be2c1a6fb1b333b335358d36daa606a095d18",
+      "model_records_analyzed": 4,
+      "offline_tests_passed": 38,
+      "review_fields": 0,
+      "update_pr": "https://github.com/LeoRigasaki/archwatch/pull/3",
+      "update_pr_head": "9f1327642a566a571b6fbadda06e156dead52348",
+      "update_pr_state": "closed",
+      "update_pr_labels": [
+        "auto-merge"
+      ],
+      "closed_as_no_op": true
+    }
+  ],
+  "required_labels_created_before_dispatch": [
+    "needs-review",
+    "auto-merge"
+  ],
+  "actions_may_create_pull_requests": true,
+  "repository_auto_merge_enabled": false,
+  "cron_enabled": false,
+  "coauthor_trailers_added": false,
+  "refreshed_record_comparison": [
+    {
+      "id": "LiquidAI/LFM2.5-1.2B-Instruct",
+      "source_commit_unchanged": true,
+      "published_values_unchanged": true,
+      "parameter_counts_unchanged": true,
+      "verification_decisions_unchanged": true
+    },
+    {
+      "id": "LiquidAI/LFM3-1.7B",
+      "source_commit_unchanged": true,
+      "published_values_unchanged": true,
+      "parameter_counts_unchanged": true,
+      "verification_decisions_unchanged": true
+    },
+    {
+      "id": "moonshotai/Kimi-K3.1-Pro",
+      "source_commit_unchanged": true,
+      "published_values_unchanged": true,
+      "parameter_counts_unchanged": true,
+      "verification_decisions_unchanged": true
+    },
+    {
+      "id": "moonshotai/Kimi-K3",
+      "source_commit_unchanged": true,
+      "published_values_unchanged": true,
+      "parameter_counts_unchanged": true,
+      "verification_decisions_unchanged": true
+    }
+  ],
+  "observations": [
+    "The refresh PR changes analysis timestamps and the display order of equally sized tensor groups, not source commits, published values, parameter counts or verification decisions.",
+    "Stabilize tensor-group tie ordering and avoid timestamp-only update noise in the watcher step.",
+    "This validates workflow execution and PR creation; it is not a gold-set accuracy evaluation."
+  ],
+  "next_branch": "feat/model-watcher",
+  "next_branch_base": "f93be2c1a6fb1b333b335358d36daa606a095d18",
+  "no_op_correction": "results/no-op-acceptance.json"
+}
