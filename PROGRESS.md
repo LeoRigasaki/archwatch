@@ -1,8 +1,8 @@
 # ArchWatch progress checklist
 
-As of **14 November 2026**, after the prototype import, a fresh four-model Hub run and the local `fix/prototype-foundations` patch. This checklist describes verified implementation and remaining acceptance; the original day numbers are planning milestones.
+As of **14 November 2026**, after the prototype import, foundations merge and successful manual GitHub Actions acceptance. This checklist describes verified implementation and remaining acceptance; the original day numbers are planning milestones.
 
-## Completed and checked locally
+## Implemented and validated
 
 - [x] Prototype integrated into `src/archwatch/`, tests into `tests/`, four JSON records and two successor YAML records into `data/models/`.
 - [x] Config extractor: nested text configs, hybrid/dense/MoE and latent MoE, MLA/DSA/KDA, layer lists and one-based indexing.
@@ -24,6 +24,10 @@ As of **14 November 2026**, after the prototype import, a fresh four-model Hub r
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
 - [x] `needs-review` and `auto-merge` labels created; repository setting permits Actions to open PRs. Actual auto-merge remains disabled.
+- [x] The [manual workflow](https://github.com/LeoRigasaki/archwatch/actions/runs/43490777972) succeeded from merged main: four records analyzed, 38 tests passed, zero review fields and [update PR #3](https://github.com/LeoRigasaki/archwatch/pull/3) opened with `auto-merge`. That PR remains open; the label does not merge it.
+- [x] The initial run exposed duplicate Git auth headers; [compatibility PR #2](https://github.com/LeoRigasaki/archwatch/pull/2) passed CI and merged before the successful rerun.
+- [x] Watcher branch `feat/model-watcher` prepared from merged main `f93be2c`; watcher implementation has not started.
+- [x] Acceptance evidence and four-record equality checks recorded in [github-workflow-acceptance.json](results/github-workflow-acceptance.json).
 - [x] Progress/result paths remain relative; research reference remains ignored.
 
 ## Decisions recorded, implementation still open
@@ -46,7 +50,7 @@ As of **14 November 2026**, after the prototype import, a fresh four-model Hub r
 - [ ] LangGraph orchestration and Langfuse traces.
 - [ ] GitHub review issue queue and recorded human decisions.
 - [ ] Automatic family/predecessor selection and diff-constrained explanations.
-- [ ] Successful manual workflow/PR acceptance and controlled publishing/merging. The [first manual run](https://github.com/LeoRigasaki/archwatch/actions/runs/43490110097) passed extraction, build and 38 tests, then exposed duplicate Git authorization headers in the old PR action; a workflow compatibility fix is being validated.
+- [ ] Controlled scheduled publishing/merging; cron remains disabled until explicit user approval.
 - [ ] MCP server (`search_models`, `get_model`, `compare`) and client tests.
 - [ ] Full collection/filter/compare UI, own RSS, final model pages and production deployment.
 - [ ] **50+ model backfill**, independent evaluation results and demo recording.
@@ -69,7 +73,7 @@ The existing refresh workflow uses a fixed watchlist and can be dispatched manua
 | 13–15 | Report retrieval and page-citation validation open |
 | 16–18 | Deterministic diffs exist; predecessor discovery, explanations and issue queue open |
 | 19–22 | Two-model site, deterministic SVG and cache UI exist; full collection/any-pair UI and RSS open |
-| 23 | GitHub connected; manual fixed-list workflow written; discovery, real workflow acceptance and controlled scheduled publishing open |
+| 23 | Manual fixed-list workflow passed and opened an update PR; discovery and controlled scheduled publishing remain open |
 | 24–25 | MCP, 50+ backfill, formal evaluation, production deployment and demo open |
 
 ## Evidence and boundaries
@@ -95,7 +99,7 @@ Evidence: [results](results/README.md), [offline validation](results/prototype-v
 
 Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-audited in this foundations patch.
 
-Next: finish and land this local foundations patch, then build the watcher described in [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
+Next: build the watcher on `feat/model-watcher`, following [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
 
 The implementation amendments approved on 14 November are recorded in [NEXT_STEPS.md](docs/NEXT_STEPS.md): CI-gated foundations merge and manual workflow acceptance first; then separate watcher, route-test, Gemini-loop, explainer and ten-model gold-set PRs. Reviews/explanations use Flash Lite, diagram routes must be compared, and cron requires explicit approval.
 
