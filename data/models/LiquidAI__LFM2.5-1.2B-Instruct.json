@@ -3,7 +3,7 @@
  "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
  "hub_created": "2026-01-06T00:28:46+00:00",
  "license": "lfm1.0",
- "analyzed_at": "2026-11-13T15:48:26+00:00",
+ "analyzed_at": "2026-11-13T19:28:37+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm2ForCausalLM",
@@ -153,18 +153,18 @@
   },
   "breakdown": [
    {
-    "layer_type": "short_conv",
-    "layers": 10,
-    "grows_per_token_bytes": 0,
-    "constant_bytes": 122880,
-    "formula": "2048 channels x 3 taps x 2 B x 10 layers (upper bound)"
-   },
-   {
     "layer_type": "full_attention",
     "layers": 6,
     "grows_per_token_bytes": 12288,
     "constant_bytes": 0,
     "formula": "2 x 8 KV heads x 64 head_dim x 2 B x 6 layers"
+   },
+   {
+    "layer_type": "short_conv",
+    "layers": 10,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 122880,
+    "formula": "2048 channels x 3 taps x 2 B x 10 layers (upper bound)"
    }
   ],
   "assumptions": [

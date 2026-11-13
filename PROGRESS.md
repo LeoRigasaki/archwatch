@@ -19,7 +19,7 @@ As of **14 November 2026**, after the prototype import, a fresh four-model Hub r
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **38 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
+- [x] **41 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
@@ -98,3 +98,12 @@ Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-au
 Next: finish and land this local foundations patch, then build the watcher described in [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
 
 The implementation amendments approved on 14 November are recorded in [NEXT_STEPS.md](docs/NEXT_STEPS.md): CI-gated foundations merge and manual workflow acceptance first; then separate watcher, route-test, Gemini-loop, explainer and ten-model gold-set PRs. Reviews/explanations use Flash Lite, diagram routes must be compared, and cron requires explicit approval.
+
+## No-op update correction (14 November)
+
+- [x] Closed PR #3 without merging and deleted `daily-update`; its changes were timestamps and equal-count ordering only.
+- [x] Tensor groups and parameter-component ties use count plus name ordering; code/file scans, representative shapes and cache rows have stable ordering. Layer sequence order remains architectural data.
+- [x] JSON comparison ignores only `analyzed_at`, preserving the saved record/date when unchanged. YAML, SVG and HTML writes preserve existing files when unchanged.
+- [x] Cached end-to-end regression checks identical bytes and modification times, changing-input updates, and cross-process hash-seed stability. All 41 tests pass.
+- [x] Two local four-model runs leave every artifact byte and modification time unchanged after the one-time ordering migration.
+- [ ] Merge this correction on green CI, then dispatch `daily.yml` twice and require no update PR from either run before resuming the watcher.
