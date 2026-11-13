@@ -81,6 +81,9 @@ def repo_info(repo: str, *, refresh: bool = False, api=None) -> dict:
         "downloads": info.downloads,
         "likes": info.likes,
         "pipeline_tag": getattr(info, "pipeline_tag", None),
+        "tags": sorted(getattr(info, "tags", None) or []),
+        "base_model": (info.card_data or {}).get("base_model") if info.card_data else None,
+        "base_model_relation": (info.card_data or {}).get("base_model_relation") if info.card_data else None,
     }
     temporary = f.with_suffix(".json.tmp")
     temporary.write_text(json.dumps(out, indent=1))

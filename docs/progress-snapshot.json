@@ -16,10 +16,13 @@
       "total_parameters_from_saved_headers": 1170340608,
       "field_checks": {
         "verified": 6,
-        "single source": 15
+        "conflict": 1,
+        "single source": 14
       },
-      "published_fields": 21,
-      "review_fields": [],
+      "published_fields": 20,
+      "review_fields": [
+        "context_length"
+      ],
       "code_files": [],
       "cache_growth_bytes_per_token": 12288,
       "fixed_cache_bytes": 122880
@@ -47,9 +50,9 @@
       "total_parameters_from_saved_headers": 2780110363392,
       "field_checks": {
         "verified": 24,
-        "single source": 19
+        "single source": 20
       },
-      "published_fields": 43,
+      "published_fields": 44,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py"
@@ -63,9 +66,9 @@
       "total_parameters_from_saved_headers": 2779931837184,
       "field_checks": {
         "verified": 20,
-        "single source": 19
+        "single source": 20
       },
-      "published_fields": 39,
+      "published_fields": 40,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py",
@@ -80,14 +83,15 @@
   "yaml_record_count": 2,
   "saved_record_check_totals": {
     "verified": 61,
-    "single source": 67
+    "conflict": 1,
+    "single source": 68
   },
   "test_run": {
-    "tests": 66,
+    "tests": 83,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 66,
+    "passed": 83,
     "python": "3.12.13",
     "command": "uv run --frozen pytest -q --junitxml=results/test-results.xml",
     "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."

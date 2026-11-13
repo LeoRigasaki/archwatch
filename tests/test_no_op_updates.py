@@ -85,7 +85,6 @@ def test_cached_pipeline_second_run_leaves_every_artifact_untouched(tmp_path, mo
     cli, site = module("run"), module("build_site")
     monkeypatch.setattr(cli, "OUT", output / "data/models")
     monkeypatch.setattr(site, "ROOT", output)
-    monkeypatch.setattr(site, "MODELS", [("lab__new", "toy")])
     cli.main(["lab/new:lab/old"])
     site.main()
     first = snapshot(output)
