@@ -1,5 +1,160 @@
 {
   "models": {
+    "0bserverx/Qwen3.8-27B-Heretic-Abliterated-Uncensored-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "ab8d7bd81d03117501e4da60cccdff4c80f0eea0",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Aravindhan11/Cieav-model": {
+      "attempts": 0,
+      "last_observed_commit": "afa965e7352c7ff592404240f681206da95de753",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "AtomicChat/DeepSeek-V4.1-Flash-1017-Uncensored-GSQ-RCO-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "4f1d2f730cff977961db81789e81bfc0d3e6dd2e",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "BAAI/AREX-2": {
+      "attempts": 0,
+      "created_at": "2026-09-29T17:56:21+00:00",
+      "family": "arex",
+      "last_observed_commit": "d4e3502f92d9e889031c2d04e387ab2eb3520268",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "BH-Language-AI/bh-decision-1-2b": {
+      "attempts": 0,
+      "last_observed_commit": "fc257a9ab00762cb8d36b743a2efe88aab343494",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Bedirhn77/Curio-1.5B-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "dd26c6a7230cfc914939292715689f4fe0caa653",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Cactus-Compute/mirage": {
+      "attempts": 0,
+      "created_at": "2026-11-05T19:01:53+00:00",
+      "family": "mirage",
+      "last_observed_commit": "3d03cee88c0acbe4e71b94b567ab14e6e55f40c9",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "DavidAU/Qwen3.8-27B-TURBO-Fable-Cold-Fusion-735-882-Heretic-Uncensored-NEO-CODER-MAX-MTP-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "36116c48f4e81b4c66a9c63da13a72959999a5f6",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Diffuspace/Clover-35B-A3B-Preview": {
+      "attempts": 0,
+      "created_at": "2026-10-24T03:46:30+00:00",
+      "family": "clover",
+      "last_observed_commit": "4b0402b65e523d0183a14c431955438714cb16ff",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "Edge0/Edge0-145B-NVFP4": {
+      "attempts": 0,
+      "last_observed_commit": "6b6cc9b35ce84c0d244043f772cf584276e91439",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "HauhauCS/Qwen3.8-27B-Uncensored-HauhauCS-Aggressive-MTP-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "993a5971fda8f30dd1b7eb2654792ba4415c7460",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Hygaard/Inkling-2-Small-oQ3e": {
+      "attempts": 0,
+      "last_observed_commit": "82672a47e7b555981cdcb125095db0e21ae3cf6b",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "d562806dbafae37109975e970aae91b43e73b440",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "JRamirez-UAB/Arete-27B-EXL3-3.85bpw": {
+      "attempts": 0,
+      "last_observed_commit": "709126b84b98d4df7884dd9db2f007ff6a84fc0e",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "Jack04810/RAVEC": {
+      "attempts": 0,
+      "last_observed_commit": "bc9139ed3ce3786a9d30352c4dd863dc50b2a058",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Jackrong/DeepSeek-V4-Pro-Qwen3.5-9B": {
+      "attempts": 0,
+      "created_at": "2026-07-19T06:49:45+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "7d7edca1b1e820d89127f9c8ac4b035e0f27652e",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "JoeGuglielmucci/Arete-27B-MTP-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "beeb3bd1815aa29769cf5db9ee871c255782e767",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "JonathanColetti/Qwen3.8-27B-Uncensored-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "45d0fc0ad6cfcf9eeee6008ddaea925536409b18",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "KRAFTON/Raon-1-nano": {
+      "attempts": 0,
+      "created_at": "2026-10-29T05:38:14+00:00",
+      "family": "raon",
+      "last_observed_commit": "fcf2d1d55e84e2f9fbe7b5d724dcfc4d861cfcee",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "KorshLAB/KorshAI-4B-v2": {
+      "attempts": 0,
+      "last_observed_commit": "4f2fcf24e747be2d6b62e547396c46f78ed31afc",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
     "LiquidAI/LFM2.5-1.2B-Instruct": {
       "architecture_hash": "cbae0f4e0523b7f66f20adc786362a7cc6e4d86dde273c64a141478d5e34e6ee",
       "created_at": "2026-01-06T00:28:46+00:00",
@@ -18,6 +173,353 @@
       "pool": "core",
       "status": "recorded"
     },
+    "MCendeja11/Kimi-K3.1-Pro": {
+      "attempts": 0,
+      "last_observed_commit": "312ead6c2d830eac8d58bbc0dbb64331615e1822",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "MiniMaxAI/MiniMax-H3-Image-PE": {
+      "attempts": 0,
+      "created_at": "2026-11-08T15:35:23+00:00",
+      "family": "minimax-h",
+      "last_observed_commit": "35603d4b63949afa12cb098227fffefedf081afa",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "MinimaLabs/KLM-1.6": {
+      "attempts": 0,
+      "created_at": "2026-11-09T10:00:48+00:00",
+      "family": "klm",
+      "last_observed_commit": "53226768a8957ca6f99e766f8025a96e2467537f",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "MoonMath-ai/DeepSeek-V4.1-Flash-1017-uncensored": {
+      "attempts": 0,
+      "created_at": "2026-11-04T16:45:50+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "bec0742e10fec66d20436a78ffa22a193ec9021c",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "Nanbeige/Nanbeige4.3-33B": {
+      "attempts": 0,
+      "created_at": "2026-10-24T02:49:18+00:00",
+      "family": "nanbeige",
+      "last_observed_commit": "df919e1e2cf077a22204c78b6c826bf3db18bc08",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "Netra-Lab/AkaraAlpha": {
+      "attempts": 0,
+      "last_observed_commit": "d728d2683d8e58cd5343d99d831905730a2c7903",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "NousResearch/Arete-27B": {
+      "attempts": 0,
+      "created_at": "2026-11-06T19:31:28+00:00",
+      "family": "arete",
+      "last_observed_commit": "108f0afbdcfaa1ceeda4a635004304dfff6d4da2",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "OBLITERATUS/Qwen3.8-27B-OBLITERATED": {
+      "attempts": 0,
+      "created_at": "2026-08-19T14:53:08+00:00",
+      "family": "qwen",
+      "last_observed_commit": "a58c3b53b3ce71551eafde2ed5ec8df48e0f4ff8",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "Qwen/Qwen3.8-27B": {
+      "attempts": 0,
+      "created_at": "2026-08-05T08:22:59+00:00",
+      "family": "qwen",
+      "last_observed_commit": "37561816e66b5b9153b1b64c10968c18c1e6f4a0",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "RecursiveSI/flint": {
+      "attempts": 0,
+      "created_at": "2026-10-21T14:20:58+00:00",
+      "family": "flint",
+      "last_observed_commit": "2a247be0c0aec895ccb0ac7ca92229ec6df37288",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "RikiyaT/Qwen3.5-0.8B-weight-space-programming": {
+      "attempts": 0,
+      "created_at": "2026-11-02T22:12:58+00:00",
+      "family": "qwen",
+      "last_observed_commit": "d1671a178705bcab7644806d23c535517f35723b",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "SC117/Qwen3.8-Flash-Next-GSQ-RCO-abliterated-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "90a3350cd800ec1fe0d1660a38414ad9e985782f",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "Scantist/GLM-5.3-SLIM-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "be750186b094d278ffd5407a1e214b2240451d29",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "XHToken/Spark-X2.6-4B": {
+      "attempts": 0,
+      "created_at": "2026-10-19T03:19:51+00:00",
+      "family": "spark-x",
+      "last_observed_commit": "64ca8f2a295b8ceb2757b9d4749a6558c4759e5b",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "Xylolabs/Llama-3.1-8B-Instruct-Tensix-BFP4-GateUp": {
+      "attempts": 0,
+      "last_observed_commit": "5d7081c92ebb26dd0def0492aa208487cc34726c",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "agentionai/Qwen3.8-Flash-Next-Gyro-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "257c95704b87e99d12e4b1cbd65794837009d587",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "ahd03/tracely": {
+      "attempts": 0,
+      "last_observed_commit": "8ce30555d2543df4b91b9a951ef1b6537d9c6366",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "aj9o9/Qwen3.8-27B-DSpine-b16-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "e27cc7dfe121a0c9327eb36a7cce82a0dfa9e3e6",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "artificialpossum/Huihui-Qwen3.8-Flash-Next-abliterated-v2-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "892d9c2d59586bb54772a9713b63181efa03a3a4",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "audnai/penclaw-Kimi-K3.1-pro-unrestricted": {
+      "attempts": 1,
+      "last_observed_commit": "781d40495beb276fc52d0afd470a5aad1fd5d1bf",
+      "last_successful_commit": null,
+      "reason": "HTTPError (HTTP 401)",
+      "status": "review"
+    },
+    "autotrust/Qwen3.8-Flash-Next-E384-FP4-V2": {
+      "attempts": 0,
+      "created_at": "2026-10-26T23:15:24+00:00",
+      "family": "qwen",
+      "last_observed_commit": "17a920e58033e325152783f633aad87209da8a45",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "baidu/ERNIE-5.5-Flash-Base": {
+      "attempts": 0,
+      "created_at": "2026-10-21T08:40:58+00:00",
+      "family": "ernie",
+      "last_observed_commit": "028544b2ffceea189b2d8768ed2b9d09b06f2343",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "bartowski/NousResearch_Arete-27B-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "9762c8502a79bd2b8634735d75f426b9febe092c",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "ccore/Qwen3.5-4B-GLB-3D-Coder": {
+      "attempts": 0,
+      "created_at": "2026-11-01T22:30:01+00:00",
+      "family": "qwen:coder",
+      "last_observed_commit": "8f32a199f8b22fe3157b9c5c8b42b052a0750dd3",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "dealignai/DeepSeek-V4.1-Flash-1017-UNCENSORED-FP8": {
+      "attempts": 0,
+      "created_at": "2026-10-18T04:11:31+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "c19ca5ca4eaeb79d29fdf08aea8327da95b1116a",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "deep-principle/Hydrogen-1.0": {
+      "attempts": 1,
+      "last_observed_commit": "b71dd62f26fa459ca548117c11c6ad567af2faba",
+      "last_successful_commit": null,
+      "reason": "HTTPError (HTTP 401)",
+      "status": "review"
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
+      "attempts": 0,
+      "created_at": "2026-10-17T02:40:38+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "es-totaljs/totem-4b": {
+      "attempts": 0,
+      "last_observed_commit": "77e82fc8ccd038d8123c3be0afb1df7160dcd5f9",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "fwgpiyawudk/OvisOCR3-mlx-4bit": {
+      "attempts": 0,
+      "last_observed_commit": "cc7a7683291f48f50aa5cfcad3b1c4fc2ee53afe",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "google/gemma-4-31B-it": {
+      "attempts": 0,
+      "created_at": "2026-03-11T18:22:36+00:00",
+      "family": "gemma",
+      "last_observed_commit": "842da3794eaa0b77d5f08bae87a17459d91ff475",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "huihui-ai/Huihui-Qwen3.8-27B-abliterated-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "06b4baa33b310388002b3dd1c1ea701ff691c901",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "jackf857/llama-3-8b-base-r-dpo-ultrafeedback-4xh200-batch-128-a0p005-a3": {
+      "attempts": 0,
+      "last_observed_commit": "46f2a8c7e87d45bbc1aeda1a3dc6dc0faf7bb9d9",
+      "last_successful_commit": null,
+      "reason": "Below outside discovery popularity threshold",
+      "status": "deferred"
+    },
+    "lyber-ai/Kimi-K3.1-Pro-UNCENSORED-MXFP4": {
+      "attempts": 1,
+      "last_observed_commit": "6194fda9590f279eafb6e4c171102bd626c67921",
+      "last_successful_commit": null,
+      "reason": "HTTPError (HTTP 401)",
+      "status": "review"
+    },
+    "mamelles/Qwen3.5-9B-Wolof-Instruct-v1-ONNX": {
+      "attempts": 0,
+      "last_observed_commit": "7130c4ff169acade4f9ad20848d76339281fa55f",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "manuelgscom/dale-0.8b-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "a022ea10affef8758b48350a46d7d0737b432250",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "maritaca-ai/S5-nano": {
+      "attempts": 0,
+      "created_at": "2026-11-02T13:34:24+00:00",
+      "family": "s",
+      "last_observed_commit": "fe3a3581c33cb22917770ef1987b7c6e30929425",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "meituan-longcat/LongCat-2.5": {
+      "attempts": 0,
+      "created_at": "2026-11-04T11:48:50+00:00",
+      "family": "longcat",
+      "last_observed_commit": "60032d966e6369b822f0e61d2eff01368d38b111",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "meta-llama/Meta-Llama-3-8B-Instruct": {
+      "attempts": 1,
+      "last_observed_commit": "8afb486c1db24fe5011ec46dfbe5b5dccdb575c2",
+      "last_successful_commit": null,
+      "reason": "HTTPError (HTTP 401)",
+      "status": "review"
+    },
+    "mh131105/qwen2.5-3b-text-to-sql-lora-exp-f": {
+      "attempts": 0,
+      "last_observed_commit": "7ed0a9d2531a74c3d63e35f1e273ee1199889e26",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "microsoft/AesCode-32B": {
+      "attempts": 0,
+      "created_at": "2026-09-29T13:05:36+00:00",
+      "family": "aescode",
+      "last_observed_commit": "3f9157f331c574b470149ddd88e67d5bd13481f8",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "mistralai/Mistral-Large-4-1T-A52B": {
+      "attempts": 0,
+      "created_at": "2026-09-30T18:35:13+00:00",
+      "family": "mistral-large",
+      "last_observed_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
     "moonshotai/Kimi-K3": {
       "architecture_hash": "7e741849ffddc7fd4e4a58a6ea26f593c586a1e4ced8041ee670f318d03fcd7a",
       "created_at": "2026-06-13T06:42:57+00:00",
@@ -35,6 +537,138 @@
       "last_successful_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
       "pool": "core",
       "status": "recorded"
+    },
+    "nex-agi/Nex-N2.6": {
+      "attempts": 0,
+      "created_at": "2026-11-10T05:34:28+00:00",
+      "family": "nex-n",
+      "last_observed_commit": "987472298e7867721576ac49a253a6f5b526013e",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16": {
+      "attempts": 0,
+      "created_at": "2026-10-16T18:25:29+00:00",
+      "family": "nvidia-nemotron-labs-dory",
+      "last_observed_commit": "ee517dd388a9b348890ae1e00dacc5eb4d0c750d",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "orcarouter/Qwen3.8-Flash-Next-Uncensored-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "98eb3357afd966c25cadd082c7f830eafde7aa52",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "ornith-ai/Ornith-1.5-9B-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "abdd624b12ebf020b767fff532ff44fe552b28c3",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "prism-ml/Ternary-Bonsai-2-27B-gguf": {
+      "attempts": 0,
+      "last_observed_commit": "839bd57023c1558945afea70a74fa83c054f35f9",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "sensenova/SenseNova-Loop-9B-Preview": {
+      "attempts": 0,
+      "created_at": "2026-10-28T15:34:40+00:00",
+      "family": "sensenova-loop",
+      "last_observed_commit": "9937e91c7301b7dcbb5bf17e3e4e95c499a11e99",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "speakleash/Bielik-11B-v3.1-Instruct": {
+      "attempts": 1,
+      "last_observed_commit": "d6e755d356ad418d0f0e30b8c428db267415ddb9",
+      "last_successful_commit": null,
+      "reason": "HTTPError (HTTP 401)",
+      "status": "review"
+    },
+    "taobao-mnn/MNN-Pocket-0.3B": {
+      "attempts": 0,
+      "created_at": "2026-09-23T09:54:34+00:00",
+      "family": "mnn-pocket",
+      "last_observed_commit": "48fae9c0be6ec505e80f36f69b8ba21097f9f822",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "tencent/Qwen3.8-27B-DSpine-b16": {
+      "attempts": 0,
+      "created_at": "2026-11-07T14:20:29+00:00",
+      "family": "qwen",
+      "last_observed_commit": "5f54174d301dbca65d9aa4448dc47e56732d9a12",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "thinkingmachines/Inkling-2-Small": {
+      "attempts": 0,
+      "created_at": "2026-11-04T19:51:05+00:00",
+      "family": "inkling",
+      "last_observed_commit": "ef5bf64c1b8e7d0e57b284e10c6891f8db6304c4",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "ukisai/Swift-1.5-Qwen3.8-27B-GSQ-RCO-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "d74895bbe5db4bec1e0024e7cc87d59c02d7631a",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "unsloth/Qwen3.8-Flash-Next-GGUF": {
+      "attempts": 0,
+      "last_observed_commit": "f5d175de2cf7f720d45d6064019a81fcf056e986",
+      "last_successful_commit": null,
+      "reason": "Requires root config.json and safetensors files",
+      "status": "rejected"
+    },
+    "webAI-Official/TwIL-8B": {
+      "attempts": 0,
+      "created_at": "2026-10-14T16:50:12+00:00",
+      "family": "twil",
+      "last_observed_commit": "9563ba7dfb70eeca4a26654b195011cbf818e7d9",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "xtools-at/DeepSeek-V4-Pro-Qwen3.5-9B-UNCENSORED-heretic": {
+      "attempts": 0,
+      "created_at": "2026-10-30T10:21:29+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "fbccdc6adf70a1981e8f40e91a8370e428e4f998",
+      "last_successful_commit": null,
+      "pool": "outside",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
+    },
+    "zai-org/GLM-5.3-Flash": {
+      "attempts": 0,
+      "created_at": "2026-08-25T06:43:14+00:00",
+      "family": "glm",
+      "last_observed_commit": "46a050bec13002ad29ee795c16e61cf4fa3c4a9c",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Hub existence, config and safetensors checked",
+      "status": "pending"
     }
   },
   "schema_version": 1
