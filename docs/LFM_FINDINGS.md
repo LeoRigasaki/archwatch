@@ -26,3 +26,7 @@ The earlier private primary-source audit captured model cards advertising **32,7
 This is a separate historical source disagreement involving different model variants and a different field. It was not re-audited in the four-model run described above; current cards may have changed. Do not describe it as a confirmed model defect or as the resolved Instruct FFN issue.
 
 Private snapshots and revision links are retained in `research-reference/private-notes/research/huggingface-verification-report.md` and its Hugging Face source manifest. They are investigation references, not gold labels derived from another person's gallery.
+
+## Newly parsed Instruct context claim
+
+Markdown-table support also exposes `32,768 tokens` in the pinned Instruct README versus `max_position_embeddings = 128000` in config. The updated verifier withholds `context_length`, and the gallery omits an architecture view that lacks this required published input. These may represent advertised/evaluated context versus a positional capacity; no model defect is inferred. This is separate from the resolved effective FFN dimension. Primary README: https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct/blob/b9d816ab510f9a28dca37cb182e9da8b0226e13c/README.md .

@@ -1,0 +1,23 @@
+{
+  "checked_on": "2026-11-14",
+  "tests_passed": 83,
+  "watcher_pr_merged": 5,
+  "discover_run": "https://github.com/LeoRigasaki/archwatch/actions/runs/43499469228",
+  "discovery_pr": 6,
+  "discovery_pr_merged": false,
+  "scope": [
+    "data-driven gallery and pinned sources",
+    "six family mappings",
+    "pre-slot derivative rejection",
+    "actual config-read coverage",
+    "published card activation labels",
+    "HTML/Markdown/bullet claims"
+  ],
+  "newly_observed_review": {
+    "model": "LiquidAI/LFM2.5-1.2B-Instruct",
+    "field": "context_length",
+    "config": 128000,
+    "card": 32768,
+    "published": false
+  }
+}

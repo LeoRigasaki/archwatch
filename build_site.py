@@ -1,15 +1,16 @@
 """Build the static gallery page from verified records: site/index.html (one self-contained file)."""
 
+import hashlib
 import html
 import json
 from pathlib import Path
+from urllib.parse import quote
 
 from archwatch import diagram, pipeline
 from archwatch.artifacts import write_if_changed
-from archwatch.publication import render_cache, render_values
+from archwatch.publication import PublicationError, render_cache, render_values
 
 ROOT = Path(__file__).parent
-MODELS = [("moonshotai__Kimi-K3.1-Pro", "kimi-k3-1-pro"), ("LiquidAI__LFM3-1.7B", "lfm3-1-7b")]
 LABEL = {
     "kda_linear": "KDA linear attention",
     "gated_dsa_mla": "Gated DSA on MLA",
@@ -162,7 +163,8 @@ def model_section(name, anchor):
 
     # diff
     pred = rec.get("predecessor", {}).get("id")
-    prec = json.loads((ROOT / "data/models" / f"{pred.replace('/', '__')}.json").read_text()) if pred else None
+    pred_path = ROOT / "data/models" / f"{pred.replace('/', '__')}.json" if pred else None
+    prec = json.loads(pred_path.read_text()) if pred_path and pred_path.exists() else None
     field_diff = pipeline.diff(rec, prec) if prec else []
     d_rows = "".join(
         f"<tr><td>{e(FIELD_NAMES.get(r['field'], r['field']))}</td><td>{e(show(r['field'], r['before']) if r['before'] is not None else 'none')}</td>"
@@ -178,7 +180,7 @@ def model_section(name, anchor):
         '<p class="small">Groups fold layer and expert numbers together. A matching add and remove of similar names (for example <code>out_proj</code> and <code>o_proj</code>) is usually a rename.</p>'
     )
 
-    if pred:
+    if prec:
         items = "".join(
             "<li><b>"
             + e(FIELD_NAMES.get(r["field"], r["field"]))
@@ -256,11 +258,74 @@ def model_section(name, anchor):
 </section>"""
 
 
+def inventory():
+    seen_path = ROOT / "data/seen.json"
+    seen = json.loads(seen_path.read_text()).get("models", {}) if seen_path.exists() else {}
+    records, eligible, held = {}, [], {}
+    for path in sorted((ROOT / "data/models").glob("*.json")):
+        rec = json.loads(path.read_text())
+        records[rec["id"]] = (path.stem, rec)
+    for repo, (name, rec) in sorted(records.items()):
+        state = seen.get(repo, {})
+        try:
+            if (
+                state.get("status") in ("review", "error", "rejected")
+                and state.get("last_observed_commit") == rec["source_commit"]
+            ):
+                raise PublicationError(state.get("reason", "Held by watcher"))
+            render_cache(render_values(rec))
+            eligible.append((name, "model-" + hashlib.sha256(repo.encode()).hexdigest()[:12], rec))
+        except (PublicationError, KeyError, TypeError) as error:
+            held[repo] = str(error)
+    for repo, state in sorted(seen.items()):
+        if repo not in records:
+            held[repo] = state.get("status", "unprocessed") + ": " + state.get("reason", "")
+    return records, eligible, held, seen
+
+
+def sources_html(records, seen):
+    rows = []
+    for repo in sorted(set(records) | set(seen)):
+        rec = records.get(repo, (None, {}))[1]
+        commit = rec.get("source_commit") or seen.get(repo, {}).get("last_observed_commit")
+        base = "https://huggingface.co/" + quote(repo, safe="/")
+        label = f'<a href="{e(base)}">{e(repo)}</a>'
+        if not rec:
+            rows.append(f"<li>{label}: discovery metadata only; architecture not published.</li>")
+            continue
+        files = rec.get("source_files") or ["config.json", "README.md", *rec.get("code_scan", {}).get("files", [])]
+        links, headers = [], []
+        for file in sorted(set(files)):
+            url = base + "/blob/" + quote(commit, safe="") + "/" + quote(file, safe="/")
+            link = f'<a href="{e(url)}">{e(file)}</a>'
+            (headers if file.endswith(".safetensors") else links).append(link)
+        header_links = (
+            (
+                f"<details><summary>{len(headers)} tensor-header source files</summary>"
+                + "<br>".join(headers)
+                + "</details>"
+            )
+            if headers
+            else f' · <a href="{e(base)}/tree/{e(commit)}">weight files at source commit</a>'
+        )
+        rows.append(f"<li>{label} · commit <code>{e(commit)}</code>: " + " · ".join(links) + header_links + "</li>")
+    return "".join(rows)
+
+
 def main():
-    sections = "".join(model_section(n, a) for n, a in MODELS)
-    nav = " · ".join(f'<a href="#{a}">{n.split("__")[1]}</a>' for n, a in MODELS)
+    records, models, held, seen = inventory()
+    sections = "".join(model_section(n, a) for n, a, _ in models)
+    nav = " · ".join(f'<a href="#{a}">{e(rec["id"])}</a>' for _, a, rec in models)
+    publishers = len({rec["id"].split("/")[0] for _, _, rec in models})
+    title = f"ArchWatch: {len(models)} model architectures"
+    intro = f"{len(models)} published architecture records from {publishers} publishers. {len(seen)} repositories tracked; {len(held)} held or awaiting analysis."
+    pending = "".join(
+        f'<li><a href="https://huggingface.co/{e(quote(repo, safe="/"))}">{e(repo)}</a>: {e(reason)}</li>'
+        for repo, reason in sorted(held.items())
+    )
+    sources = sources_html(records, seen)
     page = f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ArchWatch prototype: Kimi K3.1 Pro and LFM3-1.7B</title>
+<title>{e(title)}</title>
 <style>
 :root{{--bg:#fff;--fg:#1f2328;--mut:#59636e;--line:#d1d9e0;--soft:#f6f8fa;--acc:#0969da}}
 @media (prefers-color-scheme:dark){{:root{{--bg:#0d1117;--fg:#e6edf3;--mut:#9198a1;--line:#30363d;--soft:#161b22;--acc:#4493f8}}}}
@@ -289,9 +354,9 @@ ul{{padding-left:20px}}li{{margin:3px 0}}
 .calc-out{{font-size:15px;margin:8px 0}}.calc-out b{{font-size:20px}}.bars{{display:flex;height:22px;border-radius:5px;overflow:hidden;background:var(--line)}}
 .bars div{{height:100%}}details{{margin:8px 0;color:var(--mut);font-size:13.5px}}
 </style></head><body><main>
-<h1>ArchWatch prototype run</h1>
-<p class="lead">Two models analyzed at the source commits shown below. Architecture views use published verifier-approved values and recompute their cache estimates from those values. Model-card statements are claims to cross-check against config, code and tensor headers.</p>
-<p class="meta">Models: {nav} · predecessors diffed: Kimi-K3, LFM2.5-1.2B-Instruct · no weights downloaded: shapes come from safetensors headers via HTTP range requests</p>
+<h1>{e(title)}</h1>
+<p class="lead">{e(intro)} Architecture views use published verifier-approved values and recompute their cache estimates from those values. Model-card statements are claims to cross-check against config, code and tensor headers.</p>
+<p class="meta">Models: {nav} · no weights downloaded: shapes come from safetensors headers via HTTP range requests</p>
 <div class="stages">
 <div class="stage"><b>1 Input</b><span>Fixed watchlist, commit pinned</span></div>
 <div class="stage"><b>2 Config</b><span>config.json to schema, no LLM</span></div>
@@ -303,12 +368,10 @@ ul{{padding-left:20px}}li{{margin:3px 0}}
 <div class="stage"><b>8 Diff + publish</b><span>vs predecessor, diagram, page</span></div>
 </div>
 {sections}
+<h2>Awaiting analysis or review</h2>
+<ul class="small">{pending or "<li>No held records.</li>"}</ul>
 <h2>Sources</h2>
-<ul class="small">
-<li><a href="https://huggingface.co/moonshotai/Kimi-K3.1-Pro">moonshotai/Kimi-K3.1-Pro</a> and <a href="https://huggingface.co/moonshotai/Kimi-K3">moonshotai/Kimi-K3</a> on Hugging Face: config.json, configuration_kimi_k3.py, README.md, 96 safetensors headers each</li>
-<li><a href="https://huggingface.co/LiquidAI/LFM3-1.7B">LiquidAI/LFM3-1.7B</a> and <a href="https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct">LiquidAI/LFM2.5-1.2B-Instruct</a>: config.json, modeling_lfm3.py, configuration_lfm3.py, README.md, safetensors headers</li>
-
-</ul>
+<ul class="small">{sources}</ul>
 </main>
 <script>
 function fmtB(b){{const u=['B','KiB','MiB','GiB','TiB'];let i=0;while(b>=1024&&i<u.length-1){{b/=1024;i++}}return b.toFixed(b<10&&i?2:1)+' '+u[i]}}
