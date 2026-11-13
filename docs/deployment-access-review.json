@@ -1,0 +1,27 @@
+{
+  "checked_on": "2026-11-13",
+  "hosting_project_id": "appgprj_6af6c437fa288191a935a8fdf7fcf9ef",
+  "access_mode": "custom",
+  "policy_revision": 1,
+  "owner_only": true,
+  "non_owner_users": 0,
+  "editors": 0,
+  "groups": 0,
+  "external_visitors": 0,
+  "unauthenticated_checks": [
+    {
+      "route": "/",
+      "http_status": 401
+    },
+    {
+      "route": "/assets/diagrams/gpt-2-xl.webp",
+      "http_status": 401
+    },
+    {
+      "route": "/data/gallery.json",
+      "http_status": 401
+    }
+  ],
+  "site_link_removed_from_readme": true,
+  "portfolio_link_scan": "No matching deployment link found in the Portfolio or my-portfolio projects."
+}

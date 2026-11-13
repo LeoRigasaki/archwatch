@@ -1,0 +1,134 @@
+id: moonshotai/Kimi-K3.1-Pro
+source_commit: d9e99b0792a5e93b78ea9bea62a68167e36ddd9e
+hub_created: '2026-11-02T04:13:51+00:00'
+license: kimi-k3.1-pro
+analyzed_at: '2026-11-12T15:17:33+00:00'
+published:
+  num_layers: 93
+  hidden_size: 7168
+  vocab_size: 163840
+  context_length: 1048576
+  num_attention_heads: 96
+  num_kv_heads: 96
+  head_dim: 192
+  attention_type: MLA
+  moe_num_experts: 896
+  moe_active_experts: 16
+  moe_shared_experts: 2
+  moe_expert_intermediate: 3072
+  moe_latent_dim: 3584
+  dense_layers: 1
+  dsa_index_topk: 2048
+  dsa_index_num_heads: 32
+  dsa_index_head_dim: 128
+  layer_type_counts:
+    kda_linear: 69
+    gated_dsa_mla: 24
+  layer_pattern_per_layer:
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - dsa_mla
+  - dsa_mla
+  mla_cached_width_per_token: 576
+  dsa_index_key_width: 128
+  activation: situ
+  layer_index_base_in_config: 1
+  attention_output_gate: true
+  params_total: 2780110363392
+  params_active: 104368141056
+  vision_params: 401214464
+review_queue: []
+unchecked_notes:
+- 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
+  activation) are read from config, card and tensor names only, not from code.'
+- 'Config keys with no extraction rule yet (need a human or code to interpret): activation_situ_beta,
+  attn_res_block_size, latent_moe_use_norm'

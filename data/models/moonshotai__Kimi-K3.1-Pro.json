@@ -1,0 +1,1608 @@
+{
+ "id": "moonshotai/Kimi-K3.1-Pro",
+ "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+ "hub_created": "2026-11-02T04:13:51+00:00",
+ "license": "kimi-k3.1-pro",
+ "analyzed_at": "2026-11-12T15:17:33+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "KimiK31ForConditionalGeneration",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "kimi_k31",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 93,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 7168,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "vocab_size": {
+   "value": 163840,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 1048576,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "gated_dsa_mla"
+   ],
+   "evidence": "config:text_config.linear_attn_config"
+  },
+  "layer_index_base_in_config": {
+   "value": 1,
+   "evidence": "config:text_config.linear_attn_config (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "kda_linear": 69,
+    "gated_dsa_mla": 24
+   },
+   "evidence": "config:text_config.linear_attn_config"
+  },
+  "num_attention_heads": {
+   "value": 96,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 96,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 192,
+   "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+  },
+  "v_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "attention_type": {
+   "value": "MLA",
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_kv_lora_rank": {
+   "value": 512,
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_q_lora_rank": {
+   "value": 1536,
+   "evidence": "config:text_config.q_lora_rank"
+  },
+  "mla_qk_nope_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.qk_nope_head_dim"
+  },
+  "mla_qk_rope_head_dim": {
+   "value": 64,
+   "evidence": "config:text_config.qk_rope_head_dim"
+  },
+  "mla_v_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "mla_use_nope": {
+   "value": true,
+   "evidence": "config:text_config.mla_use_nope"
+  },
+  "attention_output_gate": {
+   "value": true,
+   "evidence": "config:text_config.mla_use_output_gate"
+  },
+  "dsa_index_topk": {
+   "value": 2048,
+   "evidence": "config:text_config.dsa_config.index_topk"
+  },
+  "dsa_index_num_heads": {
+   "value": 32,
+   "evidence": "config:text_config.dsa_config.index_num_heads"
+  },
+  "dsa_index_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.dsa_config.index_head_dim"
+  },
+  "linear_attn_num_heads": {
+   "value": 96,
+   "evidence": "config:text_config.linear_attn_config.num_heads"
+  },
+  "linear_attn_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.linear_attn_config.head_dim"
+  },
+  "linear_attn_conv_kernel": {
+   "value": 4,
+   "evidence": "config:text_config.linear_attn_config.short_conv_kernel_size"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_num_experts": {
+   "value": 896,
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_active_experts": {
+   "value": 16,
+   "evidence": "config:text_config.num_experts_per_token"
+  },
+  "moe_shared_experts": {
+   "value": 2,
+   "evidence": "config:text_config.num_shared_experts"
+  },
+  "moe_expert_intermediate": {
+   "value": 3072,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "moe_latent_dim": {
+   "value": 3584,
+   "evidence": "config:text_config.routed_expert_hidden_size"
+  },
+  "dense_layers": {
+   "value": 1,
+   "evidence": "config:text_config.first_k_dense_replace"
+  },
+  "dense_ffn_intermediate": {
+   "value": 33792,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "moe_router": {
+   "value": "sigmoid",
+   "evidence": "config:text_config.moe_router_activation_func"
+  },
+  "activation": {
+   "value": "situ",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "norm": {
+   "value": "RMSNorm",
+   "evidence": "config:text_config.rms_norm_eps"
+  },
+  "released_weights_format": {
+   "value": "mxfp4-pack-quantized (4-bit)",
+   "evidence": "config:text_config.quantization_config"
+  },
+  "vision_encoder_layers": {
+   "value": 27,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1024,
+   "evidence": "config:vision_config"
+  }
+ },
+ "params": {
+  "counted_from_weights": {
+   "total": 2780110363392,
+   "text_total": 2779663004416,
+   "by_component": {
+    "moe_routed_experts": 2722740830208,
+    "attention_or_linear_mixer": 36369321216,
+    "moe_shared_experts": 12155092992,
+    "moe_latent_projection": 4727310336,
+    "lm_head": 1174405120,
+    "embedding": 1174405120,
+    "dense_ffn": 726663168,
+    "moe_router": 590955008,
+    "vision": 401214464,
+    "vision_projector": 46144512,
+    "attention_residuals": 2680832,
+    "norms": 1340416
+   },
+   "routed_expert_params": 2722740830208,
+   "moe_layers": 92,
+   "experts_per_moe_layer": [
+    896
+   ],
+   "layer_indices_in_weights": [
+    0,
+    92
+   ],
+   "tensor_count": 497340,
+   "skipped_scale_tensors": 247296
+  },
+  "active": {
+   "text_active": 105542546176,
+   "text_active_without_embeddings": 104368141056,
+   "with_vision": 105989905152
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 33792,
+  "grows_per_token_bytes_low": 30720,
+  "constant_bytes": 449372160,
+  "naive_mha_per_token_bytes": 5713920,
+  "reduction_vs_naive_mha": 169.1,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 726196224,
+    "gib": 0.676
+   },
+   "32768": {
+    "bytes": 1556668416,
+    "gib": 1.45
+   },
+   "131072": {
+    "bytes": 4878557184,
+    "gib": 4.544
+   },
+   "262144": {
+    "bytes": 9307742208,
+    "gib": 8.669
+   },
+   "1048576": {
+    "bytes": 35882852352,
+    "gib": 33.419
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "kda_linear",
+    "layers": 69,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 449372160,
+    "formula": "(96 heads x 128x128 state x 4 B + q/k/v conv 3 taps) x 69 layers"
+   },
+   {
+    "layer_type": "gated_dsa_mla",
+    "layers": 24,
+    "grows_per_token_bytes": 33792,
+    "grows_per_token_bytes_low": 30720,
+    "constant_bytes": 0,
+    "formula": "(512 latent + 64 rope key + 128 DSA index key) x 2 B x 24 layers"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "KDA recurrent state counted in fp32 (4 B), the usual choice for delta-rule states",
+   "DSA indexer keys counted at bf16; low estimate uses fp8 (1 B), as DeepSeek-style indexers often do"
+  ]
+ },
+ "code_scan": {
+  "files": [
+   "configuration_kimi_k3.py"
+  ],
+  "classes": [
+   {
+    "name": "KimiLinearConfig",
+    "file": "configuration_kimi_k3.py",
+    "line": 6,
+    "doc": ""
+   },
+   {
+    "name": "KimiK3VisionConfig",
+    "file": "configuration_kimi_k3.py",
+    "line": 151,
+    "doc": ""
+   },
+   {
+    "name": "KimiK3Config",
+    "file": "configuration_kimi_k3.py",
+    "line": 221,
+    "doc": "Kimi-K3 model configuration."
+   }
+  ],
+  "facts": {
+   "layer_index_base_in_config": {
+    "value": 1,
+    "evidence": "code:configuration_kimi_k3.py#L148: and (layer_idx + 1) in self.linear_attn_config[\"kda_layers\"])"
+   },
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {
+  "architecture": {
+   "raw": "Mixture-of-Experts (MoE)"
+  },
+  "params_total": {
+   "raw": "2.8T",
+   "value": 2800000000000.0,
+   "tolerance": 50000000000.0,
+   "k_suffix": false
+  },
+  "params_active": {
+   "raw": "104B",
+   "value": 104000000000.0,
+   "tolerance": 500000000.0,
+   "k_suffix": false
+  },
+  "num_layers": {
+   "raw": "93",
+   "value": 93.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dense_layers": {
+   "raw": "1",
+   "value": 1.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "layer_composition": {
+   "raw": "69 KDA + 24 Gated DSA*",
+   "parts": {
+    "KDA": 69,
+    "Gated DSA": 24
+   }
+  },
+  "hidden_size": {
+   "raw": "7168",
+   "value": 7168.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "num_attention_heads": {
+   "raw": "96",
+   "value": 96.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dsa_index_head_dim": {
+   "raw": "128",
+   "value": 128.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dsa_index_num_heads": {
+   "raw": "32",
+   "value": 32.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dsa_index_topk": {
+   "raw": "2048",
+   "value": 2048.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_latent_dim": {
+   "raw": "3584",
+   "value": 3584.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_expert_intermediate": {
+   "raw": "3072",
+   "value": 3072.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_num_experts": {
+   "raw": "896",
+   "value": 896.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_active_experts": {
+   "raw": "16",
+   "value": 16.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_shared_experts": {
+   "raw": "2",
+   "value": 2.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "vocab_size": {
+   "raw": "160K",
+   "value": 160000.0,
+   "tolerance": 500.0,
+   "k_suffix": true
+  },
+  "context_length": {
+   "raw": "1048576",
+   "value": 1048576.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "attention_mechanism": {
+   "raw": "KDA & Gated DSA"
+  },
+  "activation": {
+   "raw": "SiTU-GLU"
+  },
+  "vision_encoder": {
+   "raw": "MoonViT-V2"
+  },
+  "vision_params": {
+   "raw": "401M",
+   "value": 401000000.0,
+   "tolerance": 500000.0,
+   "k_suffix": false
+  },
+  "quantization": {
+   "raw": "MXFP4 weights / MXFP8 activations / (quantization-aware training)"
+  },
+  "modality": {
+   "raw": "Text, Image"
+  }
+ },
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 93,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 93,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 93.0,
+     "evidence": "card:num_layers",
+     "raw": "93"
+    },
+    {
+     "value": 93,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 7168,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 7168,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 7168.0,
+     "evidence": "card:hidden_size",
+     "raw": "7168"
+    },
+    {
+     "value": 7168,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 163840,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 163840,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 160000.0,
+     "evidence": "card:vocab_size",
+     "raw": "160K"
+    },
+    {
+     "value": 163840,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 1048576,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1048576,
+     "evidence": "config:text_config.max_position_embeddings"
+    },
+    {
+     "value": 1048576.0,
+     "evidence": "card:context_length",
+     "raw": "1048576"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 96,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 96,
+     "evidence": "config:text_config.num_attention_heads"
+    },
+    {
+     "value": 96.0,
+     "evidence": "card:num_attention_heads",
+     "raw": "96"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 96,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 96,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 192,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 192,
+     "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "MLA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MLA",
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 896,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 896,
+     "evidence": "config:text_config.num_experts"
+    },
+    {
+     "value": 896.0,
+     "evidence": "card:moe_num_experts",
+     "raw": "896"
+    },
+    {
+     "value": 896,
+     "evidence": "weights:expert tensors per MoE layer"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 16,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 16,
+     "evidence": "config:text_config.num_experts_per_token"
+    },
+    {
+     "value": 16.0,
+     "evidence": "card:moe_active_experts",
+     "raw": "16"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 2,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2,
+     "evidence": "config:text_config.num_shared_experts"
+    },
+    {
+     "value": 2.0,
+     "evidence": "card:moe_shared_experts",
+     "raw": "2"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 3072,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3072,
+     "evidence": "config:text_config.moe_intermediate_size"
+    },
+    {
+     "value": 3072.0,
+     "evidence": "card:moe_expert_intermediate",
+     "raw": "3072"
+    },
+    {
+     "value": 3072,
+     "evidence": "weights:experts.0.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "moe_latent_dim",
+   "value": 3584,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3584,
+     "evidence": "config:text_config.routed_expert_hidden_size"
+    },
+    {
+     "value": 3584.0,
+     "evidence": "card:moe_latent_dim",
+     "raw": "3584"
+    },
+    {
+     "value": 3584,
+     "evidence": "weights:routed_expert_up_proj shape"
+    },
+    {
+     "value": 3584,
+     "evidence": "weights:experts.0.w1 input width"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 1,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.first_k_dense_replace"
+    },
+    {
+     "value": 1.0,
+     "evidence": "card:dense_layers",
+     "raw": "1"
+    },
+    {
+     "value": 1,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_topk",
+   "value": 2048,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:text_config.dsa_config.index_topk"
+    },
+    {
+     "value": 2048.0,
+     "evidence": "card:dsa_index_topk",
+     "raw": "2048"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_num_heads",
+   "value": 32,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32,
+     "evidence": "config:text_config.dsa_config.index_num_heads"
+    },
+    {
+     "value": 32.0,
+     "evidence": "card:dsa_index_num_heads",
+     "raw": "32"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_head_dim",
+   "value": 128,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.dsa_config.index_head_dim"
+    },
+    {
+     "value": 128.0,
+     "evidence": "card:dsa_index_head_dim",
+     "raw": "128"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "kda_linear": 69,
+    "gated_dsa_mla": 24
+   },
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "kda_linear": 69,
+      "gated_dsa_mla": 24
+     },
+     "evidence": "config:text_config.linear_attn_config"
+    },
+    {
+     "value": {
+      "kda_linear": 69,
+      "gated_dsa_mla": 24
+     },
+     "evidence": "card:layer_composition",
+     "raw": "69 KDA + 24 Gated DSA*"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "dsa_mla"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "dsa_mla"
+     ],
+     "evidence": "config:text_config.linear_attn_config (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "dsa_mla"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "mla_cached_width_per_token",
+   "value": 576,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 576,
+     "evidence": "derived:kv_lora_rank + qk_rope_head_dim"
+    },
+    {
+     "value": 576,
+     "evidence": "weights:kv_a_proj_with_mqa output rows"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_key_width",
+   "value": 128,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.dsa_config.index_head_dim"
+    },
+    {
+     "value": 128,
+     "evidence": "weights:indexer.wk rows"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "situ",
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": "situ",
+     "evidence": "config:text_config.hidden_act"
+    },
+    {
+     "value": "situ",
+     "evidence": "card:activation",
+     "raw": "SiTU-GLU"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 1,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.linear_attn_config (inferred from index range)"
+    },
+    {
+     "value": 1,
+     "evidence": "code:configuration_kimi_k3.py#L148: and (layer_idx + 1) in self.linear_attn_config[\"kda_layers\"])"
+    }
+   ]
+  },
+  {
+   "field": "attention_output_gate",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:text_config.mla_use_output_gate"
+    },
+    {
+     "value": true,
+     "evidence": "weights:gate_proj/g_proj tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 2780110363392,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2780110363392,
+     "evidence": "weights:sum of tensor shapes"
+    },
+    {
+     "value": 2800000000000.0,
+     "evidence": "card:params_total",
+     "raw": "2.8T"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 104368141056,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 104368141056,
+     "evidence": "weights:total - unselected routed experts (text model, input embedding excluded)"
+    },
+    {
+     "value": 104000000000.0,
+     "evidence": "card:params_active",
+     "raw": "104B"
+    }
+   ]
+  },
+  {
+   "field": "vision_params",
+   "value": 401214464,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 401214464,
+     "evidence": "weights:vision_tower tensors (projector excluded)"
+    },
+    {
+     "value": 401000000.0,
+     "evidence": "card:vision_params",
+     "raw": "401M"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 93,
+  "hidden_size": 7168,
+  "vocab_size": 163840,
+  "context_length": 1048576,
+  "num_attention_heads": 96,
+  "num_kv_heads": 96,
+  "head_dim": 192,
+  "attention_type": "MLA",
+  "moe_num_experts": 896,
+  "moe_active_experts": 16,
+  "moe_shared_experts": 2,
+  "moe_expert_intermediate": 3072,
+  "moe_latent_dim": 3584,
+  "dense_layers": 1,
+  "dsa_index_topk": 2048,
+  "dsa_index_num_heads": 32,
+  "dsa_index_head_dim": 128,
+  "layer_type_counts": {
+   "kda_linear": 69,
+   "gated_dsa_mla": 24
+  },
+  "layer_pattern_per_layer": [
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "dsa_mla"
+  ],
+  "mla_cached_width_per_token": 576,
+  "dsa_index_key_width": 128,
+  "activation": "situ",
+  "layer_index_base_in_config": 1,
+  "attention_output_gate": true,
+  "params_total": 2780110363392,
+  "params_active": 104368141056,
+  "vision_params": 401214464
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys with no extraction rule yet (need a human or code to interpret): activation_situ_beta, attn_res_block_size, latent_moe_use_norm"
+ ],
+ "weight_layer_kinds": [
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "dsa_mla"
+ ],
+ "predecessor": {
+  "id": "moonshotai/Kimi-K3",
+  "source_commit": "f831ab66814297da540d832a5235f8e904f29d06"
+ },
+ "diff_vs_predecessor": [
+  {
+   "field": "layer_type_counts",
+   "before": {
+    "kda_linear": 69,
+    "full_attention_mla": 24
+   },
+   "after": {
+    "kda_linear": 69,
+    "gated_dsa_mla": 24
+   }
+  },
+  {
+   "field": "dsa_index_topk",
+   "before": null,
+   "after": 2048
+  },
+  {
+   "field": "params_total",
+   "before": 2779931837184,
+   "after": 2780110363392
+  },
+  {
+   "field": "params_active",
+   "before": 104189614848,
+   "after": 104368141056
+  },
+  {
+   "field": "kv_cache_per_token_bytes",
+   "before": 27648,
+   "after": 33792
+  }
+ ],
+ "tensor_diff_vs_predecessor": {
+  "added": [
+   {
+    "pattern": "layers.*.self_attn.indexer.wq_b",
+    "params": 150994944
+   },
+   {
+    "pattern": "layers.*.self_attn.indexer.wk",
+    "params": 22020096
+   },
+   {
+    "pattern": "layers.*.self_attn.indexer.weights_proj",
+    "params": 5505024
+   },
+   {
+    "pattern": "layers.*.self_attn.indexer.k_norm.bias",
+    "params": 3072
+   },
+   {
+    "pattern": "layers.*.self_attn.indexer.k_norm",
+    "params": 3072
+   }
+  ],
+  "added_total": 178526208,
+  "added_count": 5,
+  "removed": [],
+  "removed_total": 0,
+  "removed_count": 0
+ }
+}

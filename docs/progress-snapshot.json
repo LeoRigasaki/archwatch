@@ -1,0 +1,118 @@
+{
+  "as_of": "2026-11-13",
+  "project": "ArchWatch",
+  "scope_reference": "docs/PROJECT_SCOPE.md",
+  "project_root": ".",
+  "package": "src/archwatch",
+  "tests_path": "tests",
+  "records_path": "data/models",
+  "prototype_archive": "archwatch.zip",
+  "prototype_archive_sha256": "e15bc174d60103bf0b5d030f54fcbc107f02975cdaabbd71d33e9f5abbaaa6ad",
+  "stage": "Implemented deterministic prototype through approximately Day 9, with earlier tooling/watcher gaps and later diff/SVG features already present.",
+  "models": [
+    {
+      "id": "LiquidAI/LFM2.5-1.2B-Instruct",
+      "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
+      "total_parameters_from_saved_headers": 1170340608,
+      "field_checks": {
+        "verified": 5,
+        "single source": 8,
+        "conflict": 1
+      },
+      "published_fields": 13,
+      "review_fields": [
+        "ffn_intermediate"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 12288,
+      "fixed_cache_bytes": 122880
+    },
+    {
+      "id": "LiquidAI/LFM3-1.7B",
+      "source_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
+      "total_parameters_from_saved_headers": 1728801536,
+      "field_checks": {
+        "verified": 11,
+        "single source": 6
+      },
+      "published_fields": 17,
+      "review_fields": [],
+      "code_files": [
+        "configuration_lfm3.py",
+        "modeling_lfm3.py"
+      ],
+      "cache_growth_bytes_per_token": 12288,
+      "fixed_cache_bytes": 2994176
+    },
+    {
+      "id": "moonshotai/Kimi-K3.1-Pro",
+      "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "total_parameters_from_saved_headers": 2780110363392,
+      "field_checks": {
+        "verified": 24,
+        "single source": 3
+      },
+      "published_fields": 27,
+      "review_fields": [],
+      "code_files": [
+        "configuration_kimi_k3.py"
+      ],
+      "cache_growth_bytes_per_token": 33792,
+      "fixed_cache_bytes": 449372160
+    },
+    {
+      "id": "moonshotai/Kimi-K3",
+      "source_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+      "total_parameters_from_saved_headers": 2779931837184,
+      "field_checks": {
+        "verified": 20,
+        "single source": 3
+      },
+      "published_fields": 23,
+      "review_fields": [],
+      "code_files": [
+        "configuration_kimi_k3.py",
+        "modeling_kimi_k3.py",
+        "modeling_kimi_linear.py"
+      ],
+      "cache_growth_bytes_per_token": 27648,
+      "fixed_cache_bytes": 449372160
+    }
+  ],
+  "record_count": 4,
+  "yaml_record_count": 2,
+  "saved_record_check_totals": {
+    "verified": 60,
+    "single source": 20,
+    "conflict": 1
+  },
+  "test_run": {
+    "tests": 22,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 22,
+    "python": "3.12.13",
+    "command": ".venv/bin/python -m pytest -q --junitxml=results/test-results.xml",
+    "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."
+  },
+  "dsa_indexer_parameter_delta": 178526208,
+  "prototype_pipeline_implemented": true,
+  "watcher_implemented": false,
+  "daily_workflow": {
+    "path": ".github/workflows/daily.yml",
+    "written": true,
+    "executed": false,
+    "inputs": "watchlist.txt",
+    "github_repository_configured": false
+  },
+  "formal_gold_set_models": 0,
+  "formal_archwatch_accuracy_measured": false,
+  "legacy_research": {
+    "path": "research-reference/gallery-prototype",
+    "usage": "Private research and spot checks only",
+    "production_input": false
+  },
+  "deployment_access_evidence": "docs/deployment-access-review.json",
+  "note": "Saved-record agreement and tests are prototype evidence, not gold-set accuracy or universal model-family coverage."
+}

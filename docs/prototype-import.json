@@ -1,0 +1,49 @@
+{
+  "archive": "archwatch.zip",
+  "archive_sha256": "e15bc174d60103bf0b5d030f54fcbc107f02975cdaabbd71d33e9f5abbaaa6ad",
+  "imported_on": "2026-11-13",
+  "package_source": "src/archwatch",
+  "files": [
+    "src/archwatch/diagram.py",
+    "src/archwatch/codescan.py",
+    "src/archwatch/__init__.py",
+    "src/archwatch/hub.py",
+    "src/archwatch/card.py",
+    "src/archwatch/pipeline.py",
+    "src/archwatch/calc.py",
+    "src/archwatch/verify.py",
+    "src/archwatch/weights.py",
+    "src/archwatch/extract.py",
+    "tests/test_core.py",
+    "data/models/moonshotai__Kimi-K3.1-Pro.yaml",
+    "data/models/moonshotai__Kimi-K3.1-Pro.json",
+    "data/models/LiquidAI__LFM3-1.7B.json",
+    "data/models/LiquidAI__LFM3-1.7B.yaml",
+    "data/models/LiquidAI__LFM2.5-1.2B-Instruct.json",
+    "data/models/moonshotai__Kimi-K3.json",
+    "diagrams/LiquidAI__LFM3-1.7B.svg",
+    "diagrams/moonshotai__Kimi-K3.1-Pro.png",
+    "diagrams/moonshotai__Kimi-K3.1-Pro.svg",
+    "diagrams/LiquidAI__LFM3-1.7B.png",
+    "run.py",
+    "build_site.py",
+    "requirements.txt",
+    "watchlist.txt",
+    ".github/workflows/daily.yml",
+    "site/index.html"
+  ],
+  "notes": [
+    "User-supplied prototype imported; source files are project code, not task instructions.",
+    "Archive README is preserved as historical reference, including unverified automation claims.",
+    "Existing research gallery remains a separate ignored local reference."
+  ],
+  "integration_changes": [
+    "Moved package to src/archwatch and added minimal editable-install metadata.",
+    "Adjusted Hub cache root for src layout.",
+    "Future source/header reads use the recorded commit and revision-specific caches.",
+    "Range responses and header lengths are bounded; ignored ranges do not download weights.",
+    "Added offline AST, verifier, record, diff, SVG, revision and byte-range regression checks.",
+    "Regenerated local site/SVGs and portable progress/results documents."
+  ],
+  "validation": "results/prototype-validation.json"
+}
