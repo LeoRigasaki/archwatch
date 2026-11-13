@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from archwatch import diagram, pipeline
+from archwatch.artifacts import write_if_changed
 from archwatch.publication import render_cache, render_values
 
 ROOT = Path(__file__).parent
@@ -80,7 +81,7 @@ def show(field, v):
     if field == "layer_index_base_in_config":
         return "1-based" if v == 1 else "0-based"
     if isinstance(v, dict):
-        return ", ".join(f"{LABEL.get(k, k)} {n}" for k, n in v.items())
+        return ", ".join(f"{LABEL.get(k, k)} {n}" for k, n in sorted(v.items()))
     if isinstance(v, list):
         runs, prev, c = [], None, 0
         for x in v:
@@ -149,7 +150,7 @@ def model_section(name, anchor):
 
     # verification table
     order = {"verified": 0, "single source": 1, "conflict": 2}
-    rows = sorted(rec["checks"], key=lambda c: order.get(c["status"], 3))
+    rows = sorted(rec["checks"], key=lambda c: (order.get(c["status"], 3), c["field"]))
     v_rows = "".join(
         f"<tr><td>{e(FIELD_NAMES.get(c['field'], c['field']))}</td><td>{e(show(c['field'], pub[c['field']]) if c['field'] in pub else 'Withheld for review')}</td>"
         f'<td><span class="st st-{c["status"].replace(" ", "-")}">{e(c["status"])}</span></td><td class="ev">{evidence(c)}</td></tr>'
@@ -191,7 +192,7 @@ def model_section(name, anchor):
     tot = pub["params_total"]
     p_rows = "".join(
         f'<tr><td>{e(k.replace("_", " "))}</td><td class="num">{v:,}</td><td class="num">{100 * v / tot:.2f}%</td></tr>'
-        for k, v in components.items()
+        for k, v in sorted(components.items(), key=lambda item: (-item[1], item[0]))
     )
 
     # cache breakdown table
@@ -323,8 +324,7 @@ document.querySelectorAll('.calc').forEach(el=>{{
   r.addEventListener('input',upd);upd();
 }});
 </script></body></html>"""
-    (ROOT / "site").mkdir(exist_ok=True)
-    (ROOT / "site" / "index.html").write_text(page)
+    write_if_changed(ROOT / "site" / "index.html", page)
     print("site/index.html", len(page) // 1024, "KB")
 
 

@@ -75,7 +75,7 @@ def repo_info(repo: str, *, refresh: bool = False) -> dict:
         "sha": info.sha,
         "created_at": info.created_at.isoformat() if info.created_at else None,
         "last_modified": info.last_modified.isoformat() if info.last_modified else None,
-        "files": [s.rfilename for s in (info.siblings or [])],
+        "files": sorted(s.rfilename for s in (info.siblings or [])),
         "license": (info.card_data or {}).get("license") if info.card_data else None,
         "license_name": (info.card_data or {}).get("license_name") if info.card_data else None,
         "downloads": info.downloads,

@@ -3,7 +3,7 @@
  "source_commit": "f831ab66814297da540d832a5235f8e904f29d06",
  "hub_created": "2026-06-13T06:42:57+00:00",
  "license": "kimi-k3",
- "analyzed_at": "2026-11-13T15:48:16+00:00",
+ "analyzed_at": "2026-11-13T19:28:35+00:00",
  "facts": {
   "architecture_class": {
    "value": "KimiK3ForConditionalGeneration",
@@ -268,8 +268,8 @@
     "attention_or_linear_mixer": 36190795008,
     "moe_shared_experts": 12155092992,
     "moe_latent_projection": 4727310336,
-    "lm_head": 1174405120,
     "embedding": 1174405120,
+    "lm_head": 1174405120,
     "dense_ffn": 726663168,
     "moe_router": 590955008,
     "vision": 401214464,
@@ -325,19 +325,19 @@
   },
   "breakdown": [
    {
-    "layer_type": "kda_linear",
-    "layers": 69,
-    "grows_per_token_bytes": 0,
-    "constant_bytes": 449372160,
-    "formula": "(96 heads x 128x128 state x 4 B + q/k/v conv 3 taps) x 69 layers"
-   },
-   {
     "layer_type": "full_attention_mla",
     "layers": 24,
     "grows_per_token_bytes": 27648,
     "grows_per_token_bytes_low": 27648,
     "constant_bytes": 0,
     "formula": "(512 latent + 64 rope key) x 2 B x 24 layers"
+   },
+   {
+    "layer_type": "kda_linear",
+    "layers": 69,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 449372160,
+    "formula": "(96 heads x 128x128 state x 4 B + q/k/v conv 3 taps) x 69 layers"
    }
   ],
   "assumptions": [
@@ -1789,8 +1789,8 @@
     "attention_or_linear_mixer": 36190795008,
     "moe_shared_experts": 12155092992,
     "moe_latent_projection": 4727310336,
-    "lm_head": 1174405120,
     "embedding": 1174405120,
+    "lm_head": 1174405120,
     "dense_ffn": 726663168,
     "moe_router": 590955008,
     "vision": 401214464,
@@ -1808,8 +1808,8 @@
       "attention_or_linear_mixer": 36190795008,
       "moe_shared_experts": 12155092992,
       "moe_latent_projection": 4727310336,
-      "lm_head": 1174405120,
       "embedding": 1174405120,
+      "lm_head": 1174405120,
       "dense_ffn": 726663168,
       "moe_router": 590955008,
       "vision": 401214464,
@@ -2075,8 +2075,8 @@
    "attention_or_linear_mixer": 36190795008,
    "moe_shared_experts": 12155092992,
    "moe_latent_projection": 4727310336,
-   "lm_head": 1174405120,
    "embedding": 1174405120,
+   "lm_head": 1174405120,
    "dense_ffn": 726663168,
    "moe_router": 590955008,
    "vision": 401214464,
