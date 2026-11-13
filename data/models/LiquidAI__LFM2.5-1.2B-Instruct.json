@@ -3,7 +3,7 @@
  "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
  "hub_created": "2026-01-06T00:28:46+00:00",
  "license": "lfm1.0",
- "analyzed_at": "2026-11-12T15:17:38+00:00",
+ "analyzed_at": "2026-11-13T15:48:26+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm2ForCausalLM",
@@ -90,8 +90,12 @@
    "evidence": "config:layer_types"
   },
   "ffn_intermediate": {
+   "value": 8192,
+   "evidence": "derived:Lfm2MLP(block_ff_dim=12288, block_auto_adjust_ff_dim=true, block_ffn_dim_multiplier=1.0, block_multiple_of=256)"
+  },
+  "ffn_intermediate_raw": {
    "value": 12288,
-   "evidence": "config:intermediate_size"
+   "evidence": "config:block_ff_dim"
   },
   "norm": {
    "value": "RMSNorm",
@@ -298,14 +302,14 @@
   },
   {
    "field": "ffn_intermediate",
-   "value": 12288,
-   "status": "conflict",
-   "confidence": 0.3,
-   "published": false,
+   "value": 8192,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
    "candidates": [
     {
-     "value": 12288,
-     "evidence": "config:intermediate_size"
+     "value": 8192,
+     "evidence": "derived:Lfm2MLP(block_ff_dim=12288, block_auto_adjust_ff_dim=true, block_ffn_dim_multiplier=1.0, block_multiple_of=256)"
     },
     {
      "value": 8192,
@@ -442,6 +446,153 @@
      "evidence": "weights:sum of tensor shapes"
     }
    ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "short_conv",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv"
+     ],
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Hybrid (dense)",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Hybrid (dense)",
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "rope_theta": 1000000.0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "rope_theta": 1000000.0
+     },
+     "evidence": "config:rope_theta"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 805306368,
+    "short_conv_mixer": 167833600,
+    "embedding": 134217728,
+    "attention_or_linear_mixer": 62915328,
+    "norms": 67584
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 805306368,
+      "short_conv_mixer": 167833600,
+      "embedding": 134217728,
+      "attention_or_linear_mixer": 62915328,
+      "norms": 67584
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 148,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 148,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
   }
  ],
  "published": {
@@ -453,6 +604,7 @@
   "num_kv_heads": 8,
   "head_dim": 64,
   "attention_type": "GQA",
+  "ffn_intermediate": 8192,
   "short_conv_kernel": 3,
   "layer_type_counts": {
    "short_conv": 10,
@@ -477,27 +629,44 @@
    "short_conv"
   ],
   "layer_index_base_in_config": 0,
-  "params_total": 1170340608
- },
- "review_queue": [
-  {
-   "field": "ffn_intermediate",
-   "value": 12288,
-   "status": "conflict",
-   "confidence": 0.3,
-   "published": false,
-   "candidates": [
-    {
-     "value": 12288,
-     "evidence": "config:intermediate_size"
-    },
-    {
-     "value": 8192,
-     "evidence": "weights:feed_forward.w1 rows"
-    }
-   ]
+  "params_total": 1170340608,
+  "layer_types": [
+   "short_conv",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv"
+  ],
+  "decoder_type": "Hybrid (dense)",
+  "tied_embeddings": false,
+  "rope": {
+   "rope_theta": 1000000.0
+  },
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "dense_ffn": 805306368,
+   "short_conv_mixer": 167833600,
+   "embedding": 134217728,
+   "attention_or_linear_mixer": 62915328,
+   "norms": 67584
+  },
+  "weight_header_summary": {
+   "tensor_count": 148,
+   "skipped_scale_tensors": 0
   }
- ],
+ },
+ "review_queue": [],
  "unchecked_notes": [
   "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code."
  ],

@@ -1,25 +1,52 @@
 """One model in, one verified record out: fetch -> extract -> weights -> code -> card -> calc -> verify."""
+
 from __future__ import annotations
 
 import datetime as dt
 
 from . import calc, card, codescan, extract, hub, verify, weights
 
-DIFF_FIELDS = ["num_layers", "hidden_size", "layer_type_counts", "attention_type", "num_attention_heads",
-               "num_kv_heads", "head_dim", "context_length", "vocab_size", "moe_num_experts", "moe_active_experts",
-               "moe_shared_experts", "moe_expert_intermediate", "moe_latent_dim", "dense_layers", "dsa_index_topk",
-               "sliding_window", "short_conv_kernel", "activation", "norm", "ffn_intermediate",
-               "released_weights_format", "params_total", "params_active", "kv_cache_per_token_bytes"]
+DIFF_FIELDS = [
+    "num_layers",
+    "hidden_size",
+    "layer_type_counts",
+    "attention_type",
+    "num_attention_heads",
+    "num_kv_heads",
+    "head_dim",
+    "context_length",
+    "vocab_size",
+    "moe_num_experts",
+    "moe_active_experts",
+    "moe_shared_experts",
+    "moe_expert_intermediate",
+    "moe_latent_dim",
+    "dense_layers",
+    "dsa_index_topk",
+    "sliding_window",
+    "short_conv_kernel",
+    "activation",
+    "norm",
+    "ffn_intermediate",
+    "released_weights_format",
+    "params_total",
+    "params_active",
+    "kv_cache_per_token_bytes",
+]
 
 
 def analyze(repo: str, with_weights: bool = True) -> dict:
-    info = hub.repo_info(repo)
+    # Refresh once per analysis; every subsequent file/header read uses this snapshot.
+    info = hub.repo_info(repo, refresh=True)
     cfg = hub.get_json(repo, "config.json")
     facts = extract.extract(cfg)
     bits = facts.get("_quant_bits", (None, ""))[0]
 
-    py = {f: hub.get_text(repo, f) for f in info["files"]
-          if f.endswith(".py") and (f.startswith("modeling_") or f.startswith("configuration_"))}
+    py = {
+        f: hub.get_text(repo, f)
+        for f in info["files"]
+        if f.endswith(".py") and (f.startswith("modeling_") or f.startswith("configuration_"))
+    }
     code = codescan.scan({k: v for k, v in py.items() if v})
 
     readme = hub.get_text(repo, "README.md") or ""
@@ -31,8 +58,9 @@ def analyze(repo: str, with_weights: bool = True) -> dict:
         wcount = weights.count(tensors, bits)
         wshape = weights.shape_facts(tensors, bits)
         wkinds = weights.layer_kinds(tensors)
-        active = weights.active_params(wcount, facts.get("moe_num_experts", (None,))[0],
-                                       facts.get("moe_active_experts", (None,))[0])
+        active = weights.active_params(
+            wcount, facts.get("moe_num_experts", (None,))[0], facts.get("moe_active_experts", (None,))[0]
+        )
 
     values = {k: v[0] for k, v in facts.items()}
     mem = calc.cache_model(values)
@@ -43,13 +71,19 @@ def analyze(repo: str, with_weights: bool = True) -> dict:
     # things the pipeline could not check at all are reported too, so nobody mistakes silence for a pass
     notes = []
     if not code["facts"]["modeling_code_in_repo"][0]:
-        notes.append("No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, "
-                     "activation) are read from config, card and tensor names only, not from code.")
-    unknown_cfg = sorted(k for k in (cfg.get("text_config") or cfg) if k in
-                         ("attn_res_block_size", "activation_situ_beta", "latent_moe_use_norm"))
+        notes.append(
+            "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, "
+            "activation) are read from config, card and tensor names only, not from code."
+        )
+    unknown_cfg = sorted(
+        k
+        for k in (cfg.get("text_config") or cfg)
+        if k in ("attn_res_block_size", "activation_situ_beta", "latent_moe_use_norm")
+    )
     if unknown_cfg:
-        notes.append("Config keys with no extraction rule yet (need a human or code to interpret): "
-                     + ", ".join(unknown_cfg))
+        notes.append(
+            "Config keys with no extraction rule yet (need a human or code to interpret): " + ", ".join(unknown_cfg)
+        )
     return {
         "id": repo,
         "source_commit": info["sha"],
@@ -59,8 +93,11 @@ def analyze(repo: str, with_weights: bool = True) -> dict:
         "facts": {k: {"value": v[0], "evidence": v[1]} for k, v in facts.items() if not k.startswith("_")},
         "params": {"counted_from_weights": wcount, "active": active},
         "cache": mem,
-        "code_scan": {"files": code["files"], "classes": code["classes"],
-                      "facts": {k: {"value": v[0], "evidence": v[1]} for k, v in code["facts"].items()}},
+        "code_scan": {
+            "files": code["files"],
+            "classes": code["classes"],
+            "facts": {k: {"value": v[0], "evidence": v[1]} for k, v in code["facts"].items()},
+        },
         "card_claims": claims,
         "checks": checks,
         "published": published,
@@ -71,18 +108,13 @@ def analyze(repo: str, with_weights: bool = True) -> dict:
 
 
 def summary_values(rec: dict) -> dict:
-    v = {k: x["value"] for k, x in rec["facts"].items()}
-    v.update(rec["published"])
-    if rec["params"]["counted_from_weights"] and "params_total" not in rec["published"]:
-        v["params_total"] = rec["params"]["counted_from_weights"]["total"]
-    if rec["params"]["active"] and "params_active" not in rec["published"]:
-        v["params_active"] = rec["params"]["active"]["text_active"]
-    # a field in review is shown with its weight-derived value: weights are what actually runs
-    for r in rec["review_queue"]:
-        w = [c for c in r["candidates"] if c["evidence"].startswith("weights:")]
-        if w:
-            v[r["field"]] = w[0]["value"]
-    v["kv_cache_per_token_bytes"] = rec["cache"]["grows_per_token_bytes"]
+    v = dict(rec["published"])
+    try:
+        memory = calc.cache_model(v)
+    except (KeyError, TypeError):
+        memory = None
+    if memory and all(row["grows_per_token_bytes"] is not None for row in memory["breakdown"]):
+        v["kv_cache_per_token_bytes"] = memory["grows_per_token_bytes"]
     return v
 
 
@@ -106,10 +138,14 @@ def tensor_diff(new_repo: str, old_repo: str, top: int = 6) -> dict:
     a, b = groups(old_repo), groups(new_repo)
     added = sorted(((p, b[p]) for p in b.keys() - a.keys()), key=lambda x: -x[1])
     removed = sorted(((p, a[p]) for p in a.keys() - b.keys()), key=lambda x: -x[1])
-    return {"added": [{"pattern": p, "params": n} for p, n in added[:top]],
-            "added_total": sum(n for _, n in added), "added_count": len(added),
-            "removed": [{"pattern": p, "params": n} for p, n in removed[:top]],
-            "removed_total": sum(n for _, n in removed), "removed_count": len(removed)}
+    return {
+        "added": [{"pattern": p, "params": n} for p, n in added[:top]],
+        "added_total": sum(n for _, n in added),
+        "added_count": len(added),
+        "removed": [{"pattern": p, "params": n} for p, n in removed[:top]],
+        "removed_total": sum(n for _, n in removed),
+        "removed_count": len(removed),
+    }
 
 
 def diff(new: dict, old: dict) -> list[dict]:

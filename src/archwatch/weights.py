@@ -3,6 +3,7 @@
 Packed low-bit weights (e.g. MXFP4 stored as uint8) hold 8/bits parameters per stored element;
 quantization scales are metadata, not parameters, and are skipped.
 """
+
 from __future__ import annotations
 
 import re

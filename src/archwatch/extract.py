@@ -3,6 +3,7 @@
 Every fact is returned as (value, evidence) where evidence names the config key it came from,
 so the verifier and the published page can show where each number was read.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,8 +21,12 @@ def _first(cfg: dict, keys: list[str], prefix: str) -> Fact | None:
 def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str, int | None]:
     """Return a per-layer mixer list (0-based), the evidence, and the index base the config used."""
     if isinstance(text.get("layer_types"), list):
-        mapping = {"conv": "short_conv", "full_attention": "full_attention",
-                   "sliding_attention": "sliding_attention", "linear_attention": "linear_attention"}
+        mapping = {
+            "conv": "short_conv",
+            "full_attention": "full_attention",
+            "sliding_attention": "sliding_attention",
+            "linear_attention": "linear_attention",
+        }
         return [mapping.get(t, t) for t in text["layer_types"]], f"config:{prefix}layer_types", 0
 
     lac = text.get("linear_attn_config")
@@ -45,8 +50,11 @@ def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str
     window = text.get("sliding_window")
     pattern = text.get("sliding_window_pattern")
     if window and pattern:
-        return (["full_attention" if (i + 1) % pattern == 0 else "sliding_attention" for i in range(n_layers)],
-                f"config:{prefix}sliding_window_pattern", None)
+        return (
+            ["full_attention" if (i + 1) % pattern == 0 else "sliding_attention" for i in range(n_layers)],
+            f"config:{prefix}sliding_window_pattern",
+            None,
+        )
     kind = "full_attention_mla" if text.get("kv_lora_rank") else "full_attention"
     return [kind] * n_layers, "config:(no per-layer pattern; all layers assumed identical)", None
 
@@ -84,12 +92,17 @@ def extract(config: dict) -> dict[str, Fact]:
     f["num_kv_heads"] = (kv, f"config:{prefix}num_key_value_heads")
     if text.get("kv_lora_rank") and text.get("qk_nope_head_dim") is not None:
         # MLA: a query/key head is the no-RoPE part plus the RoPE part; values have their own width
-        f["head_dim"] = (text["qk_nope_head_dim"] + (text.get("qk_rope_head_dim") or 0),
-                         f"derived:{prefix}qk_nope_head_dim + qk_rope_head_dim")
+        f["head_dim"] = (
+            text["qk_nope_head_dim"] + (text.get("qk_rope_head_dim") or 0),
+            f"derived:{prefix}qk_nope_head_dim + qk_rope_head_dim",
+        )
         f["v_head_dim"] = (text.get("v_head_dim"), f"config:{prefix}v_head_dim")
     else:
         head_dim = text.get("head_dim") or (text["hidden_size"] // heads if heads else None)
-        f["head_dim"] = (head_dim, f"config:{prefix}head_dim" if text.get("head_dim") else "derived:hidden_size/num_attention_heads")
+        f["head_dim"] = (
+            head_dim,
+            f"config:{prefix}head_dim" if text.get("head_dim") else "derived:hidden_size/num_attention_heads",
+        )
     if text.get("kv_lora_rank"):
         f["attention_type"] = ("MLA", f"config:{prefix}kv_lora_rank")
         for k in ["kv_lora_rank", "q_lora_rank", "qk_nope_head_dim", "qk_rope_head_dim", "v_head_dim"]:
@@ -113,7 +126,10 @@ def extract(config: dict) -> dict[str, Fact]:
     if lac:
         f["linear_attn_num_heads"] = (lac.get("num_heads"), f"config:{prefix}linear_attn_config.num_heads")
         f["linear_attn_head_dim"] = (lac.get("head_dim"), f"config:{prefix}linear_attn_config.head_dim")
-        f["linear_attn_conv_kernel"] = (lac.get("short_conv_kernel_size"), f"config:{prefix}linear_attn_config.short_conv_kernel_size")
+        f["linear_attn_conv_kernel"] = (
+            lac.get("short_conv_kernel_size"),
+            f"config:{prefix}linear_attn_config.short_conv_kernel_size",
+        )
     if text.get("conv_L_cache"):
         f["short_conv_kernel"] = (text["conv_L_cache"], f"config:{prefix}conv_L_cache")
 
@@ -143,7 +159,23 @@ def extract(config: dict) -> dict[str, Fact]:
         mixers = set(types)
         hybrid = len(mixers) > 1 and any(m in mixers for m in ("short_conv", "kda_linear", "linear_attention"))
         f["decoder_type"] = ("Hybrid (dense)" if hybrid else "Dense", ev if hybrid else "derived:no expert keys")
-        f["ffn_intermediate"] = (text.get("intermediate_size"), f"config:{prefix}intermediate_size")
+        width = text.get("block_ff_dim", text.get("intermediate_size"))
+        width_key = "block_ff_dim" if "block_ff_dim" in text else "intermediate_size"
+        f["ffn_intermediate"] = (width, f"config:{prefix}{width_key}")
+        if width is not None and text.get("block_auto_adjust_ff_dim") is True:
+            # Lfm2MLP applies these operations only inside the auto-adjust branch.
+            multiplier = text.get("block_ffn_dim_multiplier", 1.0)
+            multiple = text.get("block_multiple_of", 256)
+            effective = int(2 * width / 3)
+            if multiplier is not None:
+                effective = int(multiplier * effective)
+                effective = multiple * ((effective + multiple - 1) // multiple)
+            f["ffn_intermediate_raw"] = (width, f"config:{prefix}{width_key}")
+            f["ffn_intermediate"] = (
+                effective,
+                f"derived:Lfm2MLP({prefix}{width_key}={width}, block_auto_adjust_ff_dim=true, "
+                f"block_ffn_dim_multiplier={multiplier}, block_multiple_of={multiple})",
+            )
     act = _first(text, ["hidden_act", "hidden_activation", "activation"], prefix)
     if act:
         f["activation"] = act
@@ -156,8 +188,12 @@ def extract(config: dict) -> dict[str, Fact]:
     f["norm"] = (", ".join(norm_bits), f"config:{prefix}{'norm_eps' if 'norm_eps' in text else 'rms_norm_eps'}")
     rp = text.get("rope_parameters")
     if isinstance(rp, dict):
-        f["rope"] = ({k: {kk: vv for kk, vv in v.items()} for k, v in rp.items()} if all(isinstance(v, dict) for v in rp.values()) else rp,
-                     f"config:{prefix}rope_parameters")
+        f["rope"] = (
+            {k: {kk: vv for kk, vv in v.items()} for k, v in rp.items()}
+            if all(isinstance(v, dict) for v in rp.values())
+            else rp,
+            f"config:{prefix}rope_parameters",
+        )
     elif text.get("rope_theta"):
         f["rope"] = ({"rope_theta": text["rope_theta"]}, f"config:{prefix}rope_theta")
 
@@ -167,13 +203,22 @@ def extract(config: dict) -> dict[str, Fact]:
         bits = None
         for g in (q.get("config_groups") or {}).values():
             bits = (g.get("weights") or {}).get("num_bits", bits)
-        f["released_weights_format"] = (f"{fmt}" + (f" ({bits}-bit)" if bits else ""), f"config:{prefix}quantization_config")
+        f["released_weights_format"] = (
+            f"{fmt}" + (f" ({bits}-bit)" if bits else ""),
+            f"config:{prefix}quantization_config",
+        )
         f["_quant_bits"] = (bits, f"config:{prefix}quantization_config")
     else:
-        f["released_weights_format"] = (str(config.get("dtype") or config.get("torch_dtype") or text.get("dtype")), "config:dtype")
+        f["released_weights_format"] = (
+            str(config.get("dtype") or config.get("torch_dtype") or text.get("dtype")),
+            "config:dtype",
+        )
 
     vc = config.get("vision_config")
     if vc:
-        f["vision_encoder_layers"] = (vc.get("vt_num_hidden_layers") or vc.get("num_hidden_layers"), "config:vision_config")
+        f["vision_encoder_layers"] = (
+            vc.get("vt_num_hidden_layers") or vc.get("num_hidden_layers"),
+            "config:vision_config",
+        )
         f["vision_hidden_size"] = (vc.get("vt_hidden_size") or vc.get("hidden_size"), "config:vision_config")
     return f

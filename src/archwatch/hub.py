@@ -4,6 +4,7 @@ Nothing here downloads model weights. A safetensors file starts with an 8-byte l
 length followed by a JSON header that lists every tensor's dtype and shape, so two small range
 requests per shard are enough to know the exact shape of every weight in the model.
 """
+
 from __future__ import annotations
 
 import json
@@ -64,10 +65,10 @@ def get_json(repo: str, path: str) -> dict | None:
     return json.loads(t) if t is not None else None
 
 
-def repo_info(repo: str) -> dict:
+def repo_info(repo: str, *, refresh: bool = False) -> dict:
     """Commit sha, creation date, files and license for a model repo (cached)."""
     f = _cache_dir(repo) / "_repo_info.json"
-    if f.exists():
+    if f.exists() and not refresh:
         return json.loads(f.read_text())
     info = HfApi().model_info(repo, files_metadata=False)
     out = {
@@ -80,7 +81,9 @@ def repo_info(repo: str) -> dict:
         "downloads": info.downloads,
         "likes": info.likes,
     }
-    f.write_text(json.dumps(out, indent=1))
+    temporary = f.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(out, indent=1))
+    temporary.replace(f)
     return out
 
 

@@ -1,108 +1,98 @@
 # ArchWatch progress checklist
 
-As of **13 November 2026**, after importing and testing the user-supplied `archwatch.zip`.
+As of **14 November 2026**, after the prototype import, a fresh four-model Hub run and the local `fix/prototype-foundations` patch. This checklist describes verified implementation and remaining acceptance; the original day numbers are planning milestones.
 
-The earlier checklist described the newly created folder and missed this implementation. The supplied prototype is now the primary code baseline. This is approximately the **Day 9 deterministic-core stage**, with watcher/tooling/evaluation gaps still open and later diff/SVG/site features already present. It is not a claim that nine complete daily milestones or the full five-week plan have passed acceptance.
+## Completed and checked locally
 
-## Imported and validated
+- [x] Prototype integrated into `src/archwatch/`, tests into `tests/`, four JSON records and two successor YAML records into `data/models/`.
+- [x] Config extractor: nested text configs, hybrid/dense/MoE and latent MoE, MLA/DSA/KDA, layer lists and one-based indexing.
+- [x] LFM effective FFN normalization: explicit auto-adjust rule converts 12,288 to 8,192; agrees with released tensors; regression cases added.
+- [x] Weight counting: exact supported-format shape totals, components, scale exclusion and active-count conventions.
+- [x] AST scanner with file/line evidence; downloaded code is never executed.
+- [x] Cache calculator with GQA, sliding window, short-conv, MLA, DSA and KDA rules and hand-math tests.
+- [x] Verifier with explicit verified/single-source/conflict states and conflict withholding.
+- [x] Published-only SVG/site inputs; a verified weight-kind layer pattern is required. Missing required inputs and unsupported site cache rules are rejected.
+- [x] Site cache estimates and field comparisons recomputed from published values; raw facts, raw parameter counts and stored cache/diff artifacts cannot override them.
+- [x] Field and tensor-group predecessor diffs; exact **178,526,208-parameter** DSA-indexer addition retained.
+- [x] Two-model local site and standalone SVG outputs rebuilt. Imported PNGs remain historical previews.
+- [x] Metadata refreshed once per analysis; later reads use the same commit and revision-specific cache. Two-run/new-commit regression added.
+- [x] Header reads reject full-body range responses and oversized headers.
+- [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
+- [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
+- [x] **38 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
+- [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
+- [x] GitHub repository configured at `LeoRigasaki/archwatch`.
+- [x] Progress/result paths remain relative; research reference remains ignored.
 
-- [x] Application code integrated into `src/archwatch/`.
-- [x] Supplied tests integrated into `tests/`; meaningful offline migration, AST, verifier, diff, SVG and Hub-boundary checks added.
-- [x] **Four JSON records and two YAML records** integrated into `data/models/`.
-- [x] Original record-generated SVG/PNG diagrams integrated into `diagrams/`.
-- [x] CLI, fixed watchlist, static site builder and supplied daily workflow integrated.
-- [x] Minimal editable src-layout packaging added, with dependencies installed in a local Python 3.12 environment.
-- [x] **22 offline tests pass**; the two-model page and both SVGs rebuild from saved records.
-- [x] Cache root updated for the src layout; future file/header requests now use the recorded commit and revision-specific cache paths.
-- [x] Weight-header requests reject full-body responses and unsupported header lengths.
-- [x] Progress/result paths made relative; generated results are in `results/`.
+## Decisions recorded, implementation still open
 
-## Implemented prototype components
-
-- [x] **Config extractor:** nested `text_config`, dense/hybrid/MoE, latent MoE, MLA, DSA, KDA, layer patterns and one-based layer-list handling.
-- [x] **Weight counting:** exact shape-based totals for supported formats, scale exclusion, component counts and explicit active-parameter conventions. The archive contains counts for all four saved models.
-- [x] **AST analyzer:** class/pattern scanning with `file#line` evidence, without executing downloaded code. The separate LLM reader is open.
-- [x] **Calculator:** GQA, sliding-window, short-conv, MLA, DSA and KDA cache formulas, hand-math tests and explicit assumptions.
-- [x] **Verifier:** verified/single-source/conflict states, confidence thresholds and conflicts excluded from the published field dictionary.
-- [x] **Diff:** deterministic field diff and tensor-group diff for explicitly supplied predecessor pairs.
-- [x] **DSA result:** saved Kimi records account for an exact **178,526,208-parameter** indexer addition.
-- [x] **SVG renderer v1:** architecture diagrams generated from normalized records.
-- [x] **Static demo:** two successor models, evidence tables, predecessor/tensor diffs and interactive cache estimates.
-- [x] **Workflow file:** scheduled/manual fixed-watchlist pipeline and labeled PR creation written. It has not been run or connected to a GitHub repository.
+- [x] Preferred publishers: DeepSeek, Alibaba/Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai.
+- [x] Keep an outside-discovery route for emerging models, with architecture novelty and source readiness checked before diagram generation.
+- [x] Proposed generator: Gemini 4 Hydrogen, with Gemini 3.8 Flash as an explicit free fallback. Account quotas are transcribed from the supplied screenshots.
+- [x] Proposed weekly batch: at most five changed architectures, initially three preferred-lab slots and two outside slots; no regeneration for unchanged specifications.
+- [x] Codex recommended as optional reviewer; explanations available for any pair on demand, predecessor pairs in automated batches.
+- [ ] Implement and manually test these selection/provider policies; documentation is not a running integration.
 
 ## Still open
 
-- [ ] Watcher: lab allowlist, new-model discovery, download filtering, dedupe and `data/seen.json`.
-- [ ] Tooling completion: locked dependencies/uv project workflow, ruff, pre-commit and dedicated PR CI.
-- [ ] Typed/Pydantic schema validation and broader config/family acceptance coverage.
-- [ ] Independent **30-model gold set**, exact-match/calculator/citation metrics and the **95% config-field target**.
-- [ ] LLM code reader with structured output and line citations.
-- [ ] Model-card-to-report finder, report agent/retrieval, page citations and citation validator.
+- [ ] Watcher: lab allowlist, global discovery, popularity filters with new-release exceptions, dedupe, retry state and `data/seen.json`.
+- [ ] Typed/Pydantic schema and broader family/config acceptance coverage.
+- [ ] Independent **30-model gold set**, beginning with 15 hand-labeled models; config/calculator/citation metrics and the **95% config-field target**.
+- [ ] Gemini validated spec-to-SVG generation/repair loop and response caching; provider quota controls.
+- [ ] LLM code reader with structured output and source-line citations.
+- [ ] Report finder/retrieval, report agent, page citations and citation validator.
 - [ ] LangGraph orchestration and Langfuse traces.
-- [ ] GitHub issue review queue and human decisions.
-- [ ] Automatic family/predecessor selection and constrained LLM change notes.
-- [ ] Strict publication checks in all site/SVG consumers, including conflicted/incomplete target records and unsupported cache cases.
-- [ ] Repository connection and a real run of the supplied workflow; explicit auto-merge controls beyond a label.
-- [ ] MCP server with `search_models`, `get_model`, `compare` and client tests.
-- [ ] Full model-list/filter/compare UI for the new primary-source records, own RSS and final model pages.
-- [ ] **50+ verified-model backfill**, gold-set results, production deployment and demo recording.
+- [ ] GitHub review issue queue and recorded human decisions.
+- [ ] Automatic family/predecessor selection and diff-constrained explanations.
+- [ ] Remote CI acceptance for this patch; first manual workflow run; controlled publishing/merging.
+- [ ] MCP server (`search_models`, `get_model`, `compare`) and client tests.
+- [ ] Full collection/filter/compare UI, own RSS, final model pages and production deployment.
+- [ ] **50+ model backfill**, independent evaluation results and demo recording.
 
-## Corrected milestone map
+The existing refresh workflow uses a fixed watchlist and can be dispatched manually. Its cron remains disabled; neither a labeled PR nor zero conflicts constitutes automatic merge authorization.
 
-| Day(s) | Status | Evidence and remaining acceptance |
-|---|---|---|
-| 1 | Partial | Installable src package, pytest, README and workflow file exist; locking, ruff, pre-commit, typed schema and PR CI remain |
-| 2 | Open | Fixed watchlist only; watcher/seen state not built |
-| 3–4 | Core implemented | Dense/hybrid/MoE/nested config extraction works in the prototype; saved coverage is four models, not the planned 5/10 acceptance sets |
-| 5 | Implemented prototype | Cache formulas and hand-math tests exist; broader family/runtime coverage remains |
-| 6 | Open | First 15 independently hand-labeled gold models missing |
-| 7 | Implemented | Static AST scanner and file/line citations |
-| 8 | Open | LLM code reader missing |
-| 9 | Implemented prototype | Agreement/conflict confidence and record publication withholding; consumer-side hardening remains |
-| 10–12 | Open | Gold-set eval harness, formal metrics, tracing and failure analysis missing; existing counts are prototype evidence |
-| 13–15 | Open | Report finder, retrieval agent and page-citation validator missing |
-| 16 | Diff implemented | Field and tensor-group diffs; automatic predecessor selection missing |
-| 17 | Open | Diff-only LLM change notes and hallucination checks missing |
-| 18 | Open | Review fields exist in records; GitHub issue queue missing |
-| 19 | Partial | Own two-model static page builds; full collection filtering still to integrate |
-| 20 | SVG v1 implemented | Own generated diagrams; final standalone model pages/broader rendering still open |
-| 21 | Partial | Deterministic predecessor diff exists; arbitrary-pair compare UI for the new records remains |
-| 22 | Partial | Interactive cache calculator exists; own RSS missing |
-| 23 | Written, unrun | Daily/manual fixed-list workflow opens labeled PRs; repository, discovery and controlled merge behavior remain |
-| 24 | Open | MCP server/client tests missing |
-| 25 | Open | Four saved records are not a 50+ verified backfill; final deployment/eval/demo work remains |
+## Milestone map
 
-## Results and validation boundaries
+| Day(s) | Current state |
+|---|---|
+| 1 | uv/ruff/pytest/pre-commit/PR CI configured; typed schema remains open; remote CI needs its first run |
+| 2 | Watcher/seen state next |
+| 3–4 | Core extractor implemented; four live models are narrower than the planned family acceptance sets |
+| 5 | Cache formulas and hand-math tests implemented; broader/runtime validation remains |
+| 6 | First 15 gold labels missing |
+| 7 | AST scanner and line evidence implemented |
+| 8 | LLM reader missing |
+| 9 | Verifier and consumer publication boundary implemented; confidence remains heuristic |
+| 10–12 | Gold evaluation, metrics, tracing and failure analysis open |
+| 13–15 | Report retrieval and page-citation validation open |
+| 16–18 | Deterministic diffs exist; predecessor discovery, explanations and issue queue open |
+| 19–22 | Two-model site, deterministic SVG and cache UI exist; full collection/any-pair UI and RSS open |
+| 23 | GitHub connected; manual fixed-list workflow written; discovery, real workflow acceptance and controlled scheduled publishing open |
+| 24–25 | MCP, 50+ backfill, formal evaluation, production deployment and demo open |
 
-The imported records contain **60 verified checks, 20 single-source checks and one conflict**. Those are the prototype's rule-based statuses, not a gold-set accuracy score. The newly run test suite is offline; it validates behavior, formulas, saved diffs, conflict withholding, generated SVGs, revision URLs and bounded header reads. It does not re-download the original model sources or headers.
+## Evidence and boundaries
 
-The saved Kimi parameter totals are 2,779,931,837,184 and 2,780,110,363,392; their difference is exactly the recorded DSA-indexer group addition. The LFM totals are 1,170,340,608 and 1,728,801,536. Reproducible summaries are generated by `tools/summarize_prototype.py` into `results/` and `docs/progress-snapshot.json`.
+The refreshed records contain **61 verified checks, 67 single-source checks and zero conflicts**. Added checks cover inputs previously consumed by renderers without a publication decision. More checks do not establish higher accuracy; the independent gold set still contains zero models.
 
-`verify.py` withholds conflicting fields in records. The general SVG/site code still falls back to raw facts for some inputs, so that consumer boundary needs hardening before general publishing. Current displayed successor records have zero conflicts. Unknown layer/cache cases also need explicit release handling.
+| Model | Exact parameter total |
+|---|---:|
+| Kimi-K3 | 2,779,931,837,184 |
+| Kimi-K3.1-Pro | 2,780,110,363,392 |
+| LFM2.5-1.2B-Instruct | 1,170,340,608 |
+| LFM3-1.7B | 1,728,801,536 |
 
-## LFM findings retained
+The offline suite checks behavior without network access. The separate live run validates current commit-pinned fetching for these four checkpoints. Pattern agreement is at tensor-kind granularity; identically shaped sliding/global attention still needs config/code evidence. Single-source values are explicitly labeled and permitted by current policy. Cache outputs estimate cache state, not total runtime VRAM.
 
-- The imported `LiquidAI/LFM2.5-1.2B-Instruct` record has a held FFN-width conflict: config 12,288 versus tensor-shape 8,192.
-- The earlier primary-source audit found model-card/config context inconsistencies for the explicitly named `LFM2.5-1.2B-Thinking` and `LFM2.5-350M` variants. This is a separate finding, not the same checkpoint or field.
-- Details: `docs/LFM_FINDINGS.md`.
+Evidence: [results](results/README.md), [offline validation](results/prototype-validation.json), [live comparison](results/live-validation.json), [portable snapshot](docs/progress-snapshot.json), [LFM investigation](docs/LFM_FINDINGS.md).
 
-## Private reference deployment
+## Private reference boundary
 
-- [x] Hosting policy checked: owner only, no other users/editors/groups/external visitors.
-- [x] Unauthenticated requests to the page, a diagram asset and model JSON each returned **HTTP 401**.
-- [x] Legacy deployment link removed from this project's README; none was found in the checked portfolio projects.
-- [x] Legacy gallery/third-party diagrams retained only as ignored private research references, not production records or the independent gold set.
+- [x] Legacy hosting policy checked owner-only; unauthenticated page, diagram and model JSON returned HTTP 401 in the recorded access review.
+- [x] Legacy hosted link omitted from README and absent from the portfolio projects checked during the import.
+- [x] Third-party diagrams/gallery remain ignored private research, outside production records and the gold set.
 
-Evidence: `docs/deployment-access-review.json`. No new public deployment or GitHub workflow run was performed during integration.
+Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-audited in this foundations patch.
 
-## Files to start from
+Next: finish and land this local foundations patch, then build the watcher described in [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
 
-- `src/archwatch/`: integrated implementation.
-- `tests/`: supplied and added offline tests.
-- `data/models/`: four original JSON records and two original YAML records.
-- `site/index.html`, `diagrams/`: rebuilt original prototype outputs.
-- `results/README.md`, `results/prototype-validation.json`: generated counts and test results.
-- `docs/prototype-import.json`: archive hash and relative import manifest.
-- `docs/progress-snapshot.json`: corrected portable project status.
-
-Next work is the **watcher and remaining tooling/evaluation foundations**, followed by the LLM/report/review stages. The implemented extractor/AST/calculator/verifier should be extended rather than rebuilt from Day 1.
+The implementation amendments approved on 14 November are recorded in [NEXT_STEPS.md](docs/NEXT_STEPS.md): CI-gated foundations merge and manual workflow acceptance first; then separate watcher, route-test, Gemini-loop, explainer and ten-model gold-set PRs. Reviews/explanations use Flash Lite, diagram routes must be compared, and cron requires explicit approval.
