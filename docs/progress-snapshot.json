@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-13",
+  "as_of": "2026-11-14",
   "project": "ArchWatch",
   "scope_reference": "docs/PROJECT_SCOPE.md",
   "project_root": ".",
@@ -8,7 +8,7 @@
   "records_path": "data/models",
   "prototype_archive": "archwatch.zip",
   "prototype_archive_sha256": "e15bc174d60103bf0b5d030f54fcbc107f02975cdaabbd71d33e9f5abbaaa6ad",
-  "stage": "Deterministic prototype with uv/ruff/pre-commit/PR CI configured; watcher and independent gold-set evaluation remain open.",
+  "stage": "Deterministic prototype and bounded Hub watcher implemented; independent gold-set evaluation and LLM stages remain open.",
   "models": [
     {
       "id": "LiquidAI/LFM2.5-1.2B-Instruct",
@@ -83,18 +83,22 @@
     "single source": 67
   },
   "test_run": {
-    "tests": 38,
+    "tests": 66,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 38,
+    "passed": 66,
     "python": "3.12.13",
     "command": "uv run --frozen pytest -q --junitxml=results/test-results.xml",
     "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."
   },
   "dsa_indexer_parameter_delta": 178526208,
   "prototype_pipeline_implemented": true,
-  "watcher_implemented": false,
+  "watcher_implemented": true,
+  "watcher_policy": "config/watcher.yaml",
+  "watcher_state": "data/seen.json",
+  "watcher_live_evidence": "results/watcher-live-validation.json",
+  "no_op_acceptance": "results/no-op-acceptance.json",
   "tooling_configured": [
     "uv.lock",
     "ruff",
@@ -105,8 +109,9 @@
   "daily_workflow": {
     "path": ".github/workflows/daily.yml",
     "written": true,
-    "executed": false,
-    "inputs": "watchlist.txt",
+    "executed": true,
+    "inputs": "manual mode: fixed watchlist, discover or process",
+    "no_op_runs": "results/no-op-acceptance.json",
     "github_repository_configured": true
   },
   "formal_gold_set_models": 0,

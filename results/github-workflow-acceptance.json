@@ -35,10 +35,11 @@
       "review_fields": 0,
       "update_pr": "https://github.com/LeoRigasaki/archwatch/pull/3",
       "update_pr_head": "9f1327642a566a571b6fbadda06e156dead52348",
-      "update_pr_state": "open",
+      "update_pr_state": "closed",
       "update_pr_labels": [
         "auto-merge"
-      ]
+      ],
+      "closed_as_no_op": true
     }
   ],
   "required_labels_created_before_dispatch": [
@@ -85,5 +86,6 @@
     "This validates workflow execution and PR creation; it is not a gold-set accuracy evaluation."
   ],
   "next_branch": "feat/model-watcher",
-  "next_branch_base": "f93be2c1a6fb1b333b335358d36daa606a095d18"
+  "next_branch_base": "f93be2c1a6fb1b333b335358d36daa606a095d18",
+  "no_op_correction": "results/no-op-acceptance.json"
 }

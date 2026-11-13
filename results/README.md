@@ -9,7 +9,7 @@ Generated from four saved records refreshed on 13 November 2026. This summary co
 | moonshotai/Kimi-K3.1-Pro | 2,780,110,363,392 | 24 | 19 | 0 |
 | moonshotai/Kimi-K3 | 2,779,931,837,184 | 20 | 19 | 0 |
 
-Offline tests: 38 passed; 0 failures; 0 errors. Python 3.12.13.
+Offline tests: 66 passed; 0 failures; 0 errors. Python 3.12.13.
 
 Recorded Kimi DSA-indexer addition: 178,526,208 parameters.
 

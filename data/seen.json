@@ -1,0 +1,41 @@
+{
+  "models": {
+    "LiquidAI/LFM2.5-1.2B-Instruct": {
+      "architecture_hash": "cbae0f4e0523b7f66f20adc786362a7cc6e4d86dde273c64a141478d5e34e6ee",
+      "created_at": "2026-01-06T00:28:46+00:00",
+      "family": "lfm",
+      "last_observed_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
+      "last_successful_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
+      "pool": "core",
+      "status": "recorded"
+    },
+    "LiquidAI/LFM3-1.7B": {
+      "architecture_hash": "5f69b11287b44e4da7c2a7c9e2c1e870b8677ab5f5a88d0585a49a58bace99cd",
+      "created_at": "2026-10-23T21:35:42+00:00",
+      "family": "lfm",
+      "last_observed_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
+      "last_successful_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
+      "pool": "core",
+      "status": "recorded"
+    },
+    "moonshotai/Kimi-K3": {
+      "architecture_hash": "7e741849ffddc7fd4e4a58a6ea26f593c586a1e4ced8041ee670f318d03fcd7a",
+      "created_at": "2026-06-13T06:42:57+00:00",
+      "family": "kimi",
+      "last_observed_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+      "last_successful_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+      "pool": "core",
+      "status": "recorded"
+    },
+    "moonshotai/Kimi-K3.1-Pro": {
+      "architecture_hash": "0b914328bd1ec1ee258fb007719f4d812223e93b2cff72d3925d946a5e1cb441",
+      "created_at": "2026-11-02T04:13:51+00:00",
+      "family": "kimi",
+      "last_observed_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "last_successful_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "pool": "core",
+      "status": "recorded"
+    }
+  },
+  "schema_version": 1
+}

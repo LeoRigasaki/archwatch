@@ -43,6 +43,9 @@ def main():
     total_checks = Counter(c["status"] for rec in records for c in rec["checks"])
     kimi = next(rec for rec in records if rec["id"] == "moonshotai/Kimi-K3.1-Pro")
     import_info = json.loads((ROOT / "docs/prototype-import.json").read_text())
+    acceptance_path = ROOT / "results/github-workflow-acceptance.json"
+    acceptance = json.loads(acceptance_path.read_text()) if acceptance_path.exists() else {}
+    manual_runs = acceptance.get("manual_runs", [])
     snapshot = {
         "as_of": datetime.now(ZoneInfo("Asia/Karachi")).date().isoformat(),
         "project": "ArchWatch",
@@ -53,7 +56,7 @@ def main():
         "records_path": "data/models",
         "prototype_archive": import_info["archive"],
         "prototype_archive_sha256": import_info["archive_sha256"],
-        "stage": "Deterministic prototype with uv/ruff/pre-commit/PR CI configured; watcher and independent gold-set evaluation remain open.",
+        "stage": "Deterministic prototype and bounded Hub watcher implemented; independent gold-set evaluation and LLM stages remain open.",
         "models": summaries,
         "record_count": len(records),
         "yaml_record_count": len(list((ROOT / "data/models").glob("*.yaml"))),
@@ -61,14 +64,19 @@ def main():
         "test_run": tests,
         "dsa_indexer_parameter_delta": kimi["tensor_diff_vs_predecessor"]["added_total"],
         "prototype_pipeline_implemented": True,
-        "watcher_implemented": False,
+        "watcher_implemented": True,
+        "watcher_policy": "config/watcher.yaml",
+        "watcher_state": "data/seen.json",
+        "watcher_live_evidence": "results/watcher-live-validation.json",
+        "no_op_acceptance": "results/no-op-acceptance.json",
         "tooling_configured": ["uv.lock", "ruff", "pre-commit", "offline PR CI"],
         "fresh_source_run_evidence": "results/live-validation.json",
         "daily_workflow": {
             "path": ".github/workflows/daily.yml",
             "written": True,
-            "executed": False,
-            "inputs": "watchlist.txt",
+            "executed": bool(manual_runs),
+            "inputs": "manual mode: fixed watchlist, discover or process",
+            "no_op_runs": "results/no-op-acceptance.json",
             "github_repository_configured": subprocess.run(
                 ["git", "remote", "get-url", "origin"], cwd=ROOT, capture_output=True
             ).returncode

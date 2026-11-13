@@ -1,0 +1,26 @@
+{
+  "checked_on": "2026-11-14",
+  "fix_pr": "https://github.com/LeoRigasaki/archwatch/pull/4",
+  "merge_commit": "a2320733c10635fe3bd5fb4846a4dbdc7f42fce0",
+  "ci": "https://github.com/LeoRigasaki/archwatch/actions/runs/43492770497",
+  "ci_conclusion": "success",
+  "closed_without_merge": "https://github.com/LeoRigasaki/archwatch/pull/3",
+  "daily_update_branch_deleted": true,
+  "runs": [
+    {
+      "url": "https://github.com/LeoRigasaki/archwatch/actions/runs/43492918439",
+      "conclusion": "success",
+      "operation": "none",
+      "tests_passed": 41
+    },
+    {
+      "url": "https://github.com/LeoRigasaki/archwatch/actions/runs/43493166837",
+      "conclusion": "success",
+      "operation": "none",
+      "tests_passed": 41
+    }
+  ],
+  "new_prs": 0,
+  "unchanged_upstream": true,
+  "watcher_rebased_on_merge": true
+}
