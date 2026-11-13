@@ -18,4 +18,10 @@ family_rules:
   - {pattern: '^lfm', family: lfm}
   - {pattern: '^deepseek[-_]v', family: deepseek-v}
   - {pattern: '^qwen', family: qwen}
+  - {pattern: '^(?:mixtral|mistral)', family: mistral}
+  - {pattern: '^gemma', family: gemma}
+  - {pattern: '^(?:meta-)?llama', family: llama}
+  - {pattern: '^phi', family: phi}
+  - {pattern: '^(?:chat)?glm', family: glm}
+  - {pattern: '^(?:nvidia-)?nemotron', family: nemotron}
 family_overrides: {}

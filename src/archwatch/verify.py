@@ -242,6 +242,8 @@ def verify(
                 ],
             )
         )
+        if out[-1]["published"]:
+            out.append(check("activation_card_name", [{"value": raw, "evidence": "card:activation"}]))
 
     if "layer_index_base_in_config" in V or "layer_index_base_in_config" in cf:
         out.append(

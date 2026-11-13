@@ -39,7 +39,7 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
     # Refresh once per analysis; every subsequent file/header read uses this snapshot.
     info = info or hub.repo_info(repo, refresh=True)
     cfg = hub.get_json(repo, "config.json", revision=info["sha"])
-    facts = extract.extract(cfg)
+    facts, config_coverage = extract.extract_with_usage(cfg)
     bits = facts.get("_quant_bits", (None, ""))[0]
 
     py = {
@@ -75,22 +75,25 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
             "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, "
             "activation) are read from config, card and tensor names only, not from code."
         )
-    unknown_cfg = sorted(
-        k
-        for k in (cfg.get("text_config") or cfg)
-        if k in ("attn_res_block_size", "activation_situ_beta", "latent_moe_use_norm")
-    )
+    unknown_cfg = config_coverage["unconsumed"]
     if unknown_cfg:
         notes.append(
-            "Config keys with no extraction rule yet (need a human or code to interpret): " + ", ".join(unknown_cfg)
+            "Config keys not consumed by the extractor (including metadata/defaults): " + ", ".join(unknown_cfg)
         )
     return {
         "id": repo,
         "source_commit": info["sha"],
         "hub_created": info["created_at"],
         "license": info.get("license_name") or info.get("license"),
+        "hub_metadata": {k: info.get(k) for k in ("base_model", "base_model_relation", "tags")},
         "analyzed_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "facts": {k: {"value": v[0], "evidence": v[1]} for k, v in facts.items() if not k.startswith("_")},
+        "config_coverage": config_coverage,
+        "source_files": sorted(
+            f
+            for f in info["files"]
+            if f in ("config.json", "README.md") or f in py or f.endswith((".safetensors", ".safetensors.index.json"))
+        ),
         "params": {"counted_from_weights": wcount, "active": active},
         "cache": mem,
         "code_scan": {

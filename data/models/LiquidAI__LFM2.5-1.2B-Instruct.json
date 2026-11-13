@@ -3,7 +3,37 @@
  "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
  "hub_created": "2026-01-06T00:28:46+00:00",
  "license": "lfm1.0",
- "analyzed_at": "2026-11-13T19:28:37+00:00",
+ "hub_metadata": {
+  "base_model": "LiquidAI/LFM2.5-1.2B-Base",
+  "base_model_relation": null,
+  "tags": [
+   "ar",
+   "arxiv:2511.23404",
+   "base_model:LiquidAI/LFM2.5-1.2B-Base",
+   "base_model:finetune:LiquidAI/LFM2.5-1.2B-Base",
+   "conversational",
+   "de",
+   "deploy:azure",
+   "edge",
+   "en",
+   "endpoints_compatible",
+   "es",
+   "eval-results",
+   "fr",
+   "ja",
+   "ko",
+   "lfm2",
+   "lfm2.5",
+   "license:other",
+   "liquid",
+   "region:us",
+   "safetensors",
+   "text-generation",
+   "transformers",
+   "zh"
+  ]
+ },
+ "analyzed_at": "2026-11-13T20:28:10+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm2ForCausalLM",
@@ -112,6 +142,53 @@
    "evidence": "config:dtype"
   }
  },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "block_auto_adjust_ff_dim",
+   "block_ff_dim",
+   "block_ffn_dim_multiplier",
+   "block_multiple_of",
+   "conv_L_cache",
+   "dtype",
+   "hidden_size",
+   "layer_types",
+   "max_position_embeddings",
+   "model_type",
+   "num_attention_heads",
+   "num_hidden_layers",
+   "num_key_value_heads",
+   "rope_theta",
+   "vocab_size"
+  ],
+  "unconsumed": [
+   "block_dim",
+   "block_mlp_init_scale",
+   "block_norm_eps",
+   "block_out_init_scale",
+   "block_use_swiglu",
+   "block_use_xavier_init",
+   "bos_token_id",
+   "conv_bias",
+   "conv_dim",
+   "conv_use_xavier_init",
+   "eos_token_id",
+   "initializer_range",
+   "intermediate_size",
+   "norm_eps",
+   "num_heads",
+   "pad_token_id",
+   "tie_embedding",
+   "transformers_version",
+   "use_cache",
+   "use_pos_enc"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "model.safetensors"
+ ],
  "params": {
   "counted_from_weights": {
    "total": 1170340608,
@@ -182,7 +259,26 @@
    }
   }
  },
- "card_claims": {},
+ "card_claims": {
+  "num_layers": {
+   "raw": "16 (10 double-gated convolution blocks + 6 GQA blocks)",
+   "value": 16.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "context_length": {
+   "raw": "32,768 tokens",
+   "value": 32768.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "vocab_size": {
+   "raw": "65,536",
+   "value": 65536.0,
+   "tolerance": 0,
+   "k_suffix": false
+  }
+ },
  "checks": [
   {
    "field": "num_layers",
@@ -194,6 +290,11 @@
     {
      "value": 16,
      "evidence": "config:num_hidden_layers"
+    },
+    {
+     "value": 16.0,
+     "evidence": "card:num_layers",
+     "raw": "16 (10 double-gated convolution blocks + 6 GQA blocks)"
     },
     {
      "value": 16,
@@ -230,6 +331,11 @@
      "evidence": "config:vocab_size"
     },
     {
+     "value": 65536.0,
+     "evidence": "card:vocab_size",
+     "raw": "65,536"
+    },
+    {
      "value": 65536,
      "evidence": "weights:embed_tokens rows"
     }
@@ -238,13 +344,18 @@
   {
    "field": "context_length",
    "value": 128000,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
    "candidates": [
     {
      "value": 128000,
      "evidence": "config:max_position_embeddings"
+    },
+    {
+     "value": 32768.0,
+     "evidence": "card:context_length",
+     "raw": "32,768 tokens"
     }
    ]
   },
@@ -599,7 +710,6 @@
   "num_layers": 16,
   "hidden_size": 2048,
   "vocab_size": 65536,
-  "context_length": 128000,
   "num_attention_heads": 32,
   "num_kv_heads": 8,
   "head_dim": 64,
@@ -666,9 +776,29 @@
    "skipped_scale_tensors": 0
   }
  },
- "review_queue": [],
+ "review_queue": [
+  {
+   "field": "context_length",
+   "value": 128000,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 128000,
+     "evidence": "config:max_position_embeddings"
+    },
+    {
+     "value": 32768.0,
+     "evidence": "card:context_length",
+     "raw": "32,768 tokens"
+    }
+   ]
+  }
+ ],
  "unchecked_notes": [
-  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code."
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): block_dim, block_mlp_init_scale, block_norm_eps, block_out_init_scale, block_use_swiglu, block_use_xavier_init, bos_token_id, conv_bias, conv_dim, conv_use_xavier_init, eos_token_id, initializer_range, intermediate_size, norm_eps, num_heads, pad_token_id, tie_embedding, transformers_version, use_cache, use_pos_enc"
  ],
  "weight_layer_kinds": [
   "short_conv",

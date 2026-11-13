@@ -21,13 +21,21 @@ def policy():
 
 def model(repo, date, context=128000, sha="a" * 40):
     record = copy.deepcopy(BASE)
+    record.pop("hub_metadata", None)  # Synthetic repositories have their own provenance.
     record.update(id=repo, source_commit=sha, hub_created=date, analyzed_at="2026-01-01T00:00:00+00:00")
     record["published"]["context_length"] = context
     record["facts"]["context_length"]["value"] = context
     for check in record["checks"]:
         if check["field"] == "context_length":
             check["value"] = context
-            check["candidates"][0]["value"] = context
+            # This fixture's context is synthetic, not the donor's card claim.
+            check.update(
+                status="single source",
+                published=True,
+                confidence=0.7,
+                candidates=[{"value": context, "evidence": "config:max_position_embeddings"}],
+            )
+    record["review_queue"] = [c for c in record["review_queue"] if c["field"] != "context_length"]
     return record
 
 

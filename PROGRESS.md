@@ -19,7 +19,7 @@ As of **14 November 2026**, after the prototype import, foundations merge and su
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **66 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
+- [x] **83 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
@@ -122,3 +122,14 @@ The implementation amendments approved on 14 November are recorded in [NEXT_STEP
 - A separate configured live discovery inspected 80 candidates: 37 pending analysis, five held for access/source review, 32 rejected and six popularity-deferred. These are discovery outcomes, not verified architectures or quality rankings. The scan did not publish any new model.
 - The checked-in seen state seeds only the four existing records. Gemini requests, weekly generation, independent gold labels and the collection UI remain open.
 - Evidence: [watcher live validation](results/watcher-live-validation.json), [no-op acceptance](results/no-op-acceptance.json), and [operation/limitations](docs/WATCHER.md).
+
+## Source-driven cleanup before backfill
+
+- [x] Watcher PR #5 merged after green CI; discover-mode run [43499469228](https://github.com/LeoRigasaki/archwatch/actions/runs/43499469228) succeeded and opened [PR #6](https://github.com/LeoRigasaki/archwatch/pull/6) with `needs-review`. Its discovery state is not merged or treated as verified model data.
+- [x] Gallery inventory, title, introduction and pinned source links derive from model records and seen state; no named demo-model list remains in `build_site.py`.
+- [x] Family rules added for Mistral, Gemma, Llama, Phi, GLM and Nemotron.
+- [x] Hub-tagged fine-tunes, adapters, merges and quantized derivatives are rejected before a processing slot; historical derived records are not dedupe authorities for primary releases.
+- [x] Actual config reads are tracked, with every unread leaf key reported by dotted path (including nested dictionaries/lists). Read coverage is not a claim of semantic verification.
+- [x] Activation card names are parsed and pass through a publication decision before SVG rendering. Cards support HTML, Markdown pipe tables and key/value bullets, excluding fenced examples.
+- [x] 83 tests pass locally. The fresh four-record rebuild exposed an Instruct card/config context disagreement now visible to the verifier; it is held, not described as a lab defect.
+- [ ] Backfill one admitted primary model per core publisher; add missing family/tensor rules with regression tests and independent manual primary-source gold labels.
