@@ -23,7 +23,7 @@ def cache_model(v: dict) -> dict:
     per_token, per_token_low, constant = 0, 0, 0
     rows, assumptions = [], ["cache values stored in bf16 (2 bytes) unless noted"]
 
-    for kind, n in counts.items():
+    for kind, n in sorted(counts.items()):
         if kind == "full_attention":
             b = 2 * kv * hd * BF16
             per_token += b * n

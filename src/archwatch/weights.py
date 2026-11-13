@@ -53,7 +53,7 @@ def count(tensors: dict[str, dict], quant_bits: int | None) -> dict:
     per_layer_routed: dict[int, int] = {}
     experts_per_layer: dict[int, set] = {}
     skipped_scales = 0
-    for name, t in tensors.items():
+    for name, t in sorted(tensors.items()):
         if name.endswith(SCALE_SUFFIXES):
             skipped_scales += 1
             continue
@@ -73,7 +73,7 @@ def count(tensors: dict[str, dict], quant_bits: int | None) -> dict:
     return {
         "total": total,
         "text_total": total - by_comp.get("vision", 0) - by_comp.get("vision_projector", 0),
-        "by_component": dict(sorted(by_comp.items(), key=lambda kv: -kv[1])),
+        "by_component": dict(sorted(by_comp.items(), key=lambda kv: (-kv[1], kv[0]))),
         "routed_expert_params": by_comp.get("moe_routed_experts", 0),
         "moe_layers": len(per_layer_routed),
         "experts_per_moe_layer": sorted({len(v) for v in experts_per_layer.values()}),
@@ -110,7 +110,7 @@ def layer_kinds(tensors: dict[str, dict]) -> list[str]:
             names.setdefault(i, set()).add(k)
     out = []
     for i in sorted(names):
-        s = " ".join(names[i])
+        s = " ".join(sorted(names[i]))
         if "indexer." in s:
             out.append("dsa_mla")
         elif "kv_a_proj_with_mqa" in s:
@@ -130,7 +130,7 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None) -> dict:
     """Facts read straight from weight shapes, used to cross-check config values."""
     out: dict = {}
     mult = 8 // (quant_bits or 4)
-    for name, t in tensors.items():
+    for name, t in sorted(tensors.items()):
         if re.search(r"experts\.0\.w1\.weight(_packed)?$", name) and "expert_intermediate" not in out:
             rows, cols = t["shape"]
             out["expert_intermediate"] = rows
