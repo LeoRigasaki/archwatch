@@ -3,7 +3,7 @@
  "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
  "hub_created": "2026-01-06T00:28:46+00:00",
  "license": "lfm1.0",
- "analyzed_at": "2026-11-13T15:48:26+00:00",
+ "analyzed_at": "2026-11-13T19:18:00+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm2ForCausalLM",

@@ -3,7 +3,7 @@
  "source_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
  "hub_created": "2026-10-23T21:35:42+00:00",
  "license": "lfm1.0",
- "analyzed_at": "2026-11-13T15:48:22+00:00",
+ "analyzed_at": "2026-11-13T19:18:00+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm3ForCausalLM",
@@ -1103,19 +1103,19 @@
     "params": 360448
    },
    {
-    "pattern": "layers.*.post_ffn_norm",
-    "params": 49152
-   },
-   {
     "pattern": "layers.*.post_operator_norm",
     "params": 49152
    },
    {
-    "pattern": "layers.*.self_attn.q_norm",
-    "params": 1408
+    "pattern": "layers.*.post_ffn_norm",
+    "params": 49152
    },
    {
     "pattern": "layers.*.self_attn.k_norm",
+    "params": 1408
+   },
+   {
+    "pattern": "layers.*.self_attn.q_norm",
     "params": 1408
    }
   ],
@@ -1127,11 +1127,11 @@
     "params": 25165824
    },
    {
-    "pattern": "layers.*.self_attn.q_layernorm",
+    "pattern": "layers.*.self_attn.k_layernorm",
     "params": 384
    },
    {
-    "pattern": "layers.*.self_attn.k_layernorm",
+    "pattern": "layers.*.self_attn.q_layernorm",
     "params": 384
    }
   ],

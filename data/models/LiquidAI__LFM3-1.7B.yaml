@@ -2,7 +2,7 @@ id: LiquidAI/LFM3-1.7B
 source_commit: 1da06bec6a819da10b54c67e5c90972b46d81871
 hub_created: '2026-10-23T21:35:42+00:00'
 license: lfm1.0
-analyzed_at: '2026-11-13T15:48:22+00:00'
+analyzed_at: '2026-11-13T19:18:00+00:00'
 published:
   num_layers: 24
   hidden_size: 2048
