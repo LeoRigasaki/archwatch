@@ -1,0 +1,4 @@
+-e .
+huggingface_hub>=0.26
+pyyaml>=6
+pytest>=8

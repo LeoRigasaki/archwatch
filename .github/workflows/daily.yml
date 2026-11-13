@@ -1,0 +1,32 @@
+name: daily
+on:
+  # Enable the daily schedule after tooling, extraction, and rendering fixes land.
+  # schedule:
+  #   - cron: "17 2 * * *"   # 07:17 Asia/Karachi
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -r requirements.txt
+      - name: Analyze watched models
+        run: python run.py $(cat watchlist.txt)
+      - run: python build_site.py
+      - run: python -m pytest -q
+      - name: Count conflicts
+        id: conflicts
+        run: |
+          n=$(python -c "import json,glob;print(sum(len(json.load(open(f))['review_queue']) for f in glob.glob('data/models/*.json')))")
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+      - uses: peter-evans/create-pull-request@v6
+        with:
+          branch: daily-update
+          title: "ArchWatch daily update (${{ steps.conflicts.outputs.n }} fields in review)"
+          labels: ${{ steps.conflicts.outputs.n != '0' && 'needs-review' || 'auto-merge' }}
+          body: Records rebuilt from the Hub. Fields in review are listed in each model's YAML.

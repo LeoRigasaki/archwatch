@@ -1,0 +1,2 @@
+moonshotai/Kimi-K3.1-Pro:moonshotai/Kimi-K3
+LiquidAI/LFM3-1.7B:LiquidAI/LFM2.5-1.2B-Instruct

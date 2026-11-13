@@ -1,0 +1,52 @@
+id: LiquidAI/LFM3-1.7B
+source_commit: 1da06bec6a819da10b54c67e5c90972b46d81871
+hub_created: '2026-10-23T21:35:42+00:00'
+license: lfm1.0
+analyzed_at: '2026-11-12T15:17:38+00:00'
+published:
+  num_layers: 24
+  hidden_size: 2048
+  vocab_size: 128000
+  context_length: 262144
+  num_attention_heads: 16
+  num_kv_heads: 4
+  head_dim: 128
+  attention_type: GQA
+  ffn_intermediate: 7680
+  short_conv_kernel: 7
+  sliding_window: 256
+  layer_type_counts:
+    short_conv: 13
+    full_attention: 6
+    sliding_attention: 5
+  layer_pattern_per_layer:
+  - short_conv
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  layer_index_base_in_config: 0
+  qk_norm: true
+  attention_output_gate: true
+  params_total: 1728801536
+review_queue: []
+unchecked_notes: []
