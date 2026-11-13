@@ -44,7 +44,7 @@ def analyze(repo: str, with_weights: bool = True) -> dict:
 
     py = {
         f: hub.get_text(repo, f)
-        for f in info["files"]
+        for f in sorted(info["files"])
         if f.endswith(".py") and (f.startswith("modeling_") or f.startswith("configuration_"))
     }
     code = codescan.scan({k: v for k, v in py.items() if v})
@@ -136,8 +136,8 @@ def tensor_diff(new_repo: str, old_repo: str, top: int = 6) -> dict:
         return g
 
     a, b = groups(old_repo), groups(new_repo)
-    added = sorted(((p, b[p]) for p in b.keys() - a.keys()), key=lambda x: -x[1])
-    removed = sorted(((p, a[p]) for p in a.keys() - b.keys()), key=lambda x: -x[1])
+    added = sorted(((p, b[p]) for p in b.keys() - a.keys()), key=lambda x: (-x[1], x[0]))
+    removed = sorted(((p, a[p]) for p in a.keys() - b.keys()), key=lambda x: (-x[1], x[0]))
     return {
         "added": [{"pattern": p, "params": n} for p, n in added[:top]],
         "added_total": sum(n for _, n in added),

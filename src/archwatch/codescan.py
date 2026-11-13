@@ -18,7 +18,7 @@ def _src_line(src: str, lineno: int) -> str:
 def scan(files: dict[str, str]) -> dict:
     out: dict = {"files": sorted(files), "classes": [], "facts": {}}
     facts = out["facts"]
-    for fname, src in files.items():
+    for fname, src in sorted(files.items()):
         try:
             tree = ast.parse(src)
         except SyntaxError as e:

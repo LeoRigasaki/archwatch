@@ -38,7 +38,7 @@ The input list is fixed in `watchlist.txt`. The watcher and LLM code/report read
 - `moonshotai/Kimi-K3` and `moonshotai/Kimi-K3.1-Pro`;
 - `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM3-1.7B`.
 
-On 13 November 2026, a fresh primary-source run reproduced all four source commits and exact parameter totals. The original 81 core verdicts were unchanged except for the resolved LFM FFN field. With added decisions for rendering inputs, the records now contain **61 verified checks, 67 single-source checks and zero conflicts**. These are agreement counts, not independent accuracy scores. The offline suite has **38 passing tests**.
+On 13 November 2026, a fresh primary-source run reproduced all four source commits and exact parameter totals. The original 81 core verdicts were unchanged except for the resolved LFM FFN field. With added decisions for rendering inputs, the records now contain **61 verified checks, 67 single-source checks and zero conflicts**. These are agreement counts, not independent accuracy scores. The offline suite has **41 passing tests**.
 
 The Kimi diff still identifies exactly **178,526,208 added DSA-indexer parameters**. The LFM2.5 config's nominal 12,288-wide FFN becomes **8,192** under its explicit auto-adjust convention, agreeing with the tensors. The extractor now handles that rule; the initial flag was an extractor gap, not evidence of a mistake by Liquid AI. See [the LFM investigation](docs/LFM_FINDINGS.md).
 
