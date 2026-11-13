@@ -8,21 +8,18 @@
   "records_path": "data/models",
   "prototype_archive": "archwatch.zip",
   "prototype_archive_sha256": "e15bc174d60103bf0b5d030f54fcbc107f02975cdaabbd71d33e9f5abbaaa6ad",
-  "stage": "Implemented deterministic prototype through approximately Day 9, with earlier tooling/watcher gaps and later diff/SVG features already present.",
+  "stage": "Deterministic prototype with uv/ruff/pre-commit/PR CI configured; watcher and independent gold-set evaluation remain open.",
   "models": [
     {
       "id": "LiquidAI/LFM2.5-1.2B-Instruct",
       "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
       "total_parameters_from_saved_headers": 1170340608,
       "field_checks": {
-        "verified": 5,
-        "single source": 8,
-        "conflict": 1
+        "verified": 6,
+        "single source": 15
       },
-      "published_fields": 13,
-      "review_fields": [
-        "ffn_intermediate"
-      ],
+      "published_fields": 21,
+      "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 12288,
       "fixed_cache_bytes": 122880
@@ -33,9 +30,9 @@
       "total_parameters_from_saved_headers": 1728801536,
       "field_checks": {
         "verified": 11,
-        "single source": 6
+        "single source": 14
       },
-      "published_fields": 17,
+      "published_fields": 25,
       "review_fields": [],
       "code_files": [
         "configuration_lfm3.py",
@@ -50,9 +47,9 @@
       "total_parameters_from_saved_headers": 2780110363392,
       "field_checks": {
         "verified": 24,
-        "single source": 3
+        "single source": 19
       },
-      "published_fields": 27,
+      "published_fields": 43,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py"
@@ -66,9 +63,9 @@
       "total_parameters_from_saved_headers": 2779931837184,
       "field_checks": {
         "verified": 20,
-        "single source": 3
+        "single source": 19
       },
-      "published_fields": 23,
+      "published_fields": 39,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py",
@@ -82,29 +79,35 @@
   "record_count": 4,
   "yaml_record_count": 2,
   "saved_record_check_totals": {
-    "verified": 60,
-    "single source": 20,
-    "conflict": 1
+    "verified": 61,
+    "single source": 67
   },
   "test_run": {
-    "tests": 22,
+    "tests": 38,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 22,
+    "passed": 38,
     "python": "3.12.13",
-    "command": ".venv/bin/python -m pytest -q --junitxml=results/test-results.xml",
+    "command": "uv run --frozen pytest -q --junitxml=results/test-results.xml",
     "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."
   },
   "dsa_indexer_parameter_delta": 178526208,
   "prototype_pipeline_implemented": true,
   "watcher_implemented": false,
+  "tooling_configured": [
+    "uv.lock",
+    "ruff",
+    "pre-commit",
+    "offline PR CI"
+  ],
+  "fresh_source_run_evidence": "results/live-validation.json",
   "daily_workflow": {
     "path": ".github/workflows/daily.yml",
     "written": true,
     "executed": false,
     "inputs": "watchlist.txt",
-    "github_repository_configured": false
+    "github_repository_configured": true
   },
   "formal_gold_set_models": 0,
   "formal_archwatch_accuracy_measured": false,

@@ -3,7 +3,7 @@
  "source_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
  "hub_created": "2026-10-23T21:35:42+00:00",
  "license": "lfm1.0",
- "analyzed_at": "2026-11-12T15:17:38+00:00",
+ "analyzed_at": "2026-11-13T15:48:22+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm3ForCausalLM",
@@ -702,6 +702,198 @@
      "raw": "1.73B"
     }
    ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "short_conv",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv"
+     ],
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Hybrid (dense)",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Hybrid (dense)",
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "full_attention": {
+     "partial_rotary_factor": 0.5,
+     "rope_theta": 1000000.0,
+     "rope_type": "default"
+    },
+    "sliding_attention": {
+     "rope_theta": 10000,
+     "rope_type": "default"
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "full_attention": {
+       "partial_rotary_factor": 0.5,
+       "rope_theta": 1000000.0,
+       "rope_type": "default"
+      },
+      "sliding_attention": {
+       "rope_theta": 10000,
+       "rope_type": "default"
+      }
+     },
+     "evidence": "config:rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "sandwich_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:use_sandwich_norm"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 1132462080,
+    "embedding": 262144000,
+    "short_conv_mixer": 218290176,
+    "attention_or_linear_mixer": 115706624,
+    "norms": 198656
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 1132462080,
+      "embedding": 262144000,
+      "short_conv_mixer": 218290176,
+      "attention_or_linear_mixer": 115706624,
+      "norms": 198656
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 286,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 286,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
   }
  ],
  "published": {
@@ -750,7 +942,59 @@
   "layer_index_base_in_config": 0,
   "qk_norm": true,
   "attention_output_gate": true,
-  "params_total": 1728801536
+  "params_total": 1728801536,
+  "layer_types": [
+   "short_conv",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv"
+  ],
+  "decoder_type": "Hybrid (dense)",
+  "tied_embeddings": true,
+  "rope": {
+   "full_attention": {
+    "partial_rotary_factor": 0.5,
+    "rope_theta": 1000000.0,
+    "rope_type": "default"
+   },
+   "sliding_attention": {
+    "rope_theta": 10000,
+    "rope_type": "default"
+   }
+  },
+  "sandwich_norm": true,
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "dense_ffn": 1132462080,
+   "embedding": 262144000,
+   "short_conv_mixer": 218290176,
+   "attention_or_linear_mixer": 115706624,
+   "norms": 198656
+  },
+  "weight_header_summary": {
+   "tensor_count": 286,
+   "skipped_scale_tensors": 0
+  }
  },
  "review_queue": [],
  "unchecked_notes": [],
@@ -838,11 +1082,6 @@
    "after": 7
   },
   {
-   "field": "norm",
-   "before": "RMSNorm",
-   "after": "RMSNorm, sandwich (post-mixer + post-FFN)"
-  },
-  {
    "field": "ffn_intermediate",
    "before": 8192,
    "after": 7680
@@ -864,19 +1103,19 @@
     "params": 360448
    },
    {
-    "pattern": "layers.*.post_operator_norm",
-    "params": 49152
-   },
-   {
     "pattern": "layers.*.post_ffn_norm",
     "params": 49152
    },
    {
-    "pattern": "layers.*.self_attn.k_norm",
-    "params": 1408
+    "pattern": "layers.*.post_operator_norm",
+    "params": 49152
    },
    {
     "pattern": "layers.*.self_attn.q_norm",
+    "params": 1408
+   },
+   {
+    "pattern": "layers.*.self_attn.k_norm",
     "params": 1408
    }
   ],
@@ -888,11 +1127,11 @@
     "params": 25165824
    },
    {
-    "pattern": "layers.*.self_attn.k_layernorm",
+    "pattern": "layers.*.self_attn.q_layernorm",
     "params": 384
    },
    {
-    "pattern": "layers.*.self_attn.q_layernorm",
+    "pattern": "layers.*.self_attn.k_layernorm",
     "params": 384
    }
   ],

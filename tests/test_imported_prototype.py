@@ -3,6 +3,7 @@
 These validate saved artifacts and implemented behavior, not fresh Hub runs or
 gold-set accuracy. No model files or weight headers are fetched by this suite.
 """
+
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -40,14 +41,14 @@ def test_saved_record_publication_gate(repo):
 
 
 def test_ast_scan_cites_lines_without_executing_source():
-    source = '''raise RuntimeError("this source must never execute")
+    source = """raise RuntimeError("this source must never execute")
 class ToyAttention:
     def __init__(self, layer_idx, config):
         self.q_norm = RMSNorm(...)
         self.gate_proj = Linear(...)
         if layer_idx + 1 in config.layers:
             pass
-'''
+"""
     result = codescan.scan({"modeling_toy.py": source})
     facts = result["facts"]
     assert facts["qk_norm"] == (True, "code:modeling_toy.py#L4")
@@ -57,10 +58,13 @@ class ToyAttention:
 
 
 def test_disagreeing_context_is_held_for_review():
-    result = verify.check("context_length", [
-        {"value": 128000, "evidence": "config:max_position_embeddings"},
-        {"value": 32768, "evidence": "card:context_length"},
-    ])
+    result = verify.check(
+        "context_length",
+        [
+            {"value": 128000, "evidence": "config:max_position_embeddings"},
+            {"value": 32768, "evidence": "card:context_length"},
+        ],
+    )
     assert result["status"] == "conflict"
     assert result["published"] is False
     assert result["confidence"] < verify.PUBLISH_THRESHOLD

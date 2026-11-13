@@ -3,7 +3,7 @@
  "source_commit": "f831ab66814297da540d832a5235f8e904f29d06",
  "hub_created": "2026-06-13T06:42:57+00:00",
  "license": "kimi-k3",
- "analyzed_at": "2026-11-12T15:17:35+00:00",
+ "analyzed_at": "2026-11-13T15:48:16+00:00",
  "facts": {
   "architecture_class": {
    "value": "KimiK3ForConditionalGeneration",
@@ -1411,6 +1411,434 @@
      "raw": "401M"
     }
    ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "full_attention_mla",
+    "full_attention_mla"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "full_attention_mla",
+      "full_attention_mla"
+     ],
+     "evidence": "config:text_config.linear_attn_config"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.num_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_num_heads",
+   "value": 96,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 96,
+     "evidence": "config:text_config.linear_attn_config.num_heads"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.linear_attn_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_conv_kernel",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:text_config.linear_attn_config.short_conv_kernel_size"
+    }
+   ]
+  },
+  {
+   "field": "mla_kv_lora_rank",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "mla_qk_rope_head_dim",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "v_head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.v_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "dense_ffn_intermediate",
+   "value": 33792,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 33792,
+     "evidence": "config:text_config.intermediate_size"
+    }
+   ]
+  },
+  {
+   "field": "moe_router",
+   "value": "sigmoid",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "sigmoid",
+     "evidence": "config:text_config.moe_router_activation_func"
+    }
+   ]
+  },
+  {
+   "field": "vision_encoder_layers",
+   "value": 27,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 27,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1024,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "mxfp4-pack-quantized (4-bit)",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "mxfp4-pack-quantized (4-bit)",
+     "evidence": "config:text_config.quantization_config"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 2722740830208,
+    "attention_or_linear_mixer": 36190795008,
+    "moe_shared_experts": 12155092992,
+    "moe_latent_projection": 4727310336,
+    "lm_head": 1174405120,
+    "embedding": 1174405120,
+    "dense_ffn": 726663168,
+    "moe_router": 590955008,
+    "vision": 401214464,
+    "vision_projector": 46144512,
+    "attention_residuals": 2680832,
+    "norms": 1340416
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 2722740830208,
+      "attention_or_linear_mixer": 36190795008,
+      "moe_shared_experts": 12155092992,
+      "moe_latent_projection": 4727310336,
+      "lm_head": 1174405120,
+      "embedding": 1174405120,
+      "dense_ffn": 726663168,
+      "moe_router": 590955008,
+      "vision": 401214464,
+      "vision_projector": 46144512,
+      "attention_residuals": 2680832,
+      "norms": 1340416
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 497220,
+    "skipped_scale_tensors": 247296
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 497220,
+      "skipped_scale_tensors": 247296
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
   }
  ],
  "published": {
@@ -1533,7 +1961,133 @@
   "attention_output_gate": true,
   "params_total": 2779931837184,
   "params_active": 104189614848,
-  "vision_params": 401214464
+  "vision_params": 401214464,
+  "layer_types": [
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "full_attention_mla",
+   "full_attention_mla"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": false,
+  "linear_attn_num_heads": 96,
+  "linear_attn_head_dim": 128,
+  "linear_attn_conv_kernel": 4,
+  "mla_kv_lora_rank": 512,
+  "mla_qk_rope_head_dim": 64,
+  "v_head_dim": 128,
+  "dense_ffn_intermediate": 33792,
+  "moe_router": "sigmoid",
+  "vision_encoder_layers": 27,
+  "vision_hidden_size": 1024,
+  "released_weights_format": "mxfp4-pack-quantized (4-bit)",
+  "parameter_components": {
+   "moe_routed_experts": 2722740830208,
+   "attention_or_linear_mixer": 36190795008,
+   "moe_shared_experts": 12155092992,
+   "moe_latent_projection": 4727310336,
+   "lm_head": 1174405120,
+   "embedding": 1174405120,
+   "dense_ffn": 726663168,
+   "moe_router": 590955008,
+   "vision": 401214464,
+   "vision_projector": 46144512,
+   "attention_residuals": 2680832,
+   "norms": 1340416
+  },
+  "weight_header_summary": {
+   "tensor_count": 497220,
+   "skipped_scale_tensors": 247296
+  }
  },
  "review_queue": [],
  "unchecked_notes": [

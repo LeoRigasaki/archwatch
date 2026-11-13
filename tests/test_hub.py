@@ -1,4 +1,5 @@
 """Revision and byte-range boundaries without contacting the Hub."""
+
 import io
 import json
 import struct

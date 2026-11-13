@@ -4,6 +4,7 @@ It never imports or runs the code (remote code is untrusted). It records classes
 attention or mixer class builds in __init__, and a few patterns that settle questions the config
 leaves open, each with a file:line citation.
 """
+
 from __future__ import annotations
 
 import ast
@@ -32,9 +33,12 @@ def scan(files: dict[str, str]) -> dict:
                     continue
                 built = []
                 for sub in ast.walk(node):
-                    if (isinstance(sub, ast.Assign) and len(sub.targets) == 1
-                            and isinstance(sub.targets[0], ast.Attribute)
-                            and isinstance(sub.value, ast.Call)):
+                    if (
+                        isinstance(sub, ast.Assign)
+                        and len(sub.targets) == 1
+                        and isinstance(sub.targets[0], ast.Attribute)
+                        and isinstance(sub.value, ast.Call)
+                    ):
                         fn = ast.unparse(sub.value.func)
                         if re.search(r"Linear|Conv1d|Norm", fn):
                             built.append(f"{sub.targets[0].attr}={fn.split('.')[-1]}")
@@ -47,7 +51,10 @@ def scan(files: dict[str, str]) -> dict:
             if isinstance(node, ast.Compare) and any(isinstance(o, ast.In) for o in node.ops):
                 left = ast.unparse(node.left)
                 if re.fullmatch(r"\(?layer_idx \+ 1\)?", left):
-                    facts["layer_index_base_in_config"] = (1, f"code:{fname}#L{node.lineno}: {_src_line(src, node.lineno)}")
+                    facts["layer_index_base_in_config"] = (
+                        1,
+                        f"code:{fname}#L{node.lineno}: {_src_line(src, node.lineno)}",
+                    )
         if re.search(r"sliding_window", src) and "sliding_attention" in src:
             m = re.search(r"sliding_window\s*=.*sliding_attention.*", src)
             if m:
