@@ -11,6 +11,60 @@ from typing import Any
 Fact = tuple[Any, str]
 
 
+class _Config(dict):
+    """Track actual value reads, including nested dictionaries, without mutating input."""
+
+    def __init__(self, value, consumed, prefix=""):
+        self.consumed, self.prefix = consumed, prefix
+
+        def wrap(value, path):
+            if isinstance(value, dict):
+                return _Config(value, consumed, path + ".")
+            if isinstance(value, list):
+                return [wrap(item, f"{path}[{i}]") for i, item in enumerate(value)]
+            return value
+
+        super().__init__({k: wrap(v, prefix + k) for k, v in value.items()})
+
+    def __getitem__(self, key):
+        value = super().__getitem__(key)
+        self.consumed.add(self.prefix + key)
+        return value
+
+    def get(self, key, default=None):
+        return self[key] if key in self else default
+
+    def items(self):
+        return ((key, self[key]) for key in self)
+
+    def values(self):
+        return (self[key] for key in self)
+
+
+def _config_paths(value, prefix=""):
+    for key, child in value.items():
+        path = prefix + key
+        if isinstance(child, dict) and child:
+            yield from _config_paths(child, path + ".")
+        elif isinstance(child, list) and any(isinstance(item, dict) for item in child):
+            for i, item in enumerate(child):
+                if isinstance(item, dict):
+                    yield from _config_paths(item, f"{path}[{i}].")
+        else:
+            yield path
+
+
+def extract_with_usage(config):
+    consumed = set()
+    facts = _extract(_Config(config, consumed))
+    paths = set(_config_paths(config))
+    return facts, {"consumed": sorted(paths & consumed), "unconsumed": sorted(paths - consumed)}
+
+
+def extract(config: dict) -> dict[str, Fact]:
+    return extract_with_usage(config)[0]
+
+
 def _first(cfg: dict, keys: list[str], prefix: str) -> Fact | None:
     for k in keys:
         if cfg.get(k) is not None:
@@ -59,7 +113,7 @@ def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str
     return [kind] * n_layers, "config:(no per-layer pattern; all layers assumed identical)", None
 
 
-def extract(config: dict) -> dict[str, Fact]:
+def _extract(config: dict) -> dict[str, Fact]:
     text, prefix = (config["text_config"], "text_config.") if "text_config" in config else (config, "")
     f: dict[str, Fact] = {}
 
@@ -73,7 +127,7 @@ def extract(config: dict) -> dict[str, Fact]:
     ctx = _first(text, ["max_position_embeddings", "max_seq_len", "seq_length"], prefix)
     if ctx:
         f["context_length"] = ctx
-    tie = config.get("tie_word_embeddings", text.get("tie_word_embeddings"))
+    tie = config.get("tie_word_embeddings") if "tie_word_embeddings" in config else text.get("tie_word_embeddings")
     f["tied_embeddings"] = (bool(tie), "config:tie_word_embeddings")
 
     types, ev, base = _layer_types(text, prefix, n_layers)
@@ -159,7 +213,7 @@ def extract(config: dict) -> dict[str, Fact]:
         mixers = set(types)
         hybrid = len(mixers) > 1 and any(m in mixers for m in ("short_conv", "kda_linear", "linear_attention"))
         f["decoder_type"] = ("Hybrid (dense)" if hybrid else "Dense", ev if hybrid else "derived:no expert keys")
-        width = text.get("block_ff_dim", text.get("intermediate_size"))
+        width = text.get("block_ff_dim") if "block_ff_dim" in text else text.get("intermediate_size")
         width_key = "block_ff_dim" if "block_ff_dim" in text else "intermediate_size"
         f["ffn_intermediate"] = (width, f"config:{prefix}{width_key}")
         if width is not None and text.get("block_auto_adjust_ff_dim") is True:

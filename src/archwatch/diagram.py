@@ -186,11 +186,8 @@ def render(rec: dict) -> str:
                 f"routed experts run in a {lat}-dim latent: {v['hidden_size']} -> {lat} -> "
                 f"{v['moe_expert_intermediate']} -> {lat} -> {v['hidden_size']}"
             )
-        ffn_lines.append(
-            f"{v.get('moe_router', '')} router · gated activation '{v.get('activation', '')}' (card: SiTU-GLU)"
-            if v.get("activation") == "situ"
-            else f"{v.get('moe_router', '')} router · gated activation {v.get('activation', '')}"
-        )
+        card_name = f" (card: {v['activation_card_name']})" if v.get("activation_card_name") else ""
+        ffn_lines.append(f"{v.get('moe_router', '')} router · activation {v.get('activation', '')}" + card_name)
         if v.get("dense_layers", 0):
             ffn_lines.append(
                 f"dense prefix: FFN {v['hidden_size']} -> {v['dense_ffn_intermediate']} -> {v['hidden_size']}"

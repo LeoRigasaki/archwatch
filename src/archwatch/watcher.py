@@ -111,6 +111,18 @@ def valid_repo(repo: str) -> bool:
     return bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*", repo))
 
 
+def derivative_relation(info):
+    kinds = {"finetune", "adapter", "merge", "quantized"}
+    relation = info.get("base_model_relation")
+    if relation in kinds and info.get("base_model"):
+        return relation
+    for tag in info.get("tags", []):
+        parts = tag.split(":", 2)
+        if len(parts) == 3 and parts[0] == "base_model" and parts[1] in kinds and parts[2]:
+            return parts[1]
+    return None
+
+
 def family(repo: str, policy: dict) -> str:
     if repo in policy.get("family_overrides", {}):
         return policy["family_overrides"][repo]
@@ -301,6 +313,13 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 else "outside",
             },
         )
+        relation = derivative_relation(record.get("hub_metadata", {}))
+        if relation:
+            catalog.pop(repo, None)
+            entry.update(
+                status="rejected", reason=f"Hub base_model relation: {relation}; historical derived record excluded"
+            )
+            continue
         try:
             render_cache(render_values(record))
             config = source.config(repo, record["source_commit"])
@@ -359,6 +378,13 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 raise ValueError("Hub returned an invalid commit")
             entry["last_observed_commit"] = info["sha"]
             entry.setdefault("last_successful_commit", None)
+            relation = derivative_relation(info)
+            if relation:
+                entry.update(
+                    status="rejected", reason=f"Hub base_model relation: {relation}; excluded before processing"
+                )
+                report["outcomes"][repo] = "rejected"
+                continue
             if previous.get("last_observed_commit") != info["sha"] or (
                 retry_review and previous.get("status") == "review"
             ):
