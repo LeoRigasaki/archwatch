@@ -1,0 +1,43 @@
+schema_version: 1
+id: LiquidAI/LFM3-1.7B-Base
+source_commit: 7bca5038823c0d0f14efe06439109354a10e014c
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 24
+  hidden_size: 2048
+  vocab_size: 128000
+  num_attention_heads: 16
+  num_kv_heads: 4
+  head_dim: 128
+  ffn_intermediate: 7680
+  context_length: 262144
+  params_total: 1728801536
+  layer_type_counts:
+    short_conv: 13
+    sliding_attention: 5
+    full_attention: 6
+  short_conv_kernel: 7
+  sliding_window: 256
+  ffn_gated: true
+  sandwich_norm: true
+  activation: silu
+evidence:
+  config: https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/config.json
+  card: https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/README.md
+  weight_files:
+  - https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/model.safetensors
+  weight_header_sample:
+    model.embed_tokens.weight:
+    - 128000
+    - 2048
+    model.embedding_norm.weight:
+    - 2048
+    model.layers.8.self_attn.q_proj.weight:
+    - 2048
+    - 2048
+  implementation: https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/modeling_lfm3.py
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: Config values checked against released tensor shapes and model-card scope;
+  no pipeline record was used to assign these labels.

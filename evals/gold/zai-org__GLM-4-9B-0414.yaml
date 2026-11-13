@@ -1,0 +1,69 @@
+schema_version: 1
+id: zai-org/GLM-4-9B-0414
+source_commit: 645b8482494e31b6b752272bf7f7f273ef0f3caf
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 40
+  hidden_size: 4096
+  vocab_size: 151552
+  num_attention_heads: 32
+  num_kv_heads: 2
+  head_dim: 128
+  ffn_intermediate: 13696
+  context_length: 32768
+  params_total: 9400279040
+  layer_type_counts:
+    full_attention: 40
+  ffn_gated: true
+  sandwich_norm: true
+  activation: silu
+evidence:
+  config: https://huggingface.co/zai-org/GLM-4-9B-0414/blob/645b8482494e31b6b752272bf7f7f273ef0f3caf/config.json
+  card: https://huggingface.co/zai-org/GLM-4-9B-0414/blob/645b8482494e31b6b752272bf7f7f273ef0f3caf/README.md
+  weight_files:
+  - https://huggingface.co/zai-org/GLM-4-9B-0414/blob/645b8482494e31b6b752272bf7f7f273ef0f3caf/model-00001-of-00004.safetensors
+  - https://huggingface.co/zai-org/GLM-4-9B-0414/blob/645b8482494e31b6b752272bf7f7f273ef0f3caf/model-00002-of-00004.safetensors
+  - https://huggingface.co/zai-org/GLM-4-9B-0414/blob/645b8482494e31b6b752272bf7f7f273ef0f3caf/model-00003-of-00004.safetensors
+  - https://huggingface.co/zai-org/GLM-4-9B-0414/blob/645b8482494e31b6b752272bf7f7f273ef0f3caf/model-00004-of-00004.safetensors
+  weight_header_sample:
+    model.embed_tokens.weight:
+    - 151552
+    - 4096
+    model.layers.0.mlp.gate_up_proj.weight:
+    - 27392
+    - 4096
+    model.layers.0.self_attn.q_proj.bias:
+    - 4096
+    model.layers.0.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.1.mlp.gate_up_proj.weight:
+    - 27392
+    - 4096
+    model.layers.1.self_attn.q_proj.bias:
+    - 4096
+    model.layers.1.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.7.mlp.gate_up_proj.weight:
+    - 27392
+    - 4096
+    model.layers.7.self_attn.q_proj.bias:
+    - 4096
+    model.layers.7.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.8.mlp.gate_up_proj.weight:
+    - 27392
+    - 4096
+    model.layers.8.self_attn.q_proj.bias:
+    - 4096
+    model.layers.8.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: The shared family README discusses other parameter sizes; the exact 9B dimensions
+  and total here come from this checkpoint config and headers. gate_up_proj rows 27392
+  split into two 13696-wide branches.

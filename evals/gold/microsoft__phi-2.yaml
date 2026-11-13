@@ -1,0 +1,75 @@
+schema_version: 1
+id: microsoft/phi-2
+source_commit: 810d367871c1d460086d9f82db8696f2e0a0fcd0
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 32
+  hidden_size: 2560
+  vocab_size: 51200
+  num_attention_heads: 32
+  num_kv_heads: 32
+  head_dim: 80
+  ffn_intermediate: 10240
+  context_length: 2048
+  params_total: 2779683840
+  layer_type_counts:
+    full_attention: 32
+  ffn_gated: false
+  activation: gelu_new
+  block_layout: parallel
+evidence:
+  config: https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/config.json
+  card: https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/README.md
+  weight_files:
+  - https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/model-00001-of-00002.safetensors
+  - https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/model-00002-of-00002.safetensors
+  weight_header_sample:
+    model.embed_tokens.weight:
+    - 51200
+    - 2560
+    model.layers.0.mlp.fc1.bias:
+    - 10240
+    model.layers.0.mlp.fc1.weight:
+    - 10240
+    - 2560
+    model.layers.0.self_attn.q_proj.bias:
+    - 2560
+    model.layers.0.self_attn.q_proj.weight:
+    - 2560
+    - 2560
+    model.layers.1.mlp.fc1.bias:
+    - 10240
+    model.layers.1.mlp.fc1.weight:
+    - 10240
+    - 2560
+    model.layers.1.self_attn.q_proj.bias:
+    - 2560
+    model.layers.1.self_attn.q_proj.weight:
+    - 2560
+    - 2560
+    model.layers.7.mlp.fc1.bias:
+    - 10240
+    model.layers.7.mlp.fc1.weight:
+    - 10240
+    - 2560
+    model.layers.7.self_attn.q_proj.bias:
+    - 2560
+    model.layers.7.self_attn.q_proj.weight:
+    - 2560
+    - 2560
+    model.layers.8.mlp.fc1.bias:
+    - 10240
+    model.layers.8.mlp.fc1.weight:
+    - 10240
+    - 2560
+    model.layers.8.self_attn.q_proj.bias:
+    - 2560
+    model.layers.8.self_attn.q_proj.weight:
+    - 2560
+    - 2560
+  implementation: https://github.com/huggingface/transformers/blob/v4.37.0/src/transformers/models/phi/modeling_phi.py
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: Parallel residual block and ungated fc1/fc2 GELU MLP, as implemented by PhiDecoderLayer
+  in Transformers v4.37.0.

@@ -1,0 +1,56 @@
+schema_version: 1
+id: Qwen/Qwen3-0.6B-Base
+source_commit: da87bfb608c14b7cf20ba1ce41287e8de496c0cd
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 28
+  hidden_size: 1024
+  vocab_size: 151936
+  num_attention_heads: 16
+  num_kv_heads: 8
+  head_dim: 128
+  ffn_intermediate: 3072
+  context_length: 32768
+  params_total: 596049920
+  layer_type_counts:
+    full_attention: 28
+  ffn_gated: true
+  activation: silu
+evidence:
+  config: https://huggingface.co/Qwen/Qwen3-0.6B-Base/blob/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/config.json
+  card: https://huggingface.co/Qwen/Qwen3-0.6B-Base/blob/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/README.md
+  weight_files:
+  - https://huggingface.co/Qwen/Qwen3-0.6B-Base/blob/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/model.safetensors
+  weight_header_sample:
+    model.embed_tokens.weight:
+    - 151936
+    - 1024
+    model.layers.0.mlp.gate_proj.weight:
+    - 3072
+    - 1024
+    model.layers.0.self_attn.q_proj.weight:
+    - 2048
+    - 1024
+    model.layers.1.mlp.gate_proj.weight:
+    - 3072
+    - 1024
+    model.layers.1.self_attn.q_proj.weight:
+    - 2048
+    - 1024
+    model.layers.7.mlp.gate_proj.weight:
+    - 3072
+    - 1024
+    model.layers.7.self_attn.q_proj.weight:
+    - 2048
+    - 1024
+    model.layers.8.mlp.gate_proj.weight:
+    - 3072
+    - 1024
+    model.layers.8.self_attn.q_proj.weight:
+    - 2048
+    - 1024
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: Config values checked against released tensor shapes and model-card scope;
+  no pipeline record was used to assign these labels.
