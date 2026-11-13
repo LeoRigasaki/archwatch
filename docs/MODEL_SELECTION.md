@@ -1,6 +1,6 @@
 # Model discovery and weekly generation policy
 
-This is the proposed watcher/generation policy, incorporating the user's preferred labs and supplied Gemini quota screenshots on 13 November 2026. It is not implemented or scheduled yet.
+This is the proposed watcher/generation policy, incorporating the user's preferred labs and supplied Gemini quota screenshots on 13 November 2026. Discovery and bounded analysis are implemented in `watch.py`; generation remains planned and no schedule is enabled.
 
 ## Separate the generator from the models being documented
 
@@ -60,6 +60,6 @@ These are initial policy choices, not empirically optimized ranking weights. No 
 - Cache by both source commits/evidence revision and published-specification hash plus generator/prompt version. Reuse the same diagram when the architecture is unchanged; refresh evidence/metadata without an LLM call when only those changed.
 - Save provenance, validator outcome and attempts with the artifact. Publish only after deterministic content/SVG validation and review of unresolved discrepancies. Generator failures retain the deterministic rendering.
 
-No cron or Codex task is created by this document. The watcher, queue, provider adapter and validation loop must be implemented and manually exercised first.
+No cron or Codex task is created by this document. The weekly queue, provider adapter and diagram validation loop remain to be implemented. Watcher operation and its live evidence are documented in [WATCHER.md](WATCHER.md).
 
 The 14 November amendments in [NEXT_STEPS.md](NEXT_STEPS.md) take precedence: test full-SVG and JSON-layout routes on all four existing records before selecting one, keep model names/limits in configuration, and save every generation/review round.

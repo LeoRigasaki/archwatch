@@ -19,14 +19,14 @@ As of **14 November 2026**, after the prototype import, foundations merge and su
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **41 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
+- [x] **66 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
 - [x] `needs-review` and `auto-merge` labels created; repository setting permits Actions to open PRs. Actual auto-merge remains disabled.
-- [x] The [manual workflow](https://github.com/LeoRigasaki/archwatch/actions/runs/43490777972) succeeded from merged main: four records analyzed, 38 tests passed, zero review fields and [update PR #3](https://github.com/LeoRigasaki/archwatch/pull/3) opened with `auto-merge`. That PR remains open; the label does not merge it.
+- [x] The [manual workflow](https://github.com/LeoRigasaki/archwatch/actions/runs/43490777972) succeeded from merged main: four records analyzed, 38 tests passed, zero review fields and [update PR #3](https://github.com/LeoRigasaki/archwatch/pull/3) opened with `auto-merge`. That no-op PR was subsequently closed without merging; see the correction below.
 - [x] The initial run exposed duplicate Git auth headers; [compatibility PR #2](https://github.com/LeoRigasaki/archwatch/pull/2) passed CI and merged before the successful rerun.
-- [x] Watcher branch `feat/model-watcher` prepared from merged main `f93be2c`; watcher implementation has not started.
+- [x] Watcher branch rebased onto no-op correction main `a232073`; bounded discovery/analysis implementation and tests added.
 - [x] Acceptance evidence and four-record equality checks recorded in [github-workflow-acceptance.json](results/github-workflow-acceptance.json).
 - [x] Progress/result paths remain relative; research reference remains ignored.
 
@@ -37,43 +37,46 @@ As of **14 November 2026**, after the prototype import, foundations merge and su
 - [x] Proposed generator: Gemini 4 Hydrogen, with Gemini 3.8 Flash as an explicit free fallback. Account quotas are transcribed from the supplied screenshots.
 - [x] Proposed weekly batch: at most five changed architectures, initially three preferred-lab slots and two outside slots; no regeneration for unchanged specifications.
 - [x] Codex recommended as optional reviewer; explanations available for any pair on demand, predecessor pairs in automated batches.
-- [ ] Implement and manually test these selection/provider policies; documentation is not a running integration.
+- [x] Discovery/analysis selection implemented and live-tested.
+- [ ] Provider generation/review policies, route comparison and weekly queue remain unimplemented.
 
 ## Still open
 
-- [ ] Watcher: lab allowlist, global discovery, popularity filters with new-release exceptions, dedupe, retry state and `data/seen.json`.
+- [x] Watcher: ten core publishers, global trending/recent discovery, Hub/config/safetensors admission, verified architecture dedupe, bounded retries, retained work and `data/seen.json`.
+- [x] Same-org family predecessor selection with explicit date/catalog evidence and ambiguity handling; both existing live pairs reproduced.
+- [x] Manual workflow modes `fixed`, `discover` and `process`; default remains the fixed smoke test and cron stays disabled.
 - [ ] Typed/Pydantic schema and broader family/config acceptance coverage.
-- [ ] Independent **30-model gold set**, beginning with 15 hand-labeled models; config/calculator/citation metrics and the **95% config-field target**.
+- [ ] Independent gold labels for **10 models in this phase**, with a longer-term 30-model target; config/calculator/citation metrics and the **95% config-field target**.
 - [ ] Gemini validated spec-to-SVG generation/repair loop and response caching; provider quota controls.
 - [ ] LLM code reader with structured output and source-line citations.
 - [ ] Report finder/retrieval, report agent, page citations and citation validator.
 - [ ] LangGraph orchestration and Langfuse traces.
 - [ ] GitHub review issue queue and recorded human decisions.
-- [ ] Automatic family/predecessor selection and diff-constrained explanations.
+- [ ] Diff-constrained explanations; family/predecessor selection v1 is implemented, with broader historical coverage still open.
 - [ ] Controlled scheduled publishing/merging; cron remains disabled until explicit user approval.
 - [ ] MCP server (`search_models`, `get_model`, `compare`) and client tests.
 - [ ] Full collection/filter/compare UI, own RSS, final model pages and production deployment.
 - [ ] **50+ model backfill**, independent evaluation results and demo recording.
 
-The existing refresh workflow uses a fixed watchlist and can be dispatched manually. Its cron remains disabled; neither a labeled PR nor zero conflicts constitutes automatic merge authorization.
+The refresh workflow supports a default fixed-list smoke test plus explicit manual discovery/processing modes. Its cron remains disabled; neither a labeled PR nor zero conflicts constitutes automatic merge authorization.
 
 ## Milestone map
 
 | Day(s) | Current state |
 |---|---|
 | 1 | uv/ruff/pytest/pre-commit/PR CI configured and CI passed remotely; typed schema remains open |
-| 2 | Watcher/seen state next |
+| 2 | Watcher/seen state implemented; bounded live discovery and four-model processing/restart checks pass |
 | 3–4 | Core extractor implemented; four live models are narrower than the planned family acceptance sets |
 | 5 | Cache formulas and hand-math tests implemented; broader/runtime validation remains |
-| 6 | First 15 gold labels missing |
+| 6 | Phase target: ten independent gold labels; none written yet |
 | 7 | AST scanner and line evidence implemented |
 | 8 | LLM reader missing |
 | 9 | Verifier and consumer publication boundary implemented; confidence remains heuristic |
 | 10–12 | Gold evaluation, metrics, tracing and failure analysis open |
 | 13–15 | Report retrieval and page-citation validation open |
-| 16–18 | Deterministic diffs exist; predecessor discovery, explanations and issue queue open |
+| 16–18 | Deterministic diffs exist; bounded predecessor discovery implemented; explanations and issue queue open |
 | 19–22 | Two-model site, deterministic SVG and cache UI exist; full collection/any-pair UI and RSS open |
-| 23 | Manual fixed-list workflow passed and opened an update PR; discovery and controlled scheduled publishing remain open |
+| 23 | Manual fixed-list workflow passed and opened an update PR; discovery implemented; controlled scheduled publishing remains open |
 | 24–25 | MCP, 50+ backfill, formal evaluation, production deployment and demo open |
 
 ## Evidence and boundaries
@@ -99,7 +102,7 @@ Evidence: [results](results/README.md), [offline validation](results/prototype-v
 
 Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-audited in this foundations patch.
 
-Next: build the watcher on `feat/model-watcher`, following [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
+Next: compare the two Gemini diagram routes on all four published records, following [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
 
 The implementation amendments approved on 14 November are recorded in [NEXT_STEPS.md](docs/NEXT_STEPS.md): CI-gated foundations merge and manual workflow acceptance first; then separate watcher, route-test, Gemini-loop, explainer and ten-model gold-set PRs. Reviews/explanations use Flash Lite, diagram routes must be compared, and cron requires explicit approval.
 
@@ -110,4 +113,12 @@ The implementation amendments approved on 14 November are recorded in [NEXT_STEP
 - [x] JSON comparison ignores only `analyzed_at`, preserving the saved record/date when unchanged. YAML, SVG and HTML writes preserve existing files when unchanged.
 - [x] Cached end-to-end regression checks identical bytes and modification times, changing-input updates, and cross-process hash-seed stability. All 41 tests pass.
 - [x] Two local four-model runs leave every artifact byte and modification time unchanged after the one-time ordering migration.
-- [ ] Merge this correction on green CI, then dispatch `daily.yml` twice and require no update PR from either run before resuming the watcher.
+- [x] [No-op correction PR #4](https://github.com/LeoRigasaki/archwatch/pull/4) merged after green CI. Both [acceptance run 1](https://github.com/LeoRigasaki/archwatch/actions/runs/43492918439) and [run 2](https://github.com/LeoRigasaki/archwatch/actions/runs/43493166837) succeeded with operation `none` and no PR; watcher work resumed only afterward.
+
+## Watcher validation (14 November)
+
+- 66 offline tests pass, including admission, duplicate fine-tunes/conversions, unknown-mechanism review, pinned revisions, retries, changed commits, predecessor ambiguity, pool limits, dropped listings and no-op restart behavior.
+- A temporary live output root processed all four known models, selected both expected predecessor pairs, and remained byte/mtime-identical on a second pass.
+- A separate configured live discovery inspected 80 candidates: 37 pending analysis, five held for access/source review, 32 rejected and six popularity-deferred. These are discovery outcomes, not verified architectures or quality rankings. The scan did not publish any new model.
+- The checked-in seen state seeds only the four existing records. Gemini requests, weekly generation, independent gold labels and the collection UI remain open.
+- Evidence: [watcher live validation](results/watcher-live-validation.json), [no-op acceptance](results/no-op-acceptance.json), and [operation/limitations](docs/WATCHER.md).

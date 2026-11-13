@@ -71,11 +71,11 @@
     "single source": 67
   },
   "tests": {
-    "tests": 38,
+    "tests": 66,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 38,
+    "passed": 66,
     "python": "3.12.13",
     "command": "uv run --frozen pytest -q --junitxml=results/test-results.xml",
     "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."

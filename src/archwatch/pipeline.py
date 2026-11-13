@@ -35,26 +35,26 @@ DIFF_FIELDS = [
 ]
 
 
-def analyze(repo: str, with_weights: bool = True) -> dict:
+def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -> dict:
     # Refresh once per analysis; every subsequent file/header read uses this snapshot.
-    info = hub.repo_info(repo, refresh=True)
-    cfg = hub.get_json(repo, "config.json")
+    info = info or hub.repo_info(repo, refresh=True)
+    cfg = hub.get_json(repo, "config.json", revision=info["sha"])
     facts = extract.extract(cfg)
     bits = facts.get("_quant_bits", (None, ""))[0]
 
     py = {
-        f: hub.get_text(repo, f)
+        f: hub.get_text(repo, f, revision=info["sha"])
         for f in sorted(info["files"])
         if f.endswith(".py") and (f.startswith("modeling_") or f.startswith("configuration_"))
     }
     code = codescan.scan({k: v for k, v in py.items() if v})
 
-    readme = hub.get_text(repo, "README.md") or ""
+    readme = hub.get_text(repo, "README.md", revision=info["sha"]) or ""
     claims = card.parse_card(readme)
 
     wcount = wshape = active = wkinds = None
     if with_weights:
-        tensors = hub.safetensors_headers(repo)
+        tensors = hub.safetensors_headers(repo, info=info)
         wcount = weights.count(tensors, bits)
         wshape = weights.shape_facts(tensors, bits)
         wkinds = weights.layer_kinds(tensors)
@@ -118,16 +118,17 @@ def summary_values(rec: dict) -> dict:
     return v
 
 
-def tensor_diff(new_repo: str, old_repo: str, top: int = 6) -> dict:
+def tensor_diff(new_repo: str, old_repo: str, top: int = 6, *, new_info=None, old_info=None) -> dict:
     """Which kinds of tensors appeared or disappeared, with their parameter totals.
 
     Layer numbers and expert numbers are folded (layers.N -> layers.*) so a pattern names a kind of weight."""
     import re
     from math import prod
 
-    def groups(repo):
+    def groups(repo, info):
         g: dict[str, int] = {}
-        for k, t in hub.safetensors_headers(repo).items():
+        tensors = hub.safetensors_headers(repo, info=info) if info is not None else hub.safetensors_headers(repo)
+        for k, t in tensors.items():
             if k.endswith(weights.SCALE_SUFFIXES):
                 continue
             pat = re.sub(r"\.(\d+)\.", ".*.", re.sub(r"^(language_model\.)?model\.", "", k))
@@ -135,7 +136,7 @@ def tensor_diff(new_repo: str, old_repo: str, top: int = 6) -> dict:
             g[pat] = g.get(pat, 0) + prod(t["shape"]) * (2 if k.endswith("_packed") else 1)
         return g
 
-    a, b = groups(old_repo), groups(new_repo)
+    a, b = groups(old_repo, old_info), groups(new_repo, new_info)
     added = sorted(((p, b[p]) for p in b.keys() - a.keys()), key=lambda x: (-x[1], x[0]))
     removed = sorted(((p, a[p]) for p in a.keys() - b.keys()), key=lambda x: (-x[1], x[0]))
     return {

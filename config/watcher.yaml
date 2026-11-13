@@ -1,0 +1,21 @@
+schema_version: 1
+core_publishers: [deepseek-ai, Qwen, mistralai, LiquidAI, nvidia, google, meta-llama, microsoft, moonshotai, zai-org]
+tasks: [text-generation, image-text-to-text]
+per_publisher_task: 5
+trending_limit: 50
+recent_limit: 20
+max_candidates: 80
+outside_min_downloads: 1000
+outside_top_trending: 50
+max_process: 5
+core_slots: 3
+outside_slots: 2
+request_attempts: 2
+max_retry_wait_seconds: 15
+max_attempts_per_commit: 3
+family_rules:
+  - {pattern: '^kimi', family: kimi}
+  - {pattern: '^lfm', family: lfm}
+  - {pattern: '^deepseek[-_]v', family: deepseek-v}
+  - {pattern: '^qwen', family: qwen}
+family_overrides: {}
