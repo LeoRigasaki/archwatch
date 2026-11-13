@@ -1,0 +1,12 @@
+schema_version: 1
+models:
+  - deepseek-ai/DeepSeek-V2-Lite
+  - Qwen/Qwen3-0.6B-Base
+  - mistralai/Mistral-7B-v0.1
+  - LiquidAI/LFM3-1.7B-Base
+  - nvidia/Nemotron-H-8B-Base-8K
+  - google/gemma-3-1b-pt
+  - meta-llama/Llama-3.1-8B
+  - microsoft/phi-2
+  - moonshotai/Kimi-K3.1-Pro
+  - zai-org/GLM-4-9B-0414

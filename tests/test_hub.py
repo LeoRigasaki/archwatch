@@ -9,6 +9,11 @@ import pytest
 from archwatch import hub
 
 
+@pytest.fixture(autouse=True)
+def no_local_credentials(monkeypatch):
+    monkeypatch.setattr(hub, "get_token", lambda: None)
+
+
 def test_text_fetch_and_cache_use_the_recorded_revision(tmp_path, monkeypatch):
     revision = "a" * 40
     calls = []

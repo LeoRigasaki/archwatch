@@ -1,0 +1,239 @@
+schema_version: 1
+id: moonshotai/Kimi-K3.1-Pro
+source_commit: d9e99b0792a5e93b78ea9bea62a68167e36ddd9e
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 93
+  hidden_size: 7168
+  vocab_size: 163840
+  num_attention_heads: 96
+  num_kv_heads: 96
+  head_dim: 192
+  context_length: 1048576
+  params_total: 2780110363392
+  moe_num_experts: 896
+  moe_active_experts: 16
+  moe_shared_experts: 2
+  moe_expert_intermediate: 3072
+  moe_latent_dim: 3584
+  dense_layers: 1
+  dense_ffn_intermediate: 33792
+  mla_kv_lora_rank: 512
+  mla_qk_rope_head_dim: 64
+  layer_type_counts:
+    kda_linear: 69
+    gated_dsa_mla: 24
+  ffn_gated: true
+  activation: situ
+evidence:
+  config: https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json
+  card: https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/README.md
+  weight_files:
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00001-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00002-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00003-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00004-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00005-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00006-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00007-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00008-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00009-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00010-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00011-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00012-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00013-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00014-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00015-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00016-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00017-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00018-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00019-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00020-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00021-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00022-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00023-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00024-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00025-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00026-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00027-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00028-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00029-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00030-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00031-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00032-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00033-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00034-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00035-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00036-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00037-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00038-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00039-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00040-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00041-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00042-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00043-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00044-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00045-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00046-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00047-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00048-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00049-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00050-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00051-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00052-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00053-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00054-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00055-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00056-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00057-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00058-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00059-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00060-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00061-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00062-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00063-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00064-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00065-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00066-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00067-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00068-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00069-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00070-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00071-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00072-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00073-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00074-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00075-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00076-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00077-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00078-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00079-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00080-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00081-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00082-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00083-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00084-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00085-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00086-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00087-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00088-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00089-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00090-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00091-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00092-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00093-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00094-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00095-of-000096.safetensors
+  - https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model-00096-of-000096.safetensors
+  weight_header_sample:
+    language_model.model.layers.0.mlp.gate_proj.weight:
+    - 33792
+    - 7168
+    language_model.model.layers.0.self_attn.q_proj.weight:
+    - 12288
+    - 7168
+    language_model.model.layers.1.self_attn.q_proj.weight:
+    - 12288
+    - 7168
+    language_model.model.layers.8.self_attn.q_proj.weight:
+    - 12288
+    - 7168
+    language_model.model.embed_tokens.weight:
+    - 163840
+    - 7168
+    vision_tower.encoder.blocks.0.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.1.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.10.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.11.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.12.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.13.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.14.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.15.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.16.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.17.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.18.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.19.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.2.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.20.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.21.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.22.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.23.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.24.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.25.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.26.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.3.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.4.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.5.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.6.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.7.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.8.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.encoder.blocks.9.mlp.fc1.weight:
+    - 1024
+    - 4096
+    vision_tower.patch_embed.pos_emb.weight:
+    - 64
+    - 64
+    - 1024
+    vision_tower.patch_embed.proj.weight:
+    - 1024
+    - 3
+    - 14
+    - 14
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: Dimensions refer to the text backbone; parameter total includes vision/projector
+  weights. Logical count doubles U8 packed 4-bit weight elements and excludes quantization
+  scales.

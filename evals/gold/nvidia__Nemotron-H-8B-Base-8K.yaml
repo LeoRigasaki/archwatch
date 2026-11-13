@@ -1,0 +1,55 @@
+schema_version: 1
+id: nvidia/Nemotron-H-8B-Base-8K
+source_commit: 94ea861e008c2dfced3e8e1302094024077aa04e
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 52
+  hidden_size: 4096
+  vocab_size: 131072
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  ffn_intermediate: 21504
+  context_length: 8192
+  params_total: 8100852736
+  layer_type_counts:
+    mamba2: 24
+    mlp: 24
+    full_attention: 4
+  ffn_gated: false
+  activation: relu2
+  block_layout: standalone
+evidence:
+  config: https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/config.json
+  card: https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/README.md
+  weight_files:
+  - https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/model-00001-of-00004.safetensors
+  - https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/model-00002-of-00004.safetensors
+  - https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/model-00003-of-00004.safetensors
+  - https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/model-00004-of-00004.safetensors
+  weight_header_sample:
+    backbone.embeddings.weight:
+    - 131072
+    - 4096
+    backbone.layers.0.mixer.A_log:
+    - 128
+    backbone.layers.0.mixer.conv1d.weight:
+    - 10240
+    - 1
+    - 4
+    backbone.layers.1.mixer.up_proj.weight:
+    - 21504
+    - 4096
+    backbone.layers.7.mixer.q_proj.weight:
+    - 4096
+    - 4096
+    backbone.layers.8.mixer.up_proj.weight:
+    - 21504
+    - 4096
+  implementation: https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/modeling_nemotron_h.py#L748
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: 'Each pattern character is a whole residual block: M is Mamba-2, - is MLP,
+  * is attention. Do not add an FFN to every Mamba/attention block. Cache estimates
+  are not gold runtime measurements.'

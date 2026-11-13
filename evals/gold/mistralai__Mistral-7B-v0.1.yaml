@@ -1,0 +1,59 @@
+schema_version: 1
+id: mistralai/Mistral-7B-v0.1
+source_commit: 27d67f1b5f57dc0953326b2601d68371d40ea8da
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 32
+  hidden_size: 4096
+  vocab_size: 32000
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  ffn_intermediate: 14336
+  context_length: 32768
+  params_total: 7241732096
+  layer_type_counts:
+    sliding_attention: 32
+  sliding_window: 4096
+  ffn_gated: true
+  activation: silu
+evidence:
+  config: https://huggingface.co/mistralai/Mistral-7B-v0.1/blob/27d67f1b5f57dc0953326b2601d68371d40ea8da/config.json
+  card: https://huggingface.co/mistralai/Mistral-7B-v0.1/blob/27d67f1b5f57dc0953326b2601d68371d40ea8da/README.md
+  weight_files:
+  - https://huggingface.co/mistralai/Mistral-7B-v0.1/blob/27d67f1b5f57dc0953326b2601d68371d40ea8da/model-00001-of-00002.safetensors
+  - https://huggingface.co/mistralai/Mistral-7B-v0.1/blob/27d67f1b5f57dc0953326b2601d68371d40ea8da/model-00002-of-00002.safetensors
+  weight_header_sample:
+    model.embed_tokens.weight:
+    - 32000
+    - 4096
+    model.layers.0.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.0.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.1.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.1.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.7.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.7.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.8.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.8.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+  implementation: https://github.com/huggingface/transformers/blob/v4.34.0/src/transformers/models/mistral/modeling_mistral.py
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: All decoder attention layers use the configured sliding window; context_length
+  is the config positional limit, not a claim that training used 32K tokens.
