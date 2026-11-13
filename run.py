@@ -1,7 +1,8 @@
 """Run ArchWatch on a list of models, each paired with its predecessor, and write records.
 
-    python run.py moonshotai/Kimi-K3.1-Pro:moonshotai/Kimi-K3 LiquidAI/LFM3-1.7B:LiquidAI/LFM2.5-1.2B-Instruct
+python run.py moonshotai/Kimi-K3.1-Pro:moonshotai/Kimi-K3 LiquidAI/LFM3-1.7B:LiquidAI/LFM2.5-1.2B-Instruct
 """
+
 import json
 import sys
 from pathlib import Path

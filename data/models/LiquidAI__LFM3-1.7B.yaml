@@ -2,7 +2,7 @@ id: LiquidAI/LFM3-1.7B
 source_commit: 1da06bec6a819da10b54c67e5c90972b46d81871
 hub_created: '2026-10-23T21:35:42+00:00'
 license: lfm1.0
-analyzed_at: '2026-11-12T15:17:38+00:00'
+analyzed_at: '2026-11-13T15:48:22+00:00'
 published:
   num_layers: 24
   hidden_size: 2048
@@ -48,5 +48,51 @@ published:
   qk_norm: true
   attention_output_gate: true
   params_total: 1728801536
+  layer_types:
+  - short_conv
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  decoder_type: Hybrid (dense)
+  tied_embeddings: true
+  rope:
+    full_attention:
+      partial_rotary_factor: 0.5
+      rope_theta: 1000000.0
+      rope_type: default
+    sliding_attention:
+      rope_theta: 10000
+      rope_type: default
+  sandwich_norm: true
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 1132462080
+    embedding: 262144000
+    short_conv_mixer: 218290176
+    attention_or_linear_mixer: 115706624
+    norms: 198656
+  weight_header_summary:
+    tensor_count: 286
+    skipped_scale_tensors: 0
 review_queue: []
 unchecked_notes: []
