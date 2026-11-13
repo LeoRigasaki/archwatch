@@ -22,6 +22,8 @@ As of **14 November 2026**, after the prototype import, a fresh four-model Hub r
 - [x] **38 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
+- [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
+- [x] `needs-review` and `auto-merge` labels created; repository setting permits Actions to open PRs. Actual auto-merge remains disabled.
 - [x] Progress/result paths remain relative; research reference remains ignored.
 
 ## Decisions recorded, implementation still open
@@ -44,7 +46,7 @@ As of **14 November 2026**, after the prototype import, a fresh four-model Hub r
 - [ ] LangGraph orchestration and Langfuse traces.
 - [ ] GitHub review issue queue and recorded human decisions.
 - [ ] Automatic family/predecessor selection and diff-constrained explanations.
-- [ ] Remote CI acceptance for this patch; first manual workflow run; controlled publishing/merging.
+- [ ] Successful manual workflow/PR acceptance and controlled publishing/merging. The [first manual run](https://github.com/LeoRigasaki/archwatch/actions/runs/43490110097) passed extraction, build and 38 tests, then exposed duplicate Git authorization headers in the old PR action; a workflow compatibility fix is being validated.
 - [ ] MCP server (`search_models`, `get_model`, `compare`) and client tests.
 - [ ] Full collection/filter/compare UI, own RSS, final model pages and production deployment.
 - [ ] **50+ model backfill**, independent evaluation results and demo recording.
@@ -55,7 +57,7 @@ The existing refresh workflow uses a fixed watchlist and can be dispatched manua
 
 | Day(s) | Current state |
 |---|---|
-| 1 | uv/ruff/pytest/pre-commit/PR CI configured; typed schema remains open; remote CI needs its first run |
+| 1 | uv/ruff/pytest/pre-commit/PR CI configured and CI passed remotely; typed schema remains open |
 | 2 | Watcher/seen state next |
 | 3–4 | Core extractor implemented; four live models are narrower than the planned family acceptance sets |
 | 5 | Cache formulas and hand-math tests implemented; broader/runtime validation remains |

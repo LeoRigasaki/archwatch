@@ -74,7 +74,7 @@ The output is `dist/archwatch-source.zip`.
 
 ## Automation and next work
 
-The GitHub remote is configured. `.github/workflows/ci.yml` runs offline lint, formatting, tests and the site build on pull requests and pushes to main. Remote CI results have not yet been established for this local patch.
+The GitHub remote is configured. `.github/workflows/ci.yml` runs offline lint, formatting, tests and the site build on pull requests and pushes to main. [Foundations PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) merged after [remote CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541); main CI also passed.
 
 The existing `daily.yml` supports manual dispatch over the fixed watchlist. Its schedule remains commented out. Its PR label does not enable auto-merge. Discovery and controlled publication must be exercised manually before unattended runs.
 
