@@ -3,26 +3,41 @@
 Cards are written for people, so values are rounded ("2.8T", "160K"). Each parsed value keeps
 its raw text and a tolerance implied by that rounding, so the verifier compares fairly.
 """
+
 from __future__ import annotations
 
 import html
 import re
 
 LABELS = {
-    "total parameters": "params_total", "parameters": "params_total",
-    "activated parameters": "params_active", "active parameters": "params_active",
-    "number of layers": "num_layers", "number of dense layers": "dense_layers",
-    "attention-layer composition": "layer_composition", "architecture": "architecture",
-    "attention hidden dimension": "hidden_size", "number of attention heads": "num_attention_heads",
-    "dsa index head dimension": "dsa_index_head_dim", "dsa index number of heads": "dsa_index_num_heads",
-    "dsa index top-k": "dsa_index_topk", "latent moe dimension": "moe_latent_dim",
-    "moe hidden dimension (per expert)": "moe_expert_intermediate", "number of experts": "moe_num_experts",
-    "selected experts per token": "moe_active_experts", "number of shared experts": "moe_shared_experts",
-    "vocabulary size": "vocab_size", "vocabulary": "vocab_size",
-    "context length": "context_length", "attention mechanism": "attention_mechanism",
-    "activation function": "activation", "vision encoder": "vision_encoder",
-    "parameters of vision encoder": "vision_params", "quantization": "quantization",
-    "modality": "modality", "license": "license",
+    "total parameters": "params_total",
+    "parameters": "params_total",
+    "activated parameters": "params_active",
+    "active parameters": "params_active",
+    "number of layers": "num_layers",
+    "number of dense layers": "dense_layers",
+    "attention-layer composition": "layer_composition",
+    "architecture": "architecture",
+    "attention hidden dimension": "hidden_size",
+    "number of attention heads": "num_attention_heads",
+    "dsa index head dimension": "dsa_index_head_dim",
+    "dsa index number of heads": "dsa_index_num_heads",
+    "dsa index top-k": "dsa_index_topk",
+    "latent moe dimension": "moe_latent_dim",
+    "moe hidden dimension (per expert)": "moe_expert_intermediate",
+    "number of experts": "moe_num_experts",
+    "selected experts per token": "moe_active_experts",
+    "number of shared experts": "moe_shared_experts",
+    "vocabulary size": "vocab_size",
+    "vocabulary": "vocab_size",
+    "context length": "context_length",
+    "attention mechanism": "attention_mechanism",
+    "activation function": "activation",
+    "vision encoder": "vision_encoder",
+    "parameters of vision encoder": "vision_params",
+    "quantization": "quantization",
+    "modality": "modality",
+    "license": "license",
 }
 SUFFIX = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
 
@@ -59,8 +74,16 @@ def parse_card(readme: str) -> dict:
         raw = _clean(m.group(3))
         entry = {"raw": raw}
         num = parse_number(raw)
-        if num and key not in ("layer_composition", "architecture", "attention_mechanism", "activation",
-                               "vision_encoder", "quantization", "modality", "license"):
+        if num and key not in (
+            "layer_composition",
+            "architecture",
+            "attention_mechanism",
+            "activation",
+            "vision_encoder",
+            "quantization",
+            "modality",
+            "license",
+        ):
             entry["value"], entry["tolerance"] = num
             entry["k_suffix"] = bool(re.search(r"\dK\b", raw))
         out[key] = entry
@@ -70,5 +93,7 @@ def parse_card(readme: str) -> dict:
     if "layer_composition" in out:
         raw = re.sub(r"^\d+\s+layers:\s*", "", out["layer_composition"]["raw"])
         out["layer_composition"]["parts"] = {
-            name.strip(): int(n) for n, name in re.findall(r"(\d+)\s+([A-Za-z][A-Za-z\- ]+?)(?=\s*(?:,|\+|\*|$| and))", raw)}
+            name.strip(): int(n)
+            for n, name in re.findall(r"(\d+)\s+([A-Za-z][A-Za-z\- ]+?)(?=\s*(?:,|\+|\*|$| and))", raw)
+        }
     return out

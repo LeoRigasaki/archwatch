@@ -1,81 +1,92 @@
 # ArchWatch
 
-## Problem
+ArchWatch extracts architecture facts from a model's own Hugging Face config, tensor headers, Python code and model card, checks their agreement, and generates an architecture page with evidence. Conflicting fields are withheld from the record's `published` dictionary and from architecture views.
 
-ArchWatch extracts architecture facts from a model's own Hugging Face config, tensor headers, Python code and model card, cross-checks those claims, and generates an architecture page with evidence. Model cards are claims to check; conflicting fields are held out of the record's `published` dictionary.
+The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core has been run live on four models. Discovery, LLM readers, independent evaluation and the review queue remain open.
 
-The implementation baseline is the user-supplied `archwatch.zip`, now integrated under `src/archwatch/`. The deterministic core works on four saved model records. The watcher, LLM readers and broader evaluation/automation remain open; this is approximately the Day 9 prototype stage with earlier gaps and several later diff/site features already implemented.
+## Local demo
 
-## Live demo
-
-The self-contained local demo is [site/index.html](site/index.html), built from the two successor records. It includes generated SVGs, source evidence, predecessor diffs, tensor-group changes and an interactive cache calculator.
+[site/index.html](site/index.html) is a self-contained two-model demo with generated SVGs, source evidence, predecessor/tensor diffs and an interactive cache calculator.
 
 ```bash
 python -m http.server 4173 --directory site
 ```
 
-The earlier third-party-gallery reconstruction is private research material and is not the ArchWatch demo. Its hosted address is omitted from this README and was not found in the portfolio projects checked. The owner-only access and anonymous HTTP 401 checks are recorded in [the access review](docs/deployment-access-review.json).
+The earlier third-party-gallery reconstruction is private research material, separate from this demo. Owner-only access and anonymous HTTP 401 checks are recorded in [the access review](docs/deployment-access-review.json). Its hosted address is omitted here.
 
-## Architecture
+## Implemented components
 
-| Stage | Implementation | Current capability |
-|---|---|---|
-| Hub access | `src/archwatch/hub.py` | Repository metadata, commit-specific file/cache reads, bounded safetensors-header range requests |
-| Config | `extract.py` | Nested text configs, dense/hybrid/MoE, latent MoE, MLA/DSA/KDA, explicit layer lists and one-based indexing |
-| Weight counting | `weights.py` | Tensor-shape parameter totals, supported packed-weight handling, component breakdowns, active-parameter conventions |
-| Code analysis | `codescan.py` | Static AST classes/patterns with file and line citations; remote code is not executed |
-| Model card | `card.py` | Structured table claims with rounding tolerances |
-| Calculator | `calc.py` | GQA, sliding-window, short-convolution, MLA, DSA-index and KDA cache estimates with assumptions |
-| Verifier | `verify.py` | `verified`, `single source`, `conflict`; confidence values and record-level publication withholding |
-| Diff | `pipeline.py` | Field and tensor-group diffs against an explicitly supplied predecessor |
-| Diagram/site | `diagram.py`, `build_site.py` | Record-generated SVG layer/block diagrams and a self-contained two-model page |
+| Stage | Current capability |
+|---|---|
+| Hub access | Metadata refreshed once per analysis; file/header reads and caches pinned to that source commit; bounded safetensors-header range requests |
+| Config | Nested text configs, dense/hybrid/MoE, latent MoE, MLA/DSA/KDA, explicit layer lists and one-based indexing; LFM effective FFN dimensions |
+| Weights | Tensor-shape parameter totals, supported packed-weight handling, component counts and active-parameter conventions |
+| Code | Static AST classes/patterns with file and line citations; remote code is not executed |
+| Model card | Structured table claims with rounding tolerances |
+| Calculator | GQA, sliding-window, short-convolution, MLA, DSA-index and KDA cache estimates with stated assumptions |
+| Verifier | Verified/single-source/conflict decisions; conflicts withheld; rendering inputs carry explicit publication decisions |
+| Diff | Published-field and tensor-group diffs against an explicitly supplied predecessor |
+| Diagram/site | Published inputs only; verified weight-kind layer pattern required; site cache estimates and field comparisons recomputed |
+| Tooling | uv lock, ruff, pre-commit and offline PR CI configured; source-only ZIP exporter |
 
-The input list is fixed in `watchlist.txt`; a new-model watcher is not implemented. The LLM code reader and report agent are also not implemented.
+The input list is fixed in `watchlist.txt`. The watcher and LLM code/report readers are not implemented.
 
-## Results
+## Validation
 
-[Generated results](results/README.md) and [machine-readable validation](results/prototype-validation.json) summarize the four imported records:
+[Results](results/README.md), [offline validation](results/prototype-validation.json) and [live-run comparison](results/live-validation.json) cover:
 
 - `moonshotai/Kimi-K3` and `moonshotai/Kimi-K3.1-Pro`;
 - `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM3-1.7B`.
 
-The saved records have **60 verified field checks, 20 single-source checks and one conflict**. The offline suite currently has **22 passing tests**. These are prototype checks, not accuracy against the planned independent 30-model gold set.
+On 13 November 2026, a fresh primary-source run reproduced all four source commits and exact parameter totals. The original 81 core verdicts were unchanged except for the resolved LFM FFN field. With added decisions for rendering inputs, the records now contain **61 verified checks, 67 single-source checks and zero conflicts**. These are agreement counts, not independent accuracy scores. The offline suite has **38 passing tests**.
 
-The recorded Kimi predecessor diff identifies **178,526,208 added DSA-indexer parameters**. The LFM2.5-Instruct record holds an FFN-width conflict for review: config `intermediate_size=12,288` versus weight-shape evidence `8,192`. That field is excluded from its published dictionary.
+The Kimi diff still identifies exactly **178,526,208 added DSA-indexer parameters**. The LFM2.5 config's nominal 12,288-wide FFN becomes **8,192** under its explicit auto-adjust convention, agreeing with the tensors. The extractor now handles that rule; the initial flag was an extractor gap, not evidence of a mistake by Liquid AI. See [the LFM investigation](docs/LFM_FINDINGS.md).
 
-The separate LFM2.5 model-card/config context inconsistency is retained in [the evidence note](docs/LFM_FINDINGS.md). It concerns different explicitly named variants and should not be conflated with the FFN-width conflict.
+## Run and develop
 
-## How to run
-
-Python 3.12 or newer. Minimal installable src-layout packaging is included; dependency locking, ruff, pre-commit and dedicated PR CI remain to be configured.
+Use Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-uv venv --python 3.12
-uv pip install --python .venv/bin/python -r requirements.txt
-.venv/bin/python -m pytest -q --junitxml=results/test-results.xml
-.venv/bin/python build_site.py
-.venv/bin/python tools/summarize_prototype.py
+uv sync --locked --python 3.12
+uv run --frozen pre-commit install
+uv run --frozen ruff check .
+uv run --frozen ruff format --check .
+uv run --frozen pytest -q --junitxml=results/test-results.xml
+uv run --frozen python build_site.py
+uv run --frozen python tools/summarize_prototype.py
 ```
 
-The test/build commands above use saved local records. To run fresh primary-source analysis explicitly:
+The checks/build use saved records. To refresh the four models from primary sources:
 
 ```bash
-.venv/bin/python run.py moonshotai/Kimi-K3.1-Pro:moonshotai/Kimi-K3 LiquidAI/LFM3-1.7B:LiquidAI/LFM2.5-1.2B-Instruct
+uv run --frozen python run.py moonshotai/Kimi-K3.1-Pro:moonshotai/Kimi-K3 LiquidAI/LFM3-1.7B:LiquidAI/LFM2.5-1.2B-Instruct
 ```
 
-That command contacts Hugging Face and reads source files and weight headers. It does not request weight payloads; unsupported or ignored range responses are rejected. Hub metadata is cached locally, and cache refresh/discovery policy belongs to the future watcher.
+The live command contacts Hugging Face and reads source files and weight headers. It does not request weight payloads; ignored ranges and unsupported header lengths are rejected. Each analysis resolves current metadata, then pins all reads to that commit.
 
-`.github/workflows/daily.yml` is written but has not run. It analyzes the fixed watchlist, builds the site, runs tests and opens a labeled PR once connected to a GitHub repository. An `auto-merge` label alone does not enable automatic merging.
+To share source without environments, caches, egg-info or private research:
 
-The initial GitHub baseline enables manual dispatch only. The daily cron remains commented out until the remaining extraction, rendering and tooling fixes land.
+```bash
+uv run --frozen python tools/package_source.py
+```
 
-## Limitations
+The output is `dist/archwatch-source.zip`.
 
-- Four saved records and two displayed successor models are the current coverage; the formal gold set and 95% config-field target have not been measured.
-- Today's validation was offline. The imported tensor counts/source runs were not fetched again from the Hub. Revision-specific fetching was corrected for future runs; that change does not retroactively re-establish the original archive's source snapshots.
-- Confidence scores are prototype rules, not calibrated probabilities. Single-source values are allowed by the current threshold.
-- The record verifier withholds conflicts, but the general site/SVG renderers still merge raw facts for some display/calculation inputs. A broader release needs strict consumer-side gating and handling for incomplete/conflicted target records; the two displayed imported targets currently have no conflicts.
-- Cache formulas are estimates under stated dtype/state/kernel assumptions; they are not measurements of full runtime VRAM. Unknown layer types and additional model families need further validation.
-- Predecessors are supplied manually. Watcher/seen state, LLM readers, report retrieval/page citations, GitHub review issues, Langfuse, MCP tools, own RSS and production deployment remain open.
+## Automation and next work
 
-See [PROGRESS.md](PROGRESS.md) for the corrected component and milestone checklist. The [import manifest](docs/prototype-import.json) records the archive hash and imported paths. Private spot-check research is excluded from version control and is not the gold set or production input.
+The GitHub remote is configured. `.github/workflows/ci.yml` runs offline lint, formatting, tests and the site build on pull requests and pushes to main. Remote CI results have not yet been established for this local patch.
+
+The existing `daily.yml` supports manual dispatch over the fixed watchlist. Its schedule remains commented out. Its PR label does not enable auto-merge. Discovery and controlled publication must be exercised manually before unattended runs.
+
+The next patch is the watcher: the ten preferred labs plus a discovery route for promising outside models. The proposed cadence is daily metadata discovery and a bounded weekly Gemini generation batch. [Model selection](docs/MODEL_SELECTION.md), [provider constraints](docs/PROVIDER_LIMITS.md) and [next steps](docs/NEXT_STEPS.md) record the choices and remaining work. No Gemini integration or recurring task is enabled yet.
+
+## Limits of the evidence
+
+- Four live-checked records and two displayed successors are current coverage; the independent 30-model gold set and 95% target have not been measured.
+- Confidence scores are prototype rules, not calibrated probabilities. Single-source values remain publishable and are labeled as such.
+- Weight-kind pattern agreement cannot independently distinguish sliding from global attention when their tensor layouts are identical. Effective mechanisms need config/code/report evidence and broader family tests.
+- Public renderers reject unverified patterns, missing required inputs and unsupported cache rules. Unknown families can remain withheld until supported.
+- Cache formulas estimate cache state under stated dtype/kernel assumptions; they do not measure full runtime VRAM.
+- Watcher/seen state, typed schema, LLM readers, report retrieval/page citations, issue review, tracing, MCP, own RSS, full collection UI and production deployment remain open.
+
+[PROGRESS.md](PROGRESS.md) tracks acceptance. [The import manifest](docs/prototype-import.json) records the original archive. Private spot checks are neither production inputs nor the independent gold set.

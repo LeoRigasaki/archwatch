@@ -1,30 +1,64 @@
 """Build the static gallery page from verified records: site/index.html (one self-contained file)."""
+
 import html
 import json
 from pathlib import Path
 
-from archwatch import diagram
+from archwatch import diagram, pipeline
+from archwatch.publication import render_cache, render_values
 
 ROOT = Path(__file__).parent
 MODELS = [("moonshotai__Kimi-K3.1-Pro", "kimi-k3-1-pro"), ("LiquidAI__LFM3-1.7B", "lfm3-1-7b")]
 LABEL = {
-    "kda_linear": "KDA linear attention", "gated_dsa_mla": "Gated DSA on MLA", "full_attention_mla": "Gated MLA",
-    "short_conv": "Gated short conv", "sliding_attention": "Sliding-window GQA", "full_attention": "Global GQA",
+    "kda_linear": "KDA linear attention",
+    "gated_dsa_mla": "Gated DSA on MLA",
+    "full_attention_mla": "MLA (full)",
+    "short_conv": "Gated short conv",
+    "sliding_attention": "Sliding-window attention",
+    "full_attention": "Global attention",
 }
-COLOR = {"kda_linear": "#2a9d8f", "gated_dsa_mla": "#e76f51", "full_attention_mla": "#f4a261",
-         "short_conv": "#5b7fbf", "sliding_attention": "#8ab17d", "full_attention": "#e76f51"}
+COLOR = {
+    "kda_linear": "#2a9d8f",
+    "gated_dsa_mla": "#e76f51",
+    "full_attention_mla": "#f4a261",
+    "short_conv": "#5b7fbf",
+    "sliding_attention": "#8ab17d",
+    "full_attention": "#e76f51",
+}
 FIELD_NAMES = {
-    "num_layers": "Layers", "hidden_size": "Hidden size", "vocab_size": "Vocabulary", "context_length": "Context length",
-    "num_attention_heads": "Attention heads", "num_kv_heads": "KV heads", "head_dim": "Head dim (q/k)",
-    "attention_type": "Attention type", "moe_num_experts": "Routed experts", "moe_active_experts": "Experts per token",
-    "moe_shared_experts": "Shared experts", "moe_expert_intermediate": "Expert hidden size", "moe_latent_dim": "Latent MoE dim",
-    "dense_layers": "Dense-FFN layers", "dsa_index_topk": "DSA top-k", "dsa_index_num_heads": "DSA indexer heads",
-    "dsa_index_head_dim": "DSA indexer head dim", "layer_type_counts": "Layer mix", "layer_pattern_per_layer": "Per-layer pattern",
-    "mla_cached_width_per_token": "MLA values cached per token", "dsa_index_key_width": "DSA key width",
-    "activation": "Activation", "layer_index_base_in_config": "Config layer lists are", "attention_output_gate": "Attention output gate",
-    "params_total": "Total parameters", "params_active": "Active parameters", "vision_params": "Vision encoder parameters",
-    "ffn_intermediate": "FFN hidden size", "short_conv_kernel": "Conv kernel", "sliding_window": "Sliding window",
-    "qk_norm": "QK-norm", "kv_cache_per_token_bytes": "Cache growth per token (bytes)", "norm": "Norm",
+    "num_layers": "Layers",
+    "hidden_size": "Hidden size",
+    "vocab_size": "Vocabulary",
+    "context_length": "Context length",
+    "num_attention_heads": "Attention heads",
+    "num_kv_heads": "KV heads",
+    "head_dim": "Head dim (q/k)",
+    "attention_type": "Attention type",
+    "moe_num_experts": "Routed experts",
+    "moe_active_experts": "Experts per token",
+    "moe_shared_experts": "Shared experts",
+    "moe_expert_intermediate": "Expert hidden size",
+    "moe_latent_dim": "Latent MoE dim",
+    "dense_layers": "Dense-FFN layers",
+    "dsa_index_topk": "DSA top-k",
+    "dsa_index_num_heads": "DSA indexer heads",
+    "dsa_index_head_dim": "DSA indexer head dim",
+    "layer_type_counts": "Layer mix",
+    "layer_pattern_per_layer": "Per-layer pattern",
+    "mla_cached_width_per_token": "MLA values cached per token",
+    "dsa_index_key_width": "DSA key width",
+    "activation": "Activation",
+    "layer_index_base_in_config": "Config layer lists are",
+    "attention_output_gate": "Attention output gate",
+    "params_total": "Total parameters",
+    "params_active": "Active parameters",
+    "vision_params": "Vision encoder parameters",
+    "ffn_intermediate": "FFN hidden size",
+    "short_conv_kernel": "Conv kernel",
+    "sliding_window": "Sliding window",
+    "qk_norm": "QK-norm",
+    "kv_cache_per_token_bytes": "Cache growth per token (bytes)",
+    "norm": "Norm",
     "released_weights_format": "Released weights",
 }
 
@@ -72,32 +106,44 @@ def evidence(c):
     for x in c["candidates"]:
         ev = x["evidence"]
         src = ev.split(":", 1)[0]
-        val = show(c["field"], x["value"]) if not isinstance(x["value"], list) else ""
-        raw = f' (card says "{e(x["raw"])}")' if "raw" in x else ""
-        parts.append(f'<span class="src src-{e(src)}">{e(src)}</span> <code>{e(ev.split(":", 1)[-1][:90])}</code>'
-                     + (f" = {e(val)}" if val and src != "card" else "") + raw)
+        val = show(c["field"], x["value"]) if c["published"] and not isinstance(x["value"], list) else ""
+        raw = f' (card says "{e(x["raw"])}")' if c["published"] and "raw" in x else ""
+        parts.append(
+            f'<span class="src src-{e(src)}">{e(src)}</span> <code>{e(ev.split(":", 1)[-1][:90])}</code>'
+            + (f" = {e(val)}" if val and src != "card" else "")
+            + raw
+        )
     return "<br>".join(parts)
 
 
 def model_section(name, anchor):
     rec = json.loads((ROOT / "data/models" / f"{name}.json").read_text())
-    pub = rec["published"]
-    facts = {k: x["value"] for k, x in rec["facts"].items()}
-    cache = rec["cache"]
-    pc = rec["params"]["counted_from_weights"]
+    pub = render_values(rec)
+    cache = render_cache(pub)
+    components = pub["parameter_components"]
+    inventory = pub["weight_header_summary"]
     repo = rec["id"]
     commit = rec["source_commit"]
-    ctx = pub.get("context_length", facts.get("context_length"))
+    ctx = pub["context_length"]
     full = cache["grows_per_token_bytes"] * ctx + cache["constant_bytes"]
-    tiles = [("Total parameters", human(pc["total"]), "summed from weight shapes"),
-             ("Active per token", human(pub["params_active"]) if "params_active" in pub else "all (dense)",
-              "embedding excluded, as the card counts it" if "params_active" in pub else "every weight runs for every token"),
-             ("Layers", f"{pub['num_layers']}", show("layer_type_counts", pub["layer_type_counts"])),
-             ("Context", f"{int(ctx):,}", "tokens"),
-             ("Cache growth", f"{cache['grows_per_token_bytes']:,} B", "per token, bf16"),
-             ("Cache at full context", f"{full / 2**30:.1f} GiB", f"{cache['reduction_vs_naive_mha']}x less than plain MHA")]
-    t_html = "".join(f'<div class="tile"><div class="tl">{e(a)}</div><div class="tv">{e(b)}</div><div class="ts">{e(c)}</div></div>'
-                     for a, b, c in tiles)
+    tiles = [
+        ("Total parameters", human(pub["params_total"]), "summed from weight shapes"),
+        (
+            "Active per token",
+            human(pub["params_active"])
+            if "params_active" in pub
+            else ("withheld" if "MoE" in pub["decoder_type"] else "all (dense)"),
+            "published counting convention" if "params_active" in pub else "see verifier evidence",
+        ),
+        ("Layers", f"{pub['num_layers']}", show("layer_type_counts", pub["layer_type_counts"])),
+        ("Context", f"{int(ctx):,}", "tokens"),
+        ("Cache growth", f"{cache['grows_per_token_bytes']:,} B", "per token, bf16"),
+        ("Cache at full context", f"{full / 2**30:.1f} GiB", f"{cache['reduction_vs_naive_mha']}x less than plain MHA"),
+    ]
+    t_html = "".join(
+        f'<div class="tile"><div class="tl">{e(a)}</div><div class="tv">{e(b)}</div><div class="ts">{e(c)}</div></div>'
+        for a, b, c in tiles
+    )
 
     svg = diagram.render(rec)
 
@@ -105,55 +151,78 @@ def model_section(name, anchor):
     order = {"verified": 0, "single source": 1, "conflict": 2}
     rows = sorted(rec["checks"], key=lambda c: order.get(c["status"], 3))
     v_rows = "".join(
-        f'<tr><td>{e(FIELD_NAMES.get(c["field"], c["field"]))}</td><td>{e(show(c["field"], c["value"]))}</td>'
+        f"<tr><td>{e(FIELD_NAMES.get(c['field'], c['field']))}</td><td>{e(show(c['field'], pub[c['field']]) if c['field'] in pub else 'Withheld for review')}</td>"
         f'<td><span class="st st-{c["status"].replace(" ", "-")}">{e(c["status"])}</span></td><td class="ev">{evidence(c)}</td></tr>'
-        for c in rows)
+        for c in rows
+    )
     n_ver = sum(1 for c in rows if c["status"] == "verified")
     n_single = sum(1 for c in rows if c["status"] == "single source")
     n_conf = sum(1 for c in rows if c["status"] == "conflict")
 
     # diff
     pred = rec.get("predecessor", {}).get("id")
-    d_rows = "".join(f'<tr><td>{e(FIELD_NAMES.get(r["field"], r["field"]))}</td><td>{e(show(r["field"], r["before"]) if r["before"] is not None else "none")}</td>'
-                     f'<td>{e(show(r["field"], r["after"]) if r["after"] is not None else "none")}</td></tr>'
-                     for r in rec.get("diff_vs_predecessor", []))
+    prec = json.loads((ROOT / "data/models" / f"{pred.replace('/', '__')}.json").read_text()) if pred else None
+    field_diff = pipeline.diff(rec, prec) if prec else []
+    d_rows = "".join(
+        f"<tr><td>{e(FIELD_NAMES.get(r['field'], r['field']))}</td><td>{e(show(r['field'], r['before']) if r['before'] is not None else 'none')}</td>"
+        f"<td>{e(show(r['field'], r['after']) if r['after'] is not None else 'none')}</td></tr>"
+        for r in field_diff
+    )
     td = rec.get("tensor_diff_vs_predecessor") or {}
     t_add = "".join(f"<li><code>{e(x['pattern'])}</code> +{x['params']:,}</li>" for x in td.get("added", []))
     t_rem = "".join(f"<li><code>{e(x['pattern'])}</code> &minus;{x['params']:,}</li>" for x in td.get("removed", []))
-    tensor_html = (f'<div class="cols"><div><h4>Tensor groups added ({td.get("added_count", 0)}, +{td.get("added_total", 0):,} params)</h4><ul>{t_add or "<li>none</li>"}</ul></div>'
-                   f'<div><h4>Tensor groups removed ({td.get("removed_count", 0)}, &minus;{td.get("removed_total", 0):,} params)</h4><ul>{t_rem or "<li>none</li>"}</ul></div></div>'
-                   '<p class="small">Groups fold layer and expert numbers together. A matching add and remove of similar names (for example <code>out_proj</code> and <code>o_proj</code>) is usually a rename.</p>')
+    tensor_html = (
+        f'<div class="cols"><div><h4>Tensor groups added ({td.get("added_count", 0)}, +{td.get("added_total", 0):,} params)</h4><ul>{t_add or "<li>none</li>"}</ul></div>'
+        f"<div><h4>Tensor groups removed ({td.get('removed_count', 0)}, &minus;{td.get('removed_total', 0):,} params)</h4><ul>{t_rem or '<li>none</li>'}</ul></div></div>"
+        '<p class="small">Groups fold layer and expert numbers together. A matching add and remove of similar names (for example <code>out_proj</code> and <code>o_proj</code>) is usually a rename.</p>'
+    )
 
     if pred:
-        prec = json.loads((ROOT / "data/models" / f"{pred.replace('/', '__')}.json").read_text())
         items = "".join(
-            "<li><b>" + e(FIELD_NAMES.get(r["field"], r["field"])) + "</b>: " +
-            "; ".join(f'{e(x["evidence"].split(":", 1)[0])} says {e(show(r["field"], x["value"]))}' for x in r["candidates"]) +
-            ". The diff uses the weight value.</li>" for r in prec["review_queue"])
+            "<li><b>"
+            + e(FIELD_NAMES.get(r["field"], r["field"]))
+            + "</b>: "
+            + "withheld from published comparisons pending review.</li>"
+            for r in prec["review_queue"]
+        )
         if items:
-            tensor_html += f'<h4>Conflicts found in {e(pred.split("/")[-1])} while diffing</h4><ul>{items}</ul>'
+            tensor_html += f"<h4>Conflicts found in {e(pred.split('/')[-1])} while diffing</h4><ul>{items}</ul>"
     # params breakdown
-    tot = pc["total"]
-    p_rows = "".join(f'<tr><td>{e(k.replace("_", " "))}</td><td class="num">{v:,}</td><td class="num">{100 * v / tot:.2f}%</td></tr>'
-                     for k, v in pc["by_component"].items())
+    tot = pub["params_total"]
+    p_rows = "".join(
+        f'<tr><td>{e(k.replace("_", " "))}</td><td class="num">{v:,}</td><td class="num">{100 * v / tot:.2f}%</td></tr>'
+        for k, v in components.items()
+    )
 
     # cache breakdown table
     c_rows = "".join(
         f'<tr><td><span class="dot" style="background:{COLOR.get(r["layer_type"], "#999")}"></span>{e(LABEL.get(r["layer_type"], r["layer_type"]))}</td>'
         f'<td class="num">{r["layers"]}</td><td class="num">{(r["grows_per_token_bytes"] or 0):,}</td>'
         f'<td class="num">{(r["constant_bytes"] or 0) / 2**20:,.2f}</td><td class="small">{e(r["formula"])}</td></tr>'
-        for r in cache["breakdown"])
+        for r in cache["breakdown"]
+    )
     assumptions = "".join(f"<li>{e(a)}</li>" for a in cache["assumptions"])
     notes = "".join(f"<li>{e(n)}</li>" for n in rec.get("unchecked_notes", [])) or "<li>Nothing left unchecked.</li>"
-    calc_data = {"grow": cache["grows_per_token_bytes"], "constant": cache["constant_bytes"],
-                 "naive": cache["naive_mha_per_token_bytes"], "max": int(ctx),
-                 "rows": [{"t": LABEL.get(r["layer_type"], r["layer_type"]), "c": COLOR.get(r["layer_type"], "#999"),
-                           "g": r["grows_per_token_bytes"] or 0, "k": r["constant_bytes"] or 0} for r in cache["breakdown"]]}
+    calc_data = {
+        "grow": cache["grows_per_token_bytes"],
+        "constant": cache["constant_bytes"],
+        "naive": cache["naive_mha_per_token_bytes"],
+        "max": int(ctx),
+        "rows": [
+            {
+                "t": LABEL.get(r["layer_type"], r["layer_type"]),
+                "c": COLOR.get(r["layer_type"], "#999"),
+                "g": r["grows_per_token_bytes"] or 0,
+                "k": r["constant_bytes"] or 0,
+            }
+            for r in cache["breakdown"]
+        ],
+    }
 
     return f"""
 <section id="{anchor}" class="model">
-  <h2>{e(repo.split('/')[-1])}</h2>
-  <p class="meta"><a href="https://huggingface.co/{e(repo)}">{e(repo)}</a> · commit <code>{e(commit[:10])}</code> · license {e(rec.get('license') or 'see repo')} · analyzed {e(rec['analyzed_at'][:16].replace('T', ' '))} UTC</p>
+  <h2>{e(repo.split("/")[-1])}</h2>
+  <p class="meta"><a href="https://huggingface.co/{e(repo)}">{e(repo)}</a> · commit <code>{e(commit[:10])}</code> · license {e(rec.get("license") or "see repo")} · analyzed {e(rec["analyzed_at"][:16].replace("T", " "))} UTC</p>
   <div class="tiles">{t_html}</div>
 
   <h3>Architecture</h3>
@@ -169,8 +238,8 @@ def model_section(name, anchor):
   <table><thead><tr><th>Layer type</th><th class="num">Layers</th><th class="num">Bytes per token</th><th class="num">Fixed (MiB)</th><th>How it is computed</th></tr></thead><tbody>{c_rows}</tbody></table>
   <details><summary>Assumptions in the cache numbers</summary><ul>{assumptions}</ul></details>
 
-  <h3>What changed since {e(pred.split('/')[-1]) if pred else 'the predecessor'}</h3>
-  <table><thead><tr><th>Field</th><th>{e(pred.split('/')[-1]) if pred else 'Before'}</th><th>{e(repo.split('/')[-1])}</th></tr></thead><tbody>{d_rows}</tbody></table>
+  <h3>What changed since {e(pred.split("/")[-1]) if pred else "the predecessor"}</h3>
+  <table><thead><tr><th>Field</th><th>{e(pred.split("/")[-1]) if pred else "Before"}</th><th>{e(repo.split("/")[-1])}</th></tr></thead><tbody>{d_rows}</tbody></table>
   {tensor_html}
 
   <h3>Verification: {n_ver} verified, {n_single} single source, {n_conf} conflicts</h3>
@@ -179,7 +248,7 @@ def model_section(name, anchor):
 
   <h3>Where the parameters are</h3>
   <table><thead><tr><th>Component</th><th class="num">Parameters</th><th class="num">Share</th></tr></thead><tbody>{p_rows}</tbody></table>
-  <p class="small">{pc['tensor_count']:,} tensors read from {e(repo)} weight headers; {pc['skipped_scale_tensors']:,} quantization-scale tensors skipped as metadata. 4-bit packed weights count two parameters per stored byte.</p>
+  <p class="small">{inventory["tensor_count"]:,} tensors read from {e(repo)} weight headers; {inventory["skipped_scale_tensors"]:,} quantization-scale tensors skipped as metadata. 4-bit packed weights count two parameters per stored byte.</p>
 
   <h3>Not checked</h3>
   <ul>{notes}</ul>
@@ -220,10 +289,10 @@ ul{{padding-left:20px}}li{{margin:3px 0}}
 .bars div{{height:100%}}details{{margin:8px 0;color:var(--mut);font-size:13.5px}}
 </style></head><body><main>
 <h1>ArchWatch prototype run</h1>
-<p class="lead">Two models analyzed end to end on 12 November 2026. Every number below is read from the model's own files on Hugging Face (config, weight headers, code) and cross-checked against the lab's model card. The card counts as a claim to check, not a source of truth.</p>
+<p class="lead">Two models analyzed at the source commits shown below. Architecture views use published verifier-approved values and recompute their cache estimates from those values. Model-card statements are claims to cross-check against config, code and tensor headers.</p>
 <p class="meta">Models: {nav} · predecessors diffed: Kimi-K3, LFM2.5-1.2B-Instruct · no weights downloaded: shapes come from safetensors headers via HTTP range requests</p>
 <div class="stages">
-<div class="stage"><b>1 Watch</b><span>Hub listing, commit pinned</span></div>
+<div class="stage"><b>1 Input</b><span>Fixed watchlist, commit pinned</span></div>
 <div class="stage"><b>2 Config</b><span>config.json to schema, no LLM</span></div>
 <div class="stage"><b>3 Weights</b><span>tensor shapes, exact counts</span></div>
 <div class="stage"><b>4 Code</b><span>AST scan, line citations</span></div>
