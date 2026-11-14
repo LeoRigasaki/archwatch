@@ -1,0 +1,125 @@
+{
+  "gold_models": 1,
+  "correct": 11,
+  "total": 16,
+  "exact_match": 0.6875,
+  "fields": {
+    "activation": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "context_length": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "dense_ffn_intermediate": {
+      "correct": 0,
+      "total": 1,
+      "missing": 0
+    },
+    "dense_layers": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "ffn_gated": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "head_dim": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "hidden_size": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_active_experts": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_expert_intermediate": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "moe_num_experts": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_shared_experts": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "num_attention_heads": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "num_kv_heads": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "num_layers": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "params_total": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "vocab_size": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    }
+  },
+  "models": [
+    {
+      "id": "meta-llama/Llama-4-Maverick-17B-128E",
+      "source_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "revision_matches": true,
+      "correct": 11,
+      "total": 16,
+      "errors": {
+        "moe_shared_experts": {
+          "expected": 1,
+          "actual": null,
+          "reason": "not published"
+        },
+        "moe_expert_intermediate": {
+          "expected": 8192,
+          "actual": null,
+          "reason": "not published"
+        },
+        "dense_layers": {
+          "expected": 24,
+          "actual": null,
+          "reason": "not published"
+        },
+        "dense_ffn_intermediate": {
+          "expected": 16384,
+          "actual": 8192,
+          "reason": "different value"
+        },
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    }
+  ],
+  "scope": "Late-access addendum on the original unchanged first-run implementation. Gold entered from primary sources after the run, before viewing extracted values or changing code; reported separately from the seven strictly pre-run-frozen models."
+}
