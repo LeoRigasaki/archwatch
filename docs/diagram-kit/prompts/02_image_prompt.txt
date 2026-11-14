@@ -1,0 +1,8 @@
+Draw the architecture diagram for the model in the attached YAML spec, following your instructions exactly.
+
+Before drawing, check:
+- the layer counts in compressed_view add up to the total number of layers in the spec
+- every zoom panel in the spec has its own panel, connected to the matching bar in the stack
+- every callout in the spec appears, worded exactly as written
+
+Landscape 4:3, high resolution. Image only.

@@ -1,0 +1,19 @@
+Use this with a Gemini text model (not the image model). Paste the system instructions from
+01_system_instructions.txt, attach the same YAML, and send this message:
+
+---
+
+Write the architecture diagram for the model in the attached YAML spec as a single standalone SVG file,
+following the system instructions for content, layout and style.
+
+SVG requirements:
+- viewBox="0 0 1600 1200", white background rectangle first.
+- Font: font-family="Helvetica, Arial, sans-serif". Minimum font size 14. Titles 28-40.
+- Every box is a <rect rx="10"> with a <text> centered inside it. Compute box widths from the text:
+  about 0.6 x font-size per character, plus 24 of padding. No text may extend past its box.
+- Define one arrowhead <marker> in <defs> and reuse it on every arrow.
+- Arrows start and end on box edges and never pass through a box or a label.
+- Group each component in <g id="..."> named after it (for example id="zoom-kda").
+- Use only numbers and labels from the YAML.
+
+Output only the SVG code, starting with <svg and ending with </svg>. No explanation.
