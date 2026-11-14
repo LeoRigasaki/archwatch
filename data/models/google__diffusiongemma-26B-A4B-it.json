@@ -1,0 +1,1441 @@
+{
+ "id": "google/diffusiongemma-26B-A4B-it",
+ "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+ "hub_created": "2026-06-09T12:40:12+00:00",
+ "license": "apache-2.0",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "conversational",
+   "deploy:sagemaker",
+   "diffusion_gemma",
+   "endpoints_compatible",
+   "eval-results",
+   "image-text-to-text",
+   "license:apache-2.0",
+   "region:us",
+   "safetensors",
+   "transformers"
+  ]
+ },
+ "analyzed_at": "2026-11-14T08:16:04+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "DiffusionGemmaForBlockDiffusion",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "diffusion_gemma",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 30,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 2816,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "global_head_dim": {
+   "value": 512,
+   "evidence": "config:text_config.global_head_dim"
+  },
+  "num_global_kv_heads": {
+   "value": 2,
+   "evidence": "config:text_config.num_global_key_value_heads"
+  },
+  "generation_type": {
+   "value": "block_diffusion",
+   "evidence": "config:model_type (DiffusionGemma architecture)"
+  },
+  "canvas_length": {
+   "value": 256,
+   "evidence": "config:canvas_length"
+  },
+  "vocab_size": {
+   "value": 262144,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 262144,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": true,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention"
+   ],
+   "evidence": "config:text_config.layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:text_config.layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "sliding_attention": 25,
+    "full_attention": 5
+   },
+   "evidence": "config:text_config.layer_types"
+  },
+  "num_attention_heads": {
+   "value": 16,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 8,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 256,
+   "evidence": "config:text_config.head_dim"
+  },
+  "attention_type": {
+   "value": "GQA",
+   "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(16)"
+  },
+  "sliding_window": {
+   "value": 1024,
+   "evidence": "config:text_config.sliding_window"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_num_experts": {
+   "value": 128,
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_expert_intermediate": {
+   "value": 704,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "dense_layers": {
+   "value": 0,
+   "evidence": "default:0"
+  },
+  "dense_ffn_intermediate": {
+   "value": 2112,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "moe_active_experts": {
+   "value": 8,
+   "evidence": "config:text_config.top_k_experts"
+  },
+  "activation": {
+   "value": "gelu_pytorch_tanh",
+   "evidence": "config:text_config.hidden_activation"
+  },
+  "rope": {
+   "value": {
+    "full_attention": {
+     "partial_rotary_factor": 0.25,
+     "rope_theta": 1000000.0,
+     "rope_type": "proportional"
+    },
+    "sliding_attention": {
+     "rope_theta": 10000.0,
+     "rope_type": "default"
+    }
+   },
+   "evidence": "config:text_config.rope_parameters"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  },
+  "vision_encoder_layers": {
+   "value": 27,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1152,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "canvas_length",
+   "dtype",
+   "model_type",
+   "text_config.global_head_dim",
+   "text_config.head_dim",
+   "text_config.hidden_activation",
+   "text_config.hidden_size",
+   "text_config.intermediate_size",
+   "text_config.layer_types",
+   "text_config.max_position_embeddings",
+   "text_config.model_type",
+   "text_config.moe_intermediate_size",
+   "text_config.num_attention_heads",
+   "text_config.num_experts",
+   "text_config.num_global_key_value_heads",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.rope_parameters.full_attention.partial_rotary_factor",
+   "text_config.rope_parameters.full_attention.rope_theta",
+   "text_config.rope_parameters.full_attention.rope_type",
+   "text_config.rope_parameters.sliding_attention.rope_theta",
+   "text_config.rope_parameters.sliding_attention.rope_type",
+   "text_config.sliding_window",
+   "text_config.top_k_experts",
+   "text_config.vocab_size",
+   "tie_word_embeddings",
+   "vision_config.hidden_size",
+   "vision_config.num_hidden_layers"
+  ],
+  "unconsumed": [
+   "boi_token_id",
+   "eoi_token_id",
+   "eos_token_id",
+   "image_token_id",
+   "initializer_range",
+   "text_config.attention_bias",
+   "text_config.attention_dropout",
+   "text_config.bos_token_id",
+   "text_config.dtype",
+   "text_config.eos_token_id",
+   "text_config.final_logit_softcapping",
+   "text_config.initializer_range",
+   "text_config.pad_token_id",
+   "text_config.rms_norm_eps",
+   "text_config.tie_word_embeddings",
+   "text_config.use_bidirectional_attention",
+   "transformers_version",
+   "vision_config._name_or_path",
+   "vision_config.architectures",
+   "vision_config.attention_bias",
+   "vision_config.attention_dropout",
+   "vision_config.chunk_size_feed_forward",
+   "vision_config.default_output_length",
+   "vision_config.dtype",
+   "vision_config.global_head_dim",
+   "vision_config.head_dim",
+   "vision_config.hidden_activation",
+   "vision_config.id2label.0",
+   "vision_config.id2label.1",
+   "vision_config.initializer_range",
+   "vision_config.intermediate_size",
+   "vision_config.is_encoder_decoder",
+   "vision_config.label2id.LABEL_0",
+   "vision_config.label2id.LABEL_1",
+   "vision_config.max_position_embeddings",
+   "vision_config.model_type",
+   "vision_config.num_attention_heads",
+   "vision_config.num_key_value_heads",
+   "vision_config.output_attentions",
+   "vision_config.output_hidden_states",
+   "vision_config.patch_size",
+   "vision_config.pooling_kernel_size",
+   "vision_config.position_embedding_size",
+   "vision_config.problem_type",
+   "vision_config.return_dict",
+   "vision_config.rms_norm_eps",
+   "vision_config.rope_parameters.rope_theta",
+   "vision_config.rope_parameters.rope_type",
+   "vision_config.standardize",
+   "vision_config.use_clipped_linears",
+   "vision_soft_tokens_per_image"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "model-00001-of-00011.safetensors",
+  "model-00002-of-00011.safetensors",
+  "model-00003-of-00011.safetensors",
+  "model-00004-of-00011.safetensors",
+  "model-00005-of-00011.safetensors",
+  "model-00006-of-00011.safetensors",
+  "model-00007-of-00011.safetensors",
+  "model-00008-of-00011.safetensors",
+  "model-00009-of-00011.safetensors",
+  "model-00010-of-00011.safetensors",
+  "model-00011-of-00011.safetensors",
+  "model.safetensors.index.json"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 25823781228,
+   "text_total": 25250986812,
+   "by_component": {
+    "moe_routed_experts": 22837985280,
+    "attention_or_linear_mixer": 1110197760,
+    "embedding": 738197504,
+    "vision": 572794416,
+    "dense_ffn": 535265280,
+    "other": 17842236,
+    "moe_router": 10901760,
+    "norms": 596992
+   },
+   "routed_expert_params": 22837985280,
+   "moe_layers": 30,
+   "experts_per_moe_layer": [
+    128
+   ],
+   "layer_indices_in_weights": [
+    0,
+    29
+   ],
+   "tensor_count": 1047,
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  },
+  "active": {
+   "text_active": 3840375612,
+   "text_active_without_embeddings": 3102178108,
+   "with_vision": 4413170028
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 40960,
+  "grows_per_token_bytes_low": 40960,
+  "constant_bytes": 209715200,
+  "constant_bytes_low": 209715200,
+  "naive_mha_per_token_bytes": 491520,
+  "reduction_vs_naive_mha": 12.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 545259520,
+    "gib": 0.508
+   },
+   "32768": {
+    "bytes": 1551892480,
+    "gib": 1.445
+   },
+   "131072": {
+    "bytes": 5578424320,
+    "gib": 5.195
+   },
+   "262144": {
+    "bytes": 10947133440,
+    "gib": 10.195
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 5,
+    "grows_per_token_bytes": 40960,
+    "constant_bytes": 0,
+    "formula": "2 x 8 KV heads x 256 head_dim x 2 B x 5 layers"
+   },
+   {
+    "layer_type": "sliding_attention",
+    "layers": 25,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 209715200,
+    "formula": "window 1024 x 2 x 8 x 256 x 2 B x 25 layers (capped)"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted"
+  ]
+ },
+ "code_scan": {
+  "files": [],
+  "classes": [],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {
+  "params_total": {
+   "raw": "25.2B",
+   "value": 25200000000.0,
+   "tolerance": 50000000.0,
+   "k_suffix": false
+  },
+  "params_active": {
+   "raw": "3.8B",
+   "value": 3800000000.0,
+   "tolerance": 50000000.0,
+   "k_suffix": false
+  },
+  "num_layers": {
+   "raw": "30",
+   "value": 30.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "context_length": {
+   "raw": "Up to 256K tokens"
+  },
+  "vocab_size": {
+   "raw": "262K",
+   "value": 262000.0,
+   "tolerance": 500.0,
+   "k_suffix": true
+  }
+ },
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 30,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 30,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 30.0,
+     "evidence": "card:num_layers",
+     "raw": "30"
+    },
+    {
+     "value": 30,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 2816,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2816,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 2816,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 262144,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 262144,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 262000.0,
+     "evidence": "card:vocab_size",
+     "raw": "262K"
+    },
+    {
+     "value": 262144,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 262144,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 262144,
+     "evidence": "config:text_config.max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 16,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 16,
+     "evidence": "config:text_config.num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "config:text_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "GQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "GQA",
+     "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(16)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "sandwich_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:post-mixer/post-FFN norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 128,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.num_experts"
+    },
+    {
+     "value": 128,
+     "evidence": "weights:expert tensors per MoE layer"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:text_config.top_k_experts"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "weights:one shared expert module (config count absent; fused widths do not independently prove logical count)"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_expert_intermediate",
+   "value": 2112,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2112,
+     "evidence": "weights:shared expert gate rows"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 704,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 704,
+     "evidence": "config:text_config.moe_intermediate_size"
+    },
+    {
+     "value": 704,
+     "evidence": "weights:experts.0.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 0,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "default:0"
+    },
+    {
+     "value": 0,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "sliding_window",
+   "value": 1024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1024,
+     "evidence": "config:text_config.sliding_window"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "sliding_attention": 25,
+    "full_attention": 5
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "sliding_attention": 25,
+      "full_attention": 5
+     },
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:text_config.layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "qk_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:q_norm/k_norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 25823781228,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 25823781228,
+     "evidence": "weights:sum of tensor shapes"
+    },
+    {
+     "value": 25200000000.0,
+     "evidence": "card:params_total",
+     "raw": "25.2B"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 3840375612,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3840375612,
+     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+    },
+    {
+     "value": 3800000000.0,
+     "evidence": "card:params_active",
+     "raw": "3.8B"
+    }
+   ]
+  },
+  {
+   "field": "model_type",
+   "value": "diffusion_gemma",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "diffusion_gemma",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
+   "field": "global_head_dim",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.global_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "num_global_kv_heads",
+   "value": 2,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2,
+     "evidence": "config:text_config.num_global_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "generation_type",
+   "value": "block_diffusion",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "block_diffusion",
+     "evidence": "config:model_type (DiffusionGemma architecture)"
+    }
+   ]
+  },
+  {
+   "field": "canvas_length",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "config:canvas_length"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention"
+     ],
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.num_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "full_attention": {
+     "partial_rotary_factor": 0.25,
+     "rope_theta": 1000000.0,
+     "rope_type": "proportional"
+    },
+    "sliding_attention": {
+     "rope_theta": 10000.0,
+     "rope_type": "default"
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "full_attention": {
+       "partial_rotary_factor": 0.25,
+       "rope_theta": 1000000.0,
+       "rope_type": "proportional"
+      },
+      "sliding_attention": {
+       "rope_theta": 10000.0,
+       "rope_type": "default"
+      }
+     },
+     "evidence": "config:text_config.rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "dense_ffn_intermediate",
+   "value": 2112,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2112,
+     "evidence": "config:text_config.intermediate_size"
+    }
+   ]
+  },
+  {
+   "field": "vision_encoder_layers",
+   "value": 27,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 27,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1152,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1152,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "gelu_pytorch_tanh",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "gelu_pytorch_tanh",
+     "evidence": "config:text_config.hidden_activation"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 22837985280,
+    "attention_or_linear_mixer": 1110197760,
+    "embedding": 738197504,
+    "vision": 572794416,
+    "dense_ffn": 535265280,
+    "other": 17842236,
+    "moe_router": 10901760,
+    "norms": 596992
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 22837985280,
+      "attention_or_linear_mixer": 1110197760,
+      "embedding": 738197504,
+      "vision": 572794416,
+      "dense_ffn": 535265280,
+      "other": 17842236,
+      "moe_router": 10901760,
+      "norms": 596992
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 1047,
+    "skipped_scale_tensors": 0,
+    "skipped_buffer_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 1047,
+      "skipped_scale_tensors": 0,
+      "skipped_buffer_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 30,
+  "hidden_size": 2816,
+  "vocab_size": 262144,
+  "context_length": 262144,
+  "num_attention_heads": 16,
+  "num_kv_heads": 8,
+  "head_dim": 256,
+  "attention_type": "GQA",
+  "ffn_gated": true,
+  "sandwich_norm": true,
+  "moe_num_experts": 128,
+  "moe_active_experts": 8,
+  "moe_shared_experts": 1,
+  "moe_shared_expert_intermediate": 2112,
+  "moe_expert_intermediate": 704,
+  "dense_layers": 0,
+  "sliding_window": 1024,
+  "layer_type_counts": {
+   "sliding_attention": 25,
+   "full_attention": 5
+  },
+  "layer_pattern_per_layer": [
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention"
+  ],
+  "layer_index_base_in_config": 0,
+  "qk_norm": true,
+  "params_active": 3840375612,
+  "model_type": "diffusion_gemma",
+  "global_head_dim": 512,
+  "num_global_kv_heads": 2,
+  "generation_type": "block_diffusion",
+  "canvas_length": 256,
+  "layer_types": [
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": true,
+  "rope": {
+   "full_attention": {
+    "partial_rotary_factor": 0.25,
+    "rope_theta": 1000000.0,
+    "rope_type": "proportional"
+   },
+   "sliding_attention": {
+    "rope_theta": 10000.0,
+    "rope_type": "default"
+   }
+  },
+  "dense_ffn_intermediate": 2112,
+  "vision_encoder_layers": 27,
+  "vision_hidden_size": 1152,
+  "activation": "gelu_pytorch_tanh",
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "moe_routed_experts": 22837985280,
+   "attention_or_linear_mixer": 1110197760,
+   "embedding": 738197504,
+   "vision": 572794416,
+   "dense_ffn": 535265280,
+   "other": 17842236,
+   "moe_router": 10901760,
+   "norms": 596992
+  },
+  "weight_header_summary": {
+   "tensor_count": 1047,
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  }
+ },
+ "review_queue": [
+  {
+   "field": "params_total",
+   "value": 25823781228,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 25823781228,
+     "evidence": "weights:sum of tensor shapes"
+    },
+    {
+     "value": 25200000000.0,
+     "evidence": "card:params_total",
+     "raw": "25.2B"
+    }
+   ]
+  }
+ ],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): boi_token_id, eoi_token_id, eos_token_id, image_token_id, initializer_range, text_config.attention_bias, text_config.attention_dropout, text_config.bos_token_id, text_config.dtype, text_config.eos_token_id, text_config.final_logit_softcapping, text_config.initializer_range, text_config.pad_token_id, text_config.rms_norm_eps, text_config.tie_word_embeddings, text_config.use_bidirectional_attention, transformers_version, vision_config._name_or_path, vision_config.architectures, vision_config.attention_bias, vision_config.attention_dropout, vision_config.chunk_size_feed_forward, vision_config.default_output_length, vision_config.dtype, vision_config.global_head_dim, vision_config.head_dim, vision_config.hidden_activation, vision_config.id2label.0, vision_config.id2label.1, vision_config.initializer_range, vision_config.intermediate_size, vision_config.is_encoder_decoder, vision_config.label2id.LABEL_0, vision_config.label2id.LABEL_1, vision_config.max_position_embeddings, vision_config.model_type, vision_config.num_attention_heads, vision_config.num_key_value_heads, vision_config.output_attentions, vision_config.output_hidden_states, vision_config.patch_size, vision_config.pooling_kernel_size, vision_config.position_embedding_size, vision_config.problem_type, vision_config.return_dict, vision_config.rms_norm_eps, vision_config.rope_parameters.rope_theta, vision_config.rope_parameters.rope_type, vision_config.standardize, vision_config.use_clipped_linears, vision_soft_tokens_per_image"
+ ],
+ "weight_layer_kinds": [
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention"
+ ],
+ "predecessor": {
+  "id": "google/gemma-4-26B-A4B",
+  "source_commit": "24548b62aa021d562695c04aaf7758a1ea47990b",
+  "selection": "Newest general-purpose primary language architecture. Official card names Gemma 4 26B-A4B as architectural ancestor; this is not an earlier DiffusionGemma release."
+ },
+ "diff_vs_predecessor": [
+  {
+   "field": "params_active",
+   "before": 3822530590,
+   "after": 3840375612
+  },
+  {
+   "field": "model_type",
+   "before": "gemma4",
+   "after": "diffusion_gemma"
+  },
+  {
+   "field": "generation_type",
+   "before": null,
+   "after": "block_diffusion"
+  },
+  {
+   "field": "canvas_length",
+   "before": null,
+   "after": 256
+  }
+ ],
+ "tensor_diff_vs_predecessor": {
+  "added": [
+   {
+    "pattern": "decoder.layers.*.experts.gate_up_proj",
+    "params": 15225323520
+   },
+   {
+    "pattern": "decoder.layers.*.experts.down_proj",
+    "params": 7612661760
+   },
+   {
+    "pattern": "decoder.embed_tokens",
+    "params": 738197504
+   },
+   {
+    "pattern": "decoder.layers.*.self_attn.o_proj",
+    "params": 403701760
+   },
+   {
+    "pattern": "decoder.layers.*.self_attn.q_proj",
+    "params": 403701760
+   },
+   {
+    "pattern": "decoder.layers.*.mlp.down_proj",
+    "params": 178421760
+   }
+  ],
+  "added_total": 25823781228,
+  "added_count": 47,
+  "removed": [
+   {
+    "pattern": "language_model.layers.*.experts.gate_up_proj",
+    "params": 15225323520
+   },
+   {
+    "pattern": "language_model.layers.*.experts.down_proj",
+    "params": 7612661760
+   },
+   {
+    "pattern": "language_model.embed_tokens",
+    "params": 738197504
+   },
+   {
+    "pattern": "language_model.layers.*.self_attn.o_proj",
+    "params": 403701760
+   },
+   {
+    "pattern": "language_model.layers.*.self_attn.q_proj",
+    "params": 403701760
+   },
+   {
+    "pattern": "language_model.layers.*.mlp.down_proj",
+    "params": 178421760
+   }
+  ],
+  "removed_total": 25805936206,
+  "removed_count": 42
+ }
+}

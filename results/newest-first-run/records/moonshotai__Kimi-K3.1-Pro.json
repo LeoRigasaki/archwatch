@@ -1,0 +1,2416 @@
+{
+ "id": "moonshotai/Kimi-K3.1-Pro",
+ "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+ "hub_created": "2026-11-02T04:13:51+00:00",
+ "license": "kimi-k3.1-pro",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "8-bit",
+   "compressed-tensors",
+   "conversational",
+   "custom_code",
+   "endpoints_compatible",
+   "eval-results",
+   "image-text-to-text",
+   "kimi_k31",
+   "license:other",
+   "region:us",
+   "safetensors",
+   "text-generation",
+   "transformers"
+  ]
+ },
+ "analyzed_at": "2026-11-14T07:54:50+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "KimiK31ForConditionalGeneration",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "kimi_k31",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 93,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 7168,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "vocab_size": {
+   "value": 163840,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 1048576,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "gated_dsa_mla"
+   ],
+   "evidence": "config:text_config.linear_attn_config"
+  },
+  "layer_index_base_in_config": {
+   "value": 1,
+   "evidence": "config:text_config.linear_attn_config (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "kda_linear": 69,
+    "gated_dsa_mla": 24
+   },
+   "evidence": "config:text_config.linear_attn_config"
+  },
+  "num_attention_heads": {
+   "value": 96,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 96,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 192,
+   "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+  },
+  "v_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "attention_type": {
+   "value": "MLA",
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_kv_lora_rank": {
+   "value": 512,
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_q_lora_rank": {
+   "value": 1536,
+   "evidence": "config:text_config.q_lora_rank"
+  },
+  "mla_qk_nope_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.qk_nope_head_dim"
+  },
+  "mla_qk_rope_head_dim": {
+   "value": 64,
+   "evidence": "config:text_config.qk_rope_head_dim"
+  },
+  "mla_v_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "mla_use_nope": {
+   "value": true,
+   "evidence": "config:text_config.mla_use_nope"
+  },
+  "attention_output_gate": {
+   "value": true,
+   "evidence": "config:text_config.mla_use_output_gate"
+  },
+  "dsa_index_topk": {
+   "value": 2048,
+   "evidence": "config:text_config.dsa_config.index_topk"
+  },
+  "dsa_index_num_heads": {
+   "value": 32,
+   "evidence": "config:text_config.dsa_config.index_num_heads"
+  },
+  "dsa_index_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.dsa_config.index_head_dim"
+  },
+  "linear_attn_num_heads": {
+   "value": 96,
+   "evidence": "config:text_config.linear_attn_config.num_heads"
+  },
+  "linear_attn_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.linear_attn_config.head_dim"
+  },
+  "linear_attn_conv_kernel": {
+   "value": 4,
+   "evidence": "config:text_config.linear_attn_config.short_conv_kernel_size"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_num_experts": {
+   "value": 896,
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_active_experts": {
+   "value": 16,
+   "evidence": "config:text_config.num_experts_per_token"
+  },
+  "moe_shared_experts": {
+   "value": 2,
+   "evidence": "config:text_config.num_shared_experts"
+  },
+  "moe_expert_intermediate": {
+   "value": 3072,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "moe_latent_dim": {
+   "value": 3584,
+   "evidence": "config:text_config.routed_expert_hidden_size"
+  },
+  "dense_layers": {
+   "value": 1,
+   "evidence": "config:text_config.first_k_dense_replace"
+  },
+  "dense_ffn_intermediate": {
+   "value": 33792,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "moe_router": {
+   "value": "sigmoid",
+   "evidence": "config:text_config.moe_router_activation_func"
+  },
+  "activation": {
+   "value": "situ",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "released_weights_format": {
+   "value": "mxfp4-pack-quantized (4-bit)",
+   "evidence": "config:text_config.quantization_config"
+  },
+  "vision_encoder_layers": {
+   "value": 27,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1024,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "model_type",
+   "text_config.dsa_config.dsa_layers",
+   "text_config.dsa_config.index_head_dim",
+   "text_config.dsa_config.index_num_heads",
+   "text_config.dsa_config.index_topk",
+   "text_config.first_k_dense_replace",
+   "text_config.hidden_act",
+   "text_config.hidden_size",
+   "text_config.intermediate_size",
+   "text_config.kv_lora_rank",
+   "text_config.linear_attn_config.full_attn_layers",
+   "text_config.linear_attn_config.head_dim",
+   "text_config.linear_attn_config.kda_layers",
+   "text_config.linear_attn_config.num_heads",
+   "text_config.linear_attn_config.short_conv_kernel_size",
+   "text_config.max_position_embeddings",
+   "text_config.mla_use_nope",
+   "text_config.mla_use_output_gate",
+   "text_config.model_type",
+   "text_config.moe_intermediate_size",
+   "text_config.moe_router_activation_func",
+   "text_config.num_attention_heads",
+   "text_config.num_experts",
+   "text_config.num_experts_per_token",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.num_shared_experts",
+   "text_config.q_lora_rank",
+   "text_config.qk_nope_head_dim",
+   "text_config.qk_rope_head_dim",
+   "text_config.quantization_config.config_groups.group_0.weights.num_bits",
+   "text_config.quantization_config.format",
+   "text_config.routed_expert_hidden_size",
+   "text_config.v_head_dim",
+   "text_config.vocab_size",
+   "tie_word_embeddings",
+   "vision_config.vt_hidden_size",
+   "vision_config.vt_num_hidden_layers"
+  ],
+  "unconsumed": [
+   "auto_map.AutoConfig",
+   "bos_token_id",
+   "dtype",
+   "eos_token_id",
+   "ignore_index",
+   "image_placeholder",
+   "media_placeholder_token_id",
+   "pad_token_id",
+   "text_config._name_or_path",
+   "text_config.activation_situ_beta",
+   "text_config.activation_situ_linear_beta",
+   "text_config.add_cross_attention",
+   "text_config.architectures",
+   "text_config.attn_res_block_size",
+   "text_config.bad_words_ids",
+   "text_config.begin_suppress_tokens",
+   "text_config.bos_token_id",
+   "text_config.chunk_size_feed_forward",
+   "text_config.cross_attention_hidden_size",
+   "text_config.decoder_start_token_id",
+   "text_config.diversity_penalty",
+   "text_config.do_sample",
+   "text_config.dsa_config.index_k_norm_type",
+   "text_config.dsa_config.index_rope_dim",
+   "text_config.dsa_config.index_skip_topk_offset",
+   "text_config.dsa_config.index_topk_freq",
+   "text_config.dtype",
+   "text_config.early_stopping",
+   "text_config.encoder_no_repeat_ngram_size",
+   "text_config.eos_token_id",
+   "text_config.exponential_decay_length_penalty",
+   "text_config.finetuning_task",
+   "text_config.forced_bos_token_id",
+   "text_config.forced_eos_token_id",
+   "text_config.id2label.0",
+   "text_config.id2label.1",
+   "text_config.initializer_range",
+   "text_config.is_decoder",
+   "text_config.is_encoder_decoder",
+   "text_config.label2id.LABEL_0",
+   "text_config.label2id.LABEL_1",
+   "text_config.latent_moe_use_norm",
+   "text_config.length_penalty",
+   "text_config.linear_attn_config.gate_lower_bound",
+   "text_config.linear_attn_config.use_full_rank_gate",
+   "text_config.max_length",
+   "text_config.min_length",
+   "text_config.moe_layer_freq",
+   "text_config.moe_renormalize",
+   "text_config.no_repeat_ngram_size",
+   "text_config.num_beam_groups",
+   "text_config.num_beams",
+   "text_config.num_expert_group",
+   "text_config.num_nextn_predict_layers",
+   "text_config.num_return_sequences",
+   "text_config.output_attentions",
+   "text_config.output_hidden_states",
+   "text_config.output_scores",
+   "text_config.pad_token_id",
+   "text_config.prefix",
+   "text_config.problem_type",
+   "text_config.pruned_heads",
+   "text_config.quantization_config.config_groups.group_0.format",
+   "text_config.quantization_config.config_groups.group_0.input_activations",
+   "text_config.quantization_config.config_groups.group_0.output_activations",
+   "text_config.quantization_config.config_groups.group_0.targets",
+   "text_config.quantization_config.config_groups.group_0.weights.actorder",
+   "text_config.quantization_config.config_groups.group_0.weights.block_structure",
+   "text_config.quantization_config.config_groups.group_0.weights.dynamic",
+   "text_config.quantization_config.config_groups.group_0.weights.group_size",
+   "text_config.quantization_config.config_groups.group_0.weights.observer",
+   "text_config.quantization_config.config_groups.group_0.weights.observer_kwargs",
+   "text_config.quantization_config.config_groups.group_0.weights.scale_dtype",
+   "text_config.quantization_config.config_groups.group_0.weights.strategy",
+   "text_config.quantization_config.config_groups.group_0.weights.symmetric",
+   "text_config.quantization_config.config_groups.group_0.weights.type",
+   "text_config.quantization_config.config_groups.group_0.weights.zp_dtype",
+   "text_config.quantization_config.global_compression_ratio",
+   "text_config.quantization_config.ignore",
+   "text_config.quantization_config.kv_cache_scheme",
+   "text_config.quantization_config.quant_method",
+   "text_config.quantization_config.quantization_status",
+   "text_config.remove_invalid_values",
+   "text_config.repetition_penalty",
+   "text_config.return_dict",
+   "text_config.return_dict_in_generate",
+   "text_config.rms_norm_eps",
+   "text_config.routed_scaling_factor",
+   "text_config.sep_token_id",
+   "text_config.suppress_tokens",
+   "text_config.task_specific_params",
+   "text_config.temperature",
+   "text_config.tf_legacy_loss",
+   "text_config.tie_encoder_decoder",
+   "text_config.tie_word_embeddings",
+   "text_config.tokenizer_class",
+   "text_config.top_k",
+   "text_config.top_p",
+   "text_config.topk_group",
+   "text_config.topk_method",
+   "text_config.torchscript",
+   "text_config.transformers_version",
+   "text_config.typical_p",
+   "text_config.use_bfloat16",
+   "text_config.use_cache",
+   "text_config.use_grouped_topk",
+   "vision_config._attn_implementation",
+   "vision_config.activation_func",
+   "vision_config.attn_bias",
+   "vision_config.init_pos_emb_height",
+   "vision_config.init_pos_emb_time",
+   "vision_config.init_pos_emb_width",
+   "vision_config.linear_bias",
+   "vision_config.merge_kernel_size",
+   "vision_config.merge_type",
+   "vision_config.mlp_type",
+   "vision_config.mm_hidden_size",
+   "vision_config.mm_projector_type",
+   "vision_config.norm_type",
+   "vision_config.patch_embed_proj_bias",
+   "vision_config.patch_size",
+   "vision_config.pos_emb_interpolation_mode",
+   "vision_config.pos_emb_type",
+   "vision_config.projector_hidden_act",
+   "vision_config.projector_ln_eps",
+   "vision_config.qkv_hidden_size",
+   "vision_config.text_hidden_size",
+   "vision_config.vt_intermediate_size",
+   "vision_config.vt_num_attention_heads"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "configuration_kimi_k3.py",
+  "model-00001-of-000096.safetensors",
+  "model-00002-of-000096.safetensors",
+  "model-00003-of-000096.safetensors",
+  "model-00004-of-000096.safetensors",
+  "model-00005-of-000096.safetensors",
+  "model-00006-of-000096.safetensors",
+  "model-00007-of-000096.safetensors",
+  "model-00008-of-000096.safetensors",
+  "model-00009-of-000096.safetensors",
+  "model-00010-of-000096.safetensors",
+  "model-00011-of-000096.safetensors",
+  "model-00012-of-000096.safetensors",
+  "model-00013-of-000096.safetensors",
+  "model-00014-of-000096.safetensors",
+  "model-00015-of-000096.safetensors",
+  "model-00016-of-000096.safetensors",
+  "model-00017-of-000096.safetensors",
+  "model-00018-of-000096.safetensors",
+  "model-00019-of-000096.safetensors",
+  "model-00020-of-000096.safetensors",
+  "model-00021-of-000096.safetensors",
+  "model-00022-of-000096.safetensors",
+  "model-00023-of-000096.safetensors",
+  "model-00024-of-000096.safetensors",
+  "model-00025-of-000096.safetensors",
+  "model-00026-of-000096.safetensors",
+  "model-00027-of-000096.safetensors",
+  "model-00028-of-000096.safetensors",
+  "model-00029-of-000096.safetensors",
+  "model-00030-of-000096.safetensors",
+  "model-00031-of-000096.safetensors",
+  "model-00032-of-000096.safetensors",
+  "model-00033-of-000096.safetensors",
+  "model-00034-of-000096.safetensors",
+  "model-00035-of-000096.safetensors",
+  "model-00036-of-000096.safetensors",
+  "model-00037-of-000096.safetensors",
+  "model-00038-of-000096.safetensors",
+  "model-00039-of-000096.safetensors",
+  "model-00040-of-000096.safetensors",
+  "model-00041-of-000096.safetensors",
+  "model-00042-of-000096.safetensors",
+  "model-00043-of-000096.safetensors",
+  "model-00044-of-000096.safetensors",
+  "model-00045-of-000096.safetensors",
+  "model-00046-of-000096.safetensors",
+  "model-00047-of-000096.safetensors",
+  "model-00048-of-000096.safetensors",
+  "model-00049-of-000096.safetensors",
+  "model-00050-of-000096.safetensors",
+  "model-00051-of-000096.safetensors",
+  "model-00052-of-000096.safetensors",
+  "model-00053-of-000096.safetensors",
+  "model-00054-of-000096.safetensors",
+  "model-00055-of-000096.safetensors",
+  "model-00056-of-000096.safetensors",
+  "model-00057-of-000096.safetensors",
+  "model-00058-of-000096.safetensors",
+  "model-00059-of-000096.safetensors",
+  "model-00060-of-000096.safetensors",
+  "model-00061-of-000096.safetensors",
+  "model-00062-of-000096.safetensors",
+  "model-00063-of-000096.safetensors",
+  "model-00064-of-000096.safetensors",
+  "model-00065-of-000096.safetensors",
+  "model-00066-of-000096.safetensors",
+  "model-00067-of-000096.safetensors",
+  "model-00068-of-000096.safetensors",
+  "model-00069-of-000096.safetensors",
+  "model-00070-of-000096.safetensors",
+  "model-00071-of-000096.safetensors",
+  "model-00072-of-000096.safetensors",
+  "model-00073-of-000096.safetensors",
+  "model-00074-of-000096.safetensors",
+  "model-00075-of-000096.safetensors",
+  "model-00076-of-000096.safetensors",
+  "model-00077-of-000096.safetensors",
+  "model-00078-of-000096.safetensors",
+  "model-00079-of-000096.safetensors",
+  "model-00080-of-000096.safetensors",
+  "model-00081-of-000096.safetensors",
+  "model-00082-of-000096.safetensors",
+  "model-00083-of-000096.safetensors",
+  "model-00084-of-000096.safetensors",
+  "model-00085-of-000096.safetensors",
+  "model-00086-of-000096.safetensors",
+  "model-00087-of-000096.safetensors",
+  "model-00088-of-000096.safetensors",
+  "model-00089-of-000096.safetensors",
+  "model-00090-of-000096.safetensors",
+  "model-00091-of-000096.safetensors",
+  "model-00092-of-000096.safetensors",
+  "model-00093-of-000096.safetensors",
+  "model-00094-of-000096.safetensors",
+  "model-00095-of-000096.safetensors",
+  "model-00096-of-000096.safetensors",
+  "model.safetensors.index.json"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 2780110363392,
+   "text_total": 2779663004416,
+   "by_component": {
+    "moe_routed_experts": 2722740830208,
+    "attention_or_linear_mixer": 36369321216,
+    "moe_shared_experts": 12155092992,
+    "moe_latent_projection": 4727310336,
+    "embedding": 1174405120,
+    "lm_head": 1174405120,
+    "dense_ffn": 726663168,
+    "moe_router": 590955008,
+    "vision": 401214464,
+    "vision_projector": 46144512,
+    "attention_residuals": 2680832,
+    "norms": 1340416
+   },
+   "routed_expert_params": 2722740830208,
+   "moe_layers": 92,
+   "experts_per_moe_layer": [
+    896
+   ],
+   "layer_indices_in_weights": [
+    0,
+    92
+   ],
+   "tensor_count": 497340,
+   "skipped_scale_tensors": 247296
+  },
+  "active": {
+   "text_active": 105542546176,
+   "text_active_without_embeddings": 104368141056,
+   "with_vision": 105989905152
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 33792,
+  "grows_per_token_bytes_low": 30720,
+  "constant_bytes": 449372160,
+  "constant_bytes_low": 449372160,
+  "naive_mha_per_token_bytes": 5713920,
+  "reduction_vs_naive_mha": 169.1,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 726196224,
+    "gib": 0.676
+   },
+   "32768": {
+    "bytes": 1556668416,
+    "gib": 1.45
+   },
+   "131072": {
+    "bytes": 4878557184,
+    "gib": 4.544
+   },
+   "262144": {
+    "bytes": 9307742208,
+    "gib": 8.669
+   },
+   "1048576": {
+    "bytes": 35882852352,
+    "gib": 33.419
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "gated_dsa_mla",
+    "layers": 24,
+    "grows_per_token_bytes": 33792,
+    "grows_per_token_bytes_low": 30720,
+    "constant_bytes": 0,
+    "formula": "(512 latent + 64 rope key + 128 DSA index key) x 2 B x 24 layers"
+   },
+   {
+    "layer_type": "kda_linear",
+    "layers": 69,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 449372160,
+    "formula": "(96 heads x 128x128 state x 4 B + q/k/v conv 3 taps) x 69 layers"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "DSA indexer keys counted at bf16; low estimate uses fp8 (1 B), as DeepSeek-style indexers often do",
+   "KDA recurrent state counted in fp32 (4 B), the usual choice for delta-rule states"
+  ]
+ },
+ "code_scan": {
+  "files": [
+   "configuration_kimi_k3.py"
+  ],
+  "classes": [
+   {
+    "name": "KimiLinearConfig",
+    "file": "configuration_kimi_k3.py",
+    "line": 6,
+    "doc": ""
+   },
+   {
+    "name": "KimiK3VisionConfig",
+    "file": "configuration_kimi_k3.py",
+    "line": 151,
+    "doc": ""
+   },
+   {
+    "name": "KimiK3Config",
+    "file": "configuration_kimi_k3.py",
+    "line": 221,
+    "doc": "Kimi-K3 model configuration."
+   }
+  ],
+  "facts": {
+   "layer_index_base_in_config": {
+    "value": 1,
+    "evidence": "code:configuration_kimi_k3.py#L148: and (layer_idx + 1) in self.linear_attn_config[\"kda_layers\"])"
+   },
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {
+  "architecture": {
+   "raw": "Mixture-of-Experts (MoE)"
+  },
+  "params_total": {
+   "raw": "2.8T",
+   "value": 2800000000000.0,
+   "tolerance": 50000000000.0,
+   "k_suffix": false
+  },
+  "params_active": {
+   "raw": "104B",
+   "value": 104000000000.0,
+   "tolerance": 500000000.0,
+   "k_suffix": false
+  },
+  "num_layers": {
+   "raw": "93",
+   "value": 93.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dense_layers": {
+   "raw": "1",
+   "value": 1.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "layer_composition": {
+   "raw": "69 KDA + 24 Gated DSA",
+   "parts": {
+    "KDA": 69,
+    "Gated DSA": 24
+   }
+  },
+  "hidden_size": {
+   "raw": "7168",
+   "value": 7168.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "num_attention_heads": {
+   "raw": "96",
+   "value": 96.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dsa_index_head_dim": {
+   "raw": "128",
+   "value": 128.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dsa_index_num_heads": {
+   "raw": "32",
+   "value": 32.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "dsa_index_topk": {
+   "raw": "2048",
+   "value": 2048.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_latent_dim": {
+   "raw": "3584",
+   "value": 3584.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_expert_intermediate": {
+   "raw": "3072",
+   "value": 3072.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_num_experts": {
+   "raw": "896",
+   "value": 896.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_active_experts": {
+   "raw": "16",
+   "value": 16.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_shared_experts": {
+   "raw": "2",
+   "value": 2.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "vocab_size": {
+   "raw": "160K",
+   "value": 160000.0,
+   "tolerance": 500.0,
+   "k_suffix": true
+  },
+  "context_length": {
+   "raw": "1048576",
+   "value": 1048576.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "attention_mechanism": {
+   "raw": "KDA & Gated DSA"
+  },
+  "activation": {
+   "raw": "SiTU-GLU"
+  },
+  "vision_encoder": {
+   "raw": "MoonViT-V2"
+  },
+  "vision_params": {
+   "raw": "401M",
+   "value": 401000000.0,
+   "tolerance": 500000.0,
+   "k_suffix": false
+  },
+  "quantization": {
+   "raw": "MXFP4 weights / MXFP8 activations / (quantization-aware training)"
+  },
+  "modality": {
+   "raw": "Text, Image"
+  }
+ },
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 93,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 93,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 93.0,
+     "evidence": "card:num_layers",
+     "raw": "93"
+    },
+    {
+     "value": 93,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 7168,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 7168,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 7168.0,
+     "evidence": "card:hidden_size",
+     "raw": "7168"
+    },
+    {
+     "value": 7168,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 163840,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 163840,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 160000.0,
+     "evidence": "card:vocab_size",
+     "raw": "160K"
+    },
+    {
+     "value": 163840,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 1048576,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1048576,
+     "evidence": "config:text_config.max_position_embeddings"
+    },
+    {
+     "value": 1048576.0,
+     "evidence": "card:context_length",
+     "raw": "1048576"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 96,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 96,
+     "evidence": "config:text_config.num_attention_heads"
+    },
+    {
+     "value": 96.0,
+     "evidence": "card:num_attention_heads",
+     "raw": "96"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 96,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 96,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 192,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 192,
+     "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "MLA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MLA",
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 896,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 896,
+     "evidence": "config:text_config.num_experts"
+    },
+    {
+     "value": 896.0,
+     "evidence": "card:moe_num_experts",
+     "raw": "896"
+    },
+    {
+     "value": 896,
+     "evidence": "weights:expert tensors per MoE layer"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 16,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 16,
+     "evidence": "config:text_config.num_experts_per_token"
+    },
+    {
+     "value": 16.0,
+     "evidence": "card:moe_active_experts",
+     "raw": "16"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 2,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2,
+     "evidence": "config:text_config.num_shared_experts"
+    },
+    {
+     "value": 2.0,
+     "evidence": "card:moe_shared_experts",
+     "raw": "2"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 3072,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3072,
+     "evidence": "config:text_config.moe_intermediate_size"
+    },
+    {
+     "value": 3072.0,
+     "evidence": "card:moe_expert_intermediate",
+     "raw": "3072"
+    },
+    {
+     "value": 3072,
+     "evidence": "weights:experts.0.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "moe_latent_dim",
+   "value": 3584,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3584,
+     "evidence": "config:text_config.routed_expert_hidden_size"
+    },
+    {
+     "value": 3584.0,
+     "evidence": "card:moe_latent_dim",
+     "raw": "3584"
+    },
+    {
+     "value": 3584,
+     "evidence": "weights:routed_expert_up_proj shape"
+    },
+    {
+     "value": 3584,
+     "evidence": "weights:experts.0.w1 input width"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 1,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.first_k_dense_replace"
+    },
+    {
+     "value": 1.0,
+     "evidence": "card:dense_layers",
+     "raw": "1"
+    },
+    {
+     "value": 1,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_topk",
+   "value": 2048,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:text_config.dsa_config.index_topk"
+    },
+    {
+     "value": 2048.0,
+     "evidence": "card:dsa_index_topk",
+     "raw": "2048"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_num_heads",
+   "value": 32,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32,
+     "evidence": "config:text_config.dsa_config.index_num_heads"
+    },
+    {
+     "value": 32.0,
+     "evidence": "card:dsa_index_num_heads",
+     "raw": "32"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_head_dim",
+   "value": 128,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.dsa_config.index_head_dim"
+    },
+    {
+     "value": 128.0,
+     "evidence": "card:dsa_index_head_dim",
+     "raw": "128"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "kda_linear": 69,
+    "gated_dsa_mla": 24
+   },
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "kda_linear": 69,
+      "gated_dsa_mla": 24
+     },
+     "evidence": "config:text_config.linear_attn_config"
+    },
+    {
+     "value": {
+      "kda_linear": 69,
+      "gated_dsa_mla": 24
+     },
+     "evidence": "card:layer_composition",
+     "raw": "69 KDA + 24 Gated DSA"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "dsa_mla"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "dsa_mla"
+     ],
+     "evidence": "config:text_config.linear_attn_config (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "dsa_mla"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "mla_cached_width_per_token",
+   "value": 576,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 576,
+     "evidence": "derived:kv_lora_rank + qk_rope_head_dim"
+    },
+    {
+     "value": 576,
+     "evidence": "weights:kv_a_proj_with_mqa output rows"
+    }
+   ]
+  },
+  {
+   "field": "dsa_index_key_width",
+   "value": 128,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.dsa_config.index_head_dim"
+    },
+    {
+     "value": 128,
+     "evidence": "weights:indexer.wk rows"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "situ",
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": "situ",
+     "evidence": "config:text_config.hidden_act"
+    },
+    {
+     "value": "situ",
+     "evidence": "card:activation",
+     "raw": "SiTU-GLU"
+    }
+   ]
+  },
+  {
+   "field": "activation_card_name",
+   "value": "SiTU-GLU",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "SiTU-GLU",
+     "evidence": "card:activation"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 1,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.linear_attn_config (inferred from index range)"
+    },
+    {
+     "value": 1,
+     "evidence": "code:configuration_kimi_k3.py#L148: and (layer_idx + 1) in self.linear_attn_config[\"kda_layers\"])"
+    }
+   ]
+  },
+  {
+   "field": "attention_output_gate",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:text_config.mla_use_output_gate"
+    },
+    {
+     "value": true,
+     "evidence": "weights:gate_proj/g_proj tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 2780110363392,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2780110363392,
+     "evidence": "weights:sum of tensor shapes"
+    },
+    {
+     "value": 2800000000000.0,
+     "evidence": "card:params_total",
+     "raw": "2.8T"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 104368141056,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 104368141056,
+     "evidence": "weights:total - unselected routed experts (text model, input embedding excluded)"
+    },
+    {
+     "value": 104000000000.0,
+     "evidence": "card:params_active",
+     "raw": "104B"
+    }
+   ]
+  },
+  {
+   "field": "vision_params",
+   "value": 401214464,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 401214464,
+     "evidence": "weights:vision_tower tensors (projector excluded)"
+    },
+    {
+     "value": 401000000.0,
+     "evidence": "card:vision_params",
+     "raw": "401M"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "gated_dsa_mla",
+    "gated_dsa_mla"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "gated_dsa_mla"
+     ],
+     "evidence": "config:text_config.linear_attn_config"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.num_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_num_heads",
+   "value": 96,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 96,
+     "evidence": "config:text_config.linear_attn_config.num_heads"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.linear_attn_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_conv_kernel",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:text_config.linear_attn_config.short_conv_kernel_size"
+    }
+   ]
+  },
+  {
+   "field": "mla_kv_lora_rank",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "mla_qk_rope_head_dim",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "v_head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.v_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "dense_ffn_intermediate",
+   "value": 33792,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 33792,
+     "evidence": "config:text_config.intermediate_size"
+    }
+   ]
+  },
+  {
+   "field": "moe_router",
+   "value": "sigmoid",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "sigmoid",
+     "evidence": "config:text_config.moe_router_activation_func"
+    }
+   ]
+  },
+  {
+   "field": "vision_encoder_layers",
+   "value": 27,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 27,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1024,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "mxfp4-pack-quantized (4-bit)",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "mxfp4-pack-quantized (4-bit)",
+     "evidence": "config:text_config.quantization_config"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 2722740830208,
+    "attention_or_linear_mixer": 36369321216,
+    "moe_shared_experts": 12155092992,
+    "moe_latent_projection": 4727310336,
+    "embedding": 1174405120,
+    "lm_head": 1174405120,
+    "dense_ffn": 726663168,
+    "moe_router": 590955008,
+    "vision": 401214464,
+    "vision_projector": 46144512,
+    "attention_residuals": 2680832,
+    "norms": 1340416
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 2722740830208,
+      "attention_or_linear_mixer": 36369321216,
+      "moe_shared_experts": 12155092992,
+      "moe_latent_projection": 4727310336,
+      "embedding": 1174405120,
+      "lm_head": 1174405120,
+      "dense_ffn": 726663168,
+      "moe_router": 590955008,
+      "vision": 401214464,
+      "vision_projector": 46144512,
+      "attention_residuals": 2680832,
+      "norms": 1340416
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 497340,
+    "skipped_scale_tensors": 247296
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 497340,
+      "skipped_scale_tensors": 247296
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 93,
+  "hidden_size": 7168,
+  "vocab_size": 163840,
+  "context_length": 1048576,
+  "num_attention_heads": 96,
+  "num_kv_heads": 96,
+  "head_dim": 192,
+  "attention_type": "MLA",
+  "ffn_gated": true,
+  "moe_num_experts": 896,
+  "moe_active_experts": 16,
+  "moe_shared_experts": 2,
+  "moe_expert_intermediate": 3072,
+  "moe_latent_dim": 3584,
+  "dense_layers": 1,
+  "dsa_index_topk": 2048,
+  "dsa_index_num_heads": 32,
+  "dsa_index_head_dim": 128,
+  "layer_type_counts": {
+   "kda_linear": 69,
+   "gated_dsa_mla": 24
+  },
+  "layer_pattern_per_layer": [
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "dsa_mla"
+  ],
+  "mla_cached_width_per_token": 576,
+  "dsa_index_key_width": 128,
+  "activation": "situ",
+  "activation_card_name": "SiTU-GLU",
+  "layer_index_base_in_config": 1,
+  "attention_output_gate": true,
+  "params_total": 2780110363392,
+  "params_active": 104368141056,
+  "vision_params": 401214464,
+  "layer_types": [
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "gated_dsa_mla",
+   "gated_dsa_mla"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": false,
+  "linear_attn_num_heads": 96,
+  "linear_attn_head_dim": 128,
+  "linear_attn_conv_kernel": 4,
+  "mla_kv_lora_rank": 512,
+  "mla_qk_rope_head_dim": 64,
+  "v_head_dim": 128,
+  "dense_ffn_intermediate": 33792,
+  "moe_router": "sigmoid",
+  "vision_encoder_layers": 27,
+  "vision_hidden_size": 1024,
+  "released_weights_format": "mxfp4-pack-quantized (4-bit)",
+  "parameter_components": {
+   "moe_routed_experts": 2722740830208,
+   "attention_or_linear_mixer": 36369321216,
+   "moe_shared_experts": 12155092992,
+   "moe_latent_projection": 4727310336,
+   "embedding": 1174405120,
+   "lm_head": 1174405120,
+   "dense_ffn": 726663168,
+   "moe_router": 590955008,
+   "vision": 401214464,
+   "vision_projector": 46144512,
+   "attention_residuals": 2680832,
+   "norms": 1340416
+  },
+  "weight_header_summary": {
+   "tensor_count": 497340,
+   "skipped_scale_tensors": 247296
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig, bos_token_id, dtype, eos_token_id, ignore_index, image_placeholder, media_placeholder_token_id, pad_token_id, text_config._name_or_path, text_config.activation_situ_beta, text_config.activation_situ_linear_beta, text_config.add_cross_attention, text_config.architectures, text_config.attn_res_block_size, text_config.bad_words_ids, text_config.begin_suppress_tokens, text_config.bos_token_id, text_config.chunk_size_feed_forward, text_config.cross_attention_hidden_size, text_config.decoder_start_token_id, text_config.diversity_penalty, text_config.do_sample, text_config.dsa_config.index_k_norm_type, text_config.dsa_config.index_rope_dim, text_config.dsa_config.index_skip_topk_offset, text_config.dsa_config.index_topk_freq, text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size, text_config.eos_token_id, text_config.exponential_decay_length_penalty, text_config.finetuning_task, text_config.forced_bos_token_id, text_config.forced_eos_token_id, text_config.id2label.0, text_config.id2label.1, text_config.initializer_range, text_config.is_decoder, text_config.is_encoder_decoder, text_config.label2id.LABEL_0, text_config.label2id.LABEL_1, text_config.latent_moe_use_norm, text_config.length_penalty, text_config.linear_attn_config.gate_lower_bound, text_config.linear_attn_config.use_full_rank_gate, text_config.max_length, text_config.min_length, text_config.moe_layer_freq, text_config.moe_renormalize, text_config.no_repeat_ngram_size, text_config.num_beam_groups, text_config.num_beams, text_config.num_expert_group, text_config.num_nextn_predict_layers, text_config.num_return_sequences, text_config.output_attentions, text_config.output_hidden_states, text_config.output_scores, text_config.pad_token_id, text_config.prefix, text_config.problem_type, text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format, text_config.quantization_config.config_groups.group_0.input_activations, text_config.quantization_config.config_groups.group_0.output_activations, text_config.quantization_config.config_groups.group_0.targets, text_config.quantization_config.config_groups.group_0.weights.actorder, text_config.quantization_config.config_groups.group_0.weights.block_structure, text_config.quantization_config.config_groups.group_0.weights.dynamic, text_config.quantization_config.config_groups.group_0.weights.group_size, text_config.quantization_config.config_groups.group_0.weights.observer, text_config.quantization_config.config_groups.group_0.weights.observer_kwargs, text_config.quantization_config.config_groups.group_0.weights.scale_dtype, text_config.quantization_config.config_groups.group_0.weights.strategy, text_config.quantization_config.config_groups.group_0.weights.symmetric, text_config.quantization_config.config_groups.group_0.weights.type, text_config.quantization_config.config_groups.group_0.weights.zp_dtype, text_config.quantization_config.global_compression_ratio, text_config.quantization_config.ignore, text_config.quantization_config.kv_cache_scheme, text_config.quantization_config.quant_method, text_config.quantization_config.quantization_status, text_config.remove_invalid_values, text_config.repetition_penalty, text_config.return_dict, text_config.return_dict_in_generate, text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.sep_token_id, text_config.suppress_tokens, text_config.task_specific_params, text_config.temperature, text_config.tf_legacy_loss, text_config.tie_encoder_decoder, text_config.tie_word_embeddings, text_config.tokenizer_class, text_config.top_k, text_config.top_p, text_config.topk_group, text_config.topk_method, text_config.torchscript, text_config.transformers_version, text_config.typical_p, text_config.use_bfloat16, text_config.use_cache, text_config.use_grouped_topk, vision_config._attn_implementation, vision_config.activation_func, vision_config.attn_bias, vision_config.init_pos_emb_height, vision_config.init_pos_emb_time, vision_config.init_pos_emb_width, vision_config.linear_bias, vision_config.merge_kernel_size, vision_config.merge_type, vision_config.mlp_type, vision_config.mm_hidden_size, vision_config.mm_projector_type, vision_config.norm_type, vision_config.patch_embed_proj_bias, vision_config.patch_size, vision_config.pos_emb_interpolation_mode, vision_config.pos_emb_type, vision_config.projector_hidden_act, vision_config.projector_ln_eps, vision_config.qkv_hidden_size, vision_config.text_hidden_size, vision_config.vt_intermediate_size, vision_config.vt_num_attention_heads"
+ ],
+ "weight_layer_kinds": [
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "dsa_mla"
+ ]
+}

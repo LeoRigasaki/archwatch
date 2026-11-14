@@ -1,0 +1,37 @@
+schema_version: 1
+id: nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16
+source_commit: ee517dd388a9b348890ae1e00dacc5eb4d0c750d
+split: heldout_first_run
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 72
+  hidden_size: 2560
+  vocab_size: 131072
+  num_attention_heads: 16
+  num_kv_heads: 4
+  head_dim: 256
+  context_length: 262144
+  params_total: 3975229440
+  ffn_intermediate: 7168
+  activation: silu
+  ffn_gated: true
+  layer_type_counts:
+    sliding_attention: 27
+    full_attention: 9
+    mlp: 36
+  sliding_window: 1024
+  generation_type: latent_recurrent
+  recurrent_loops: 2
+  recurrent_layers: 40
+  input_layers: 16
+  output_layers: 16
+  recurrent_kv_cache_mode: per_loop
+evidence:
+  config: https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16/blob/ee517dd388a9b348890ae1e00dacc5eb4d0c750d/config.json
+  card: https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16/blob/ee517dd388a9b348890ae1e00dacc5eb4d0c750d/README.md
+  weight_files:
+  - https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16/blob/ee517dd388a9b348890ae1e00dacc5eb4d0c750d/model.safetensors
+notes: 72 physical operator blocks, 36 attention and 36 MLP. Card counts attention/MLP
+  pairs as 36 layers. Two traversals of 40 recurrent operator blocks imply 112 executed
+  blocks with per-loop cache; do not count 112 sets of weights.

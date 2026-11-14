@@ -36,7 +36,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-13T20:58:36+00:00",
+ "analyzed_at": "2026-11-14T08:16:03+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm3ForCausalLM",
@@ -225,7 +225,8 @@
     23
    ],
    "tensor_count": 286,
-   "skipped_scale_tensors": 0
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
   },
   "active": null
  },
@@ -812,6 +813,19 @@
    ]
   },
   {
+   "field": "model_type",
+   "value": "lfm3",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "lfm3",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
    "field": "layer_types",
    "value": [
     "short_conv",
@@ -988,7 +1002,8 @@
    "field": "weight_header_summary",
    "value": {
     "tensor_count": 286,
-    "skipped_scale_tensors": 0
+    "skipped_scale_tensors": 0,
+    "skipped_buffer_tensors": 0
    },
    "status": "single source",
    "confidence": 0.7,
@@ -997,7 +1012,8 @@
     {
      "value": {
       "tensor_count": 286,
-      "skipped_scale_tensors": 0
+      "skipped_scale_tensors": 0,
+      "skipped_buffer_tensors": 0
      },
      "evidence": "weights:tensor header inventory"
     }
@@ -1053,6 +1069,7 @@
   "qk_norm": true,
   "attention_output_gate": true,
   "params_total": 1728801536,
+  "model_type": "lfm3",
   "layer_types": [
    "short_conv",
    "short_conv",
@@ -1103,7 +1120,8 @@
   },
   "weight_header_summary": {
    "tensor_count": 286,
-   "skipped_scale_tensors": 0
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
   }
  },
  "review_queue": [],
@@ -1135,5 +1153,162 @@
   "short_conv",
   "attention",
   "short_conv"
- ]
+ ],
+ "predecessor": {
+  "id": "LiquidAI/LFM2.5-24B-A2B-Base",
+  "source_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
+  "selection": "Newest eligible primary by Hub creation. Already in the development set; regression only, excluded from held-out accuracy."
+ },
+ "diff_vs_predecessor": [
+  {
+   "field": "num_layers",
+   "before": 40,
+   "after": 24
+  },
+  {
+   "field": "layer_type_counts",
+   "before": {
+    "short_conv": 30,
+    "full_attention": 10
+   },
+   "after": {
+    "short_conv": 13,
+    "full_attention": 6,
+    "sliding_attention": 5
+   }
+  },
+  {
+   "field": "num_attention_heads",
+   "before": 32,
+   "after": 16
+  },
+  {
+   "field": "num_kv_heads",
+   "before": 8,
+   "after": 4
+  },
+  {
+   "field": "head_dim",
+   "before": 64,
+   "after": 128
+  },
+  {
+   "field": "context_length",
+   "before": 131072,
+   "after": 262144
+  },
+  {
+   "field": "moe_num_experts",
+   "before": 64,
+   "after": null
+  },
+  {
+   "field": "moe_active_experts",
+   "before": 4,
+   "after": null
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "before": 1536,
+   "after": null
+  },
+  {
+   "field": "sliding_window",
+   "before": null,
+   "after": 256
+  },
+  {
+   "field": "short_conv_kernel",
+   "before": 3,
+   "after": 7
+  },
+  {
+   "field": "activation",
+   "before": null,
+   "after": "silu"
+  },
+  {
+   "field": "ffn_intermediate",
+   "before": null,
+   "after": 7680
+  },
+  {
+   "field": "params_total",
+   "before": 23971587712,
+   "after": 1728801536
+  },
+  {
+   "field": "params_active",
+   "before": 2454808192,
+   "after": null
+  },
+  {
+   "field": "kv_cache_per_token_bytes",
+   "before": 20480,
+   "after": 12288
+  },
+  {
+   "field": "model_type",
+   "before": "lfm2_moe",
+   "after": "lfm3"
+  }
+ ],
+ "tensor_diff_vs_predecessor": {
+  "added": [
+   {
+    "pattern": "layers.*.self_attn.o_proj",
+    "params": 46137344
+   },
+   {
+    "pattern": "layers.*.self_attn.gate_proj",
+    "params": 360448
+   },
+   {
+    "pattern": "layers.*.post_ffn_norm",
+    "params": 49152
+   },
+   {
+    "pattern": "layers.*.post_operator_norm",
+    "params": 49152
+   },
+   {
+    "pattern": "layers.*.self_attn.k_norm",
+    "params": 1408
+   },
+   {
+    "pattern": "layers.*.self_attn.q_norm",
+    "params": 1408
+   }
+  ],
+  "added_total": 46598912,
+  "added_count": 6,
+  "removed": [
+   {
+    "pattern": "layers.*.feed_forward.experts.*.w1",
+    "params": 7650410496
+   },
+   {
+    "pattern": "layers.*.feed_forward.experts.*.w2",
+    "params": 7650410496
+   },
+   {
+    "pattern": "layers.*.feed_forward.experts.*.w3",
+    "params": 7650410496
+   },
+   {
+    "pattern": "layers.*.self_attn.out_proj",
+    "params": 41943040
+   },
+   {
+    "pattern": "layers.*.feed_forward.gate",
+    "params": 4980736
+   },
+   {
+    "pattern": "layers.*.feed_forward.expert_bias",
+    "params": 2432
+   }
+  ],
+  "removed_total": 22998158976,
+  "removed_count": 8
+ }
 }

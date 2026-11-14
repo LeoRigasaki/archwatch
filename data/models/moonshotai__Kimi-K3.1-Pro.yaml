@@ -2,7 +2,7 @@ id: moonshotai/Kimi-K3.1-Pro
 source_commit: d9e99b0792a5e93b78ea9bea62a68167e36ddd9e
 hub_created: '2026-11-02T04:13:51+00:00'
 license: kimi-k3.1-pro
-analyzed_at: '2026-11-13T20:58:39+00:00'
+analyzed_at: '2026-11-14T08:16:14+00:00'
 published:
   num_layers: 93
   hidden_size: 7168
@@ -16,6 +16,7 @@ published:
   moe_num_experts: 896
   moe_active_experts: 16
   moe_shared_experts: 2
+  moe_shared_expert_intermediate: 6144
   moe_expert_intermediate: 3072
   moe_latent_dim: 3584
   dense_layers: 1
@@ -128,6 +129,8 @@ published:
   params_total: 2780110363392
   params_active: 104368141056
   vision_params: 401214464
+  model_type: kimi_k31
+  num_mtp_layers: 0
   layer_types:
   - kda_linear
   - kda_linear
@@ -251,6 +254,7 @@ published:
   weight_header_summary:
     tensor_count: 497340
     skipped_scale_tensors: 247296
+    skipped_buffer_tensors: 0
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
@@ -272,9 +276,9 @@ unchecked_notes:
   text_config.linear_attn_config.use_full_rank_gate, text_config.max_length, text_config.min_length,
   text_config.moe_layer_freq, text_config.moe_renormalize, text_config.no_repeat_ngram_size,
   text_config.num_beam_groups, text_config.num_beams, text_config.num_expert_group,
-  text_config.num_nextn_predict_layers, text_config.num_return_sequences, text_config.output_attentions,
-  text_config.output_hidden_states, text_config.output_scores, text_config.pad_token_id,
-  text_config.prefix, text_config.problem_type, text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format,
+  text_config.num_return_sequences, text_config.output_attentions, text_config.output_hidden_states,
+  text_config.output_scores, text_config.pad_token_id, text_config.prefix, text_config.problem_type,
+  text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format,
   text_config.quantization_config.config_groups.group_0.input_activations, text_config.quantization_config.config_groups.group_0.output_activations,
   text_config.quantization_config.config_groups.group_0.targets, text_config.quantization_config.config_groups.group_0.weights.actorder,
   text_config.quantization_config.config_groups.group_0.weights.block_structure, text_config.quantization_config.config_groups.group_0.weights.dynamic,

@@ -1,0 +1,53 @@
+{
+  "batch": 1,
+  "outcomes": {
+    "google/diffusiongemma-26B-A4B-it": {
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+      "status": "review"
+    },
+    "google/gemma-4-26B-A4B": {
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "source_commit": "24548b62aa021d562695c04aaf7758a1ea47990b",
+      "status": "review"
+    },
+    "meta-llama/Llama-3.2-90B-Vision": {
+      "error": "HTTPError",
+      "http_status": 403,
+      "reason": "HTTPError",
+      "source_commit": "38850089f6a42b7394680c4e4bbd4c40fb62404f",
+      "status": "review"
+    },
+    "meta-llama/Llama-4-Maverick-17B-128E": {
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "source_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "status": "review"
+    },
+    "microsoft/Mage-VL": {
+      "reason": "Frozen primary-source backfill passed publication checks",
+      "source_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "status": "ready_for_diagram"
+    },
+    "moonshotai/Kimi-K3": {
+      "reason": "Frozen primary-source backfill passed publication checks",
+      "source_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+      "status": "ready_for_diagram"
+    },
+    "moonshotai/Kimi-K3.1-Pro": {
+      "reason": "Frozen primary-source backfill passed publication checks",
+      "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "status": "ready_for_diagram"
+    },
+    "zai-org/GLM-5.2": {
+      "reason": "Layer pattern is not verified; architecture rendering is withheld",
+      "source_commit": "cf457fa734ab149ffef225f80893eb38c6ff5cdc",
+      "status": "review"
+    },
+    "zai-org/GLM-5.3-Flash-BF16": {
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "source_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+      "status": "review"
+    }
+  },
+  "primary_models": 5
+}

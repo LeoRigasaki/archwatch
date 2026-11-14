@@ -1,0 +1,6 @@
+{
+  "artifacts_compared": 58,
+  "byte_and_mtime_identical": true,
+  "changed_paths": [],
+  "scope": "Both fixed-source newest-release batches repeated after the final rule migration, including diagnostic and source-review files, public formats, seen state and site."
+}

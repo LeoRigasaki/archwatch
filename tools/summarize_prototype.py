@@ -10,6 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from archwatch.publication import PublicationError, render_cache, render_values
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -21,6 +23,11 @@ def main():
         for check in rec["checks"]:
             if check["status"] == "conflict":
                 assert check["field"] not in rec["published"]
+        try:
+            cache = render_cache(render_values(rec))
+            rendering_review = None
+        except (PublicationError, KeyError, TypeError) as error:
+            cache, rendering_review = None, str(error)
         summaries.append(
             {
                 "id": rec["id"],
@@ -30,8 +37,9 @@ def main():
                 "published_fields": len(rec["published"]),
                 "review_fields": [c["field"] for c in rec["review_queue"]],
                 "code_files": rec["code_scan"]["files"],
-                "cache_growth_bytes_per_token": rec["cache"]["grows_per_token_bytes"],
-                "fixed_cache_bytes": rec["cache"]["constant_bytes"],
+                "cache_growth_bytes_per_token": cache["grows_per_token_bytes"] if cache else None,
+                "fixed_cache_bytes": cache["constant_bytes"] if cache else None,
+                "rendering_review": rendering_review,
             }
         )
     suites = ET.parse(ROOT / "results/test-results.xml").getroot().findall("testsuite")
@@ -67,7 +75,7 @@ def main():
         "records_path": "data/models",
         "prototype_archive": import_info["archive"],
         "prototype_archive_sha256": import_info["archive_sha256"],
-        "stage": "Ten-publisher primary backfill and development gold evaluation implemented; human review, held-out evaluation and LLM stages remain open.",
+        "stage": "Newest-release first-run evaluation and source-based adaptation implemented; new graph/cache qualification, human review and LLM stages remain open.",
         "models": summaries,
         "record_count": len(records),
         "yaml_record_count": len(list((ROOT / "data/models").glob("*.yaml"))),
@@ -99,6 +107,19 @@ def main():
         if gold_report
         else None,
         "backfill_source_run_evidence": "results/backfill-processing.json",
+        "newest_backfill_protocol": "docs/NEWEST_BACKFILL.md",
+        "first_run_holdout": {
+            "models": 7,
+            "correct": 97,
+            "total": 139,
+            "evidence": "results/newest-first-run/heldout-exact-match.json",
+        },
+        "late_access_baseline": {
+            "models": 1,
+            "correct": 11,
+            "total": 16,
+            "evidence": "results/newest-first-run/meta-late-access.json",
+        },
         "formal_archwatch_accuracy_measured": False,
         "legacy_research": {
             "path": "research-reference/private-notes",

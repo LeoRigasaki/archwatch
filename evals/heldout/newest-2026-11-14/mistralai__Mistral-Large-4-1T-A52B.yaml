@@ -1,0 +1,89 @@
+schema_version: 1
+id: mistralai/Mistral-Large-4-1T-A52B
+source_commit: af26e7869af601441d5cdf75a1272469ddc3d059
+split: heldout_first_run
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 72
+  hidden_size: 6144
+  vocab_size: 204800
+  num_attention_heads: 64
+  num_kv_heads: 64
+  head_dim: 128
+  context_length: 1048576
+  params_total: 1053161553184
+  moe_num_experts: 128
+  moe_active_experts: 4
+  moe_shared_experts: 1
+  moe_expert_intermediate: 6144
+  dense_layers: 1
+  dense_ffn_intermediate: 24576
+  activation: silu
+  ffn_gated: true
+  layer_type_counts:
+    indexed_mla: 72
+  mla_kv_lora_rank: 512
+  mla_qk_rope_head_dim: 64
+  shared_kv_layers: 9
+evidence:
+  config: https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/config.json
+  card: https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/README.md
+  weight_files:
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00001-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00002-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00003-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00004-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00005-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00006-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00007-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00008-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00009-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00010-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00011-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00012-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00013-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00014-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00015-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00016-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00017-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00018-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00019-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00020-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00021-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00022-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00023-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00024-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00025-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00026-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00027-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00028-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00029-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00030-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00031-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00032-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00033-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00034-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00035-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00036-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00037-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00038-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00039-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00040-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00041-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00042-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00043-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00044-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00045-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00046-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00047-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00048-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00049-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00050-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00051-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00052-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00053-of-00054.safetensors
+  - https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/af26e7869af601441d5cdf75a1272469ddc3d059/consolidated-00054-of-00054.safetensors
+notes: MLA query/key width is 64 no-RoPE + 64 RoPE, despite head_dim=64 in config.
+  Exclude qscale_weight quantization metadata; learned b/s residual tensors remain
+  parameters. Nine layers reuse KV source layer 35.

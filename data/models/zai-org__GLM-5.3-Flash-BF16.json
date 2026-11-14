@@ -1,0 +1,1667 @@
+{
+ "id": "zai-org/GLM-5.3-Flash-BF16",
+ "source_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+ "hub_created": "2026-08-25T06:45:05+00:00",
+ "license": "mit",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "arxiv:2602.15763",
+   "conversational",
+   "en",
+   "endpoints_compatible",
+   "glm5_next",
+   "image-text-to-text",
+   "license:mit",
+   "region:us",
+   "safetensors",
+   "transformers",
+   "zh"
+  ]
+ },
+ "analyzed_at": "2026-11-14T08:16:16+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "Glm5NextForConditionalGeneration",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "glm5_next",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 45,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 4096,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "hyper_connection_multiplier": {
+   "value": 4,
+   "evidence": "config:text_config.hc_mult"
+  },
+  "num_mtp_layers": {
+   "value": 1,
+   "evidence": "config:text_config.num_nextn_predict_layers"
+  },
+  "vocab_size": {
+   "value": 154880,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 1048576,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear"
+   ],
+   "evidence": "config:text_config.layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:text_config.layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "kda_linear": 34,
+    "indexed_mla": 11
+   },
+   "evidence": "config:text_config.layer_types"
+  },
+  "num_attention_heads": {
+   "value": 64,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 64,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 256,
+   "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+  },
+  "v_head_dim": {
+   "value": 256,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "attention_type": {
+   "value": "MLA",
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_kv_lora_rank": {
+   "value": 512,
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_q_lora_rank": {
+   "value": 1536,
+   "evidence": "config:text_config.q_lora_rank"
+  },
+  "mla_qk_nope_head_dim": {
+   "value": 256,
+   "evidence": "config:text_config.qk_nope_head_dim"
+  },
+  "mla_qk_rope_head_dim": {
+   "value": 0,
+   "evidence": "config:text_config.qk_rope_head_dim"
+  },
+  "mla_v_head_dim": {
+   "value": 256,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "mla_use_nope": {
+   "value": true,
+   "evidence": "config:text_config.mla_use_nope"
+  },
+  "linear_attn_num_heads": {
+   "value": 64,
+   "evidence": "config:text_config.linear_attn_config.num_heads"
+  },
+  "linear_attn_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.linear_attn_config.head_dim"
+  },
+  "linear_attn_conv_kernel": {
+   "value": 4,
+   "evidence": "config:text_config.linear_attn_config.short_conv_kernel_size"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.n_routed_experts"
+  },
+  "moe_num_experts": {
+   "value": 288,
+   "evidence": "config:text_config.n_routed_experts"
+  },
+  "moe_active_experts": {
+   "value": 8,
+   "evidence": "config:text_config.num_experts_per_tok"
+  },
+  "moe_shared_experts": {
+   "value": 1,
+   "evidence": "config:text_config.n_shared_experts"
+  },
+  "moe_expert_intermediate": {
+   "value": 2048,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "dense_layers": {
+   "value": 3,
+   "evidence": "config:text_config.first_k_dense_replace"
+  },
+  "dense_ffn_intermediate": {
+   "value": 12288,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "activation": {
+   "value": "silu",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  },
+  "vision_encoder_layers": {
+   "value": null,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1024,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "model_type",
+   "text_config.dtype",
+   "text_config.first_k_dense_replace",
+   "text_config.hc_mult",
+   "text_config.hidden_act",
+   "text_config.hidden_size",
+   "text_config.intermediate_size",
+   "text_config.kv_lora_rank",
+   "text_config.layer_types",
+   "text_config.linear_attn_config.head_dim",
+   "text_config.linear_attn_config.num_heads",
+   "text_config.linear_attn_config.short_conv_kernel_size",
+   "text_config.max_position_embeddings",
+   "text_config.mla_use_nope",
+   "text_config.model_type",
+   "text_config.moe_intermediate_size",
+   "text_config.n_routed_experts",
+   "text_config.n_shared_experts",
+   "text_config.num_attention_heads",
+   "text_config.num_experts_per_tok",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.num_nextn_predict_layers",
+   "text_config.q_lora_rank",
+   "text_config.qk_nope_head_dim",
+   "text_config.qk_rope_head_dim",
+   "text_config.v_head_dim",
+   "text_config.vocab_size",
+   "tie_word_embeddings",
+   "vision_config.hidden_size"
+  ],
+  "unconsumed": [
+   "image_end_token_id",
+   "image_start_token_id",
+   "image_token_id",
+   "text_config.attention_bias",
+   "text_config.attention_dropout",
+   "text_config.eos_token_id",
+   "text_config.hc_eps",
+   "text_config.hc_sinkhorn_iters",
+   "text_config.head_dim",
+   "text_config.index_head_dim",
+   "text_config.index_kpool",
+   "text_config.index_kpool_always_select_tail",
+   "text_config.index_kpool_compress",
+   "text_config.index_n_heads",
+   "text_config.index_share_for_mtp_iteration",
+   "text_config.index_topk",
+   "text_config.indexer_rope_interleave",
+   "text_config.indexer_types",
+   "text_config.initializer_range",
+   "text_config.linear_attn_config.full_attn_layers",
+   "text_config.linear_attn_config.gate_lower_bound",
+   "text_config.linear_attn_config.kda_layers",
+   "text_config.mhc",
+   "text_config.mlp_layer_types",
+   "text_config.moe_router_dtype",
+   "text_config.n_group",
+   "text_config.norm_topk_prob",
+   "text_config.output_router_logits",
+   "text_config.pad_token_id",
+   "text_config.qk_head_dim",
+   "text_config.rms_norm_eps",
+   "text_config.routed_scaling_factor",
+   "text_config.router_aux_loss_coef",
+   "text_config.scoring_func",
+   "text_config.swiglu_limit",
+   "text_config.tie_word_embeddings",
+   "text_config.topk_group",
+   "text_config.topk_method",
+   "text_config.use_cache",
+   "transformers_version",
+   "video_end_token_id",
+   "video_start_token_id",
+   "video_token_id",
+   "vision_config.attention_bias",
+   "vision_config.attention_dropout",
+   "vision_config.depth",
+   "vision_config.hidden_act",
+   "vision_config.image_size",
+   "vision_config.in_channels",
+   "vision_config.initializer_range",
+   "vision_config.intermediate_size",
+   "vision_config.model_type",
+   "vision_config.num_heads",
+   "vision_config.out_hidden_size",
+   "vision_config.patch_size",
+   "vision_config.projection_intermediate_size",
+   "vision_config.rms_norm_eps",
+   "vision_config.spatial_merge_size",
+   "vision_config.swiglu_limit",
+   "vision_config.temporal_patch_size"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "model-00001-of-00120.safetensors",
+  "model-00002-of-00120.safetensors",
+  "model-00003-of-00120.safetensors",
+  "model-00004-of-00120.safetensors",
+  "model-00005-of-00120.safetensors",
+  "model-00006-of-00120.safetensors",
+  "model-00007-of-00120.safetensors",
+  "model-00008-of-00120.safetensors",
+  "model-00009-of-00120.safetensors",
+  "model-00010-of-00120.safetensors",
+  "model-00011-of-00120.safetensors",
+  "model-00012-of-00120.safetensors",
+  "model-00013-of-00120.safetensors",
+  "model-00014-of-00120.safetensors",
+  "model-00015-of-00120.safetensors",
+  "model-00016-of-00120.safetensors",
+  "model-00017-of-00120.safetensors",
+  "model-00018-of-00120.safetensors",
+  "model-00019-of-00120.safetensors",
+  "model-00020-of-00120.safetensors",
+  "model-00021-of-00120.safetensors",
+  "model-00022-of-00120.safetensors",
+  "model-00023-of-00120.safetensors",
+  "model-00024-of-00120.safetensors",
+  "model-00025-of-00120.safetensors",
+  "model-00026-of-00120.safetensors",
+  "model-00027-of-00120.safetensors",
+  "model-00028-of-00120.safetensors",
+  "model-00029-of-00120.safetensors",
+  "model-00030-of-00120.safetensors",
+  "model-00031-of-00120.safetensors",
+  "model-00032-of-00120.safetensors",
+  "model-00033-of-00120.safetensors",
+  "model-00034-of-00120.safetensors",
+  "model-00035-of-00120.safetensors",
+  "model-00036-of-00120.safetensors",
+  "model-00037-of-00120.safetensors",
+  "model-00038-of-00120.safetensors",
+  "model-00039-of-00120.safetensors",
+  "model-00040-of-00120.safetensors",
+  "model-00041-of-00120.safetensors",
+  "model-00042-of-00120.safetensors",
+  "model-00043-of-00120.safetensors",
+  "model-00044-of-00120.safetensors",
+  "model-00045-of-00120.safetensors",
+  "model-00046-of-00120.safetensors",
+  "model-00047-of-00120.safetensors",
+  "model-00048-of-00120.safetensors",
+  "model-00049-of-00120.safetensors",
+  "model-00050-of-00120.safetensors",
+  "model-00051-of-00120.safetensors",
+  "model-00052-of-00120.safetensors",
+  "model-00053-of-00120.safetensors",
+  "model-00054-of-00120.safetensors",
+  "model-00055-of-00120.safetensors",
+  "model-00056-of-00120.safetensors",
+  "model-00057-of-00120.safetensors",
+  "model-00058-of-00120.safetensors",
+  "model-00059-of-00120.safetensors",
+  "model-00060-of-00120.safetensors",
+  "model-00061-of-00120.safetensors",
+  "model-00062-of-00120.safetensors",
+  "model-00063-of-00120.safetensors",
+  "model-00064-of-00120.safetensors",
+  "model-00065-of-00120.safetensors",
+  "model-00066-of-00120.safetensors",
+  "model-00067-of-00120.safetensors",
+  "model-00068-of-00120.safetensors",
+  "model-00069-of-00120.safetensors",
+  "model-00070-of-00120.safetensors",
+  "model-00071-of-00120.safetensors",
+  "model-00072-of-00120.safetensors",
+  "model-00073-of-00120.safetensors",
+  "model-00074-of-00120.safetensors",
+  "model-00075-of-00120.safetensors",
+  "model-00076-of-00120.safetensors",
+  "model-00077-of-00120.safetensors",
+  "model-00078-of-00120.safetensors",
+  "model-00079-of-00120.safetensors",
+  "model-00080-of-00120.safetensors",
+  "model-00081-of-00120.safetensors",
+  "model-00082-of-00120.safetensors",
+  "model-00083-of-00120.safetensors",
+  "model-00084-of-00120.safetensors",
+  "model-00085-of-00120.safetensors",
+  "model-00086-of-00120.safetensors",
+  "model-00087-of-00120.safetensors",
+  "model-00088-of-00120.safetensors",
+  "model-00089-of-00120.safetensors",
+  "model-00090-of-00120.safetensors",
+  "model-00091-of-00120.safetensors",
+  "model-00092-of-00120.safetensors",
+  "model-00093-of-00120.safetensors",
+  "model-00094-of-00120.safetensors",
+  "model-00095-of-00120.safetensors",
+  "model-00096-of-00120.safetensors",
+  "model-00097-of-00120.safetensors",
+  "model-00098-of-00120.safetensors",
+  "model-00099-of-00120.safetensors",
+  "model-00100-of-00120.safetensors",
+  "model-00101-of-00120.safetensors",
+  "model-00102-of-00120.safetensors",
+  "model-00103-of-00120.safetensors",
+  "model-00104-of-00120.safetensors",
+  "model-00105-of-00120.safetensors",
+  "model-00106-of-00120.safetensors",
+  "model-00107-of-00120.safetensors",
+  "model-00108-of-00120.safetensors",
+  "model-00109-of-00120.safetensors",
+  "model-00110-of-00120.safetensors",
+  "model-00111-of-00120.safetensors",
+  "model-00112-of-00120.safetensors",
+  "model-00113-of-00120.safetensors",
+  "model-00114-of-00120.safetensors",
+  "model-00115-of-00120.safetensors",
+  "model-00116-of-00120.safetensors",
+  "model-00117-of-00120.safetensors",
+  "model-00118-of-00120.safetensors",
+  "model-00119-of-00120.safetensors",
+  "model-00120-of-00120.safetensors",
+  "model.safetensors.index.json"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 321323031390,
+   "text_total": 320759404382,
+   "by_component": {
+    "moe_routed_experts": 311653564416,
+    "attention_or_linear_mixer": 6181870976,
+    "moe_shared_experts": 1082130432,
+    "embedding": 634388480,
+    "lm_head": 634388480,
+    "vision": 563627008,
+    "dense_ffn": 452984832,
+    "other": 68946302,
+    "moe_router": 50737248,
+    "norms": 393216
+   },
+   "routed_expert_params": 311653564416,
+   "moe_layers": 42,
+   "experts_per_moe_layer": [
+    288
+   ],
+   "layer_indices_in_weights": [
+    0,
+    44
+   ],
+   "tensor_count": 38770,
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  },
+  "active": {
+   "text_active": 17762883422,
+   "text_active_without_embeddings": 17128494942,
+   "with_vision": 18326510430
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 0,
+  "grows_per_token_bytes_low": 0,
+  "constant_bytes": 147619840,
+  "constant_bytes_low": 147619840,
+  "naive_mha_per_token_bytes": 2949120,
+  "reduction_vs_naive_mha": null,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 147619840,
+    "gib": 0.137
+   },
+   "32768": {
+    "bytes": 147619840,
+    "gib": 0.137
+   },
+   "131072": {
+    "bytes": 147619840,
+    "gib": 0.137
+   },
+   "262144": {
+    "bytes": 147619840,
+    "gib": 0.137
+   },
+   "1048576": {
+    "bytes": 147619840,
+    "gib": 0.137
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "indexed_mla",
+    "layers": 11,
+    "grows_per_token_bytes": null,
+    "constant_bytes": null,
+    "formula": "unknown layer type: not counted"
+   },
+   {
+    "layer_type": "kda_linear",
+    "layers": 34,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 147619840,
+    "formula": "(64 heads x 128x128 state x 4 B + q/k/v conv 3 taps) x 34 layers"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "layer type 'indexed_mla' has no memory rule yet; sent to review",
+   "KDA recurrent state counted in fp32 (4 B), the usual choice for delta-rule states"
+  ]
+ },
+ "code_scan": {
+  "files": [],
+  "classes": [],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {},
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 45,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 45,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 45,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 4096,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4096,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 4096,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 154880,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 154880,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 154880,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 1048576,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1048576,
+     "evidence": "config:text_config.max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "MLA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MLA",
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 288,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 288,
+     "evidence": "config:text_config.n_routed_experts"
+    },
+    {
+     "value": 288,
+     "evidence": "weights:expert tensors per MoE layer"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:text_config.num_experts_per_tok"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.n_shared_experts"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_expert_intermediate",
+   "value": 2048,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "weights:shared expert gate rows"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 2048,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:text_config.moe_intermediate_size"
+    },
+    {
+     "value": 2048,
+     "evidence": "weights:experts.0.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 3,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3,
+     "evidence": "config:text_config.first_k_dense_replace"
+    },
+    {
+     "value": 3,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "kda_linear": 34,
+    "indexed_mla": 11
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "kda_linear": 34,
+      "indexed_mla": 11
+     },
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta",
+    "linear_delta",
+    "linear_delta",
+    "dsa_mla",
+    "linear_delta"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "mla_cached_width_per_token",
+   "value": 512,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "derived:kv_lora_rank + qk_rope_head_dim"
+    },
+    {
+     "value": 512,
+     "evidence": "weights:kv_a_proj_with_mqa output rows"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:text_config.layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 321323031390,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 321323031390,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 17762883422,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 17762883422,
+     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+    }
+   ]
+  },
+  {
+   "field": "model_type",
+   "value": "glm5_next",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "glm5_next",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
+   "field": "hyper_connection_multiplier",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:text_config.hc_mult"
+    }
+   ]
+  },
+  {
+   "field": "num_mtp_layers",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.num_nextn_predict_layers"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear",
+    "kda_linear",
+    "kda_linear",
+    "indexed_mla",
+    "kda_linear"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "indexed_mla",
+      "kda_linear"
+     ],
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.n_routed_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_num_heads",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.linear_attn_config.num_heads"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.linear_attn_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "linear_attn_conv_kernel",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:text_config.linear_attn_config.short_conv_kernel_size"
+    }
+   ]
+  },
+  {
+   "field": "mla_kv_lora_rank",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "mla_qk_rope_head_dim",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:text_config.qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "v_head_dim",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "config:text_config.v_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "dense_ffn_intermediate",
+   "value": 12288,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 12288,
+     "evidence": "config:text_config.intermediate_size"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1024,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:text_config.hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 311653564416,
+    "attention_or_linear_mixer": 6181870976,
+    "moe_shared_experts": 1082130432,
+    "embedding": 634388480,
+    "lm_head": 634388480,
+    "vision": 563627008,
+    "dense_ffn": 452984832,
+    "other": 68946302,
+    "moe_router": 50737248,
+    "norms": 393216
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 311653564416,
+      "attention_or_linear_mixer": 6181870976,
+      "moe_shared_experts": 1082130432,
+      "embedding": 634388480,
+      "lm_head": 634388480,
+      "vision": 563627008,
+      "dense_ffn": 452984832,
+      "other": 68946302,
+      "moe_router": 50737248,
+      "norms": 393216
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 38770,
+    "skipped_scale_tensors": 0,
+    "skipped_buffer_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 38770,
+      "skipped_scale_tensors": 0,
+      "skipped_buffer_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 45,
+  "hidden_size": 4096,
+  "vocab_size": 154880,
+  "context_length": 1048576,
+  "num_attention_heads": 64,
+  "num_kv_heads": 64,
+  "head_dim": 256,
+  "attention_type": "MLA",
+  "ffn_gated": true,
+  "moe_num_experts": 288,
+  "moe_active_experts": 8,
+  "moe_shared_experts": 1,
+  "moe_shared_expert_intermediate": 2048,
+  "moe_expert_intermediate": 2048,
+  "dense_layers": 3,
+  "layer_type_counts": {
+   "kda_linear": 34,
+   "indexed_mla": 11
+  },
+  "layer_pattern_per_layer": [
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta",
+   "linear_delta",
+   "linear_delta",
+   "dsa_mla",
+   "linear_delta"
+  ],
+  "mla_cached_width_per_token": 512,
+  "layer_index_base_in_config": 0,
+  "params_total": 321323031390,
+  "params_active": 17762883422,
+  "model_type": "glm5_next",
+  "hyper_connection_multiplier": 4,
+  "num_mtp_layers": 1,
+  "layer_types": [
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear",
+   "kda_linear",
+   "kda_linear",
+   "indexed_mla",
+   "kda_linear"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": false,
+  "linear_attn_num_heads": 64,
+  "linear_attn_head_dim": 128,
+  "linear_attn_conv_kernel": 4,
+  "mla_kv_lora_rank": 512,
+  "mla_qk_rope_head_dim": 0,
+  "v_head_dim": 256,
+  "dense_ffn_intermediate": 12288,
+  "vision_hidden_size": 1024,
+  "activation": "silu",
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "moe_routed_experts": 311653564416,
+   "attention_or_linear_mixer": 6181870976,
+   "moe_shared_experts": 1082130432,
+   "embedding": 634388480,
+   "lm_head": 634388480,
+   "vision": 563627008,
+   "dense_ffn": 452984832,
+   "other": 68946302,
+   "moe_router": 50737248,
+   "norms": 393216
+  },
+  "weight_header_summary": {
+   "tensor_count": 38770,
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): image_end_token_id, image_start_token_id, image_token_id, text_config.attention_bias, text_config.attention_dropout, text_config.eos_token_id, text_config.hc_eps, text_config.hc_sinkhorn_iters, text_config.head_dim, text_config.index_head_dim, text_config.index_kpool, text_config.index_kpool_always_select_tail, text_config.index_kpool_compress, text_config.index_n_heads, text_config.index_share_for_mtp_iteration, text_config.index_topk, text_config.indexer_rope_interleave, text_config.indexer_types, text_config.initializer_range, text_config.linear_attn_config.full_attn_layers, text_config.linear_attn_config.gate_lower_bound, text_config.linear_attn_config.kda_layers, text_config.mhc, text_config.mlp_layer_types, text_config.moe_router_dtype, text_config.n_group, text_config.norm_topk_prob, text_config.output_router_logits, text_config.pad_token_id, text_config.qk_head_dim, text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.router_aux_loss_coef, text_config.scoring_func, text_config.swiglu_limit, text_config.tie_word_embeddings, text_config.topk_group, text_config.topk_method, text_config.use_cache, transformers_version, video_end_token_id, video_start_token_id, video_token_id, vision_config.attention_bias, vision_config.attention_dropout, vision_config.depth, vision_config.hidden_act, vision_config.image_size, vision_config.in_channels, vision_config.initializer_range, vision_config.intermediate_size, vision_config.model_type, vision_config.num_heads, vision_config.out_hidden_size, vision_config.patch_size, vision_config.projection_intermediate_size, vision_config.rms_norm_eps, vision_config.spatial_merge_size, vision_config.swiglu_limit, vision_config.temporal_patch_size"
+ ],
+ "weight_layer_kinds": [
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta"
+ ],
+ "predecessor": {
+  "id": "zai-org/GLM-5.2",
+  "source_commit": "cf457fa734ab149ffef225f80893eb38c6ff5cdc",
+  "selection": "Newest primary Flash release, full precision package. GLM5.3/BF16 are parallel packages/releases; GLM5.2 is the previous generation."
+ },
+ "diff_vs_predecessor": [
+  {
+   "field": "num_layers",
+   "before": 78,
+   "after": 45
+  },
+  {
+   "field": "hidden_size",
+   "before": 6144,
+   "after": 4096
+  },
+  {
+   "field": "layer_type_counts",
+   "before": {
+    "full_attention_mla": 78
+   },
+   "after": {
+    "kda_linear": 34,
+    "indexed_mla": 11
+   }
+  },
+  {
+   "field": "moe_num_experts",
+   "before": 256,
+   "after": 288
+  },
+  {
+   "field": "params_total",
+   "before": 753329940480,
+   "after": 321323031390
+  },
+  {
+   "field": "params_active",
+   "before": 41841764352,
+   "after": 17762883422
+  },
+  {
+   "field": "kv_cache_per_token_bytes",
+   "before": 89856,
+   "after": null
+  },
+  {
+   "field": "model_type",
+   "before": "glm_moe_dsa",
+   "after": "glm5_next"
+  },
+  {
+   "field": "hyper_connection_multiplier",
+   "before": null,
+   "after": 4
+  }
+ ],
+ "tensor_diff_vs_predecessor": {
+  "added": [
+   {
+    "pattern": "language_model.layers.*.mlp.experts.*.down_proj",
+    "params": 103884521472
+   },
+   {
+    "pattern": "language_model.layers.*.mlp.experts.*.gate_proj",
+    "params": 103884521472
+   },
+   {
+    "pattern": "language_model.layers.*.mlp.experts.*.up_proj",
+    "params": 103884521472
+   },
+   {
+    "pattern": "language_model.layers.*.self_attn.o_proj",
+    "params": 1946157056
+   },
+   {
+    "pattern": "language_model.layers.*.self_attn.k_proj",
+    "params": 1140850688
+   },
+   {
+    "pattern": "language_model.layers.*.self_attn.q_proj",
+    "params": 1140850688
+   }
+  ],
+  "added_total": 320688642910,
+  "added_count": 78,
+  "removed": [
+   {
+    "pattern": "layers.*.mlp.experts.*.down_proj",
+    "params": 244813135872
+   },
+   {
+    "pattern": "layers.*.mlp.experts.*.gate_proj",
+    "params": 244813135872
+   },
+   {
+    "pattern": "layers.*.mlp.experts.*.up_proj",
+    "params": 244813135872
+   },
+   {
+    "pattern": "layers.*.self_attn.o_proj",
+    "params": 7952400384
+   },
+   {
+    "pattern": "layers.*.self_attn.q_b_proj",
+    "params": 2650800128
+   },
+   {
+    "pattern": "layers.*.self_attn.kv_b_proj",
+    "params": 1159725056
+   }
+  ],
+  "removed_total": 752378357760,
+  "removed_count": 31
+ }
+}

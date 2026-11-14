@@ -86,6 +86,9 @@ def _first(cfg: dict, keys: list[str], prefix: str) -> Fact | None:
 
 def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str, int | None]:
     """Return a per-layer mixer list (0-based), the evidence, and the index base the config used."""
+    model_type = str(text.get("model_type") or "")
+    if model_type.startswith("deepseek_v4"):
+        return ["compressed_attention"] * n_layers, f"config:{prefix}model_type/compress_ratios", None
     if text.get("model_type") == "nemotron_h" and text.get("hybrid_override_pattern"):
         pattern = text["hybrid_override_pattern"]
         if len(pattern) != n_layers or set(pattern) - set("M*-"):
@@ -102,6 +105,14 @@ def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str
             "sliding_attention": "sliding_attention",
             "linear_attention": "linear_attention",
         }
+        if model_type in ("qwen4_exp_text", "glm5_next_text"):
+            mapping.update(
+                linear_attention="gated_delta_net" if model_type == "qwen4_exp_text" else "kda_linear",
+                full_attention="qwen_sparse_attention" if model_type == "qwen4_exp_text" else "full_attention",
+                deepseek_sparse_attention="indexed_mla",
+            )
+        if model_type == "mistral_large4_text":
+            mapping["indexed_attention"] = "indexed_mla"
         return [mapping.get(t, t) for t in text["layer_types"]], f"config:{prefix}layer_types", 0
 
     lac = text.get("linear_attn_config")
@@ -146,6 +157,41 @@ def _extract(config: dict) -> dict[str, Fact]:
     n_layers = text["num_hidden_layers"]
     f["num_layers"] = (n_layers, f"config:{prefix}num_hidden_layers")
     f["hidden_size"] = (text["hidden_size"], f"config:{prefix}hidden_size")
+    # Structured mechanisms remain source facts even when the graph/cache
+    # renderer does not yet qualify their topology or sharing semantics.
+    for field, source in (
+        ("global_head_dim", "global_head_dim"),
+        ("num_global_kv_heads", "num_global_key_value_heads"),
+        ("linear_num_key_heads", "linear_num_key_heads"),
+        ("linear_num_value_heads", "linear_num_value_heads"),
+        ("linear_key_head_dim", "linear_key_head_dim"),
+        ("linear_value_head_dim", "linear_value_head_dim"),
+        ("linear_conv_kernel", "linear_conv_kernel_dim"),
+        ("ngram_layer_ids", "engram_layer_ids"),
+        ("recurrent_loops", "n_recurrent_loops"),
+        ("recurrent_layers", "n_recurrent_layers"),
+        ("input_layers", "n_input_layers"),
+        ("output_layers", "n_output_layers"),
+        ("recurrent_kv_cache_mode", "recurrent_kv_cache_mode"),
+    ):
+        if text.get(source) is not None:
+            f[field] = (text[source], f"config:{prefix}{source}")
+    hc = _first(text, ["hc_mult", "hc_count"], prefix)
+    if hc:
+        f["hyper_connection_multiplier"] = hc
+    mtp = _first(text, ["num_nextn_predict_layers", "mtp_num_hidden_layers"], prefix)
+    if mtp:
+        f["num_mtp_layers"] = mtp
+    if text.get("kv_source_layers"):
+        f["shared_kv_layers"] = (
+            sum(i != source for i, source in enumerate(text["kv_source_layers"])),
+            f"derived:{prefix}kv_source_layers differs from layer index",
+        )
+    if config.get("model_type") == "diffusion_gemma":
+        f["generation_type"] = ("block_diffusion", "config:model_type (DiffusionGemma architecture)")
+        f["canvas_length"] = (config.get("canvas_length"), "config:canvas_length")
+    if text.get("model_type") == "dory":
+        f["generation_type"] = ("latent_recurrent", f"config:{prefix}n_recurrent_loops/recurrent_kv_cache_mode")
     if text.get("model_type") == "nemotron_h":
         f["block_layout"] = ("standalone", f"config:{prefix}hybrid_override_pattern (one operator per block)")
         for key, source in (
@@ -236,7 +282,9 @@ def _extract(config: dict) -> dict[str, Fact]:
         sh = _first(text, ["num_shared_experts", "n_shared_experts"], prefix)
         if sh:
             f["moe_shared_experts"] = sh
-        mi = _first(text, ["moe_intermediate_size"], prefix)
+        mi = _first(text, ["moe_intermediate_size", "expert_intermediate_size"], prefix)
+        if mi is None and text.get("model_type") == "llama4_text":
+            mi = _first(text, ["intermediate_size"], prefix)
         if mi:
             f["moe_expert_intermediate"] = mi
         lat = _first(text, ["routed_expert_hidden_size"], prefix)
@@ -245,6 +293,13 @@ def _extract(config: dict) -> dict[str, Fact]:
         fk = _first(text, ["first_k_dense_replace"], prefix)
         f["dense_layers"] = (fk[0] if fk else 0, fk[1] if fk else "default:0")
         f["dense_ffn_intermediate"] = (text.get("intermediate_size"), f"config:{prefix}intermediate_size")
+        if text.get("model_type") == "llama4_text":
+            step = text["interleave_moe_layer_step"]
+            f["dense_layers"] = (n_layers - n_layers // step, f"derived:{prefix}interleave_moe_layer_step")
+            f["dense_ffn_intermediate"] = (text["intermediate_size_mlp"], f"config:{prefix}intermediate_size_mlp")
+        top = _first(text, ["top_k_experts"], prefix)
+        if k is None and top:
+            f["moe_active_experts"] = top
         if text.get("moe_router_activation_func"):
             f["moe_router"] = (text["moe_router_activation_func"], f"config:{prefix}moe_router_activation_func")
     else:

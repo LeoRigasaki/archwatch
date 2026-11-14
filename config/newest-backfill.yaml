@@ -1,0 +1,101 @@
+schema_version: 1
+as_of: '2026-11-14'
+baseline_code_commit: 5977d090797cad34f68645ae6eea47d3b9186716
+selection_basis: Official Hub creation chronology, grouping release variants and verifying
+  primary cards/config/safetensors; general language/multimodal foundations. No source
+  payload execution.
+models:
+- id: deepseek-ai/DeepSeek-V4.1-Flash-1017
+  source_commit: 08c8657f02291e11b6f6b63e0e16014f8e748518
+  created_at: '2026-10-17T02:40:38+00:00'
+  split: heldout_first_run
+  selection: Newest dated V4.1 Flash primary release; previous V4.1 Flash release
+    selected, not a quantized package.
+  predecessor: deepseek-ai/DeepSeek-V4.1-Flash
+  predecessor_commit: 314113f8a7dadb388215396ba5fbee2c610a04d6
+  gold: evals/heldout/newest-2026-11-14/deepseek-ai__DeepSeek-V4.1-Flash-1017.yaml
+- id: Qwen/Qwen3.8-Flash-Next
+  source_commit: 812d96e10a0dd82b69d749e68693698cf6c36daa
+  created_at: '2026-08-24T08:24:59+00:00'
+  split: heldout_first_run
+  selection: Newer than Qwen3.8-27B; latest prior Qwen3.8 primary release is 2.4T-A95B.
+    Flash-Next previews Qwen4 and is a new architecture.
+  predecessor: Qwen/Qwen3.8-2.4T-A95B
+  predecessor_commit: 4f885e51d6bbfee5866446d56d3f96f336c39723
+  gold: evals/heldout/newest-2026-11-14/Qwen__Qwen3.8-Flash-Next.yaml
+- id: mistralai/Mistral-Large-4-1T-A52B
+  source_commit: af26e7869af601441d5cdf75a1272469ddc3d059
+  created_at: '2026-09-30T18:35:13+00:00'
+  split: heldout_first_run
+  selection: 'Large product stream: use Large 3 Base as prior generation, not unrelated
+    Medium/Small releases.'
+  predecessor: mistralai/Mistral-Large-3-675B-Base-2512
+  predecessor_commit: 3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d
+  gold: evals/heldout/newest-2026-11-14/mistralai__Mistral-Large-4-1T-A52B.yaml
+- id: LiquidAI/LFM3-1.7B-Base
+  source_commit: 7bca5038823c0d0f14efe06439109354a10e014c
+  created_at: '2026-10-26T16:28:49+00:00'
+  split: development_overlap
+  selection: Newest eligible primary by Hub creation. Already in the development set;
+    regression only, excluded from held-out accuracy.
+  predecessor: LiquidAI/LFM2.5-24B-A2B-Base
+  predecessor_commit: 9156f24f4a227a259b09011f4e0295aa8f57db01
+  gold: evals/gold/LiquidAI__LFM3-1.7B-Base.yaml
+- id: nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16
+  source_commit: ee517dd388a9b348890ae1e00dacc5eb4d0c750d
+  created_at: '2026-10-16T18:25:29+00:00'
+  split: heldout_first_run
+  selection: 'Newest primary language release, distinct from older Nemotron-H. NVFP4/MXFP8
+    packages are conversions. First Dory release: no earlier same-family predecessor.'
+  predecessor: null
+  gold: evals/heldout/newest-2026-11-14/nvidia__NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16.yaml
+- id: google/diffusiongemma-26B-A4B-it
+  source_commit: f7f5b7f5fa82ffc52addd066915886d497f5517b
+  created_at: '2026-06-09T12:40:12+00:00'
+  split: heldout_first_run
+  selection: Newest general-purpose primary language architecture. Official card names
+    Gemma 4 26B-A4B as architectural ancestor; this is not an earlier DiffusionGemma
+    release.
+  predecessor: google/gemma-4-26B-A4B
+  predecessor_commit: 24548b62aa021d562695c04aaf7758a1ea47990b
+  gold: evals/heldout/newest-2026-11-14/google__diffusiongemma-26B-A4B-it.yaml
+- id: meta-llama/Llama-4-Maverick-17B-128E
+  source_commit: 10751cb97a4d7c90f7ed89196b98eb8220cfa1c2
+  created_at: '2025-04-02T17:35:27+00:00'
+  split: late_access_first_run
+  selection: Newest general foundation generation. Exclude later Llama Guard safety
+    adaptation and Original-format packages. Scout is a parallel Llama 4 variant,
+    not a prior generation; use Llama 3.2 Vision as predecessor. Maverick access was
+    approved during the baseline; predecessor access is pending.
+  predecessor: meta-llama/Llama-3.2-90B-Vision
+  predecessor_commit: 38850089f6a42b7394680c4e4bbd4c40fb62404f
+  gold: evals/heldout/late-access-2026-11-14/meta-llama__Llama-4-Maverick-17B-128E.yaml
+  access_status: Maverick access approved during baseline run; predecessor Llama-3.2-90B-Vision
+    remains HTTP 403
+- id: microsoft/Mage-VL
+  source_commit: d88b153285f1633a61b2f693c59c8576693af185
+  created_at: '2026-07-25T08:29:09+00:00'
+  split: heldout_first_run
+  selection: 'Newest eligible primary architecture after excluding FrogNano (card
+    explicitly says Qwen post-training), Cowork, and other derivative/specialized
+    models. First Mage release: no earlier same-family predecessor.'
+  predecessor: null
+  gold: evals/heldout/newest-2026-11-14/microsoft__Mage-VL.yaml
+- id: moonshotai/Kimi-K3.1-Pro
+  source_commit: d9e99b0792a5e93b78ea9bea62a68167e36ddd9e
+  created_at: '2026-11-02T04:13:51+00:00'
+  split: development_overlap
+  selection: Newest release already used in development. Regression only, excluded
+    from held-out accuracy.
+  predecessor: moonshotai/Kimi-K3
+  predecessor_commit: f831ab66814297da540d832a5235f8e904f29d06
+  gold: evals/gold/moonshotai__Kimi-K3.1-Pro.yaml
+- id: zai-org/GLM-5.3-Flash-BF16
+  source_commit: f9fed3bbc82291073373d67452e9f25317ef7577
+  created_at: '2026-08-25T06:45:05+00:00'
+  split: heldout_first_run
+  selection: Newest primary Flash release, full precision package. GLM5.3/BF16 are
+    parallel packages/releases; GLM5.2 is the previous generation.
+  predecessor: zai-org/GLM-5.2
+  predecessor_commit: cf457fa734ab149ffef225f80893eb38c6ff5cdc
+  gold: evals/heldout/newest-2026-11-14/zai-org__GLM-5.3-Flash-BF16.yaml
