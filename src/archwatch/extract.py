@@ -330,6 +330,8 @@ def _extract(config: dict) -> dict[str, Fact]:
         f["activation"] = act
 
     # norms and positions
+    if text.get("attn_res_block_size") is not None:
+        f["attn_res_block_size"] = (text["attn_res_block_size"], f"config:{prefix}attn_res_block_size")
     if text.get("use_sandwich_norm") is not None:
         f["sandwich_norm"] = (bool(text["use_sandwich_norm"]), f"config:{prefix}use_sandwich_norm")
     rp = text.get("rope_parameters")

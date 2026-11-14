@@ -2,7 +2,7 @@ id: moonshotai/Kimi-K3
 source_commit: f831ab66814297da540d832a5235f8e904f29d06
 hub_created: '2026-06-13T06:42:57+00:00'
 license: kimi-k3
-analyzed_at: '2026-11-14T08:16:10+00:00'
+analyzed_at: '2026-11-14T09:57:45+00:00'
 published:
   num_layers: 93
   hidden_size: 7168
@@ -234,6 +234,9 @@ published:
   vision_encoder_layers: 27
   vision_hidden_size: 1024
   released_weights_format: mxfp4-pack-quantized (4-bit)
+  mla_use_nope: true
+  mla_q_lora_rank: 1536
+  attn_res_block_size: 12
   parameter_components:
     moe_routed_experts: 2722740830208
     attention_or_linear_mixer: 36190795008
@@ -251,17 +254,171 @@ published:
     tensor_count: 497220
     skipped_scale_tensors: 247296
     skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      kda_linear:
+        layers: 69
+        tensors:
+          input_layernorm.weight:
+          - 7168
+          mlp_res_norm.weight:
+          - 7168
+          mlp_res_proj.weight:
+          - 1
+          - 7168
+          post_attention_layernorm.weight:
+          - 7168
+          self_attention_res_norm.weight:
+          - 7168
+          self_attention_res_proj.weight:
+          - 1
+          - 7168
+          self_attn.A_log:
+          - 128
+          self_attn.b_proj.weight:
+          - 96
+          - 7168
+          self_attn.dt_bias:
+          - 12288
+          self_attn.f_a_proj.weight:
+          - 128
+          - 7168
+          self_attn.f_b_proj.weight:
+          - 12288
+          - 128
+          self_attn.g_proj.weight:
+          - 12288
+          - 7168
+          self_attn.k_conv1d.weight:
+          - 12288
+          - 1
+          - 4
+          self_attn.k_proj.weight:
+          - 12288
+          - 7168
+          self_attn.o_norm.weight:
+          - 128
+          self_attn.o_proj.weight:
+          - 7168
+          - 12288
+          self_attn.q_conv1d.weight:
+          - 12288
+          - 1
+          - 4
+          self_attn.q_proj.weight:
+          - 12288
+          - 7168
+          self_attn.v_conv1d.weight:
+          - 12288
+          - 1
+          - 4
+          self_attn.v_proj.weight:
+          - 12288
+          - 7168
+      full_attention_mla:
+        layers: 24
+        tensors:
+          input_layernorm.weight:
+          - 7168
+          mlp_res_norm.weight:
+          - 7168
+          mlp_res_proj.weight:
+          - 1
+          - 7168
+          post_attention_layernorm.weight:
+          - 7168
+          self_attention_res_norm.weight:
+          - 7168
+          self_attention_res_proj.weight:
+          - 1
+          - 7168
+          self_attn.g_proj.weight:
+          - 12288
+          - 7168
+          self_attn.kv_a_layernorm.weight:
+          - 512
+          self_attn.kv_a_proj_with_mqa.weight:
+          - 576
+          - 7168
+          self_attn.kv_b_proj.weight:
+          - 24576
+          - 512
+          self_attn.o_proj.weight:
+          - 7168
+          - 12288
+          self_attn.q_a_layernorm.weight:
+          - 1536
+          self_attn.q_a_proj.weight:
+          - 1536
+          - 7168
+          self_attn.q_b_proj.weight:
+          - 18432
+          - 1536
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 0
+      tensors:
+        mlp.down_proj.weight:
+        - 7168
+        - 33792
+        mlp.gate_proj.weight:
+        - 33792
+        - 7168
+        mlp.up_proj.weight:
+        - 33792
+        - 7168
+    - layer_ranges:
+      - - 1
+        - 92
+      tensors:
+        block_sparse_moe.gate.e_score_correction_bias:
+        - 896
+        block_sparse_moe.gate.weight:
+        - 896
+        - 7168
+        block_sparse_moe.routed_expert_down_proj.weight:
+        - 3584
+        - 7168
+        block_sparse_moe.routed_expert_norm.weight:
+        - 3584
+        block_sparse_moe.routed_expert_up_proj.weight:
+        - 7168
+        - 3584
+        block_sparse_moe.shared_experts.down_proj.weight:
+        - 7168
+        - 6144
+        block_sparse_moe.shared_experts.gate_proj.weight:
+        - 6144
+        - 7168
+        block_sparse_moe.shared_experts.up_proj.weight:
+        - 6144
+        - 7168
+    globals:
+      embed_tokens.weight:
+      - 163840
+      - 7168
+      lm_head.weight:
+      - 163840
+      - 7168
+      norm.weight:
+      - 7168
+      output_attn_res_norm.weight:
+      - 7168
+      output_attn_res_proj.weight:
+      - 1
+      - 7168
 review_queue: []
 unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig,
   auto_map.AutoModel, auto_map.AutoModelForCausalLM, bos_token_id, dtype, eos_token_id,
   ignore_index, image_placeholder, media_placeholder_token_id, pad_token_id, text_config._name_or_path,
   text_config.activation_situ_beta, text_config.activation_situ_linear_beta, text_config.add_cross_attention,
-  text_config.architectures, text_config.attn_res_block_size, text_config.auto_map.AutoConfig,
-  text_config.auto_map.AutoModel, text_config.auto_map.AutoModelForCausalLM, text_config.bad_words_ids,
-  text_config.begin_suppress_tokens, text_config.bos_token_id, text_config.chunk_size_feed_forward,
-  text_config.cross_attention_hidden_size, text_config.decoder_start_token_id, text_config.diversity_penalty,
-  text_config.do_sample, text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size,
+  text_config.architectures, text_config.auto_map.AutoConfig, text_config.auto_map.AutoModel,
+  text_config.auto_map.AutoModelForCausalLM, text_config.bad_words_ids, text_config.begin_suppress_tokens,
+  text_config.bos_token_id, text_config.chunk_size_feed_forward, text_config.cross_attention_hidden_size,
+  text_config.decoder_start_token_id, text_config.diversity_penalty, text_config.do_sample,
+  text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size,
   text_config.eos_token_id, text_config.exponential_decay_length_penalty, text_config.finetuning_task,
   text_config.forced_bos_token_id, text_config.forced_eos_token_id, text_config.id2label.0,
   text_config.id2label.1, text_config.initializer_range, text_config.is_decoder, text_config.is_encoder_decoder,

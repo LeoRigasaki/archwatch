@@ -2,7 +2,7 @@ id: nvidia/Nemotron-H-8B-Base-8K
 source_commit: 94ea861e008c2dfced3e8e1302094024077aa04e
 hub_created: '2025-03-19T23:37:16+00:00'
 license: nvidia-internal-scientific-research-and-development-model-license
-analyzed_at: '2026-11-13T20:58:36+00:00'
+analyzed_at: '2026-11-14T09:57:47+00:00'
 published:
   num_layers: 52
   hidden_size: 4096
@@ -73,6 +73,7 @@ published:
   - mamba2
   - mlp
   params_total: 8100852736
+  model_type: nemotron_h
   layer_types:
   - mamba2
   - mlp
@@ -147,6 +148,72 @@ published:
   weight_header_summary:
     tensor_count: 311
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      mamba2:
+        layers: 24
+        tensors:
+          mixer.A_log:
+          - 128
+          mixer.D:
+          - 128
+          mixer.conv1d.bias:
+          - 10240
+          mixer.conv1d.weight:
+          - 10240
+          - 1
+          - 4
+          mixer.dt_bias:
+          - 128
+          mixer.in_proj.weight:
+          - 18560
+          - 4096
+          mixer.norm.weight:
+          - 8192
+          mixer.out_proj.weight:
+          - 4096
+          - 8192
+          norm.weight:
+          - 4096
+      mlp:
+        layers: 24
+        tensors:
+          mixer.down_proj.weight:
+          - 4096
+          - 21504
+          mixer.up_proj.weight:
+          - 21504
+          - 4096
+          norm.weight:
+          - 4096
+      full_attention:
+        layers: 4
+        tensors:
+          mixer.k_proj.weight:
+          - 1024
+          - 4096
+          mixer.o_proj.weight:
+          - 4096
+          - 4096
+          mixer.q_proj.weight:
+          - 4096
+          - 4096
+          mixer.v_proj.weight:
+          - 1024
+          - 4096
+          norm.weight:
+          - 4096
+    ffns: []
+    globals:
+      embeddings.weight:
+      - 131072
+      - 4096
+      lm_head.weight:
+      - 131072
+      - 4096
+      norm_f.weight:
+      - 4096
 review_queue: []
 unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,
