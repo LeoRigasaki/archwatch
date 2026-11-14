@@ -147,6 +147,8 @@ def test_explicit_reprocess_refreshes_schema_at_same_commit_and_keeps_ready(tmp_
 
 
 def test_reprocessing_successor_refreshes_predecessor_formats_and_seen_state(tmp_path):
+    from archwatch.notifications import annotate_report, format_message, snapshot
+
     old = model("lab/Family1", "2025-01-01T00:00:00Z")
     new = model("lab/Family2", "2026-01-01T00:00:00Z", 256000, "b" * 40)
     save_record(old, tmp_path / "data/models", with_yaml=True, diagrams=tmp_path / "diagrams")
@@ -166,7 +168,11 @@ def test_reprocessing_successor_refreshes_predecessor_formats_and_seen_state(tmp
             candidates=[dict(value=True, evidence="weights:gate tensors")],
         )
     )
-    watcher.run(tmp_path, policy(), source=source, repos=[new["id"]], process=True, reprocess=True)
+    notification_before = snapshot(tmp_path)
+    result = watcher.run(tmp_path, policy(), source=source, repos=[new["id"]], process=True, reprocess=True)
+    assert result["outcomes"][old["id"]] == "ready_for_diagram"
+    content = format_message(annotate_report(tmp_path, result, notification_before))
+    assert "Processed: 2" in content and "Processed: lab/Family1" in content and "Processed: lab/Family2" in content
     after = files(tmp_path)
     for name in ("data/models/lab__Family1.json", "data/models/lab__Family1.yaml", "diagrams/lab__Family1.svg"):
         assert before[name][0] != after[name][0], name
