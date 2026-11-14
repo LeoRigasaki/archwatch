@@ -1,0 +1,12 @@
+Your previous SVG for the model in this YAML spec failed these automated checks:
+
+{failures}
+
+Fix exactly these problems. Keep everything that already passed as it is. Follow the system instructions and
+use only what the spec contains. Output only the full corrected SVG.
+
+SPEC:
+{spec}
+
+PREVIOUS SVG:
+{svg}
