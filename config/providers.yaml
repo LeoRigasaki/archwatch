@@ -1,0 +1,43 @@
+schema_version: 1
+free_only: true
+endpoint: https://generativelanguage.googleapis.com/v1beta
+key_env: GEMINI_API_KEY
+request_timeout_seconds: 180
+max_output_tokens: 16384
+temperature: 0.2
+models:
+  diagram:
+    id: gemini-4-hydrogen
+    free: true
+    rpm: 5
+    tpm: 250000
+    rpd: 20
+  fallback:
+    id: gemini-3.8-flash
+    free: true
+    rpm: 5
+    tpm: 250000
+    rpd: 20
+  review:
+    id: gemini-3.5-flash-lite
+    free: true
+    rpm: 15
+    tpm: 250000
+    rpd: 500
+weekly_generation_request_cap: 15
+route_test:
+  requests_per_minute: 4
+  max_generation_requests: 8
+  repairs: 0
+  fallback_enabled: false
+  browser_channel: chrome
+  tie_break: fewer_output_tokens_after_equal_validation
+  models:
+    - moonshotai/Kimi-K3.1-Pro
+    - LiquidAI/LFM3-1.7B
+    - nvidia/Nemotron-H-8B-Base-8K
+    - meta-llama/Llama-3.1-8B
+evidence:
+  quotas: docs/PROVIDER_LIMITS.md
+  model: https://aistudio.google.com/docs/models
+  free_pricing: https://aistudio.google.com/docs/pricing#gemini-4-hydrogen

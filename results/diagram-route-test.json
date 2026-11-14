@@ -1,0 +1,79 @@
+{
+  "protocol": "Eight first attempts; same fixed facts and graph, one model; no repairs or fallback.",
+  "generator": "gemini-4-hydrogen",
+  "complete": false,
+  "totals": {
+    "A": {
+      "passed": 0,
+      "cases": 4,
+      "check_passes": 0,
+      "output_tokens": 0
+    },
+    "B": {
+      "passed": 0,
+      "cases": 4,
+      "check_passes": 0,
+      "output_tokens": 0
+    }
+  },
+  "winner": null,
+  "cases": [
+    {
+      "id": "moonshotai/Kimi-K3.1-Pro",
+      "route": "A",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c"
+    },
+    {
+      "id": "moonshotai/Kimi-K3.1-Pro",
+      "route": "B",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c"
+    },
+    {
+      "id": "LiquidAI/LFM3-1.7B",
+      "route": "A",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5"
+    },
+    {
+      "id": "LiquidAI/LFM3-1.7B",
+      "route": "B",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5"
+    },
+    {
+      "id": "nvidia/Nemotron-H-8B-Base-8K",
+      "route": "A",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993"
+    },
+    {
+      "id": "nvidia/Nemotron-H-8B-Base-8K",
+      "route": "B",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993"
+    },
+    {
+      "id": "meta-llama/Llama-3.1-8B",
+      "route": "A",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c"
+    },
+    {
+      "id": "meta-llama/Llama-3.1-8B",
+      "route": "B",
+      "generated": false,
+      "reviewer": "deterministic validators",
+      "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c"
+    }
+  ],
+  "selection_rule": "Most complete passes, then most individual check passes, then fewer output tokens; declared before generation."
+}
