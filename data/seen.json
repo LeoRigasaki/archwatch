@@ -105,13 +105,14 @@
       "status": "ready_for_diagram"
     },
     "moonshotai/Kimi-K3": {
-      "architecture_hash": "7e741849ffddc7fd4e4a58a6ea26f593c586a1e4ced8041ee670f318d03fcd7a",
+      "architecture_hash": "39d0f3d0c2d4b6f8ab8e38d6288668146183860b25a61b6eab56e089be4801d6",
       "created_at": "2026-06-13T06:42:57+00:00",
       "family": "kimi",
       "last_observed_commit": "f831ab66814297da540d832a5235f8e904f29d06",
       "last_successful_commit": "f831ab66814297da540d832a5235f8e904f29d06",
       "pool": "core",
-      "status": "recorded"
+      "reason": "Predecessor refreshed with the current extraction rules",
+      "status": "ready_for_diagram"
     },
     "moonshotai/Kimi-K3.1-Pro": {
       "architecture_hash": "fd6845c97a6718b7c46570d9246b5382f452871299d3d9dd5620b5249feba219",

@@ -18,7 +18,7 @@ Generated from 13 saved records. This command does not refetch sources. The ten-
 | nvidia/Nemotron-H-8B-Base-8K | 8,100,852,736 | 6 | 22 | 0 |
 | zai-org/GLM-4-9B-0414 | 9,400,279,040 | 5 | 17 | 0 |
 
-Offline tests: 101 passed; 0 failures; 0 errors. Python 3.12.13.
+Offline tests: 102 passed; 0 failures; 0 errors. Python 3.12.13.
 
 Tensor-group additions: LiquidAI/LFM3-1.7B: 46,598,912; moonshotai/Kimi-K3.1-Pro: 178,526,208.
 
