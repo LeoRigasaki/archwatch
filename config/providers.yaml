@@ -1,0 +1,48 @@
+schema_version: 1
+free_only: true
+endpoint: https://generativelanguage.googleapis.com/v1beta
+key_env: GEMINI_API_KEY
+request_timeout_seconds: 300
+temperature: 0.2
+models:
+  diagram:
+    id: gemini-4-hydrogen
+    free: true
+    rpm: 5
+    tpm: 250000
+    rpd: 20
+  fallback:
+    id: gemini-3.8-flash
+    free: true
+    rpm: 5
+    tpm: 250000
+    rpd: 20
+  review:
+    id: gemini-3.5-flash-lite
+    free: true
+    rpm: 15
+    tpm: 250000
+    rpd: 500
+weekly_generation_request_cap: 15
+diagram_gen:
+  # Spec-driven SVG generation with code checks and a repair loop. Manual runs only.
+  experiment: diagram-gen-v1
+  requests_per_minute: 4
+  max_output_tokens: 65536
+  repairs: 2
+  max_generation_requests: 12   # 4 models x (1 generation + 2 repairs)
+  fallback_enabled: false
+  browser_channel: chrome
+  canvas_width: 1600
+  canvas_height_range: [1000, 2000]
+  margin_px: 16                 # checked; the prompt asks for 24
+  min_font_px: 13.5             # checked; the prompt asks for 14
+  models:
+    - moonshotai/Kimi-K3.1-Pro
+    - LiquidAI/LFM3-1.7B
+    - nvidia/Nemotron-H-8B-Base-8K
+    - meta-llama/Llama-3.1-8B
+evidence:
+  quotas: docs/PROVIDER_LIMITS.md
+  model: https://aistudio.google.com/docs/models
+  free_pricing: https://aistudio.google.com/docs/pricing#gemini-4-hydrogen

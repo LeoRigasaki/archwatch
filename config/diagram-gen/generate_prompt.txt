@@ -1,0 +1,11 @@
+Draw the architecture diagram for the model in this YAML spec as a single standalone SVG file,
+following the system instructions exactly.
+
+Before writing, check:
+- the layer counts in compressed_view add up to {num_layers}
+- every zoom panel in the spec has its own data-zoom group
+- every callout appears in its own data-callout group, worded exactly as written
+- every element is at least 24 px inside the canvas, and nothing overlaps
+
+SPEC:
+{spec}
