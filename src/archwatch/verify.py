@@ -375,6 +375,7 @@ def verify(
         "mamba_conv_kernel",
         "mamba_groups",
         "mamba_activation",
+        "mla_use_nope",
     )
     checked = {r["field"] for r in out}
     for field in rendering_fields:
