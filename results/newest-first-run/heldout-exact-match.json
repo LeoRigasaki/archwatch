@@ -1,0 +1,522 @@
+{
+  "gold_models": 7,
+  "correct": 97,
+  "total": 139,
+  "exact_match": 0.697841726618705,
+  "fields": {
+    "activation": {
+      "correct": 7,
+      "total": 7,
+      "missing": 0
+    },
+    "canvas_length": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "context_length": {
+      "correct": 7,
+      "total": 7,
+      "missing": 0
+    },
+    "dense_ffn_intermediate": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "dense_layers": {
+      "correct": 4,
+      "total": 5,
+      "missing": 1
+    },
+    "ffn_gated": {
+      "correct": 4,
+      "total": 7,
+      "missing": 2
+    },
+    "ffn_intermediate": {
+      "correct": 1,
+      "total": 2,
+      "missing": 1
+    },
+    "generation_type": {
+      "correct": 0,
+      "total": 2,
+      "missing": 2
+    },
+    "global_head_dim": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "head_dim": {
+      "correct": 7,
+      "total": 7,
+      "missing": 0
+    },
+    "hidden_size": {
+      "correct": 7,
+      "total": 7,
+      "missing": 0
+    },
+    "hyper_connection_multiplier": {
+      "correct": 0,
+      "total": 3,
+      "missing": 3
+    },
+    "input_layers": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "layer_type_counts": {
+      "correct": 3,
+      "total": 7,
+      "missing": 0
+    },
+    "linear_conv_kernel": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "linear_key_head_dim": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "linear_num_key_heads": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "linear_num_value_heads": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "linear_value_head_dim": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "mla_kv_lora_rank": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "mla_qk_rope_head_dim": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "moe_active_experts": {
+      "correct": 4,
+      "total": 5,
+      "missing": 1
+    },
+    "moe_expert_intermediate": {
+      "correct": 5,
+      "total": 5,
+      "missing": 0
+    },
+    "moe_num_experts": {
+      "correct": 5,
+      "total": 5,
+      "missing": 0
+    },
+    "moe_shared_expert_intermediate": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "moe_shared_experts": {
+      "correct": 3,
+      "total": 5,
+      "missing": 2
+    },
+    "ngram_layer_ids": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "num_attention_heads": {
+      "correct": 7,
+      "total": 7,
+      "missing": 0
+    },
+    "num_global_kv_heads": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "num_kv_heads": {
+      "correct": 7,
+      "total": 7,
+      "missing": 0
+    },
+    "num_layers": {
+      "correct": 6,
+      "total": 7,
+      "missing": 1
+    },
+    "num_mtp_layers": {
+      "correct": 0,
+      "total": 3,
+      "missing": 3
+    },
+    "output_layers": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "params_total": {
+      "correct": 3,
+      "total": 7,
+      "missing": 1
+    },
+    "qk_norm": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "recurrent_kv_cache_mode": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "recurrent_layers": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "recurrent_loops": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "shared_kv_layers": {
+      "correct": 0,
+      "total": 1,
+      "missing": 1
+    },
+    "sliding_window": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "vision_encoder_layers": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "vision_hidden_size": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "vocab_size": {
+      "correct": 6,
+      "total": 7,
+      "missing": 1
+    }
+  },
+  "models": [
+    {
+      "id": "Qwen/Qwen3.8-Flash-Next",
+      "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
+      "revision_matches": true,
+      "correct": 12,
+      "total": 23,
+      "errors": {
+        "params_total": {
+          "expected": 179999981424,
+          "actual": 179999981459,
+          "reason": "different value"
+        },
+        "moe_shared_experts": {
+          "expected": 1,
+          "actual": null,
+          "reason": "not published"
+        },
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        },
+        "layer_type_counts": {
+          "expected": {
+            "gated_delta_net": 36,
+            "qwen_sparse_attention": 12
+          },
+          "actual": {
+            "linear_attention": 36,
+            "full_attention": 12
+          },
+          "reason": "different value"
+        },
+        "linear_num_key_heads": {
+          "expected": 16,
+          "actual": null,
+          "reason": "not published"
+        },
+        "linear_num_value_heads": {
+          "expected": 48,
+          "actual": null,
+          "reason": "not published"
+        },
+        "linear_key_head_dim": {
+          "expected": 128,
+          "actual": null,
+          "reason": "not published"
+        },
+        "linear_value_head_dim": {
+          "expected": 128,
+          "actual": null,
+          "reason": "not published"
+        },
+        "linear_conv_kernel": {
+          "expected": 4,
+          "actual": null,
+          "reason": "not published"
+        },
+        "hyper_connection_multiplier": {
+          "expected": 4,
+          "actual": null,
+          "reason": "not published"
+        },
+        "num_mtp_layers": {
+          "expected": 1,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "source_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+      "revision_matches": true,
+      "correct": 13,
+      "total": 19,
+      "errors": {
+        "params_total": {
+          "expected": 763205315794,
+          "actual": 508182659298,
+          "reason": "different value"
+        },
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        },
+        "layer_type_counts": {
+          "expected": {
+            "compressed_attention": 40
+          },
+          "actual": {
+            "full_attention": 40
+          },
+          "reason": "different value"
+        },
+        "hyper_connection_multiplier": {
+          "expected": 4,
+          "actual": null,
+          "reason": "not published"
+        },
+        "ngram_layer_ids": {
+          "expected": [
+            1,
+            14
+          ],
+          "actual": null,
+          "reason": "not published"
+        },
+        "num_mtp_layers": {
+          "expected": 3,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "google/diffusiongemma-26B-A4B-it",
+      "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+      "revision_matches": true,
+      "correct": 14,
+      "total": 22,
+      "errors": {
+        "global_head_dim": {
+          "expected": 512,
+          "actual": null,
+          "reason": "not published"
+        },
+        "num_global_kv_heads": {
+          "expected": 2,
+          "actual": null,
+          "reason": "not published"
+        },
+        "params_total": {
+          "expected": 25823781228,
+          "actual": null,
+          "reason": "not published"
+        },
+        "moe_active_experts": {
+          "expected": 8,
+          "actual": null,
+          "reason": "not published"
+        },
+        "moe_shared_experts": {
+          "expected": 1,
+          "actual": null,
+          "reason": "not published"
+        },
+        "moe_shared_expert_intermediate": {
+          "expected": 2112,
+          "actual": null,
+          "reason": "not published"
+        },
+        "generation_type": {
+          "expected": "block_diffusion",
+          "actual": null,
+          "reason": "not published"
+        },
+        "canvas_length": {
+          "expected": 256,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "microsoft/Mage-VL",
+      "source_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "revision_matches": true,
+      "correct": 13,
+      "total": 15,
+      "errors": {
+        "vocab_size": {
+          "expected": 151936,
+          "actual": null,
+          "reason": "not published"
+        },
+        "ffn_intermediate": {
+          "expected": 9728,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "mistralai/Mistral-Large-4-1T-A52B",
+      "source_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+      "revision_matches": true,
+      "correct": 17,
+      "total": 20,
+      "errors": {
+        "params_total": {
+          "expected": 1053161553184,
+          "actual": 1053225397792,
+          "reason": "different value"
+        },
+        "layer_type_counts": {
+          "expected": {
+            "indexed_mla": 72
+          },
+          "actual": {
+            "indexed_attention": 72
+          },
+          "reason": "different value"
+        },
+        "shared_kv_layers": {
+          "expected": 9,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "source_commit": "ee517dd388a9b348890ae1e00dacc5eb4d0c750d",
+      "revision_matches": true,
+      "correct": 12,
+      "total": 19,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": false,
+          "reason": "different value"
+        },
+        "generation_type": {
+          "expected": "latent_recurrent",
+          "actual": null,
+          "reason": "not published"
+        },
+        "recurrent_loops": {
+          "expected": 2,
+          "actual": null,
+          "reason": "not published"
+        },
+        "recurrent_layers": {
+          "expected": 40,
+          "actual": null,
+          "reason": "not published"
+        },
+        "input_layers": {
+          "expected": 16,
+          "actual": null,
+          "reason": "not published"
+        },
+        "output_layers": {
+          "expected": 16,
+          "actual": null,
+          "reason": "not published"
+        },
+        "recurrent_kv_cache_mode": {
+          "expected": "per_loop",
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "zai-org/GLM-5.3-Flash-BF16",
+      "source_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+      "revision_matches": true,
+      "correct": 16,
+      "total": 21,
+      "errors": {
+        "num_layers": {
+          "expected": 45,
+          "actual": null,
+          "reason": "not published"
+        },
+        "dense_layers": {
+          "expected": 3,
+          "actual": null,
+          "reason": "not published"
+        },
+        "layer_type_counts": {
+          "expected": {
+            "kda_linear": 34,
+            "indexed_mla": 11
+          },
+          "actual": {
+            "linear_attention": 34,
+            "deepseek_sparse_attention": 11
+          },
+          "reason": "different value"
+        },
+        "hyper_connection_multiplier": {
+          "expected": 4,
+          "actual": null,
+          "reason": "not published"
+        },
+        "num_mtp_layers": {
+          "expected": 1,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    }
+  ],
+  "scope": "Frozen FIRST RUN on seven previously unseen readable newest releases, before any family/tensor/extraction fixes. Two known development overlaps and one access-blocked publisher are excluded from accuracy and explicitly reported in the cohort manifest. Assistant-manual labels; human review pending."
+}
