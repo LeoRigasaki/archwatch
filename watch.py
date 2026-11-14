@@ -4,6 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
+from archwatch.artifacts import write_if_changed
+from archwatch.notifications import annotate_report, snapshot
 from archwatch.watcher import load_policy, run
 
 ROOT = Path(__file__).resolve().parent
@@ -15,6 +17,7 @@ def main():
     parser.add_argument("--repo", action="append", help="Inspect only these explicit repository IDs (repeatable)")
     parser.add_argument("--process", action="store_true", help="Analyze up to the configured per-run limit")
     parser.add_argument("--retry-review", action="store_true", help="Recheck held records after rule changes")
+    parser.add_argument("--report", type=Path, help="Write an ephemeral run report, outside tracked artifacts")
     parser.add_argument(
         "--reprocess", action="store_true", help="Reanalyze unchanged admitted commits after schema/rule changes"
     )
@@ -22,6 +25,7 @@ def main():
         "--root", type=Path, default=ROOT, help="Output root, e.g. a temporary directory for a live smoke test"
     )
     args = parser.parse_args()
+    before = snapshot(args.root)
     report = run(
         args.root,
         load_policy(args.policy),
@@ -30,6 +34,9 @@ def main():
         retry_review=args.retry_review,
         reprocess=args.reprocess,
     )
+    report = annotate_report(args.root, report, before)
+    if args.report:
+        write_if_changed(args.report, json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(json.dumps(report, indent=2, sort_keys=True))
     # Per-model failures are persisted for review/retry, not discarded by failing
     # the entire batch before its state can be proposed in a PR.

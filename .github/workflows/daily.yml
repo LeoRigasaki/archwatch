@@ -36,9 +36,9 @@ jobs:
           ARCHWATCH_MODE: ${{ inputs.mode }}
         run: |
           if [ "$ARCHWATCH_MODE" = "process" ]; then
-            uv run --frozen python watch.py --process
+            uv run --frozen python watch.py --process --report "$RUNNER_TEMP/archwatch-report.json"
           else
-            uv run --frozen python watch.py
+            uv run --frozen python watch.py --report "$RUNNER_TEMP/archwatch-report.json"
           fi
       - run: uv run --frozen python build_site.py
       - run: uv run --frozen pytest -q
@@ -59,8 +59,16 @@ jobs:
           )
           echo "n=$n" >> "$GITHUB_OUTPUT"
       - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+        id: updates
         with:
           branch: daily-update
           title: "ArchWatch daily update (${{ steps.conflicts.outputs.n }} items in review)"
           labels: ${{ steps.conflicts.outputs.n != '0' && 'needs-review' || 'auto-merge' }}
           body: Records rebuilt from the Hub. Fields in review are listed in each model's YAML.
+      - name: Optional Discord watcher summary
+        if: always() && (inputs.mode == 'discover' || inputs.mode == 'process')
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ARCHWATCH_PR_URL: ${{ steps.updates.outputs.pull-request-url }}
+        run: uv run --frozen python tools/notify_discord.py --report "$RUNNER_TEMP/archwatch-report.json"
