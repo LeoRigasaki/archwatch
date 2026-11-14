@@ -1,0 +1,103 @@
+id: LiquidAI/LFM3-1.7B-Base
+source_commit: 7bca5038823c0d0f14efe06439109354a10e014c
+hub_created: '2026-10-26T16:28:49+00:00'
+license: lfm1.0
+analyzed_at: '2026-11-13T20:58:36+00:00'
+published:
+  num_layers: 24
+  hidden_size: 2048
+  vocab_size: 128000
+  context_length: 262144
+  num_attention_heads: 16
+  num_kv_heads: 4
+  head_dim: 128
+  attention_type: GQA
+  ffn_gated: true
+  sandwich_norm: true
+  ffn_intermediate: 7680
+  short_conv_kernel: 7
+  sliding_window: 256
+  layer_type_counts:
+    short_conv: 13
+    full_attention: 6
+    sliding_attention: 5
+  layer_pattern_per_layer:
+  - short_conv
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  - attention
+  - short_conv
+  layer_index_base_in_config: 0
+  qk_norm: true
+  attention_output_gate: true
+  params_total: 1728801536
+  layer_types:
+  - short_conv
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  - sliding_attention
+  - short_conv
+  - full_attention
+  - short_conv
+  decoder_type: Hybrid (dense)
+  tied_embeddings: true
+  rope:
+    full_attention:
+      partial_rotary_factor: 0.5
+      rope_theta: 1000000.0
+      rope_type: default
+    sliding_attention:
+      rope_theta: 10000
+      rope_type: default
+  activation: silu
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 1132462080
+    embedding: 262144000
+    short_conv_mixer: 218290176
+    attention_or_linear_mixer: 115706624
+    norms: 198656
+  weight_header_summary:
+    tensor_count: 286
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig,
+  auto_map.AutoModel, auto_map.AutoModelForCausalLM, bos_token_id, conv_bias, eos_token_id,
+  norm_eps, pad_token_id, transformers_version, use_cache'

@@ -1,6 +1,6 @@
 # ArchWatch progress checklist
 
-As of **14 November 2026**, after the prototype import, foundations merge and successful manual GitHub Actions acceptance. This checklist describes verified implementation and remaining acceptance; the original day numbers are planning milestones.
+As of **14 November 2026**, after the watcher and source-driven cleanup merges, manual discovery acceptance and the ten-publisher backfill. This checklist describes verified implementation and remaining acceptance; the original day numbers are planning milestones.
 
 ## Implemented and validated
 
@@ -19,7 +19,7 @@ As of **14 November 2026**, after the prototype import, foundations merge and su
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **83 offline tests pass**, including publication boundaries, normalization, refresh, packaging, AST and original formulas/diffs.
+- [x] **102 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
@@ -46,7 +46,8 @@ As of **14 November 2026**, after the prototype import, foundations merge and su
 - [x] Same-org family predecessor selection with explicit date/catalog evidence and ambiguity handling; both existing live pairs reproduced.
 - [x] Manual workflow modes `fixed`, `discover` and `process`; default remains the fixed smoke test and cron stays disabled.
 - [ ] Typed/Pydantic schema and broader family/config acceptance coverage.
-- [ ] Independent gold labels for **10 models in this phase**, with a longer-term 30-model target; config/calculator/citation metrics and the **95% config-field target**.
+- [x] Ten development gold labels manually transcribed from primary sources, frozen before family fixes; per-field published exact match reported. Every label is explicitly `human_reviewed: false`.
+- [ ] Human review and unseen 30-model evaluation; calculator/citation metrics and the **95% held-out config-field target** remain unmeasured.
 - [ ] Gemini validated spec-to-SVG generation/repair loop and response caching; provider quota controls.
 - [ ] LLM code reader with structured output and source-line citations.
 - [ ] Report finder/retrieval, report agent, page citations and citation validator.
@@ -102,7 +103,7 @@ Evidence: [results](results/README.md), [offline validation](results/prototype-v
 
 Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-audited in this foundations patch.
 
-Next: compare the two Gemini diagram routes on all four published records, following [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md).
+Next after backfill review: compare the two Gemini diagram routes, following [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md). The original four diagnostic records include held Liquid Instruct releases; choose eligible primary records for rendering rather than bypassing their publication gate.
 
 The implementation amendments approved on 14 November are recorded in [NEXT_STEPS.md](docs/NEXT_STEPS.md): CI-gated foundations merge and manual workflow acceptance first; then separate watcher, route-test, Gemini-loop, explainer and ten-model gold-set PRs. Reviews/explanations use Flash Lite, diagram routes must be compared, and cron requires explicit approval.
 
@@ -132,4 +133,20 @@ The implementation amendments approved on 14 November are recorded in [NEXT_STEP
 - [x] Actual config reads are tracked, with every unread leaf key reported by dotted path (including nested dictionaries/lists). Read coverage is not a claim of semantic verification.
 - [x] Activation card names are parsed and pass through a publication decision before SVG rendering. Cards support HTML, Markdown pipe tables and key/value bullets, excluding fenced examples.
 - [x] 83 tests pass locally. The fresh four-record rebuild exposed an Instruct card/config context disagreement now visible to the verifier; it is held, not described as a lab defect.
-- [ ] Backfill one admitted primary model per core publisher; add missing family/tensor rules with regression tests and independent manual primary-source gold labels.
+- [x] Cleanup [PR #7](https://github.com/LeoRigasaki/archwatch/pull/7) merged after [green CI](https://github.com/LeoRigasaki/archwatch/actions/runs/43502432850) before starting the backfill branch.
+
+## Ten-publisher backfill
+
+- [x] Processed all ten primary releases in `config/backfill.yaml` in two bounded batches of five. Each resolved on the Hub with pinned config, card and safetensors headers; all ten meet the publication gate with no review fields. No weight payloads or modeling code were executed.
+- [x] Added tested rules for Mistral all-layer SWA; Gemma periodic/global pattern and post-norms; Phi parallel ungated FFN; GLM fused gate/up; Nemotron-H standalone Mamba-2/MLP/attention blocks; DeepSeek expert names; LFM static SiLU; Qwen/Meta FFN gates; Kimi packed gate evidence.
+- [x] Added Mamba-2 mathematical cache-state bounds and separate standalone/parallel diagrams. These estimates do not claim runtime/kernel qualification.
+- [x] Ten manually entered primary-source gold labels committed before family fixes (`fad28a0`), with pinned links and shape samples. Assistant curation is explicit; no label claims human review.
+- [x] Development exact match improved from **117/144 to 144/144** published fields, reported per field and per model in [results/gold-exact-match.md](results/gold-exact-match.md). Missing/held records are failures, not dropped cases. This is not held-out accuracy.
+- [x] Existing approved Hugging Face login supports gated Meta/Google sources. Authorization is stripped across hosts/downgrades; bounded range/header checks remain enforced and tested.
+- [x] Added explicit `--reprocess` for unchanged source commits after schema/rule changes. Ordinary repeat backfill reports all ten unchanged; **39 artifact byte streams and mtimes remain identical**, including seen state/site.
+- [x] Fixed the automatic PR review's predecessor consistency finding: reanalysis refreshes existing JSON/YAML/SVG formats, architecture signatures and seen state together, while preserving source-pinned lineage. A regression checks the former stale-YAML/SVG case and subsequent no-op behavior.
+- [x] Gallery now derives 11 eligible model views from 13 saved records across ten publishers. Historical Liquid derivatives remain held and diagnostically available.
+- [x] Browser text geometry checks found zero text/text overlaps and zero labels outside the canvas across all 11 diagrams. Phi/Nemotron layouts were visually inspected. Sliders render cache estimates from published inputs.
+- [ ] Human review and backfill PR merge; discovery state PR #6 remains open and unmerged. Cron, Gemini calls and recurring generation remain disabled.
+
+Evidence: [processing](results/backfill-processing.json), [repeat no-op](results/backfill-no-op.json), [gold method](evals/README.md), [family rules](docs/FAMILY_RULES.md).

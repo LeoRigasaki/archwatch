@@ -51,6 +51,14 @@ ARCH_FIELDS |= {
     "attention_output_gate",
     "vision_encoder_layers",
     "vision_hidden_size",
+    "ffn_gated",
+    "block_layout",
+    "mamba_num_heads",
+    "mamba_head_dim",
+    "mamba_state_size",
+    "mamba_conv_kernel",
+    "mamba_groups",
+    "mamba_conv_channels",
 }
 DONE = {"recorded", "duplicate", "ready_for_diagram", "rejected", "review"}
 
@@ -284,7 +292,9 @@ def _load_records(root):
     }
 
 
-def run(root: Path, policy: dict, *, source=None, repos=None, process=False, retry_review=False) -> dict:
+def run(
+    root: Path, policy: dict, *, source=None, repos=None, process=False, retry_review=False, reprocess=False
+) -> dict:
     source = source or HubSource(policy)
     path = root / "data/seen.json"
     state = json.loads(path.read_text()) if path.exists() else {"schema_version": 1, "models": {}}
@@ -368,6 +378,7 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
     for candidate in candidates:
         repo = candidate["id"]
         previous = dict(entries.get(repo, {}))
+        candidate["was_diagram_ready"] = previous.get("status") == "ready_for_diagram"
         entry = entries.setdefault(repo, {})
         if timestamp(entry.get("retry_after")) and timestamp(entry["retry_after"]) > datetime.now(timezone.utc):
             report["outcomes"][repo] = "rate_limit_deferred"
@@ -385,8 +396,10 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 )
                 report["outcomes"][repo] = "rejected"
                 continue
-            if previous.get("last_observed_commit") != info["sha"] or (
-                retry_review and previous.get("status") == "review"
+            if (
+                reprocess
+                or previous.get("last_observed_commit") != info["sha"]
+                or (retry_review and previous.get("status") == "review")
             ):
                 entry["attempts"] = 0
             if entry.get("attempts", 0) >= policy["max_attempts_per_commit"]:
@@ -396,7 +409,7 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 report["outcomes"][repo] = "review"
                 continue
             if previous.get("last_observed_commit") == info["sha"] and previous.get("status") in DONE:
-                if not (retry_review and previous["status"] == "review"):
+                if not reprocess and not (retry_review and previous["status"] == "review"):
                     report["outcomes"][repo] = "unchanged"
                     continue
             files = info["files"]
@@ -504,12 +517,21 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 else:
                     pred, reason = predecessor(catalog[repo], catalog)
                     if pred:
-                        old = records.get(pred["id"])
+                        saved_old = records.get(pred["id"])
+                        old = saved_old
                         old_info = source.metadata(pred["id"])
                         if old_info["sha"] != pred["source_commit"]:
                             raise ValueError("Predecessor changed since selection; retry discovery")
-                        if old is None or old["source_commit"] != old_info["sha"]:
+                        if reprocess or old is None or old["source_commit"] != old_info["sha"]:
                             old = source.analyze(pred["id"], old_info)
+                            if old["id"] != pred["id"] or old["source_commit"] != old_info["sha"]:
+                                raise ValueError("Predecessor analysis used a different admitted revision")
+                            # Retain this record's own lineage when only the
+                            # extractor changed at an unchanged source commit.
+                            if saved_old and saved_old["source_commit"] == old["source_commit"]:
+                                for field in ("predecessor", "diff_vs_predecessor", "tensor_diff_vs_predecessor"):
+                                    if field in saved_old:
+                                        old[field] = saved_old[field]
                         record["predecessor"] = {
                             "id": pred["id"],
                             "source_commit": old["source_commit"],
@@ -517,9 +539,40 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                         }
                         record["diff_vs_predecessor"] = pipeline.diff(record, old)
                         record["tensor_diff_vs_predecessor"] = source.tensor_diff(repo, pred["id"], info, old_info)
-                        if pred["id"] not in records:
-                            save_record(old, root / "data/models")
-                            records[pred["id"]] = old
+                        if reprocess or pred["id"] not in records:
+                            render_cache(render_values(old))
+                            old_config = source.config(pred["id"], old_info["sha"])
+                            old_signature = architecture_hash(
+                                old, old_config, source.code(pred["id"], old_info["sha"], old_info["files"])
+                            )
+                            stem = pred["id"].replace("/", "__")
+                            # Refresh existing formats together. A comparison-only
+                            # predecessor need not acquire a new standalone view.
+                            old = save_record(
+                                old,
+                                root / "data/models",
+                                with_yaml=(root / "data/models" / (stem + ".yaml")).exists(),
+                                diagrams=root / "diagrams" if (root / "diagrams" / (stem + ".svg")).exists() else None,
+                            )
+                            old_entry = entries.setdefault(pred["id"], {})
+                            changed_old = old_entry.get("architecture_hash") != old_signature
+                            old_entry.update(
+                                last_observed_commit=old_info["sha"],
+                                last_successful_commit=old_info["sha"],
+                                architecture_hash=old_signature,
+                                status="ready_for_diagram"
+                                if changed_old or old_entry.get("status") == "ready_for_diagram"
+                                else "recorded",
+                                reason="Predecessor refreshed with the current extraction rules",
+                                family=pred["family"],
+                                created_at=pred["created_at"],
+                            )
+                            signatures = {key: value for key, value in signatures.items() if value != pred["id"]}
+                            published_signatures = {
+                                key: value for key, value in published_signatures.items() if value != pred["id"]
+                            }
+                            records[pred["id"]], signatures[old_signature] = old, pred["id"]
+                            published_signatures[published_hash(old)] = pred["id"]
                     changed_architecture = (
                         entry.get("architecture_hash") != signature or entry.get("last_successful_commit") is None
                     )
@@ -527,7 +580,9 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                     records[repo], signatures[signature] = record, repo
                     published_signatures[published_hash(record)] = repo
                     entry.update(
-                        status="ready_for_diagram" if changed_architecture else "recorded",
+                        status="ready_for_diagram"
+                        if changed_architecture or candidate["was_diagram_ready"]
+                        else "recorded",
                         reason=reason,
                         architecture_hash=signature,
                         last_successful_commit=info["sha"],

@@ -13,12 +13,22 @@ import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, get_token
 
 CACHE = Path(__file__).resolve().parents[2] / "cache"
 BASE = "https://huggingface.co"
 MAX_HEADER_BYTES = 64 * 1024 * 1024
+
+
+class _SourceRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        target, original = urlsplit(newurl), urlsplit(req.full_url)
+        if redirected and (target.hostname != original.hostname or target.scheme != "https"):
+            redirected.remove_header("Authorization")
+        return redirected
 
 
 def _cache_dir(repo: str) -> Path:
@@ -28,8 +38,14 @@ def _cache_dir(repo: str) -> Path:
 
 
 def _get(url: str, headers: dict | None = None) -> bytes:
-    req = urllib.request.Request(url, headers=headers or {})
-    with urllib.request.urlopen(req, timeout=120) as r:
+    request_headers = dict(headers or {})
+    target = urlsplit(url)
+    token = get_token() if target.scheme == "https" and target.hostname == "huggingface.co" else None
+    if token:
+        request_headers["Authorization"] = "Bearer " + token
+    req = urllib.request.Request(url, headers=request_headers)
+    open_url = urllib.request.build_opener(_SourceRedirect()).open if token else urllib.request.urlopen
+    with open_url(req, timeout=120) as r:
         if headers and "Range" in headers:
             if r.status != 206:
                 raise ValueError("Server ignored the byte range; refusing to download a weight body")

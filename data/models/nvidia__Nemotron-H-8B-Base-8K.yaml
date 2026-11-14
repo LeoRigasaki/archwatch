@@ -1,0 +1,158 @@
+id: nvidia/Nemotron-H-8B-Base-8K
+source_commit: 94ea861e008c2dfced3e8e1302094024077aa04e
+hub_created: '2025-03-19T23:37:16+00:00'
+license: nvidia-internal-scientific-research-and-development-model-license
+analyzed_at: '2026-11-13T20:58:36+00:00'
+published:
+  num_layers: 52
+  hidden_size: 4096
+  vocab_size: 131072
+  context_length: 8192
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  attention_type: GQA
+  ffn_gated: false
+  mamba_conv_channels: 10240
+  ffn_intermediate: 21504
+  layer_type_counts:
+    mamba2: 24
+    mlp: 24
+    full_attention: 4
+  layer_pattern_per_layer:
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  params_total: 8100852736
+  layer_types:
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - full_attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - full_attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - full_attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - full_attention
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  - mamba2
+  - mlp
+  decoder_type: Hybrid (dense)
+  tied_embeddings: false
+  activation: relu2
+  released_weights_format: bfloat16
+  block_layout: standalone
+  mamba_num_heads: 128
+  mamba_head_dim: 64
+  mamba_state_size: 128
+  mamba_conv_kernel: 4
+  mamba_groups: 8
+  mamba_activation: silu
+  parameter_components:
+    dense_ffn: 4227858432
+    state_space_mixer: 2631066624
+    embedding: 536870912
+    lm_head: 536870912
+    attention_or_linear_mixer: 167772160
+    norms: 413696
+  weight_header_summary:
+    tensor_count: 311
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,
+  attention_dropout, auto_map.AutoConfig, auto_map.AutoModelForCausalLM, bos_token_id,
+  chunk_size, eos_token_id, expand, hidden_dropout, initializer_range, layer_norm_epsilon,
+  mamba_proj_bias, mlp_bias, num_logits_to_keep, pad_token_id, rescale_prenorm_residual,
+  residual_in_fp32, rms_norm_eps, time_step_floor, time_step_limit, time_step_max,
+  time_step_min, time_step_rank, transformers_version, use_bias, use_cache, use_conv_bias,
+  use_mamba_kernels'

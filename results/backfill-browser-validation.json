@@ -1,0 +1,72 @@
+{
+  "title": "ArchWatch: 11 model architectures",
+  "diagrams": [
+    {
+      "model": "LFM3-1.7B-Base",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "Qwen3-0.6B-Base",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "DeepSeek-V2-Lite",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "gemma-3-1b-pt",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "Llama-3.1-8B",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "phi-2",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "Mistral-7B-v0.1",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "Kimi-K3",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "Kimi-K3.1-Pro",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "Nemotron-H-8B-Base-8K",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    },
+    {
+      "model": "GLM-4-9B-0414",
+      "outside": [],
+      "overlaps": [],
+      "calculatorResponds": true
+    }
+  ],
+  "scope": "Browser SVG text bounds and text/text intersections at 960-unit canvas; not an architecture-semantic score or Gemini route test."
+}

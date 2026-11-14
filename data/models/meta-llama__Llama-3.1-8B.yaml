@@ -1,0 +1,113 @@
+id: meta-llama/Llama-3.1-8B
+source_commit: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+hub_created: '2024-07-14T22:20:15+00:00'
+license: llama3.1
+analyzed_at: '2026-11-13T20:59:26+00:00'
+published:
+  num_layers: 32
+  hidden_size: 4096
+  vocab_size: 128256
+  context_length: 131072
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  attention_type: GQA
+  ffn_gated: true
+  ffn_intermediate: 14336
+  layer_type_counts:
+    full_attention: 32
+  layer_pattern_per_layer:
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  params_total: 8030261248
+  layer_types:
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  decoder_type: Dense
+  tied_embeddings: false
+  rope:
+    rope_theta: 500000.0
+    scaling:
+      factor: 8.0
+      low_freq_factor: 1.0
+      high_freq_factor: 4.0
+      original_max_position_embeddings: 8192
+      rope_type: llama3
+  activation: silu
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 5637144576
+    attention_or_linear_mixer: 1342177280
+    embedding: 525336576
+    lm_head: 525336576
+    norms: 266240
+  weight_header_summary:
+    tensor_count: 291
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
+  activation) are read from config, card and tensor names only, not from code.'
+- 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,
+  attention_dropout, bos_token_id, eos_token_id, initializer_range, mlp_bias, pretraining_tp,
+  rms_norm_eps, transformers_version, use_cache'

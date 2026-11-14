@@ -28,6 +28,14 @@ def scan(files: dict[str, str]) -> dict:
             if isinstance(node, ast.ClassDef):
                 doc = (ast.get_docstring(node) or "").split("\n")[0][:160]
                 out["classes"].append({"name": node.name, "file": fname, "line": node.lineno, "doc": doc})
+                if re.search(r"MLP|FFN|FeedForward|Feedforward", node.name):
+                    for call in ast.walk(node):
+                        if (
+                            isinstance(call, ast.Call)
+                            and isinstance(call.func, ast.Attribute)
+                            and call.func.attr == "silu"
+                        ):
+                            facts["activation"] = ("silu", f"code:{fname}#L{call.lineno}")
                 is_mixer = re.search(r"Attention|Conv|Mixer|DeltaNet|KDA", node.name)
                 if not is_mixer:
                     continue

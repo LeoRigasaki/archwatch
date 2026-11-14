@@ -21,10 +21,43 @@ def cache_model(v: dict) -> dict:
     counts: dict = v["layer_type_counts"]
     kv, hd, heads = v.get("num_kv_heads"), v.get("head_dim"), v.get("num_attention_heads")
     per_token, per_token_low, constant = 0, 0, 0
+    state_precision_savings = 0
     rows, assumptions = [], ["cache values stored in bf16 (2 bytes) unless noted"]
 
     for kind, n in sorted(counts.items()):
-        if kind == "full_attention":
+        if kind == "mlp":
+            rows.append(
+                {
+                    "layer_type": kind,
+                    "layers": n,
+                    "grows_per_token_bytes": 0,
+                    "constant_bytes": 0,
+                    "formula": "standalone MLP: no persistent decoding state",
+                }
+            )
+        elif kind == "mamba2":
+            heads_m, dim, state = v["mamba_num_heads"], v["mamba_head_dim"], v["mamba_state_size"]
+            channels = v.get("mamba_conv_channels") or heads_m * dim + 2 * v["mamba_groups"] * state
+            kernel = v["mamba_conv_kernel"]
+            recurrent = heads_m * dim * state
+            conv = channels * kernel * BF16
+            high, low = recurrent * FP32 + conv, recurrent * BF16 + conv
+            constant += high * n
+            state_precision_savings += (high - low) * n
+            rows.append(
+                {
+                    "layer_type": kind,
+                    "layers": n,
+                    "grows_per_token_bytes": 0,
+                    "constant_bytes": high * n,
+                    "constant_bytes_low": low * n,
+                    "formula": f"({heads_m} heads x {dim} dim x {state} state x 4 B + {channels} conv channels x {kernel} taps x 2 B) x {n} blocks",
+                }
+            )
+            assumptions.append(
+                "Mamba-2 mathematical state budget: fp32 recurrent state, bf16 convolution buffer; low bound uses bf16 recurrent state. Runtime allocation is not qualified."
+            )
+        elif kind == "full_attention":
             b = 2 * kv * hd * BF16
             per_token += b * n
             per_token_low += b * n
@@ -125,6 +158,7 @@ def cache_model(v: dict) -> dict:
         "grows_per_token_bytes": per_token,
         "grows_per_token_bytes_low": per_token_low,
         "constant_bytes": constant,
+        "constant_bytes_low": constant - state_precision_savings,
         "naive_mha_per_token_bytes": naive,
         "reduction_vs_naive_mha": round(naive / per_token, 1) if naive and per_token else None,
         "memory_at_context": at,
