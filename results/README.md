@@ -31,7 +31,7 @@ Generated from 26 saved records. This command does not refetch sources. The ten-
 | zai-org/GLM-5.2 | 753,329,940,480 | 7 | 26 | 1 |
 | zai-org/GLM-5.3-Flash-BF16 | 321,323,031,390 | 8 | 31 | 0 |
 
-Offline tests: 114 passed; 0 failures; 0 errors. Python 3.12.13.
+Offline tests: 116 passed; 0 failures; 0 errors. Python 3.12.13.
 
 Tensor-group additions: LiquidAI/LFM3-1.7B-Base: 46,598,912; LiquidAI/LFM3-1.7B: 46,598,912; Qwen/Qwen3.8-Flash-Next: 176,791,650,672; deepseek-ai/DeepSeek-V4.1-Flash-1017: 0; google/diffusiongemma-26B-A4B-it: 25,823,781,228; mistralai/Mistral-Large-4-1T-A52B: 6,874,961,696; moonshotai/Kimi-K3.1-Pro: 178,526,208; zai-org/GLM-5.3-Flash-BF16: 320,688,642,910.
 

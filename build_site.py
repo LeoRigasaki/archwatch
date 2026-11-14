@@ -181,6 +181,12 @@ def model_section(name, anchor):
         f"<div><h4>Tensor groups removed ({td.get('removed_count', 0)}, &minus;{td.get('removed_total', 0):,} params)</h4><ul>{t_rem or '<li>none</li>'}</ul></div></div>"
         '<p class="small">Groups fold layer and expert numbers together. A matching add and remove of similar names (for example <code>out_proj</code> and <code>o_proj</code>) is usually a rename.</p>'
     )
+    if not td:
+        tensor_html = (
+            "<p class='small'>Tensor comparison unavailable; see predecessor review diagnostics.</p>"
+            if pred
+            else "<p class='small'>No predecessor selected.</p>"
+        )
 
     if prec:
         items = "".join(
