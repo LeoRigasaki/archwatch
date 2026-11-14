@@ -8,13 +8,19 @@
     "errors": []
   },
   {
-    "model": "nvidia/Nemotron-H-8B-Base-8K",
+    "model": "LiquidAI/LFM3-1.7B",
     "attempts": 2,
     "final_version": 2,
-    "passed": false,
-    "remaining_failures": [
-      "group 2: bars from bottom to top are ['MLP', 'Mamba-2', 'MLP', 'GQA', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP'], spec says ['Mamba-2', 'MLP', 'Mamba-2', 'GQA', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP'] (data-layer must be each layer's exact label)"
-    ],
+    "passed": true,
+    "remaining_failures": [],
+    "errors": []
+  },
+  {
+    "model": "nvidia/Nemotron-H-8B-Base-8K",
+    "attempts": 3,
+    "final_version": 3,
+    "passed": true,
+    "remaining_failures": [],
     "errors": []
   },
   {
