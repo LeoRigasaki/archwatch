@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 from archwatch import hub, watcher
+from archwatch.artifacts import save_record
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = json.loads((ROOT / "data/models/LiquidAI__LFM2.5-1.2B-Instruct.json").read_text())
@@ -143,6 +144,38 @@ def test_explicit_reprocess_refreshes_schema_at_same_commit_and_keeps_ready(tmp_
     before = files(tmp_path)
     watcher.run(tmp_path, policy(), source=source, repos=[rec["id"]], process=True)
     assert files(tmp_path) == before
+
+
+def test_reprocessing_successor_refreshes_predecessor_formats_and_seen_state(tmp_path):
+    old = model("lab/Family1", "2025-01-01T00:00:00Z")
+    new = model("lab/Family2", "2026-01-01T00:00:00Z", 256000, "b" * 40)
+    save_record(old, tmp_path / "data/models", with_yaml=True, diagrams=tmp_path / "diagrams")
+    source = Source([old, new])
+    watcher.run(tmp_path, policy(), source=source, repos=[new["id"]], process=True)
+    before = files(tmp_path)
+    # A new tensor-layout rule learns gating at the SAME source commit.
+    fixed = source.records[old["id"]]
+    fixed["published"]["ffn_gated"] = True
+    fixed["checks"].append(
+        dict(
+            field="ffn_gated",
+            value=True,
+            status="single source",
+            published=True,
+            confidence=0.7,
+            candidates=[dict(value=True, evidence="weights:gate tensors")],
+        )
+    )
+    watcher.run(tmp_path, policy(), source=source, repos=[new["id"]], process=True, reprocess=True)
+    after = files(tmp_path)
+    for name in ("data/models/lab__Family1.json", "data/models/lab__Family1.yaml", "diagrams/lab__Family1.svg"):
+        assert before[name][0] != after[name][0], name
+    old_state = state(tmp_path, old["id"])
+    assert old_state["last_successful_commit"] == old["source_commit"]
+    assert old_state["status"] == "ready_for_diagram"
+    assert old_state["architecture_hash"] == watcher.architecture_hash(fixed, source.configs[old["id"]], {})
+    watcher.run(tmp_path, policy(), source=source, repos=[old["id"], new["id"]], process=True)
+    assert files(tmp_path) == after
 
 
 @pytest.mark.parametrize("files_present", [[], ["config.json"], ["model.safetensors"], ["config.json", "model.gguf"]])

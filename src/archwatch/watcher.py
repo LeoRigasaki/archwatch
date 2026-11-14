@@ -517,12 +517,21 @@ def run(
                 else:
                     pred, reason = predecessor(catalog[repo], catalog)
                     if pred:
-                        old = records.get(pred["id"])
+                        saved_old = records.get(pred["id"])
+                        old = saved_old
                         old_info = source.metadata(pred["id"])
                         if old_info["sha"] != pred["source_commit"]:
                             raise ValueError("Predecessor changed since selection; retry discovery")
                         if reprocess or old is None or old["source_commit"] != old_info["sha"]:
                             old = source.analyze(pred["id"], old_info)
+                            if old["id"] != pred["id"] or old["source_commit"] != old_info["sha"]:
+                                raise ValueError("Predecessor analysis used a different admitted revision")
+                            # Retain this record's own lineage when only the
+                            # extractor changed at an unchanged source commit.
+                            if saved_old and saved_old["source_commit"] == old["source_commit"]:
+                                for field in ("predecessor", "diff_vs_predecessor", "tensor_diff_vs_predecessor"):
+                                    if field in saved_old:
+                                        old[field] = saved_old[field]
                         record["predecessor"] = {
                             "id": pred["id"],
                             "source_commit": old["source_commit"],
@@ -531,8 +540,39 @@ def run(
                         record["diff_vs_predecessor"] = pipeline.diff(record, old)
                         record["tensor_diff_vs_predecessor"] = source.tensor_diff(repo, pred["id"], info, old_info)
                         if reprocess or pred["id"] not in records:
-                            save_record(old, root / "data/models")
-                            records[pred["id"]] = old
+                            render_cache(render_values(old))
+                            old_config = source.config(pred["id"], old_info["sha"])
+                            old_signature = architecture_hash(
+                                old, old_config, source.code(pred["id"], old_info["sha"], old_info["files"])
+                            )
+                            stem = pred["id"].replace("/", "__")
+                            # Refresh existing formats together. A comparison-only
+                            # predecessor need not acquire a new standalone view.
+                            old = save_record(
+                                old,
+                                root / "data/models",
+                                with_yaml=(root / "data/models" / (stem + ".yaml")).exists(),
+                                diagrams=root / "diagrams" if (root / "diagrams" / (stem + ".svg")).exists() else None,
+                            )
+                            old_entry = entries.setdefault(pred["id"], {})
+                            changed_old = old_entry.get("architecture_hash") != old_signature
+                            old_entry.update(
+                                last_observed_commit=old_info["sha"],
+                                last_successful_commit=old_info["sha"],
+                                architecture_hash=old_signature,
+                                status="ready_for_diagram"
+                                if changed_old or old_entry.get("status") == "ready_for_diagram"
+                                else "recorded",
+                                reason="Predecessor refreshed with the current extraction rules",
+                                family=pred["family"],
+                                created_at=pred["created_at"],
+                            )
+                            signatures = {key: value for key, value in signatures.items() if value != pred["id"]}
+                            published_signatures = {
+                                key: value for key, value in published_signatures.items() if value != pred["id"]
+                            }
+                            records[pred["id"]], signatures[old_signature] = old, pred["id"]
+                            published_signatures[published_hash(old)] = pred["id"]
                     changed_architecture = (
                         entry.get("architecture_hash") != signature or entry.get("last_successful_commit") is None
                     )

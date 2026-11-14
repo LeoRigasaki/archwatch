@@ -41,6 +41,8 @@ State is checkpointed atomically and written only when changed. Pending/errors s
 
 Requests honor bounded retries and Retry-After values; longer deferrals persist across restart. Discovery failures and per-model errors remain visible in the report/state. Per-model failures do not discard other candidates' successful checkpoints. A wholly failed discovery returns a nonzero CLI exit; a completed batch's zero exit does not mean every model passed verification.
 
+`--reprocess` also rechecks the selected predecessor with the current extraction rules. Before saving, the predecessor must pass the publication/cache gate. Its existing JSON, YAML and SVG artifacts and seen/signature state refresh together; a comparison-only predecessor does not acquire new YAML/SVG formats. Source-pinned lineage is retained for an unchanged commit. A subsequent ordinary run must leave every artifact untouched.
+
 ## Manual GitHub workflow
 
 `daily.yml` has manual modes `fixed` (default smoke test), `discover`, and `process`. Generated update PRs are labeled `needs-review` if the state or records contain review/error items. Neither the `auto-merge` label nor zero review items merges a PR. Merge accepted state/data PRs before relying on that state in subsequent Actions runs.

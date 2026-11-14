@@ -19,7 +19,7 @@ As of **14 November 2026**, after the watcher and source-driven cleanup merges, 
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **101 offline tests pass**, including publication boundaries, family layouts, normalization, refresh, packaging, AST, independent labels and hand-math formulas.
+- [x] **102 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
@@ -144,6 +144,7 @@ The implementation amendments approved on 14 November are recorded in [NEXT_STEP
 - [x] Development exact match improved from **117/144 to 144/144** published fields, reported per field and per model in [results/gold-exact-match.md](results/gold-exact-match.md). Missing/held records are failures, not dropped cases. This is not held-out accuracy.
 - [x] Existing approved Hugging Face login supports gated Meta/Google sources. Authorization is stripped across hosts/downgrades; bounded range/header checks remain enforced and tested.
 - [x] Added explicit `--reprocess` for unchanged source commits after schema/rule changes. Ordinary repeat backfill reports all ten unchanged; **39 artifact byte streams and mtimes remain identical**, including seen state/site.
+- [x] Fixed the automatic PR review's predecessor consistency finding: reanalysis refreshes existing JSON/YAML/SVG formats, architecture signatures and seen state together, while preserving source-pinned lineage. A regression checks the former stale-YAML/SVG case and subsequent no-op behavior.
 - [x] Gallery now derives 11 eligible model views from 13 saved records across ten publishers. Historical Liquid derivatives remain held and diagnostically available.
 - [x] Browser text geometry checks found zero text/text overlaps and zero labels outside the canvas across all 11 diagrams. Phi/Nemotron layouts were visually inspected. Sliders render cache estimates from published inputs.
 - [ ] Human review and backfill PR merge; discovery state PR #6 remains open and unmerged. Cron, Gemini calls and recurring generation remain disabled.
