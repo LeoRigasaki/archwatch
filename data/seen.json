@@ -224,7 +224,7 @@
       "last_observed_commit": "f831ab66814297da540d832a5235f8e904f29d06",
       "last_successful_commit": "f831ab66814297da540d832a5235f8e904f29d06",
       "pool": "core",
-      "reason": "Frozen primary-source backfill passed publication checks",
+      "reason": "Predecessor refreshed with the current extraction rules",
       "status": "ready_for_diagram"
     },
     "moonshotai/Kimi-K3.1-Pro": {
@@ -237,7 +237,7 @@
       "last_successful_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
       "pool": "core",
       "predecessor": "moonshotai/Kimi-K3",
-      "reason": "Frozen primary-source backfill passed publication checks",
+      "reason": "Latest earlier Hub creation date in the inspected same-org family catalog",
       "status": "ready_for_diagram"
     },
     "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16": {

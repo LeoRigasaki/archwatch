@@ -2,7 +2,7 @@ id: moonshotai/Kimi-K3
 source_commit: f831ab66814297da540d832a5235f8e904f29d06
 hub_created: '2026-06-13T06:42:57+00:00'
 license: kimi-k3
-analyzed_at: '2026-11-14T08:16:10+00:00'
+analyzed_at: '2026-11-14T15:34:55+00:00'
 published:
   num_layers: 93
   hidden_size: 7168
@@ -234,6 +234,7 @@ published:
   vision_encoder_layers: 27
   vision_hidden_size: 1024
   released_weights_format: mxfp4-pack-quantized (4-bit)
+  mla_use_nope: true
   parameter_components:
     moe_routed_experts: 2722740830208
     attention_or_linear_mixer: 36190795008
