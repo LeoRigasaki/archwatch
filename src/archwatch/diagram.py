@@ -54,6 +54,21 @@ def _human(n):
     return str(n)
 
 
+def _mla_cache_line(v: dict) -> str:
+    # mla_use_nope means the 64 "rope" key dims carry no rotary encoding; never label them RoPE.
+    if v.get("mla_use_nope") is True:
+        return f"MLA: caches {v['mla_kv_lora_rank']} latent + {v['mla_qk_rope_head_dim']} key (NoPE)"
+    return f"MLA: caches {v['mla_kv_lora_rank']} latent + {v['mla_qk_rope_head_dim']} RoPE"
+
+
+def _rope_line(r: dict) -> str:
+    """Only a published rope fact may produce a RoPE label."""
+    theta, pr = r.get("rope_theta"), r.get("partial_rotary_factor")
+    if not theta:
+        return "position encoding not published"
+    return (f"partial RoPE {pr:g}, " if pr else "RoPE ") + f"theta {int(theta):,}"
+
+
 def _mixer_lines(kind: str, v: dict) -> list[str]:
     gate = "output gate" if v.get("attention_output_gate") else "gate status unverified"
     additions = " + ".join(
@@ -68,14 +83,14 @@ def _mixer_lines(kind: str, v: dict) -> list[str]:
         ]
     if kind == "gated_dsa_mla":
         return [
-            f"MLA: caches {v['mla_kv_lora_rank']} latent + {v['mla_qk_rope_head_dim']} RoPE",
+            _mla_cache_line(v),
             f"indexer {v['dsa_index_num_heads']} heads x {v['dsa_index_head_dim']}",
             f"each query reads top-{v['dsa_index_topk']} tokens",
             gate,
         ]
     if kind == "full_attention_mla":
         return [
-            f"MLA: caches {v['mla_kv_lora_rank']} latent + {v['mla_qk_rope_head_dim']} RoPE",
+            _mla_cache_line(v),
             f"{v['num_attention_heads']} heads, q/k {v['head_dim']}, v {v.get('v_head_dim')}",
             "attends to every token",
             gate,
@@ -89,20 +104,18 @@ def _mixer_lines(kind: str, v: dict) -> list[str]:
             "cache does not grow",
         ]
     if kind == "sliding_attention":
-        th = (rope.get("sliding_attention") or {}).get("rope_theta")
         return [
             f"{v.get('attention_type', 'Attention')} {v['num_attention_heads']} q / {v['num_kv_heads']} kv, head {v['head_dim']}",
             f"window {v.get('sliding_window')} tokens",
-            f"RoPE theta {int(th):,}" if th else "RoPE",
+            _rope_line(rope.get("sliding_attention") or {}),
             additions,
         ]
     if kind == "full_attention":
         r = rope.get("full_attention") or rope
-        pr = r.get("partial_rotary_factor")
         return [
             f"{v.get('attention_type', 'Attention')} {v['num_attention_heads']} q / {v['num_kv_heads']} kv, head {v['head_dim']}",
             "attends to every token",
-            (f"partial RoPE {pr:g}, theta {int(r.get('rope_theta')):,}" if pr else "RoPE"),
+            _rope_line(r),
             additions,
         ]
     return ["no rule for this layer type"]
