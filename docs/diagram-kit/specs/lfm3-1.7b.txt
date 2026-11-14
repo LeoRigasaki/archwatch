@@ -1,0 +1,78 @@
+# Diagram spec: LFM3-1.7B
+# Every value below was read from LiquidAI/LFM3-1.7B at commit 1da06bec6a
+# (config.json, modeling_lfm3.py, safetensors weight headers, model card) and cross-checked by ArchWatch.
+# The diagram must use ONLY what is written here. If something is not here, leave it out.
+
+model:
+  name: "LFM3-1.7B"
+  title_label: "LFM3 (1.7B)"
+  lab: "Liquid AI"
+  total_params: "1.73B"
+  layers: 24
+  hidden_size: 2048
+  vocabulary: "128,000 (128K)"
+  context_length: "256K tokens (262,144)"
+  embedding: "tied to the LM head"
+
+layer_pattern:
+  summary: "13 short-conv + 6 global attention + 5 sliding-window attention layers"
+  compressed_view:            # draw the stack as these groups, bottom to top
+    - repeat: 1
+      layers: ["ShortConv + FFN", "ShortConv + FFN"]
+      note: "layers 1-2"
+    - repeat: 5
+      layers: ["Global GQA + FFN", "ShortConv + FFN", "Sliding-window GQA + FFN", "ShortConv + FFN"]
+      note: "layers 3-22"
+    - repeat: 1
+      layers: ["Global GQA + FFN", "ShortConv + FFN"]
+      note: "layers 23-24"
+
+decoder_layer:               # one layer, bottom to top ("sandwich" norms)
+  - "RMSNorm (pre-mixer)"
+  - "Token mixer: ShortConv, Global GQA or Sliding-window GQA"
+  - "RMSNorm (post-mixer)"
+  - "residual add"
+  - "RMSNorm (pre-FFN)"
+  - "SwiGLU FFN"
+  - "RMSNorm (post-FFN)"
+  - "residual add"
+
+zoom_panels:
+  short_conv:
+    title: "Gated ShortConv (13 layers)"
+    parts:
+      - "in_proj: Linear 2048 -> 6144, split into three parts B, C and x (2048 each)"
+      - "B multiplied with x, then depthwise Conv1d (kernel 7), then multiplied with C"
+      - "out_proj: Linear 2048 -> 2048"
+      - "keeps only the last few inputs; cache does not grow with context"
+  gqa:
+    title: "GQA attention (6 global + 5 sliding-window layers)"
+    parts:
+      - "16 query heads, 4 key/value heads, head size 128"
+      - "q: Linear 2048 -> 2048; k and v: Linear 2048 -> 512 each"
+      - "QK-norm: RMSNorm on q and k per head, before rotary position encoding"
+      - "global layers: partial rotary (half of each head), theta 1,000,000, attend to all tokens"
+      - "sliding-window layers: full rotary, theta 10,000, attend to the last 256 tokens only"
+      - "head-wise output gate: Linear 2048 -> 16 (one sigmoid gate per head)"
+      - "output projection: Linear 2048 -> 2048"
+  ffn:
+    title: "SwiGLU FFN"
+    parts:
+      - "w1 and w3: Linear 2048 -> 7680 in parallel; SiLU on w1; multiply"
+      - "w2: Linear 7680 -> 2048"
+
+io:
+  bottom: ["Tokenized text", "Token embedding 128,000 x 2048"]
+  top: ["Final RMSNorm", "LM head (shares weights with the token embedding)"]
+
+callouts:
+  - "Context length: 256K tokens"
+  - "Vocabulary: 128K"
+  - "Embedding dimension: 2048"
+  - "16 Q / 4 KV heads"
+  - "KV cache: 12 KB per token (only the 6 global layers grow)"
+
+do_not_include:
+  - "any benchmark scores"
+  - "any number not in this file"
+  - "logos or watermarks"
