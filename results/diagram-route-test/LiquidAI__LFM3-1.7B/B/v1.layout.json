@@ -1,0 +1,130 @@
+{
+  "canvas": {
+    "width": 960,
+    "height": 754
+  },
+  "nodes": [
+    {
+      "id": "embedding",
+      "x": 340,
+      "y": 50,
+      "width": 280,
+      "height": 90
+    },
+    {
+      "id": "mix_short_conv",
+      "x": 50,
+      "y": 220,
+      "width": 260,
+      "height": 156
+    },
+    {
+      "id": "mix_full_attention",
+      "x": 350,
+      "y": 220,
+      "width": 260,
+      "height": 156
+    },
+    {
+      "id": "mix_sliding_attention",
+      "x": 650,
+      "y": 220,
+      "width": 260,
+      "height": 156
+    },
+    {
+      "id": "ffn",
+      "x": 340,
+      "y": 456,
+      "width": 280,
+      "height": 72
+    },
+    {
+      "id": "summary",
+      "x": 340,
+      "y": 592,
+      "width": 280,
+      "height": 112
+    }
+  ],
+  "groups": [],
+  "labels": [
+    {
+      "id": "f_vocab_size",
+      "node": "embedding"
+    },
+    {
+      "id": "f_hidden_size",
+      "node": "embedding"
+    },
+    {
+      "id": "kind_short_conv",
+      "node": "mix_short_conv"
+    },
+    {
+      "id": "count_short_conv",
+      "node": "mix_short_conv"
+    },
+    {
+      "id": "f_short_conv_kernel",
+      "node": "mix_short_conv"
+    },
+    {
+      "id": "kind_full_attention",
+      "node": "mix_full_attention"
+    },
+    {
+      "id": "count_full_attention",
+      "node": "mix_full_attention"
+    },
+    {
+      "id": "f_num_attention_heads",
+      "node": "mix_full_attention"
+    },
+    {
+      "id": "f_num_kv_heads",
+      "node": "mix_full_attention"
+    },
+    {
+      "id": "f_head_dim",
+      "node": "mix_full_attention"
+    },
+    {
+      "id": "kind_sliding_attention",
+      "node": "mix_sliding_attention"
+    },
+    {
+      "id": "count_sliding_attention",
+      "node": "mix_sliding_attention"
+    },
+    {
+      "id": "f_sliding_window",
+      "node": "mix_sliding_attention"
+    },
+    {
+      "id": "f_ffn_intermediate",
+      "node": "ffn"
+    },
+    {
+      "id": "f_num_layers",
+      "node": "summary"
+    },
+    {
+      "id": "f_context_length",
+      "node": "summary"
+    },
+    {
+      "id": "f_params_total",
+      "node": "summary"
+    }
+  ],
+  "edges": [
+    "embedding_to_mix_short_conv",
+    "mix_short_conv_out",
+    "embedding_to_mix_full_attention",
+    "mix_full_attention_out",
+    "embedding_to_mix_sliding_attention",
+    "mix_sliding_attention_out",
+    "ffn_out"
+  ]
+}

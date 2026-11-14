@@ -1,0 +1,10 @@
+{
+  "name": "models/gemini-4-hydrogen",
+  "supportedGenerationMethods": [
+    "generateContent",
+    "countTokens",
+    "batchGenerateContent"
+  ],
+  "inputTokenLimit": 1048576,
+  "outputTokenLimit": 65536
+}

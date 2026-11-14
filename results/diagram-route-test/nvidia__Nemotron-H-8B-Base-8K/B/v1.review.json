@@ -1,0 +1,60 @@
+{
+  "id": "nvidia/Nemotron-H-8B-Base-8K",
+  "route": "B",
+  "generated": true,
+  "reviewer": "deterministic validators",
+  "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+  "scored": true,
+  "metadata": {
+    "model": "gemini-4-hydrogen",
+    "finish_reason": "STOP",
+    "provider_model_version": "gemini-4-hydrogen",
+    "usage": {
+      "promptTokenCount": 2242,
+      "candidatesTokenCount": 578,
+      "totalTokenCount": 6570,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2242
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 578
+        }
+      ],
+      "thoughtsTokenCount": 3750,
+      "serviceTier": "standard"
+    },
+    "elapsed_seconds": 26.889,
+    "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+    "prompt_hash": "05a191d61b3bd1392ca8aba8e3dfcc72d3eba153dbfe7d269eabc462a776e403"
+  },
+  "labels_and_numbers_from_published": true,
+  "label_coverage": true,
+  "labels_attached_to_nodes": true,
+  "invalid_labels": [],
+  "layer_sum": 52,
+  "expected_layers": 52,
+  "layer_sum_matches": true,
+  "nodes_and_edges_match": true,
+  "canvas": {
+    "width": 960,
+    "height": 700
+  },
+  "overlaps": [],
+  "outside": [],
+  "invisible": [],
+  "nodeOverlaps": [],
+  "text_node_overflow": [],
+  "no_text_overlap": true,
+  "everything_inside_canvas": true,
+  "all_labels_visible": true,
+  "readable_font_sizes": true,
+  "no_node_overlap": true,
+  "text_fits_nodes": true,
+  "canvas_within_experiment_bounds": true,
+  "passed": true
+}

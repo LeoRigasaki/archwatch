@@ -1,79 +1,513 @@
 {
-  "protocol": "Eight first attempts; same fixed facts and graph, one model; no repairs or fallback.",
+  "protocol": "Eight first-response candidates; same fixed facts and graph, one model; no repairs or fallback.",
   "generator": "gemini-4-hydrogen",
-  "complete": false,
+  "complete": true,
   "totals": {
     "A": {
-      "passed": 0,
+      "passed": 4,
       "cases": 4,
-      "check_passes": 0,
-      "output_tokens": 0
+      "check_passes": 48,
+      "output_tokens": 8643
     },
     "B": {
-      "passed": 0,
+      "passed": 4,
       "cases": 4,
-      "check_passes": 0,
-      "output_tokens": 0
+      "check_passes": 48,
+      "output_tokens": 2106
     }
   },
-  "winner": null,
+  "winner": "B",
   "cases": [
     {
       "id": "moonshotai/Kimi-K3.1-Pro",
       "route": "A",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c"
+      "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 2424,
+          "candidatesTokenCount": 2556,
+          "totalTokenCount": 13073,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2424
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2556
+            }
+          ],
+          "thoughtsTokenCount": 8093,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 70.524,
+        "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c",
+        "prompt_hash": "537306548e5c265f9573b52af07fec87800187fec0d3fb1fd0ba638114530515"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 93,
+      "expected_layers": 93,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 820,
+        "height": 1000
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "moonshotai/Kimi-K3.1-Pro",
       "route": "B",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c"
+      "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 2526,
+          "candidatesTokenCount": 661,
+          "totalTokenCount": 5477,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2526
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 661
+            }
+          ],
+          "thoughtsTokenCount": 2290,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 18.606,
+        "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c",
+        "prompt_hash": "042dcd1a489a43ce004b817f485e3dff9dda5923793f4fda62808d01f0249317"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 93,
+      "expected_layers": 93,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 840,
+        "height": 970
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "LiquidAI/LFM3-1.7B",
       "route": "A",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5"
+      "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 1868,
+          "candidatesTokenCount": 2163,
+          "totalTokenCount": 10738,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1868
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2163
+            }
+          ],
+          "thoughtsTokenCount": 6707,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 82.739,
+        "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5",
+        "prompt_hash": "206d1a9de1e8c451040d592daf1f5133002bc7cd7fe451f4eb02c3a36e37e922"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 24,
+      "expected_layers": 24,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 960,
+        "height": 680
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "LiquidAI/LFM3-1.7B",
       "route": "B",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5"
+      "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 1970,
+          "candidatesTokenCount": 519,
+          "totalTokenCount": 4840,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1970
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 519
+            }
+          ],
+          "thoughtsTokenCount": 2351,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 59.005,
+        "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5",
+        "prompt_hash": "f18e46ca35bfbbcb25cc223e49c8bcbe141930fa343a27836b260894c9b96a9c"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 24,
+      "expected_layers": 24,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 960,
+        "height": 754
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "nvidia/Nemotron-H-8B-Base-8K",
       "route": "A",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993"
+      "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 2140,
+          "candidatesTokenCount": 2440,
+          "totalTokenCount": 9864,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2140
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2440
+            }
+          ],
+          "thoughtsTokenCount": 5284,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 52.108,
+        "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+        "prompt_hash": "6cce84467a8c34b5221c09fcc1801132c80400022164a8a529b8050fa34b19c5"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 52,
+      "expected_layers": 52,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 960,
+        "height": 660
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "nvidia/Nemotron-H-8B-Base-8K",
       "route": "B",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993"
+      "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 2242,
+          "candidatesTokenCount": 578,
+          "totalTokenCount": 6570,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 2242
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 578
+            }
+          ],
+          "thoughtsTokenCount": 3750,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 26.889,
+        "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+        "prompt_hash": "05a191d61b3bd1392ca8aba8e3dfcc72d3eba153dbfe7d269eabc462a776e403"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 52,
+      "expected_layers": 52,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 960,
+        "height": 700
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "meta-llama/Llama-3.1-8B",
       "route": "A",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c"
+      "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 1467,
+          "candidatesTokenCount": 1484,
+          "totalTokenCount": 5612,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1467
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1484
+            }
+          ],
+          "thoughtsTokenCount": 2661,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 27.557,
+        "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c",
+        "prompt_hash": "9b7e883398f3fddd572ae0c0cf22f8edd0594b98463435d111a3f4bdbb0dc804"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 32,
+      "expected_layers": 32,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 480,
+        "height": 664
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     },
     {
       "id": "meta-llama/Llama-3.1-8B",
       "route": "B",
-      "generated": false,
+      "generated": true,
       "reviewer": "deterministic validators",
-      "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c"
+      "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c",
+      "scored": true,
+      "metadata": {
+        "model": "gemini-4-hydrogen",
+        "finish_reason": "STOP",
+        "provider_model_version": "gemini-4-hydrogen",
+        "usage": {
+          "promptTokenCount": 1569,
+          "candidatesTokenCount": 348,
+          "totalTokenCount": 3018,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 1569
+            }
+          ],
+          "candidatesTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 348
+            }
+          ],
+          "thoughtsTokenCount": 1101,
+          "serviceTier": "standard"
+        },
+        "elapsed_seconds": 31.564,
+        "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c",
+        "prompt_hash": "b3d0db64ab8635b83836afda8dcadfd8abdfe88c130673ae91ff428dcc8f8290"
+      },
+      "labels_and_numbers_from_published": true,
+      "label_coverage": true,
+      "labels_attached_to_nodes": true,
+      "invalid_labels": [],
+      "layer_sum": 32,
+      "expected_layers": 32,
+      "layer_sum_matches": true,
+      "nodes_and_edges_match": true,
+      "canvas": {
+        "width": 600,
+        "height": 750
+      },
+      "overlaps": [],
+      "outside": [],
+      "invisible": [],
+      "nodeOverlaps": [],
+      "text_node_overflow": [],
+      "no_text_overlap": true,
+      "everything_inside_canvas": true,
+      "all_labels_visible": true,
+      "readable_font_sizes": true,
+      "no_node_overlap": true,
+      "text_fits_nodes": true,
+      "canvas_within_experiment_bounds": true,
+      "passed": true
     }
   ],
-  "selection_rule": "Most complete passes, then most individual check passes, then fewer output tokens; declared before generation."
+  "selection_rule": "Most complete passes, then most individual check passes, then fewer output tokens; declared before generation.",
+  "request_accounting": {
+    "reserved_requests": 10,
+    "successful_candidates": 8,
+    "http_503_failures": 2,
+    "architecture_repairs": 0,
+    "fallback_calls": 0,
+    "model_review_calls": 0,
+    "weekly_cap": 15,
+    "remaining_weekly_reservations": 5
+  }
 }

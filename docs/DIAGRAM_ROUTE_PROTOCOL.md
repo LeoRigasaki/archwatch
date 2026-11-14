@@ -32,6 +32,8 @@ Select by most complete passes, then most individual check passes, then fewer ou
 
 Eight planned generation calls, one per model/route, zero architecture repairs, zero fallback calls. Limits and model IDs live in configuration. The adapter enforces the screenshot-derived daily cap, a 15-request weekly cap, four starts per minute and a conservative token bound. Reservations are written before transport; an uncertain/failed request still counts. Quota/provider failures stop the experiment rather than upgrading service or switching models. Reviews are deterministic; the diagram model never grades itself.
 
+Transport amendment: request 2 returned HTTP 503 without a candidate. Manual resumption reused the already saved first SVG and the identical pending prompt. The total attempt ceiling was raised from eight to the existing 15-request weekly budget, including failed transports. Request 8 later returned HTTP 503 as well. The completed experiment reserved ten requests for eight successful first-response samples, with no architecture repairs or fallback. This changes transport headroom only, not the prompts, validators or selection rule.
+
 Each case saves `spec.yaml`, `prompt.txt`, `v1.response.txt`, `v1.metadata.json`, `v1.svg`, `v1.review.json` and a preview. B also saves `v1.layout.json`. Unsafe/malformed candidates retain raw text and a failed review instead of being loaded or published. Cached responses cannot be reused with changed input/prompt hashes. Nothing from this experiment is published in the gallery automatically.
 
 ```bash

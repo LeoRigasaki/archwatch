@@ -1,0 +1,157 @@
+{
+  "canvas": {
+    "width": 840,
+    "height": 970
+  },
+  "nodes": [
+    {
+      "id": "embedding",
+      "x": 280,
+      "y": 50,
+      "width": 280,
+      "height": 84
+    },
+    {
+      "id": "mix_kda_linear",
+      "x": 80,
+      "y": 220,
+      "width": 300,
+      "height": 194
+    },
+    {
+      "id": "mix_gated_dsa_mla",
+      "x": 460,
+      "y": 220,
+      "width": 300,
+      "height": 194
+    },
+    {
+      "id": "ffn",
+      "x": 260,
+      "y": 500,
+      "width": 320,
+      "height": 240
+    },
+    {
+      "id": "summary",
+      "x": 270,
+      "y": 810,
+      "width": 300,
+      "height": 108
+    }
+  ],
+  "groups": [],
+  "labels": [
+    {
+      "id": "f_vocab_size",
+      "node": "embedding"
+    },
+    {
+      "id": "f_hidden_size",
+      "node": "embedding"
+    },
+    {
+      "id": "kind_kda_linear",
+      "node": "mix_kda_linear"
+    },
+    {
+      "id": "count_kda_linear",
+      "node": "mix_kda_linear"
+    },
+    {
+      "id": "f_linear_attn_num_heads",
+      "node": "mix_kda_linear"
+    },
+    {
+      "id": "f_linear_attn_head_dim",
+      "node": "mix_kda_linear"
+    },
+    {
+      "id": "f_linear_attn_conv_kernel",
+      "node": "mix_kda_linear"
+    },
+    {
+      "id": "kind_gated_dsa_mla",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "count_gated_dsa_mla",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "f_mla_kv_lora_rank",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "f_mla_qk_rope_head_dim",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "f_dsa_index_num_heads",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "f_dsa_index_head_dim",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "f_dsa_index_topk",
+      "node": "mix_gated_dsa_mla"
+    },
+    {
+      "id": "f_moe_num_experts",
+      "node": "ffn"
+    },
+    {
+      "id": "f_moe_active_experts",
+      "node": "ffn"
+    },
+    {
+      "id": "f_moe_shared_experts",
+      "node": "ffn"
+    },
+    {
+      "id": "f_moe_expert_intermediate",
+      "node": "ffn"
+    },
+    {
+      "id": "f_moe_latent_dim",
+      "node": "ffn"
+    },
+    {
+      "id": "f_dense_layers",
+      "node": "ffn"
+    },
+    {
+      "id": "f_dense_ffn_intermediate",
+      "node": "ffn"
+    },
+    {
+      "id": "f_activation",
+      "node": "ffn"
+    },
+    {
+      "id": "f_ffn_gated",
+      "node": "ffn"
+    },
+    {
+      "id": "f_num_layers",
+      "node": "summary"
+    },
+    {
+      "id": "f_context_length",
+      "node": "summary"
+    },
+    {
+      "id": "f_params_total",
+      "node": "summary"
+    }
+  ],
+  "edges": [
+    "embedding_to_mix_kda_linear",
+    "mix_kda_linear_out",
+    "embedding_to_mix_gated_dsa_mla",
+    "mix_gated_dsa_mla_out",
+    "ffn_out"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "reserved_requests": 10,
+  "successful_candidates": 8,
+  "http_503_failures": 2,
+  "architecture_repairs": 0,
+  "fallback_calls": 0,
+  "model_review_calls": 0,
+  "weekly_cap": 15,
+  "remaining_weekly_reservations": 5
+}

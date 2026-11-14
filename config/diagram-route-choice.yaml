@@ -1,0 +1,6 @@
+schema_version: 1
+route: B
+generator: gemini-4-hydrogen
+evidence: results/diagram-route-test.md
+generation_loop_enabled: false
+explainer_enabled: false

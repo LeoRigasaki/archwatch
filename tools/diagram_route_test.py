@@ -56,7 +56,7 @@ def report(root, config, rows):
 
         winner = "A" if key(a) > key(b) else "B" if key(b) > key(a) else "tie"
     summary = dict(
-        protocol="Eight first attempts; same fixed facts and graph, one model; no repairs or fallback.",
+        protocol="Eight first-response candidates; same fixed facts and graph, one model; no repairs or fallback.",
         generator=config["models"]["diagram"]["id"],
         complete=complete,
         totals=totals,
@@ -64,7 +64,6 @@ def report(root, config, rows):
         cases=rows,
         selection_rule="Most complete passes, then most individual check passes, then fewer output tokens; declared before generation.",
     )
-    write_if_changed(root / "results/diagram-route-test.json", json.dumps(summary, indent=2) + "\n")
     lines = [
         "# Diagram route comparison",
         "",
@@ -106,14 +105,35 @@ def report(root, config, rows):
         "",
         "Selection rule: " + summary["selection_rule"],
         "",
-        f"Result: **{winner if winner else 'incomplete; no route selected'}**.",
+        f"Result: **{winner if winner else 'no passing case; no route selected' if complete else 'incomplete; no route selected'}**.",
         "",
-        "Each case saves its frozen spec, prompt, raw response, SVG, review JSON and provider usage. Route B also saves its JSON layout. Geometric dimensions are not architecture facts; visible labels must match source-linked published values exactly. Input facts, node membership and edges are fixed for both routes.",
+        "Each case saves its frozen spec, prompt, raw response, SVG, review JSON and provider usage. Route B also saves its JSON layout. Geometric dimensions are not architecture facts; visible labels must match source-linked published values, allowing colon whitespace and numeric thousands separators. Input facts, node membership and edges are fixed for both routes.",
         "",
         "The LFM3-1.7B record is the requested historical record, used only for this private experiment; its current watcher derivative status is not overridden or newly admitted. The other subjects are the requested established records, not the newest unqualified layouts.",
         "",
         "These are four models and one sample per route. The checks test factual control, required-label coverage, layer totals and browser geometry, not exhaustive semantic architecture correctness or general aesthetic quality. A route failing validation is not publishable. No output is added to the public gallery by this experiment. The generation/repair loop and explainer remain disabled.",
     ]
+    accounting = root / "results/diagram-route-test/request-accounting.json"
+    if accounting.exists():
+        summary["request_accounting"] = json.loads(accounting.read_text())
+        usage = summary["request_accounting"]
+        lines += [
+            "",
+            f"Request accounting: **{usage['reserved_requests']} reserved attempts**, {usage['successful_candidates']} successful candidates, {usage['http_503_failures']} HTTP 503 failures. Failed requests count against the 15-request weekly cap. Manual resumption used the same prompts and reused completed outputs; zero architecture repairs, fallback or model-review calls.",
+        ]
+    if complete and winner in ("A", "B"):
+        lines += [
+            "",
+            f"A passed {totals['A']['passed']}/4 cases ({totals['A']['check_passes']}/48 individual checks); B passed {totals['B']['passed']}/4 ({totals['B']['check_passes']}/48). Output tokens: A {totals['A']['output_tokens']:,}, B {totals['B']['output_tokens']:,}. The selected route wins the predeclared token tie-break; this is not evidence of better visual quality.",
+            "",
+            "## Saved previews",
+            "",
+            "| Model | Full SVG (A) | JSON + Python (B) |",
+            "|---|---|---|",
+        ]
+        for repo in config["route_test"]["models"]:
+            path = "diagram-route-test/" + repo.replace("/", "__")
+            lines.append(f"| {repo} | [preview]({path}/A/v1.png) | [preview]({path}/B/v1.png) |")
     for row in rows:
         if row.get("error") or not row.get("passed"):
             lines += [
@@ -125,6 +145,7 @@ def report(root, config, rows):
                 "```",
             ]
     write_if_changed(root / "results/diagram-route-test.md", "\n".join(lines) + "\n")
+    write_if_changed(root / "results/diagram-route-test.json", json.dumps(summary, indent=2) + "\n")
     if winner in ("A", "B"):
         choice = dict(
             schema_version=1,
@@ -175,7 +196,11 @@ def run(root, config, *, generate=False, score=False, provider=None):
                 try:
                     text, metadata = provider.generate(request, json_output=route == "B")
                 except ProviderError as error:
-                    write_if_changed(folder / "request.error.json", json.dumps(dict(error=str(error)), indent=2) + "\n")
+                    error_number = len(list(folder.glob("request*.error.json"))) + 1
+                    write_if_changed(
+                        folder / f"request-{error_number}.error.json",
+                        json.dumps(dict(error=str(error)), indent=2) + "\n",
+                    )
                     report(root, config, rows)
                     raise
                 metadata.update(spec_hash=spec["spec_hash"], prompt_hash=hashlib.sha256(request.encode()).hexdigest())

@@ -1,0 +1,60 @@
+{
+  "id": "LiquidAI/LFM3-1.7B",
+  "route": "A",
+  "generated": true,
+  "reviewer": "deterministic validators",
+  "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5",
+  "scored": true,
+  "metadata": {
+    "model": "gemini-4-hydrogen",
+    "finish_reason": "STOP",
+    "provider_model_version": "gemini-4-hydrogen",
+    "usage": {
+      "promptTokenCount": 1868,
+      "candidatesTokenCount": 2163,
+      "totalTokenCount": 10738,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1868
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2163
+        }
+      ],
+      "thoughtsTokenCount": 6707,
+      "serviceTier": "standard"
+    },
+    "elapsed_seconds": 82.739,
+    "spec_hash": "0bf2bf8b4186840ab41fb49345d76916fbd48f92f8a244484a6b8f5c9b32f3b5",
+    "prompt_hash": "206d1a9de1e8c451040d592daf1f5133002bc7cd7fe451f4eb02c3a36e37e922"
+  },
+  "labels_and_numbers_from_published": true,
+  "label_coverage": true,
+  "labels_attached_to_nodes": true,
+  "invalid_labels": [],
+  "layer_sum": 24,
+  "expected_layers": 24,
+  "layer_sum_matches": true,
+  "nodes_and_edges_match": true,
+  "canvas": {
+    "width": 960,
+    "height": 680
+  },
+  "overlaps": [],
+  "outside": [],
+  "invisible": [],
+  "nodeOverlaps": [],
+  "text_node_overflow": [],
+  "no_text_overlap": true,
+  "everything_inside_canvas": true,
+  "all_labels_visible": true,
+  "readable_font_sizes": true,
+  "no_node_overlap": true,
+  "text_fits_nodes": true,
+  "canvas_within_experiment_bounds": true,
+  "passed": true
+}

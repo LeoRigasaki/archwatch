@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 680" width="960" height="680">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M 1 2 L 9 5 L 1 8 z" fill="#64748b"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .node-rect { fill: #ffffff; stroke: #64748b; stroke-width: 1.5; rx: 8; ry: 8; }
+      .mixer-rect { fill: #f1f5f9; stroke: #475569; stroke-width: 1.5; rx: 8; ry: 8; }
+      .summary-rect { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.5; rx: 8; ry: 8; }
+      .label-kind { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+      .label-fact { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; fill: #334155; text-anchor: middle; dominant-baseline: central; }
+      .edge-path { fill: none; stroke: #64748b; stroke-width: 1.75; stroke-linecap: butt; stroke-linejoin: round; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="960" height="680"/>
+
+  <path data-edge-id="embedding_to_mix_short_conv" class="edge-path" d="M 440 124 L 440 150 Q 440 158 432 158 L 188 158 Q 180 158 180 166 L 180 209"/>
+  <path data-edge-id="embedding_to_mix_full_attention" class="edge-path" d="M 480 124 L 480 189"/>
+  <path data-edge-id="embedding_to_mix_sliding_attention" class="edge-path" d="M 520 124 L 520 150 Q 520 158 528 158 L 772 158 Q 780 158 780 166 L 780 209"/>
+  <path data-edge-id="mix_short_conv_out" class="edge-path" d="M 180 330 L 180 375 Q 180 383 188 383 L 432 383 Q 440 383 440 391 L 440 415"/>
+  <path data-edge-id="mix_full_attention_out" class="edge-path" d="M 480 350 L 480 415"/>
+  <path data-edge-id="mix_sliding_attention_out" class="edge-path" d="M 780 330 L 780 375 Q 780 383 772 383 L 528 383 Q 520 383 520 391 L 520 415"/>
+  <path data-edge-id="ffn_out" class="edge-path" d="M 480 480 L 480 535"/>
+
+  <g data-node-id="embedding">
+    <rect class="node-rect" x="340" y="40" width="280" height="84"/>
+    <text data-label-id="f_vocab_size" class="label-fact" x="480" y="69">vocab_size: 128000</text>
+    <text data-label-id="f_hidden_size" class="label-fact" x="480" y="95">hidden_size: 2048</text>
+  </g>
+
+  <g data-node-id="mix_short_conv">
+    <rect class="mixer-rect" x="50" y="210" width="260" height="120"/>
+    <text data-label-id="kind_short_conv" class="label-kind" x="180" y="240">Gated short conv</text>
+    <text data-label-id="count_short_conv" class="label-fact" x="180" y="272">layers: 13</text>
+    <text data-label-id="f_short_conv_kernel" class="label-fact" x="180" y="298">short_conv_kernel: 7</text>
+  </g>
+
+  <g data-node-id="mix_full_attention">
+    <rect class="mixer-rect" x="350" y="190" width="260" height="160"/>
+    <text data-label-id="kind_full_attention" class="label-kind" x="480" y="218">Global attention</text>
+    <text data-label-id="count_full_attention" class="label-fact" x="480" y="248">layers: 6</text>
+    <text data-label-id="f_num_attention_heads" class="label-fact" x="480" y="274">num_attention_heads: 16</text>
+    <text data-label-id="f_num_kv_heads" class="label-fact" x="480" y="300">num_kv_heads: 4</text>
+    <text data-label-id="f_head_dim" class="label-fact" x="480" y="326">head_dim: 128</text>
+  </g>
+
+  <g data-node-id="mix_sliding_attention">
+    <rect class="mixer-rect" x="650" y="210" width="260" height="120"/>
+    <text data-label-id="kind_sliding_attention" class="label-kind" x="780" y="240">Sliding-window attention</text>
+    <text data-label-id="count_sliding_attention" class="label-fact" x="780" y="272">layers: 5</text>
+    <text data-label-id="f_sliding_window" class="label-fact" x="780" y="298">sliding_window: 256</text>
+  </g>
+
+  <g data-node-id="ffn">
+    <rect class="node-rect" x="340" y="416" width="280" height="64"/>
+    <text data-label-id="f_ffn_intermediate" class="label-fact" x="480" y="448">ffn_intermediate: 7680</text>
+  </g>
+
+  <g data-node-id="summary">
+    <rect class="summary-rect" x="340" y="536" width="280" height="104"/>
+    <text data-label-id="f_num_layers" class="label-fact" x="480" y="562">num_layers: 24</text>
+    <text data-label-id="f_context_length" class="label-fact" x="480" y="588">context_length: 262144</text>
+    <text data-label-id="f_params_total" class="label-fact" x="480" y="614">params_total: 1728801536</text>
+  </g>
+</svg>

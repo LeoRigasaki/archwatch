@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1000" width="820" height="1000">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+      <polygon points="0,1.5 10,5 0,8.5 2.2,5" fill="#475569"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .node-base { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+      .node-io { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.5; }
+      .node-linear { fill: #f0f9ff; stroke: #7dd3fc; stroke-width: 1.5; }
+      .node-sparse { fill: #eef2ff; stroke: #a5b4fc; stroke-width: 1.5; }
+      .node-summary { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.5; }
+      .edge { fill: none; stroke: #475569; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      text { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-variant-numeric: tabular-nums; }
+      .kind { font-size: 15.5px; font-weight: 700; fill: #0f172a; }
+      .count-linear { font-size: 14px; font-weight: 600; fill: #0369a1; }
+      .count-sparse { font-size: 14px; font-weight: 600; fill: #4338ca; }
+      .fact { font-size: 14px; font-weight: 400; fill: #1e293b; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="820" height="1000"/>
+
+  <path class="edge" data-edge-id="embedding_to_mix_kda_linear" d="M 350 142 L 350 168 Q 350 176 342 176 L 228 176 Q 220 176 220 184 L 220 206"/>
+  <path class="edge" data-edge-id="embedding_to_mix_gated_dsa_mla" d="M 470 142 L 470 168 Q 470 176 478 176 L 592 176 Q 600 176 600 184 L 600 206"/>
+  <path class="edge" data-edge-id="mix_kda_linear_out" d="M 220 378 L 220 456 Q 220 464 228 464 L 342 464 Q 350 464 350 472 L 350 494"/>
+  <path class="edge" data-edge-id="mix_gated_dsa_mla_out" d="M 600 430 L 600 456 Q 600 464 592 464 L 478 464 Q 470 464 470 472 L 470 494"/>
+  <path class="edge" data-edge-id="ffn_out" d="M 410 768 L 410 828"/>
+
+  <g data-node-id="embedding">
+    <rect class="node-io" x="240" y="50" width="340" height="92" rx="10"/>
+    <text class="fact" data-label-id="f_vocab_size" x="264" y="86">vocab_size: 163840</text>
+    <text class="fact" data-label-id="f_hidden_size" x="264" y="114">hidden_size: 7168</text>
+  </g>
+
+  <g data-node-id="mix_kda_linear">
+    <rect class="node-linear" x="60" y="210" width="320" height="168" rx="10"/>
+    <text class="kind" data-label-id="kind_kda_linear" x="84" y="246">KDA linear attention</text>
+    <text class="count-linear" data-label-id="count_kda_linear" x="84" y="270">layers: 69</text>
+    <text class="fact" data-label-id="f_linear_attn_num_heads" x="84" y="302">linear_attn_num_heads: 96</text>
+    <text class="fact" data-label-id="f_linear_attn_head_dim" x="84" y="328">linear_attn_head_dim: 128</text>
+    <text class="fact" data-label-id="f_linear_attn_conv_kernel" x="84" y="354">linear_attn_conv_kernel: 4</text>
+  </g>
+
+  <g data-node-id="mix_gated_dsa_mla">
+    <rect class="node-sparse" x="440" y="210" width="320" height="220" rx="10"/>
+    <text class="kind" data-label-id="kind_gated_dsa_mla" x="464" y="246">Gated DSA (sparse, on MLA)</text>
+    <text class="count-sparse" data-label-id="count_gated_dsa_mla" x="464" y="270">layers: 24</text>
+    <text class="fact" data-label-id="f_mla_kv_lora_rank" x="464" y="302">mla_kv_lora_rank: 512</text>
+    <text class="fact" data-label-id="f_mla_qk_rope_head_dim" x="464" y="328">mla_qk_rope_head_dim: 64</text>
+    <text class="fact" data-label-id="f_dsa_index_num_heads" x="464" y="354">dsa_index_num_heads: 32</text>
+    <text class="fact" data-label-id="f_dsa_index_head_dim" x="464" y="380">dsa_index_head_dim: 128</text>
+    <text class="fact" data-label-id="f_dsa_index_topk" x="464" y="406">dsa_index_topk: 2048</text>
+  </g>
+
+  <g data-node-id="ffn">
+    <rect class="node-base" x="230" y="498" width="360" height="270" rx="10"/>
+    <text class="fact" data-label-id="f_moe_num_experts" x="254" y="534">moe_num_experts: 896</text>
+    <text class="fact" data-label-id="f_moe_active_experts" x="254" y="560">moe_active_experts: 16</text>
+    <text class="fact" data-label-id="f_moe_shared_experts" x="254" y="586">moe_shared_experts: 2</text>
+    <text class="fact" data-label-id="f_moe_expert_intermediate" x="254" y="612">moe_expert_intermediate: 3072</text>
+    <text class="fact" data-label-id="f_moe_latent_dim" x="254" y="638">moe_latent_dim: 3584</text>
+    <text class="fact" data-label-id="f_dense_layers" x="254" y="664">dense_layers: 1</text>
+    <text class="fact" data-label-id="f_dense_ffn_intermediate" x="254" y="690">dense_ffn_intermediate: 33792</text>
+    <text class="fact" data-label-id="f_activation" x="254" y="716">activation: situ</text>
+    <text class="fact" data-label-id="f_ffn_gated" x="254" y="742">ffn_gated: true</text>
+  </g>
+
+  <g data-node-id="summary">
+    <rect class="node-summary" x="240" y="832" width="340" height="118" rx="10"/>
+    <text class="fact" data-label-id="f_num_layers" x="264" y="868">num_layers: 93</text>
+    <text class="fact" data-label-id="f_context_length" x="264" y="896">context_length: 1048576</text>
+    <text class="fact" data-label-id="f_params_total" x="264" y="924">params_total: 2780110363392</text>
+  </g>
+</svg>

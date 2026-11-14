@@ -27,7 +27,8 @@ models:
 weekly_generation_request_cap: 15
 route_test:
   requests_per_minute: 4
-  max_generation_requests: 8
+  planned_generations: 8
+  max_generation_requests: 15
   repairs: 0
   fallback_enabled: false
   browser_channel: chrome

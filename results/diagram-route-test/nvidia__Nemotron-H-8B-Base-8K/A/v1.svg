@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 660" width="960" height="660">
+  <defs>
+    <style>
+      .label-kind {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        fill: #0f172a;
+      }
+      .label-count {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        fill: #475569;
+        font-variant-numeric: tabular-nums;
+      }
+      .label-fact {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 13.5px;
+        font-weight: 400;
+        fill: #1e293b;
+        font-variant-numeric: tabular-nums;
+      }
+      .edge-path {
+        fill: none;
+        stroke: #475569;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1.5 L 9.5 5 L 1 8.5 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="660" fill="#f8fafc"/>
+
+  <g>
+    <path data-edge-id="embedding_to_mix_mamba2" class="edge-path" d="M 410 124 L 410 154 Q 410 162 402 162 L 188 162 Q 180 162 180 170 L 180 199" marker-end="url(#arrow)"/>
+    <path data-edge-id="embedding_to_mix_mlp" class="edge-path" d="M 480 124 L 480 199" marker-end="url(#arrow)"/>
+    <path data-edge-id="embedding_to_mix_full_attention" class="edge-path" d="M 550 124 L 550 154 Q 550 162 558 162 L 772 162 Q 780 162 780 170 L 780 199" marker-end="url(#arrow)"/>
+    <path data-edge-id="mix_mamba2_out" class="edge-path" d="M 180 430 L 180 460 Q 180 468 188 468 L 402 468 Q 410 468 410 476 L 410 505" marker-end="url(#arrow)"/>
+    <path data-edge-id="mix_mlp_out" class="edge-path" d="M 480 430 L 480 505" marker-end="url(#arrow)"/>
+    <path data-edge-id="mix_full_attention_out" class="edge-path" d="M 780 430 L 780 460 Q 780 468 772 468 L 558 468 Q 550 468 550 476 L 550 505" marker-end="url(#arrow)"/>
+  </g>
+
+  <g data-node-id="embedding">
+    <rect x="340" y="40" width="280" height="84" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text data-label-id="f_vocab_size" class="label-fact" x="360" y="73">vocab_size: 131072</text>
+    <text data-label-id="f_hidden_size" class="label-fact" x="360" y="99">hidden_size: 4096</text>
+  </g>
+
+  <g data-node-id="mix_mamba2">
+    <rect x="40" y="200" width="280" height="230" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+    <text data-label-id="kind_mamba2" class="label-kind" x="60" y="232">Mamba-2</text>
+    <text data-label-id="count_mamba2" class="label-count" x="60" y="256">layers: 24</text>
+    <text data-label-id="f_mamba_num_heads" class="label-fact" x="60" y="286">mamba_num_heads: 128</text>
+    <text data-label-id="f_mamba_head_dim" class="label-fact" x="60" y="310">mamba_head_dim: 64</text>
+    <text data-label-id="f_mamba_state_size" class="label-fact" x="60" y="334">mamba_state_size: 128</text>
+    <text data-label-id="f_mamba_groups" class="label-fact" x="60" y="358">mamba_groups: 8</text>
+    <text data-label-id="f_mamba_conv_kernel" class="label-fact" x="60" y="382">mamba_conv_kernel: 4</text>
+    <text data-label-id="f_mamba_conv_channels" class="label-fact" x="60" y="406">mamba_conv_channels: 10240</text>
+  </g>
+
+  <g data-node-id="mix_mlp">
+    <rect x="340" y="200" width="280" height="230" rx="8" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+    <text data-label-id="kind_mlp" class="label-kind" x="360" y="232">MLP</text>
+    <text data-label-id="count_mlp" class="label-count" x="360" y="256">layers: 24</text>
+    <text data-label-id="f_ffn_intermediate" class="label-fact" x="360" y="286">ffn_intermediate: 21504</text>
+    <text data-label-id="f_activation" class="label-fact" x="360" y="310">activation: relu2</text>
+    <text data-label-id="f_ffn_gated" class="label-fact" x="360" y="334">ffn_gated: false</text>
+  </g>
+
+  <g data-node-id="mix_full_attention">
+    <rect x="640" y="200" width="280" height="230" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+    <text data-label-id="kind_full_attention" class="label-kind" x="660" y="232">Global attention</text>
+    <text data-label-id="count_full_attention" class="label-count" x="660" y="256">layers: 4</text>
+    <text data-label-id="f_num_attention_heads" class="label-fact" x="660" y="286">num_attention_heads: 32</text>
+    <text data-label-id="f_num_kv_heads" class="label-fact" x="660" y="310">num_kv_heads: 8</text>
+    <text data-label-id="f_head_dim" class="label-fact" x="660" y="334">head_dim: 128</text>
+  </g>
+
+  <g data-node-id="summary">
+    <rect x="340" y="506" width="280" height="114" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text data-label-id="f_num_layers" class="label-fact" x="360" y="540">num_layers: 52</text>
+    <text data-label-id="f_context_length" class="label-fact" x="360" y="566">context_length: 8192</text>
+    <text data-label-id="f_params_total" class="label-fact" x="360" y="592">params_total: 8100852736</text>
+  </g>
+</svg>

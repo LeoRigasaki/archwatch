@@ -1,0 +1,27 @@
+{
+  "model": "gemini-4-hydrogen",
+  "finish_reason": "STOP",
+  "provider_model_version": "gemini-4-hydrogen",
+  "usage": {
+    "promptTokenCount": 2140,
+    "candidatesTokenCount": 2440,
+    "totalTokenCount": 9864,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 2140
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 2440
+      }
+    ],
+    "thoughtsTokenCount": 5284,
+    "serviceTier": "standard"
+  },
+  "elapsed_seconds": 52.108,
+  "spec_hash": "afca43cbb3875715a5f2c03a72779b4adc018e2b091f836fd77d20c946b4c993",
+  "prompt_hash": "6cce84467a8c34b5221c09fcc1801132c80400022164a8a529b8050fa34b19c5"
+}

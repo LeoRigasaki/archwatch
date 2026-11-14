@@ -2,7 +2,7 @@
 
 ArchWatch extracts architecture facts from a model's own Hugging Face config, tensor headers, Python code and model card, checks their agreement, and generates an architecture page with evidence. Conflicting fields are withheld from the record's `published` dictionary and from architecture views.
 
-The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core and bounded watcher now cover a primary-source backfill from all ten core publishers. Ten manually transcribed development labels and per-field evaluation are included; human review, held-out evaluation, LLM readers and the issue review queue remain open.
+The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core and bounded watcher now cover primary-source backfills from all ten core publishers. Development labels and a separately frozen newest-release evaluation are included; human review, broader held-out evaluation, LLM readers and the issue review queue remain open.
 
 ## Local demo
 
@@ -36,7 +36,7 @@ The fixed list in `watchlist.txt` remains the reproducible smoke test. `watch.py
 
 [Backfill processing](results/backfill-processing.json) covers one primary release each from DeepSeek, Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai. [The exact selections](config/backfill.yaml) and [gold labels](evals/README.md) retain pinned primary links. The gallery holds 26 saved diagnostic records, of which 12 meet its current display policy.
 
-The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **116 passing tests**.
+The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **138 passing tests**, including browser geometry fixtures on installed Chrome.
 
 The original four-model live run remains in [live-validation.json](results/live-validation.json). [Family rules](docs/FAMILY_RULES.md) document the new Phi parallel graph, Mistral all-layer sliding attention, GLM fused FFN and Nemotron-H operator-only graph. Cache estimates are not measured runtime VRAM.
 
@@ -83,7 +83,9 @@ The GitHub remote is configured. `.github/workflows/ci.yml` runs offline lint, f
 
 The existing `daily.yml` supports manual `fixed` (default), `discover` and `process` modes. Its schedule remains commented out. Its PR label does not enable auto-merge. Discovery and controlled publication must be exercised manually before unattended runs.
 
-The watcher uses the ten preferred labs plus outside discovery. A live temporary-root run processed the four known models with both expected predecessors; a second pass changed no artifact bytes or mtimes. A separate 80-candidate discovery scan did not publish new models. The proposed cadence remains daily metadata discovery and a bounded weekly Gemini batch, with cron disabled pending approval. [Model selection](docs/MODEL_SELECTION.md), [provider constraints](docs/PROVIDER_LIMITS.md) and [next steps](docs/NEXT_STEPS.md) record the choices and remaining work. No Gemini integration or recurring task is enabled yet.
+The watcher uses the ten preferred labs plus outside discovery. A live temporary-root run processed the four known models with both expected predecessors; a second pass changed no artifact bytes or mtimes. A separate 80-candidate discovery scan did not publish new models. The proposed cadence remains daily metadata discovery and a bounded weekly Gemini batch, with cron disabled pending approval. [Model selection](docs/MODEL_SELECTION.md), [provider constraints](docs/PROVIDER_LIMITS.md) and [next steps](docs/NEXT_STEPS.md) record the choices and remaining work.
+
+The [one-shot Gemini route experiment](results/diagram-route-test.md) is complete. Full SVG and JSON layout + Python each passed all checks on all four subjects. **Route B** wins the predeclared output-token tie-break (2,106 vs 8,643). Published facts are frozen before generation; Gemini only arranges them. Ten requests yielded eight candidates and two HTTP 503 failures, with no repairs or fallback. Saved previews are layer-kind overviews, not qualified detailed wiring diagrams. The generation/repair loop, explainer and recurring tasks remain disabled pending review of these results.
 
 ## Limits of the evidence
 

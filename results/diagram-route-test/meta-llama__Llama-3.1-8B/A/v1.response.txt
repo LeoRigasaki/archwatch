@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 664" width="480" height="664">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#475569"/>
+    </marker>
+    <style>
+      .label-fact {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        fill: #1e293b;
+      }
+      .label-kind {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        fill: #1d4ed8;
+      }
+      .label-count {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        fill: #334155;
+      }
+      .edge-line {
+        stroke: #475569;
+        stroke-width: 1.75;
+        fill: none;
+        marker-end: url(#arrow);
+      }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="480" height="664" fill="#f8fafc"/>
+
+  <line data-edge-id="embedding_to_mix_full_attention" class="edge-line" x1="240" y1="124" x2="240" y2="169"/>
+  <line data-edge-id="mix_full_attention_out" class="edge-line" x1="240" y1="324" x2="240" y2="369"/>
+  <line data-edge-id="ffn_out" class="edge-line" x1="240" y1="474" x2="240" y2="519"/>
+
+  <g data-node-id="embedding">
+    <rect x="70" y="40" width="340" height="84" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text data-label-id="f_vocab_size" class="label-fact" x="94" y="74">vocab_size: 128256</text>
+    <text data-label-id="f_hidden_size" class="label-fact" x="94" y="99">hidden_size: 4096</text>
+  </g>
+
+  <g data-node-id="mix_full_attention">
+    <rect x="70" y="170" width="340" height="154" rx="8" fill="#f0f7ff" stroke="#3b82f6" stroke-width="1.75"/>
+    <text data-label-id="kind_full_attention" class="label-kind" x="94" y="202">Global attention</text>
+    <text data-label-id="count_full_attention" class="label-count" x="94" y="227">layers: 32</text>
+    <text data-label-id="f_num_attention_heads" class="label-fact" x="94" y="252">num_attention_heads: 32</text>
+    <text data-label-id="f_num_kv_heads" class="label-fact" x="94" y="277">num_kv_heads: 8</text>
+    <text data-label-id="f_head_dim" class="label-fact" x="94" y="302">head_dim: 128</text>
+  </g>
+
+  <g data-node-id="ffn">
+    <rect x="70" y="370" width="340" height="104" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+    <text data-label-id="f_ffn_intermediate" class="label-fact" x="94" y="402">ffn_intermediate: 14336</text>
+    <text data-label-id="f_activation" class="label-fact" x="94" y="427">activation: silu</text>
+    <text data-label-id="f_ffn_gated" class="label-fact" x="94" y="452">ffn_gated: true</text>
+  </g>
+
+  <g data-node-id="summary">
+    <rect x="70" y="520" width="340" height="104" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+    <text data-label-id="f_num_layers" class="label-fact" x="94" y="552">num_layers: 32</text>
+    <text data-label-id="f_context_length" class="label-fact" x="94" y="577">context_length: 131072</text>
+    <text data-label-id="f_params_total" class="label-fact" x="94" y="602">params_total: 8030261248</text>
+  </g>
+</svg>

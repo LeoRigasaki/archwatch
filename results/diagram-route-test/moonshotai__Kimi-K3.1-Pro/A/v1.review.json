@@ -1,0 +1,60 @@
+{
+  "id": "moonshotai/Kimi-K3.1-Pro",
+  "route": "A",
+  "generated": true,
+  "reviewer": "deterministic validators",
+  "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c",
+  "scored": true,
+  "metadata": {
+    "model": "gemini-4-hydrogen",
+    "finish_reason": "STOP",
+    "provider_model_version": "gemini-4-hydrogen",
+    "usage": {
+      "promptTokenCount": 2424,
+      "candidatesTokenCount": 2556,
+      "totalTokenCount": 13073,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2424
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2556
+        }
+      ],
+      "thoughtsTokenCount": 8093,
+      "serviceTier": "standard"
+    },
+    "elapsed_seconds": 70.524,
+    "spec_hash": "97a266f8a1d14e91c04223675d6a0496406fc3556f2b3c16cb05aff54087558c",
+    "prompt_hash": "537306548e5c265f9573b52af07fec87800187fec0d3fb1fd0ba638114530515"
+  },
+  "labels_and_numbers_from_published": true,
+  "label_coverage": true,
+  "labels_attached_to_nodes": true,
+  "invalid_labels": [],
+  "layer_sum": 93,
+  "expected_layers": 93,
+  "layer_sum_matches": true,
+  "nodes_and_edges_match": true,
+  "canvas": {
+    "width": 820,
+    "height": 1000
+  },
+  "overlaps": [],
+  "outside": [],
+  "invisible": [],
+  "nodeOverlaps": [],
+  "text_node_overflow": [],
+  "no_text_overlap": true,
+  "everything_inside_canvas": true,
+  "all_labels_visible": true,
+  "readable_font_sizes": true,
+  "no_node_overlap": true,
+  "text_fits_nodes": true,
+  "canvas_within_experiment_bounds": true,
+  "passed": true
+}

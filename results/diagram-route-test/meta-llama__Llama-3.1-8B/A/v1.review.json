@@ -1,0 +1,60 @@
+{
+  "id": "meta-llama/Llama-3.1-8B",
+  "route": "A",
+  "generated": true,
+  "reviewer": "deterministic validators",
+  "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c",
+  "scored": true,
+  "metadata": {
+    "model": "gemini-4-hydrogen",
+    "finish_reason": "STOP",
+    "provider_model_version": "gemini-4-hydrogen",
+    "usage": {
+      "promptTokenCount": 1467,
+      "candidatesTokenCount": 1484,
+      "totalTokenCount": 5612,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1467
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1484
+        }
+      ],
+      "thoughtsTokenCount": 2661,
+      "serviceTier": "standard"
+    },
+    "elapsed_seconds": 27.557,
+    "spec_hash": "153845e275c85f3287d52d28e8a2e793430a19a1730f8d88b5564889d519cf2c",
+    "prompt_hash": "9b7e883398f3fddd572ae0c0cf22f8edd0594b98463435d111a3f4bdbb0dc804"
+  },
+  "labels_and_numbers_from_published": true,
+  "label_coverage": true,
+  "labels_attached_to_nodes": true,
+  "invalid_labels": [],
+  "layer_sum": 32,
+  "expected_layers": 32,
+  "layer_sum_matches": true,
+  "nodes_and_edges_match": true,
+  "canvas": {
+    "width": 480,
+    "height": 664
+  },
+  "overlaps": [],
+  "outside": [],
+  "invisible": [],
+  "nodeOverlaps": [],
+  "text_node_overflow": [],
+  "no_text_overlap": true,
+  "everything_inside_canvas": true,
+  "all_labels_visible": true,
+  "readable_font_sizes": true,
+  "no_node_overlap": true,
+  "text_fits_nodes": true,
+  "canvas_within_experiment_bounds": true,
+  "passed": true
+}
