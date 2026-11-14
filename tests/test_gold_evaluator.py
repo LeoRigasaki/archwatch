@@ -42,3 +42,9 @@ def test_gold_covers_exactly_one_primary_model_per_core_publisher():
         assert label["source_commit"] in label["evidence"]["card"]
         assert label["evidence"]["weight_files"]
         assert label["expected"]["params_total"] > 0
+
+
+def test_saved_backfill_preserves_all_independently_labeled_published_fields():
+    report = evaluator().evaluate(ROOT / "evals/gold", ROOT / "data/models")
+    assert report["total"] == 144
+    assert report["correct"] == report["total"], [m for m in report["models"] if m["errors"]]

@@ -22,7 +22,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-13T20:28:06+00:00",
+ "analyzed_at": "2026-11-13T20:58:39+00:00",
  "facts": {
   "architecture_class": {
    "value": "KimiK31ForConditionalGeneration",
@@ -273,10 +273,6 @@
    "value": "situ",
    "evidence": "config:text_config.hidden_act"
   },
-  "norm": {
-   "value": "RMSNorm",
-   "evidence": "config:text_config.rms_norm_eps"
-  },
   "released_weights_format": {
    "value": "mxfp4-pack-quantized (4-bit)",
    "evidence": "config:text_config.quantization_config"
@@ -311,6 +307,7 @@
    "text_config.max_position_embeddings",
    "text_config.mla_use_nope",
    "text_config.mla_use_output_gate",
+   "text_config.model_type",
    "text_config.moe_intermediate_size",
    "text_config.moe_router_activation_func",
    "text_config.num_attention_heads",
@@ -379,7 +376,6 @@
    "text_config.linear_attn_config.use_full_rank_gate",
    "text_config.max_length",
    "text_config.min_length",
-   "text_config.model_type",
    "text_config.moe_layer_freq",
    "text_config.moe_renormalize",
    "text_config.no_repeat_ngram_size",
@@ -606,6 +602,7 @@
   "grows_per_token_bytes": 33792,
   "grows_per_token_bytes_low": 30720,
   "constant_bytes": 449372160,
+  "constant_bytes_low": 449372160,
   "naive_mha_per_token_bytes": 5713920,
   "reduction_vs_naive_mha": 169.1,
   "memory_at_context": {
@@ -956,6 +953,19 @@
     {
      "value": "MLA",
      "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
     }
    ]
   },
@@ -2058,6 +2068,7 @@
   "num_kv_heads": 96,
   "head_dim": 192,
   "attention_type": "MLA",
+  "ffn_gated": true,
   "moe_num_experts": 896,
   "moe_active_experts": 16,
   "moe_shared_experts": 2,
@@ -2305,7 +2316,7 @@
  "review_queue": [],
  "unchecked_notes": [
   "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
-  "Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig, bos_token_id, dtype, eos_token_id, ignore_index, image_placeholder, media_placeholder_token_id, pad_token_id, text_config._name_or_path, text_config.activation_situ_beta, text_config.activation_situ_linear_beta, text_config.add_cross_attention, text_config.architectures, text_config.attn_res_block_size, text_config.bad_words_ids, text_config.begin_suppress_tokens, text_config.bos_token_id, text_config.chunk_size_feed_forward, text_config.cross_attention_hidden_size, text_config.decoder_start_token_id, text_config.diversity_penalty, text_config.do_sample, text_config.dsa_config.index_k_norm_type, text_config.dsa_config.index_rope_dim, text_config.dsa_config.index_skip_topk_offset, text_config.dsa_config.index_topk_freq, text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size, text_config.eos_token_id, text_config.exponential_decay_length_penalty, text_config.finetuning_task, text_config.forced_bos_token_id, text_config.forced_eos_token_id, text_config.id2label.0, text_config.id2label.1, text_config.initializer_range, text_config.is_decoder, text_config.is_encoder_decoder, text_config.label2id.LABEL_0, text_config.label2id.LABEL_1, text_config.latent_moe_use_norm, text_config.length_penalty, text_config.linear_attn_config.gate_lower_bound, text_config.linear_attn_config.use_full_rank_gate, text_config.max_length, text_config.min_length, text_config.model_type, text_config.moe_layer_freq, text_config.moe_renormalize, text_config.no_repeat_ngram_size, text_config.num_beam_groups, text_config.num_beams, text_config.num_expert_group, text_config.num_nextn_predict_layers, text_config.num_return_sequences, text_config.output_attentions, text_config.output_hidden_states, text_config.output_scores, text_config.pad_token_id, text_config.prefix, text_config.problem_type, text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format, text_config.quantization_config.config_groups.group_0.input_activations, text_config.quantization_config.config_groups.group_0.output_activations, text_config.quantization_config.config_groups.group_0.targets, text_config.quantization_config.config_groups.group_0.weights.actorder, text_config.quantization_config.config_groups.group_0.weights.block_structure, text_config.quantization_config.config_groups.group_0.weights.dynamic, text_config.quantization_config.config_groups.group_0.weights.group_size, text_config.quantization_config.config_groups.group_0.weights.observer, text_config.quantization_config.config_groups.group_0.weights.observer_kwargs, text_config.quantization_config.config_groups.group_0.weights.scale_dtype, text_config.quantization_config.config_groups.group_0.weights.strategy, text_config.quantization_config.config_groups.group_0.weights.symmetric, text_config.quantization_config.config_groups.group_0.weights.type, text_config.quantization_config.config_groups.group_0.weights.zp_dtype, text_config.quantization_config.global_compression_ratio, text_config.quantization_config.ignore, text_config.quantization_config.kv_cache_scheme, text_config.quantization_config.quant_method, text_config.quantization_config.quantization_status, text_config.remove_invalid_values, text_config.repetition_penalty, text_config.return_dict, text_config.return_dict_in_generate, text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.sep_token_id, text_config.suppress_tokens, text_config.task_specific_params, text_config.temperature, text_config.tf_legacy_loss, text_config.tie_encoder_decoder, text_config.tie_word_embeddings, text_config.tokenizer_class, text_config.top_k, text_config.top_p, text_config.topk_group, text_config.topk_method, text_config.torchscript, text_config.transformers_version, text_config.typical_p, text_config.use_bfloat16, text_config.use_cache, text_config.use_grouped_topk, vision_config._attn_implementation, vision_config.activation_func, vision_config.attn_bias, vision_config.init_pos_emb_height, vision_config.init_pos_emb_time, vision_config.init_pos_emb_width, vision_config.linear_bias, vision_config.merge_kernel_size, vision_config.merge_type, vision_config.mlp_type, vision_config.mm_hidden_size, vision_config.mm_projector_type, vision_config.norm_type, vision_config.patch_embed_proj_bias, vision_config.patch_size, vision_config.pos_emb_interpolation_mode, vision_config.pos_emb_type, vision_config.projector_hidden_act, vision_config.projector_ln_eps, vision_config.qkv_hidden_size, vision_config.text_hidden_size, vision_config.vt_intermediate_size, vision_config.vt_num_attention_heads"
+  "Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig, bos_token_id, dtype, eos_token_id, ignore_index, image_placeholder, media_placeholder_token_id, pad_token_id, text_config._name_or_path, text_config.activation_situ_beta, text_config.activation_situ_linear_beta, text_config.add_cross_attention, text_config.architectures, text_config.attn_res_block_size, text_config.bad_words_ids, text_config.begin_suppress_tokens, text_config.bos_token_id, text_config.chunk_size_feed_forward, text_config.cross_attention_hidden_size, text_config.decoder_start_token_id, text_config.diversity_penalty, text_config.do_sample, text_config.dsa_config.index_k_norm_type, text_config.dsa_config.index_rope_dim, text_config.dsa_config.index_skip_topk_offset, text_config.dsa_config.index_topk_freq, text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size, text_config.eos_token_id, text_config.exponential_decay_length_penalty, text_config.finetuning_task, text_config.forced_bos_token_id, text_config.forced_eos_token_id, text_config.id2label.0, text_config.id2label.1, text_config.initializer_range, text_config.is_decoder, text_config.is_encoder_decoder, text_config.label2id.LABEL_0, text_config.label2id.LABEL_1, text_config.latent_moe_use_norm, text_config.length_penalty, text_config.linear_attn_config.gate_lower_bound, text_config.linear_attn_config.use_full_rank_gate, text_config.max_length, text_config.min_length, text_config.moe_layer_freq, text_config.moe_renormalize, text_config.no_repeat_ngram_size, text_config.num_beam_groups, text_config.num_beams, text_config.num_expert_group, text_config.num_nextn_predict_layers, text_config.num_return_sequences, text_config.output_attentions, text_config.output_hidden_states, text_config.output_scores, text_config.pad_token_id, text_config.prefix, text_config.problem_type, text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format, text_config.quantization_config.config_groups.group_0.input_activations, text_config.quantization_config.config_groups.group_0.output_activations, text_config.quantization_config.config_groups.group_0.targets, text_config.quantization_config.config_groups.group_0.weights.actorder, text_config.quantization_config.config_groups.group_0.weights.block_structure, text_config.quantization_config.config_groups.group_0.weights.dynamic, text_config.quantization_config.config_groups.group_0.weights.group_size, text_config.quantization_config.config_groups.group_0.weights.observer, text_config.quantization_config.config_groups.group_0.weights.observer_kwargs, text_config.quantization_config.config_groups.group_0.weights.scale_dtype, text_config.quantization_config.config_groups.group_0.weights.strategy, text_config.quantization_config.config_groups.group_0.weights.symmetric, text_config.quantization_config.config_groups.group_0.weights.type, text_config.quantization_config.config_groups.group_0.weights.zp_dtype, text_config.quantization_config.global_compression_ratio, text_config.quantization_config.ignore, text_config.quantization_config.kv_cache_scheme, text_config.quantization_config.quant_method, text_config.quantization_config.quantization_status, text_config.remove_invalid_values, text_config.repetition_penalty, text_config.return_dict, text_config.return_dict_in_generate, text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.sep_token_id, text_config.suppress_tokens, text_config.task_specific_params, text_config.temperature, text_config.tf_legacy_loss, text_config.tie_encoder_decoder, text_config.tie_word_embeddings, text_config.tokenizer_class, text_config.top_k, text_config.top_p, text_config.topk_group, text_config.topk_method, text_config.torchscript, text_config.transformers_version, text_config.typical_p, text_config.use_bfloat16, text_config.use_cache, text_config.use_grouped_topk, vision_config._attn_implementation, vision_config.activation_func, vision_config.attn_bias, vision_config.init_pos_emb_height, vision_config.init_pos_emb_time, vision_config.init_pos_emb_width, vision_config.linear_bias, vision_config.merge_kernel_size, vision_config.merge_type, vision_config.mlp_type, vision_config.mm_hidden_size, vision_config.mm_projector_type, vision_config.norm_type, vision_config.patch_embed_proj_bias, vision_config.patch_size, vision_config.pos_emb_interpolation_mode, vision_config.pos_emb_type, vision_config.projector_hidden_act, vision_config.projector_ln_eps, vision_config.qkv_hidden_size, vision_config.text_hidden_size, vision_config.vt_intermediate_size, vision_config.vt_num_attention_heads"
  ],
  "weight_layer_kinds": [
   "linear_delta",
@@ -2404,7 +2415,8 @@
  ],
  "predecessor": {
   "id": "moonshotai/Kimi-K3",
-  "source_commit": "f831ab66814297da540d832a5235f8e904f29d06"
+  "source_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+  "selection": "Latest earlier Hub creation date in the inspected same-org family catalog"
  },
  "diff_vs_predecessor": [
   {

@@ -18,6 +18,8 @@ LABEL = {
     "short_conv": "Gated short conv",
     "sliding_attention": "Sliding-window attention",
     "full_attention": "Global attention",
+    "mamba2": "Mamba-2",
+    "mlp": "MLP",
 }
 COLOR = {
     "kda_linear": "#2a9d8f",
@@ -26,6 +28,8 @@ COLOR = {
     "short_conv": "#5b7fbf",
     "sliding_attention": "#8ab17d",
     "full_attention": "#e76f51",
+    "mamba2": "#a17bbb",
+    "mlp": "#c69b50",
 }
 FIELD_NAMES = {
     "num_layers": "Layers",
@@ -140,7 +144,7 @@ def model_section(name, anchor):
         ("Layers", f"{pub['num_layers']}", show("layer_type_counts", pub["layer_type_counts"])),
         ("Context", f"{int(ctx):,}", "tokens"),
         ("Cache growth", f"{cache['grows_per_token_bytes']:,} B", "per token, bf16"),
-        ("Cache at full context", f"{full / 2**30:.1f} GiB", f"{cache['reduction_vs_naive_mha']}x less than plain MHA"),
+        ("Cache at full context", f"{full / 2**30:.1f} GiB", "cache-state estimate; see dtype assumptions"),
     ]
     t_html = "".join(
         f'<div class="tile"><div class="tl">{e(a)}</div><div class="tv">{e(b)}</div><div class="ts">{e(c)}</div></div>'
@@ -358,7 +362,7 @@ ul{{padding-left:20px}}li{{margin:3px 0}}
 <p class="lead">{e(intro)} Architecture views use published verifier-approved values and recompute their cache estimates from those values. Model-card statements are claims to cross-check against config, code and tensor headers.</p>
 <p class="meta">Models: {nav} · no weights downloaded: shapes come from safetensors headers via HTTP range requests</p>
 <div class="stages">
-<div class="stage"><b>1 Input</b><span>Fixed watchlist, commit pinned</span></div>
+<div class="stage"><b>1 Input</b><span>Admitted Hub records, commit pinned</span></div>
 <div class="stage"><b>2 Config</b><span>config.json to schema, no LLM</span></div>
 <div class="stage"><b>3 Weights</b><span>tensor shapes, exact counts</span></div>
 <div class="stage"><b>4 Code</b><span>AST scan, line citations</span></div>

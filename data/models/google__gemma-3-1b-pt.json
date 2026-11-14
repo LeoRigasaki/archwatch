@@ -1,0 +1,911 @@
+{
+ "id": "google/gemma-3-1b-pt",
+ "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29",
+ "hub_created": "2025-02-20T21:21:06+00:00",
+ "license": "gemma",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "arxiv:1705.03551",
+   "arxiv:1810.12440",
+   "arxiv:1903.00161",
+   "arxiv:1904.09728",
+   "arxiv:1905.07830",
+   "arxiv:1905.10044",
+   "arxiv:1907.10641",
+   "arxiv:1908.02660",
+   "arxiv:1910.11856",
+   "arxiv:1911.01547",
+   "arxiv:1911.11641",
+   "arxiv:2009.03300",
+   "arxiv:2103.03874",
+   "arxiv:2104.12756",
+   "arxiv:2106.03193",
+   "arxiv:2107.03374",
+   "arxiv:2108.07732",
+   "arxiv:2110.14168",
+   "arxiv:2203.10244",
+   "arxiv:2210.03057",
+   "arxiv:2304.06364",
+   "arxiv:2311.12022",
+   "arxiv:2311.16502",
+   "arxiv:2312.11805",
+   "arxiv:2404.12390",
+   "arxiv:2404.16816",
+   "arxiv:2502.12404",
+   "arxiv:2502.21228",
+   "endpoints_compatible",
+   "gemma3_text",
+   "license:gemma",
+   "region:us",
+   "safetensors",
+   "text-generation",
+   "text-generation-inference",
+   "transformers"
+  ]
+ },
+ "analyzed_at": "2026-11-13T20:58:37+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "Gemma3ForCausalLM",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "gemma3_text",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 26,
+   "evidence": "config:num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 1152,
+   "evidence": "config:hidden_size"
+  },
+  "vocab_size": {
+   "value": 262144,
+   "evidence": "config:vocab_size"
+  },
+  "context_length": {
+   "value": 32768,
+   "evidence": "config:max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention"
+   ],
+   "evidence": "config:sliding_window_pattern"
+  },
+  "layer_type_counts": {
+   "value": {
+    "sliding_attention": 22,
+    "full_attention": 4
+   },
+   "evidence": "config:sliding_window_pattern"
+  },
+  "num_attention_heads": {
+   "value": 4,
+   "evidence": "config:num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 1,
+   "evidence": "config:num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 256,
+   "evidence": "config:head_dim"
+  },
+  "attention_type": {
+   "value": "MQA",
+   "evidence": "derived:num_key_value_heads(1) vs num_attention_heads(4)"
+  },
+  "sliding_window": {
+   "value": 512,
+   "evidence": "config:sliding_window"
+  },
+  "decoder_type": {
+   "value": "Dense",
+   "evidence": "derived:no expert keys"
+  },
+  "ffn_intermediate": {
+   "value": 6912,
+   "evidence": "config:intermediate_size"
+  },
+  "activation": {
+   "value": "gelu_pytorch_tanh",
+   "evidence": "config:hidden_activation"
+  },
+  "rope": {
+   "value": {
+    "full_attention": {
+     "rope_theta": 1000000
+    },
+    "sliding_attention": {
+     "rope_theta": 10000
+    }
+   },
+   "evidence": "config:rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "head_dim",
+   "hidden_activation",
+   "hidden_size",
+   "intermediate_size",
+   "max_position_embeddings",
+   "model_type",
+   "num_attention_heads",
+   "num_hidden_layers",
+   "num_key_value_heads",
+   "rope_local_base_freq",
+   "rope_scaling",
+   "rope_theta",
+   "sliding_window",
+   "sliding_window_pattern",
+   "torch_dtype",
+   "vocab_size"
+  ],
+  "unconsumed": [
+   "attention_bias",
+   "attention_dropout",
+   "attn_logit_softcapping",
+   "bos_token_id",
+   "cache_implementation",
+   "eos_token_id",
+   "final_logit_softcapping",
+   "initializer_range",
+   "pad_token_id",
+   "query_pre_attn_scalar",
+   "rms_norm_eps",
+   "transformers_version",
+   "use_cache"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "model.safetensors"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 999885952,
+   "text_total": 999885952,
+   "by_component": {
+    "dense_ffn": 621084672,
+    "embedding": 301989888,
+    "attention_or_linear_mixer": 76690432,
+    "norms": 120960
+   },
+   "routed_expert_params": 0,
+   "moe_layers": 0,
+   "experts_per_moe_layer": [],
+   "layer_indices_in_weights": [
+    0,
+    25
+   ],
+   "tensor_count": 340,
+   "skipped_scale_tensors": 0
+  },
+  "active": null
+ },
+ "cache": {
+  "grows_per_token_bytes": 4096,
+  "grows_per_token_bytes_low": 4096,
+  "constant_bytes": 11534336,
+  "constant_bytes_low": 11534336,
+  "naive_mha_per_token_bytes": 106496,
+  "reduction_vs_naive_mha": 26.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 45088768,
+    "gib": 0.042
+   },
+   "32768": {
+    "bytes": 145752064,
+    "gib": 0.136
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 4,
+    "grows_per_token_bytes": 4096,
+    "constant_bytes": 0,
+    "formula": "2 x 1 KV heads x 256 head_dim x 2 B x 4 layers"
+   },
+   {
+    "layer_type": "sliding_attention",
+    "layers": 22,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 11534336,
+    "formula": "window 512 x 2 x 1 x 256 x 2 B x 22 layers (capped)"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted"
+  ]
+ },
+ "code_scan": {
+  "files": [],
+  "classes": [],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {},
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 26,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 26,
+     "evidence": "config:num_hidden_layers"
+    },
+    {
+     "value": 26,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 1152,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1152,
+     "evidence": "config:hidden_size"
+    },
+    {
+     "value": 1152,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 262144,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 262144,
+     "evidence": "config:vocab_size"
+    },
+    {
+     "value": 262144,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 32768,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32768,
+     "evidence": "config:max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "config:head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "MQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MQA",
+     "evidence": "derived:num_key_value_heads(1) vs num_attention_heads(4)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "sandwich_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:post-mixer/post-FFN norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 6912,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 6912,
+     "evidence": "config:intermediate_size"
+    },
+    {
+     "value": 6912,
+     "evidence": "weights:feed_forward.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "sliding_window",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:sliding_window"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "sliding_attention": 22,
+    "full_attention": 4
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "sliding_attention": 22,
+      "full_attention": 4
+     },
+     "evidence": "config:sliding_window_pattern"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "config:sliding_window_pattern (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "qk_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:q_norm/k_norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 999885952,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 999885952,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention"
+     ],
+     "evidence": "config:sliding_window_pattern"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Dense",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Dense",
+     "evidence": "derived:no expert keys"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "full_attention": {
+     "rope_theta": 1000000
+    },
+    "sliding_attention": {
+     "rope_theta": 10000
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "full_attention": {
+       "rope_theta": 1000000
+      },
+      "sliding_attention": {
+       "rope_theta": 10000
+      }
+     },
+     "evidence": "config:rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "gelu_pytorch_tanh",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "gelu_pytorch_tanh",
+     "evidence": "config:hidden_activation"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 621084672,
+    "embedding": 301989888,
+    "attention_or_linear_mixer": 76690432,
+    "norms": 120960
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 621084672,
+      "embedding": 301989888,
+      "attention_or_linear_mixer": 76690432,
+      "norms": 120960
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 340,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 340,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 26,
+  "hidden_size": 1152,
+  "vocab_size": 262144,
+  "context_length": 32768,
+  "num_attention_heads": 4,
+  "num_kv_heads": 1,
+  "head_dim": 256,
+  "attention_type": "MQA",
+  "ffn_gated": true,
+  "sandwich_norm": true,
+  "ffn_intermediate": 6912,
+  "sliding_window": 512,
+  "layer_type_counts": {
+   "sliding_attention": 22,
+   "full_attention": 4
+  },
+  "layer_pattern_per_layer": [
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention"
+  ],
+  "qk_norm": true,
+  "params_total": 999885952,
+  "layer_types": [
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention"
+  ],
+  "decoder_type": "Dense",
+  "tied_embeddings": false,
+  "rope": {
+   "full_attention": {
+    "rope_theta": 1000000
+   },
+   "sliding_attention": {
+    "rope_theta": 10000
+   }
+  },
+  "activation": "gelu_pytorch_tanh",
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "dense_ffn": 621084672,
+   "embedding": 301989888,
+   "attention_or_linear_mixer": 76690432,
+   "norms": 120960
+  },
+  "weight_header_summary": {
+   "tensor_count": 340,
+   "skipped_scale_tensors": 0
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): attention_bias, attention_dropout, attn_logit_softcapping, bos_token_id, cache_implementation, eos_token_id, final_logit_softcapping, initializer_range, pad_token_id, query_pre_attn_scalar, rms_norm_eps, transformers_version, use_cache"
+ ],
+ "weight_layer_kinds": [
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention"
+ ]
+}

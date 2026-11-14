@@ -7,7 +7,8 @@
       "last_observed_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
       "last_successful_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
       "pool": "core",
-      "status": "recorded"
+      "reason": "Hub base_model relation: finetune; historical derived record excluded",
+      "status": "rejected"
     },
     "LiquidAI/LFM3-1.7B": {
       "architecture_hash": "5f69b11287b44e4da7c2a7c9e2c1e870b8677ab5f5a88d0585a49a58bace99cd",
@@ -16,7 +17,92 @@
       "last_observed_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
       "last_successful_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
       "pool": "core",
-      "status": "recorded"
+      "reason": "Hub base_model relation: finetune; historical derived record excluded",
+      "status": "rejected"
+    },
+    "LiquidAI/LFM3-1.7B-Base": {
+      "architecture_hash": "e25cd9410d7396ed2da99adc7f2b50b0f8d0bd3b8aa878d3bd9befae3ede331e",
+      "attempts": 1,
+      "created_at": "2026-10-26T16:28:49+00:00",
+      "family": "lfm",
+      "last_observed_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+      "last_successful_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "Qwen/Qwen3-0.6B-Base": {
+      "architecture_hash": "9999560f4a6d9d7f82ff30702fa83aa4cbc0c983e1083bfe70a10316ab1503e1",
+      "attempts": 1,
+      "created_at": "2025-04-28T05:09:54+00:00",
+      "family": "qwen",
+      "last_observed_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "last_successful_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "deepseek-ai/DeepSeek-V2-Lite": {
+      "architecture_hash": "566c43f36d833b25735f78653f70e97dbd0b1369679172848841d735e8ef988e",
+      "attempts": 1,
+      "created_at": "2024-05-15T05:31:53+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "604d5664dddd88a0433dbae533b7fe9472482de0",
+      "last_successful_commit": "604d5664dddd88a0433dbae533b7fe9472482de0",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "google/gemma-3-1b-pt": {
+      "architecture_hash": "e40b8c7cdd14940fa3609cf1469a84bd8abed8fdcbef9b8ee6cbcf5fab7d9dd0",
+      "attempts": 1,
+      "created_at": "2025-02-20T21:21:06+00:00",
+      "family": "gemma",
+      "last_observed_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29",
+      "last_successful_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "meta-llama/Llama-3.1-8B": {
+      "architecture_hash": "5755b913fd48f8cba6ad2c228e07379790799a0144fa974acd963e482f3beae3",
+      "attempts": 1,
+      "created_at": "2024-07-14T22:20:15+00:00",
+      "family": "llama",
+      "last_observed_commit": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+      "last_successful_commit": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "microsoft/phi-2": {
+      "architecture_hash": "ff8b8237b8aece69eb1b0f9713d6dfd1b56089d5d8deb5c66c273349d6ea4a47",
+      "attempts": 1,
+      "created_at": "2023-12-13T21:19:59+00:00",
+      "family": "phi",
+      "last_observed_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0",
+      "last_successful_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "mistralai/Mistral-7B-v0.1": {
+      "architecture_hash": "9dd457f91370e1f2d6b6d06b96d051957b0a799797b0ee1da225ea892b78358f",
+      "attempts": 1,
+      "created_at": "2023-09-20T13:03:50+00:00",
+      "family": "mistral",
+      "last_observed_commit": "27d67f1b5f57dc0953326b2601d68371d40ea8da",
+      "last_successful_commit": "27d67f1b5f57dc0953326b2601d68371d40ea8da",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
     },
     "moonshotai/Kimi-K3": {
       "architecture_hash": "7e741849ffddc7fd4e4a58a6ea26f593c586a1e4ced8041ee670f318d03fcd7a",
@@ -28,13 +114,40 @@
       "status": "recorded"
     },
     "moonshotai/Kimi-K3.1-Pro": {
-      "architecture_hash": "0b914328bd1ec1ee258fb007719f4d812223e93b2cff72d3925d946a5e1cb441",
+      "architecture_hash": "fd6845c97a6718b7c46570d9246b5382f452871299d3d9dd5620b5249feba219",
+      "attempts": 1,
       "created_at": "2026-11-02T04:13:51+00:00",
       "family": "kimi",
       "last_observed_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
       "last_successful_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
       "pool": "core",
-      "status": "recorded"
+      "predecessor": "moonshotai/Kimi-K3",
+      "reason": "Latest earlier Hub creation date in the inspected same-org family catalog",
+      "status": "ready_for_diagram"
+    },
+    "nvidia/Nemotron-H-8B-Base-8K": {
+      "architecture_hash": "5f029337097c35808cb5ae65d099d9f50c12b23236144c5e5e967f13f87244da",
+      "attempts": 1,
+      "created_at": "2025-03-19T23:37:16+00:00",
+      "family": "nemotron",
+      "last_observed_commit": "94ea861e008c2dfced3e8e1302094024077aa04e",
+      "last_successful_commit": "94ea861e008c2dfced3e8e1302094024077aa04e",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "zai-org/GLM-4-9B-0414": {
+      "architecture_hash": "0a3e03998cbe475f498902d8cdccdf289cb68896ce3c372760a415254c933ba0",
+      "attempts": 1,
+      "created_at": "2025-04-07T11:57:02+00:00",
+      "family": "glm",
+      "last_observed_commit": "645b8482494e31b6b752272bf7f7f273ef0f3caf",
+      "last_successful_commit": "645b8482494e31b6b752272bf7f7f273ef0f3caf",
+      "pool": "core",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
     }
   },
   "schema_version": 1

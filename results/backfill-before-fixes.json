@@ -1,0 +1,369 @@
+{
+  "gold_models": 10,
+  "correct": 117,
+  "total": 144,
+  "exact_match": 0.8125,
+  "fields": {
+    "activation": {
+      "correct": 8,
+      "total": 10,
+      "missing": 2
+    },
+    "block_layout": {
+      "correct": 0,
+      "total": 2,
+      "missing": 2
+    },
+    "context_length": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "dense_ffn_intermediate": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "dense_layers": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "ffn_gated": {
+      "correct": 0,
+      "total": 10,
+      "missing": 10
+    },
+    "ffn_intermediate": {
+      "correct": 7,
+      "total": 8,
+      "missing": 1
+    },
+    "head_dim": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "hidden_size": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "layer_type_counts": {
+      "correct": 8,
+      "total": 10,
+      "missing": 1
+    },
+    "mla_kv_lora_rank": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "mla_qk_rope_head_dim": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "moe_active_experts": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "moe_expert_intermediate": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "moe_latent_dim": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_num_experts": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "moe_shared_experts": {
+      "correct": 2,
+      "total": 2,
+      "missing": 0
+    },
+    "num_attention_heads": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "num_kv_heads": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "num_layers": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "params_total": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    },
+    "sandwich_norm": {
+      "correct": 1,
+      "total": 3,
+      "missing": 2
+    },
+    "short_conv_kernel": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "sliding_window": {
+      "correct": 3,
+      "total": 3,
+      "missing": 0
+    },
+    "vocab_size": {
+      "correct": 9,
+      "total": 10,
+      "missing": 1
+    }
+  },
+  "models": [
+    {
+      "id": "LiquidAI/LFM3-1.7B-Base",
+      "source_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+      "revision_matches": true,
+      "correct": 13,
+      "total": 15,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        },
+        "activation": {
+          "expected": "silu",
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "Qwen/Qwen3-0.6B-Base",
+      "source_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "revision_matches": true,
+      "correct": 11,
+      "total": 12,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V2-Lite",
+      "source_commit": "604d5664dddd88a0433dbae533b7fe9472482de0",
+      "revision_matches": true,
+      "correct": 18,
+      "total": 19,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "google/gemma-3-1b-pt",
+      "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29",
+      "revision_matches": true,
+      "correct": 12,
+      "total": 14,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        },
+        "sandwich_norm": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "meta-llama/Llama-3.1-8B",
+      "source_commit": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+      "revision_matches": true,
+      "correct": 11,
+      "total": 12,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "microsoft/phi-2",
+      "source_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0",
+      "revision_matches": true,
+      "correct": 11,
+      "total": 13,
+      "errors": {
+        "ffn_gated": {
+          "expected": false,
+          "actual": null,
+          "reason": "not published"
+        },
+        "block_layout": {
+          "expected": "parallel",
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "mistralai/Mistral-7B-v0.1",
+      "source_commit": "27d67f1b5f57dc0953326b2601d68371d40ea8da",
+      "revision_matches": true,
+      "correct": 11,
+      "total": 13,
+      "errors": {
+        "layer_type_counts": {
+          "expected": {
+            "sliding_attention": 32
+          },
+          "actual": {
+            "full_attention": 32
+          },
+          "reason": "different value"
+        },
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "moonshotai/Kimi-K3.1-Pro",
+      "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "revision_matches": true,
+      "correct": 19,
+      "total": 20,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    },
+    {
+      "id": "nvidia/Nemotron-H-8B-Base-8K",
+      "source_commit": "94ea861e008c2dfced3e8e1302094024077aa04e",
+      "revision_matches": false,
+      "correct": 0,
+      "total": 13,
+      "errors": {
+        "num_layers": {
+          "expected": 52,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "hidden_size": {
+          "expected": 4096,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "vocab_size": {
+          "expected": 131072,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "num_attention_heads": {
+          "expected": 32,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "num_kv_heads": {
+          "expected": 8,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "head_dim": {
+          "expected": 128,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "ffn_intermediate": {
+          "expected": 21504,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "context_length": {
+          "expected": 8192,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "params_total": {
+          "expected": 8100852736,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "layer_type_counts": {
+          "expected": {
+            "mamba2": 24,
+            "mlp": 24,
+            "full_attention": 4
+          },
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "ffn_gated": {
+          "expected": false,
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "activation": {
+          "expected": "relu2",
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        },
+        "block_layout": {
+          "expected": "standalone",
+          "actual": null,
+          "reason": "source revision mismatch/missing record"
+        }
+      }
+    },
+    {
+      "id": "zai-org/GLM-4-9B-0414",
+      "source_commit": "645b8482494e31b6b752272bf7f7f273ef0f3caf",
+      "revision_matches": true,
+      "correct": 11,
+      "total": 13,
+      "errors": {
+        "ffn_gated": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        },
+        "sandwich_norm": {
+          "expected": true,
+          "actual": null,
+          "reason": "not published"
+        }
+      }
+    }
+  ],
+  "scope": "Ten-model development gold set, manually inspected primary sources; not human-reviewed or a held-out accuracy estimate."
+}

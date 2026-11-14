@@ -8,7 +8,7 @@
   "records_path": "data/models",
   "prototype_archive": "archwatch.zip",
   "prototype_archive_sha256": "e15bc174d60103bf0b5d030f54fcbc107f02975cdaabbd71d33e9f5abbaaa6ad",
-  "stage": "Deterministic prototype and bounded Hub watcher implemented; independent gold-set evaluation and LLM stages remain open.",
+  "stage": "Ten-publisher primary backfill and development gold evaluation implemented; human review, held-out evaluation and LLM stages remain open.",
   "models": [
     {
       "id": "LiquidAI/LFM2.5-1.2B-Instruct",
@@ -28,6 +28,23 @@
       "fixed_cache_bytes": 122880
     },
     {
+      "id": "LiquidAI/LFM3-1.7B-Base",
+      "source_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+      "total_parameters_from_saved_headers": 1728801536,
+      "field_checks": {
+        "verified": 12,
+        "single source": 15
+      },
+      "published_fields": 27,
+      "review_fields": [],
+      "code_files": [
+        "configuration_lfm3.py",
+        "modeling_lfm3.py"
+      ],
+      "cache_growth_bytes_per_token": 12288,
+      "fixed_cache_bytes": 2994176
+    },
+    {
       "id": "LiquidAI/LFM3-1.7B",
       "source_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
       "total_parameters_from_saved_headers": 1728801536,
@@ -45,14 +62,101 @@
       "fixed_cache_bytes": 2994176
     },
     {
+      "id": "Qwen/Qwen3-0.6B-Base",
+      "source_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+      "total_parameters_from_saved_headers": 596049920,
+      "field_checks": {
+        "verified": 6,
+        "single source": 16
+      },
+      "published_fields": 22,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 114688,
+      "fixed_cache_bytes": 0
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V2-Lite",
+      "source_commit": "604d5664dddd88a0433dbae533b7fe9472482de0",
+      "total_parameters_from_saved_headers": 15706484224,
+      "field_checks": {
+        "verified": 8,
+        "single source": 23
+      },
+      "published_fields": 31,
+      "review_fields": [],
+      "code_files": [
+        "configuration_deepseek.py",
+        "modeling_deepseek.py"
+      ],
+      "cache_growth_bytes_per_token": 31104,
+      "fixed_cache_bytes": 0
+    },
+    {
+      "id": "google/gemma-3-1b-pt",
+      "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29",
+      "total_parameters_from_saved_headers": 999885952,
+      "field_checks": {
+        "verified": 5,
+        "single source": 19
+      },
+      "published_fields": 24,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 4096,
+      "fixed_cache_bytes": 11534336
+    },
+    {
+      "id": "meta-llama/Llama-3.1-8B",
+      "source_commit": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
+      "total_parameters_from_saved_headers": 8030261248,
+      "field_checks": {
+        "verified": 5,
+        "single source": 16
+      },
+      "published_fields": 21,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 131072,
+      "fixed_cache_bytes": 0
+    },
+    {
+      "id": "microsoft/phi-2",
+      "source_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0",
+      "total_parameters_from_saved_headers": 2779683840,
+      "field_checks": {
+        "verified": 6,
+        "single source": 16
+      },
+      "published_fields": 22,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 327680,
+      "fixed_cache_bytes": 0
+    },
+    {
+      "id": "mistralai/Mistral-7B-v0.1",
+      "source_commit": "27d67f1b5f57dc0953326b2601d68371d40ea8da",
+      "total_parameters_from_saved_headers": 7241732096,
+      "field_checks": {
+        "verified": 5,
+        "single source": 17
+      },
+      "published_fields": 22,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 0,
+      "fixed_cache_bytes": 536870912
+    },
+    {
       "id": "moonshotai/Kimi-K3.1-Pro",
       "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
       "total_parameters_from_saved_headers": 2780110363392,
       "field_checks": {
         "verified": 24,
-        "single source": 20
+        "single source": 21
       },
-      "published_fields": 44,
+      "published_fields": 45,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py"
@@ -66,9 +170,9 @@
       "total_parameters_from_saved_headers": 2779931837184,
       "field_checks": {
         "verified": 20,
-        "single source": 20
+        "single source": 21
       },
-      "published_fields": 40,
+      "published_fields": 41,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py",
@@ -77,26 +181,68 @@
       ],
       "cache_growth_bytes_per_token": 27648,
       "fixed_cache_bytes": 449372160
+    },
+    {
+      "id": "nvidia/Nemotron-H-8B-Base-8K",
+      "source_commit": "94ea861e008c2dfced3e8e1302094024077aa04e",
+      "total_parameters_from_saved_headers": 8100852736,
+      "field_checks": {
+        "verified": 6,
+        "single source": 22
+      },
+      "published_fields": 28,
+      "review_fields": [],
+      "code_files": [
+        "configuration_nemotron_h.py",
+        "modeling_nemotron_h.py"
+      ],
+      "cache_growth_bytes_per_token": 16384,
+      "fixed_cache_bytes": 102629376
+    },
+    {
+      "id": "zai-org/GLM-4-9B-0414",
+      "source_commit": "645b8482494e31b6b752272bf7f7f273ef0f3caf",
+      "total_parameters_from_saved_headers": 9400279040,
+      "field_checks": {
+        "verified": 5,
+        "single source": 17
+      },
+      "published_fields": 22,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": 40960,
+      "fixed_cache_bytes": 0
     }
   ],
-  "record_count": 4,
-  "yaml_record_count": 2,
+  "record_count": 13,
+  "yaml_record_count": 11,
   "saved_record_check_totals": {
-    "verified": 61,
+    "verified": 119,
     "conflict": 1,
-    "single source": 68
+    "single source": 231
   },
   "test_run": {
-    "tests": 83,
+    "tests": 101,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 83,
+    "passed": 101,
     "python": "3.12.13",
     "command": "uv run --frozen pytest -q --junitxml=results/test-results.xml",
     "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."
   },
-  "dsa_indexer_parameter_delta": 178526208,
+  "tensor_group_additions": [
+    {
+      "id": "LiquidAI/LFM3-1.7B",
+      "predecessor": "LiquidAI/LFM2.5-1.2B-Instruct",
+      "added_total": 46598912
+    },
+    {
+      "id": "moonshotai/Kimi-K3.1-Pro",
+      "predecessor": "moonshotai/Kimi-K3",
+      "added_total": 178526208
+    }
+  ],
   "prototype_pipeline_implemented": true,
   "watcher_implemented": true,
   "watcher_policy": "config/watcher.yaml",
@@ -118,7 +264,14 @@
     "no_op_runs": "results/no-op-acceptance.json",
     "github_repository_configured": true
   },
-  "formal_gold_set_models": 0,
+  "formal_gold_set_models": 10,
+  "gold_label_method": "Assistant manual primary-source inspection; human_reviewed=false",
+  "development_gold_evaluation": {
+    "correct": 144,
+    "total": 144,
+    "exact_match": 1.0
+  },
+  "backfill_source_run_evidence": "results/backfill-processing.json",
   "formal_archwatch_accuracy_measured": false,
   "legacy_research": {
     "path": "research-reference/private-notes",

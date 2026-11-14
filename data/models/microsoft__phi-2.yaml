@@ -1,0 +1,109 @@
+id: microsoft/phi-2
+source_commit: 810d367871c1d460086d9f82db8696f2e0a0fcd0
+hub_created: '2023-12-13T21:19:59+00:00'
+license: mit
+analyzed_at: '2026-11-13T20:58:37+00:00'
+published:
+  num_layers: 32
+  hidden_size: 2560
+  vocab_size: 51200
+  context_length: 2048
+  num_attention_heads: 32
+  num_kv_heads: 32
+  head_dim: 80
+  attention_type: MHA
+  ffn_gated: false
+  ffn_intermediate: 10240
+  layer_type_counts:
+    full_attention: 32
+  layer_pattern_per_layer:
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  params_total: 2779683840
+  layer_types:
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  decoder_type: Dense
+  tied_embeddings: false
+  rope:
+    rope_theta: 10000.0
+    partial_rotary_factor: 0.4
+  activation: gelu_new
+  released_weights_format: float16
+  block_layout: parallel
+  parameter_components:
+    dense_ffn: 1678131200
+    attention_or_linear_mixer: 839188480
+    lm_head: 131123200
+    embedding: 131072000
+    norms: 168960
+  weight_header_summary:
+    tensor_count: 453
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
+  activation) are read from config, card and tensor names only, not from code.'
+- 'Config keys not consumed by the extractor (including metadata/defaults): _name_or_path,
+  attention_dropout, bos_token_id, embd_pdrop, eos_token_id, initializer_range, layer_norm_eps,
+  qk_layernorm, resid_pdrop, transformers_version, use_cache'

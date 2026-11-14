@@ -1,0 +1,30 @@
+{
+  "scope": "Repeat ten explicit repositories against unchanged upstream commits after final backfill; compare all model, diagram, seen and site bytes and mtimes.",
+  "artifacts_compared": 39,
+  "changed_paths": [],
+  "byte_and_mtime_identical": true,
+  "batches": [
+    {
+      "discovery_errors": [],
+      "outcomes": {
+        "LiquidAI/LFM3-1.7B-Base": "unchanged",
+        "Qwen/Qwen3-0.6B-Base": "unchanged",
+        "deepseek-ai/DeepSeek-V2-Lite": "unchanged",
+        "mistralai/Mistral-7B-v0.1": "unchanged",
+        "nvidia/Nemotron-H-8B-Base-8K": "unchanged"
+      },
+      "processed": 0
+    },
+    {
+      "discovery_errors": [],
+      "outcomes": {
+        "google/gemma-3-1b-pt": "unchanged",
+        "meta-llama/Llama-3.1-8B": "unchanged",
+        "microsoft/phi-2": "unchanged",
+        "moonshotai/Kimi-K3.1-Pro": "unchanged",
+        "zai-org/GLM-4-9B-0414": "unchanged"
+      },
+      "processed": 0
+    }
+  ]
+}
