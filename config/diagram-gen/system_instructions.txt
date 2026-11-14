@@ -5,51 +5,63 @@ ACCURACY RULES (most important)
 2. Copy every number exactly as written in the spec. Never round, convert, or invent a value.
 3. If the spec does not mention something, leave it out. Do not add components you know from other models.
 4. Respect every item under "do_not_include".
-5. Use only words that appear in the spec. You may shorten a spec line by dropping words, never by adding new ones.
-6. At most 6 words per box (numbers count as words). Shorten long spec lines to their key words and numbers,
-   for example "q, k, v projections: Linear 7168 -> 12288 each" becomes "q, k, v: Linear 7168 -> 12288".
+5. Use only words that appear in the spec. Never show YAML keys or node ids as visible text.
+6. Each box shows its node "label" exactly as written (every label has at most 6 words).
 
-LAYOUT
-- Canvas: viewBox="0 0 1600 H". Choose H between 1000 and 2000 so that everything fits.
-  Keep a margin of at least 24 px on every side: no text, box or line may come closer than 24 px to the canvas edge.
-  Nothing may be cut off at the bottom.
-- Main panel on the left (about 50% of the width): the model as a vertical stack, data flowing bottom to top.
-  Bottom: the "io.bottom" items. Top: the "io.top" items, with an arrow out of the top.
-- Inside the main panel, draw the layer stack using "layer_pattern.compressed_view": one rounded group per entry,
-  its layers as stacked colored bars, and a large "N x" label beside each group (N = repeat).
-  Put a large brace beside the whole stack labelled with the total layer count, for example "93 x".
-- Right side: one dotted-outline zoom panel per entry in "zoom_panels", stacked vertically, each with its title on top.
-  Do NOT draw leader lines between a zoom panel and the stack. Instead give the zoom panel outline and title the
-  same color as the matching bars in the stack.
-  Inside a zoom panel, draw the parts as a small flow of boxes and arrows, bottom to top, in the order listed.
-- "callouts": short bold labels placed in the free margin right next to the part they describe.
-  No leader lines and no connector lines of any kind for callouts.
-- "io.vision", if present, is a small side note near the token embedding, without connector lines.
-- Title at the top center: "model.title_label".
+FIXED LAYOUT (identical for every model; positions are on a 1800 px wide canvas)
+- Canvas: viewBox="0 0 1800 H". Choose H between 1000 and 2400 so that everything fits.
+  Keep every text, box and line at least 24 px inside the canvas edge. Nothing may be cut off.
+- Title band (top, y 24 to 110), centered at x 900: "model.title_label" (font 32-36) and, under it,
+  "model.summary_line" exactly (font 16). Nothing else in this band.
+- Left column (x 24 to 600): the main stack, data flowing bottom to top.
+  Bottom: the "io.bottom" boxes. Then one rounded group per "layer_pattern.compressed_view" entry, its layers drawn
+  as stacked colored bars, first listed layer lowest, with one "N x" label (N = repeat) beside the group.
+  Then the "io.top" boxes, with an arrow out of the top. Arrows connect the stack from bottom to top.
+  Beside the whole stack draw a brace labelled "<layers> layers" (for example "93 layers").
+  Each repeat count appears exactly once: only the group's own "N x" label. Never write "<layers> x".
+  "io.note" and "io.vision", if present, are small grey notes next to their box, without connector lines.
+- Under the main stack (x 24 to 860): one box titled "Each layer" that draws "each_layer" as a small graph.
+- Right column (x 900 to 1520): one dotted-outline zoom panel per "zoom_panels" entry, stacked vertically in the
+  order given, each with its title on top. The zoom panel outline and title use the same color as the matching
+  bars in the stack. No lines between the stack and the zoom panels.
+- Callouts: short bold labels (font 15-16), each placed directly beside the part named in its "beside" field,
+  vertically level with that part:
+    beside "stack" or "embedding": in the column x 620 to 880, level with the stack or the token embedding box;
+    beside a zoom panel key: in the column x 1540 to 1776, level with that zoom panel.
+  Wrap callout text onto several lines with <tspan> if needed. No leader lines or connector lines for callouts.
+
+GRAPHS (zoom panels and "Each layer")
+- Draw every node as a box with its label, and every edge "A -> B" as one arrow from node A to node B.
+  Draw exactly the listed edges: no more, no fewer. Data flows bottom to top: put "in" / "layer input" at the
+  bottom and "out" / "layer output" at the top. Parallel branches sit side by side.
+- An arrow starts on the edge of box A and ends on the edge of box B (the arrowhead touching box B).
+  Arrows never pass through another box or a text label; route them around with right angles if needed.
+- Put each "caption" line as small grey text (font 14) at the bottom of its panel, inside the panel.
 
 STYLE
 - Flat, clean vector look on a pure white background, like a figure in a technical book. No 3D, no shadows,
   no gradients, no decorative icons.
-- Boxes: white fill, thin dark-grey outline, rounded corners (rx="10"). Main panel: light grey rounded rectangle.
+- Boxes: white fill, thin dark-grey outline, rounded corners (rx="8"). Main stack: light grey rounded rectangle.
 - One consistent color per mixer type across the stack and its zoom panel:
   linear attention / KDA = teal, sparse or full attention = salmon red, short convolution = green,
   sliding-window attention = blue, Mamba-2 = purple, FFN / MoE / MLP = light grey.
-- font-family="Helvetica, Arial, sans-serif". Minimum font size 14. Title 28-40. Dark text.
-- Arrows: thin black lines with one small solid arrowhead <marker> defined once in <defs> and reused.
-  Arrows start and end on box edges and never cross a box or a text label.
-- Every text sits fully inside its box. Size boxes from the text: about 0.6 x font-size per character, plus 24 of padding.
-- Leave generous white space. Nothing may overlap: no text over text, and no shape drawn on top of text.
+- font-family="Helvetica, Arial, sans-serif". Minimum font size 14. Dark text.
+- Arrows: thin dark lines with one small solid arrowhead <marker> defined once in <defs> and reused.
+- Every text sits fully inside its box. Size boxes from the text: about 0.6 x font-size per character, plus 24.
+- Nothing overlaps: no text over text, and no shape drawn on top of text.
 
 REQUIRED SVG STRUCTURE (checked by code)
-- Root: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 H">, with a white background <rect> first.
-- Each compressed_view entry i (1 = the first entry, at the bottom): <g data-group="i" data-repeat="N"> containing
-  exactly one <rect data-layer="LABEL"> per layer bar of that entry, and its visible "N x" label.
-  LABEL is that layer's exact text from the spec, and the bars go bottom to top in the order listed
-  (the first listed layer is the lowest bar).
-- Each zoom panel: <g data-zoom="KEY"> (KEY = its key under zoom_panels, for example data-zoom="kda"),
-  containing the panel, its exact title text and its parts.
-- Each callout i (1 = the first in the list): <g data-callout="i"> containing that callout's text, worded exactly
-  as in the spec. You may break it across lines with <tspan>.
+- Root: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 H">, with a white background <rect> first.
+- <g data-section="title"> holds the title and the summary line.
+- <g data-section="stack"> holds the whole main stack, including:
+    each io item: <g data-io="ID"> (ID = its "id") with its box and label;
+    each compressed_view entry i (1 = first entry, lowest): <g data-group="i" data-repeat="N"> containing exactly
+    one <rect data-layer="LABEL"> per layer bar (LABEL = that layer's exact text, first listed lowest) and its "N x" label.
+- <g data-section="each-layer"> holds the "Each layer" graph.
+- <g data-section="zooms"> holds all zoom panels; each panel is <g data-zoom="KEY"> with its title, graph and caption.
+- Inside a graph, each node is <g data-node="ID"> with one <rect> and its label <text>; each edge is one
+  <path>, <line> or <polyline> with data-edge="A->B" (node ids) and the arrowhead marker.
+- Each callout i (1 = first in the list): <g data-callout="i"> containing that callout's "text", worded exactly.
 - Allowed elements only: svg, g, rect, text, tspan, path, line, polyline, polygon, defs, marker, style, title.
   No images, scripts, foreignObject, external fonts or links.
 

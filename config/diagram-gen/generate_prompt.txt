@@ -1,10 +1,10 @@
 Draw the architecture diagram for the model in this YAML spec as a single standalone SVG file,
-following the system instructions exactly.
+following the system instructions and the fixed layout exactly.
 
 Before writing, check:
-- the layer counts in compressed_view add up to {num_layers}
-- every zoom panel in the spec has its own data-zoom group
-- every callout appears in its own data-callout group, worded exactly as written
+- the layer counts in compressed_view add up to {num_layers}, and each repeat count appears exactly once
+- every zoom panel and the "Each layer" box draw exactly their listed nodes and edges
+- every callout is in its own data-callout group, beside the part named in "beside"
 - every element is at least 24 px inside the canvas, and nothing overlaps
 
 SPEC:

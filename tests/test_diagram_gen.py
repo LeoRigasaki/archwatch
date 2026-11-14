@@ -2,6 +2,8 @@ import copy
 import json
 import re
 import shutil
+import textwrap
+from html import escape
 from pathlib import Path
 
 import pytest
@@ -9,12 +11,18 @@ import yaml
 
 from archwatch import weights
 from archwatch.diagram_checks import extract_svg, review, static_checks
-from archwatch.diagram_spec import SpecError, build_spec, compress, dump
+from archwatch.diagram_spec import MAX_WORDS, SpecError, _words, build_spec, compress, dump
 from archwatch.gemini import Gemini, ProviderError
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = yaml.safe_load((ROOT / "config/providers.yaml").read_text())
 SETTINGS = CONFIG["diagram_gen"]
+SUBJECTS = [
+    "moonshotai__Kimi-K3.1-Pro",
+    "LiquidAI__LFM3-1.7B",
+    "nvidia__Nemotron-H-8B-Base-8K",
+    "meta-llama__Llama-3.1-8B",
+]
 
 
 def record(stem):
@@ -24,6 +32,11 @@ def record(stem):
 def numbers(text):
     text = "\n".join("" if line.lstrip().startswith("#") else line.split(" #")[0] for line in text.splitlines())
     return {x.replace(",", "") for x in re.findall(r"\d[\d,]*(?:\.\d+)?", text)}
+
+
+def edges(panel):
+    labels = {n["id"]: n["label"] for n in panel["nodes"]}
+    return {(labels[a], labels[b]) for a, b in (e.split(" -> ") for e in panel["edges"])}
 
 
 # ---------------------------------------------------------------- spec builder
@@ -47,28 +60,63 @@ def test_generated_spec_matches_hand_written_kit_numbers(stem, kit, deviations):
     assert got - expected == deviations[1]
 
 
-def test_kimi_spec_structure_matches_kit():
+def test_kimi_panels_encode_the_real_wiring():
     spec = build_spec(record("moonshotai__Kimi-K3.1-Pro"))
     view = spec["layer_pattern"]["compressed_view"]
     assert [(g["repeat"], len(g["layers"])) for g in view] == [(1, 4), (22, 4), (1, 1)]
-    assert view[0]["layers"][0] == "KDA + dense FFN"
     assert set(spec["zoom_panels"]) == {"kda", "gated_dsa", "latent_moe", "dense_ffn"}
+    kda = edges(spec["zoom_panels"]["kda"])
+    delta = "gated delta rule"
+    # q, k, v -> conv -> delta rule; beta and decay are parallel inputs into the delta rule.
+    assert ("q, k, v: Linear 7168 -> 12288", "Conv1d, kernel 4") in kda
+    assert ("Conv1d, kernel 4", delta) in kda
+    assert ("beta: Linear 7168 -> 96", delta) in kda and ("decay: Linear 7168 -> 128 -> 12288", delta) in kda
+    assert ("beta: Linear 7168 -> 96", "decay: Linear 7168 -> 128 -> 12288") not in kda
+    # output norm -> gate multiplied in -> output projection
+    assert {(delta, "output norm (128)"), ("output norm (128)", "multiply")} <= kda
+    assert ("output gate: Linear 7168 -> 12288", "multiply") in kda
+    assert ("multiply", "output projection: 12288 -> 7168") in kda
+    dsa = edges(spec["zoom_panels"]["gated_dsa"])
+    attn = "sparse attention, NoPE"
+    assert ("Linear 1536 -> 96 x 192", attn) in dsa and ("Linear 512 -> 96 x (128 + 128)", attn) in dsa
+    assert ("select top 2048 tokens", attn) in dsa and ("indexer: 32 heads x 128", "select top 2048 tokens") in dsa
+    moe = edges(spec["zoom_panels"]["latent_moe"])
+    assert ("router: 896 experts, top 16", "16 experts: 3584 -> 3072 -> 3584") in moe
+    assert ("2 shared experts (6144)", "sum") in moe and ("Linear 3584 -> 7168", "sum") in moe
     assert "the word RoPE" in spec["do_not_include"]
-    assert not any("rope" in p.lower().replace("no", "") for p in spec["zoom_panels"]["gated_dsa"]["parts"][2:3])
-    assert spec["callouts"][-1].startswith("KV cache: about 33 KB")
+    assert not any("RoPE" in s for s in json.dumps(spec["zoom_panels"]).split('"') if "NoPE" not in s)
 
 
-@pytest.mark.parametrize(
-    "stem",
-    ["moonshotai__Kimi-K3.1-Pro", "LiquidAI__LFM3-1.7B", "nvidia__Nemotron-H-8B-Base-8K", "meta-llama__Llama-3.1-8B"],
-)
-def test_every_spec_layer_sum_and_panel_order(stem):
+def test_parallel_parts_are_not_drawn_in_sequence():
+    lfm = build_spec(record("LiquidAI__LFM3-1.7B"))["zoom_panels"]
+    gqa = edges(lfm["gqa"])
+    q, k, v = "q: Linear 2048 -> 2048", "k: Linear 2048 -> 512", "v: Linear 2048 -> 512"
+    assert {("input (2048)", q), ("input (2048)", k), ("input (2048)", v)} <= gqa
+    assert not ({(q, k), (k, v)} & gqa)
+    assert ("input (2048)", "head gate: Linear 2048 -> 16") in gqa  # gate reads the layer input (modeling_lfm3.py)
+    conv = edges(lfm["short_conv"])
+    assert ("in_proj: Linear 2048 -> 6144", "multiply with C") in conv  # C skips the convolution
+    ffn = edges(lfm["ffn"])
+    assert ("w3: Linear 2048 -> 7680", "multiply") in ffn and ("SiLU", "multiply") in ffn
+    mamba = edges(build_spec(record("nvidia__Nemotron-H-8B-Base-8K"))["zoom_panels"]["mamba2"])
+    assert ("in_proj: Linear 4096 -> 18560", "norm (8192) gated by z") in mamba  # z branch
+
+
+@pytest.mark.parametrize("stem", SUBJECTS)
+def test_every_spec_is_well_formed(stem):
     spec = build_spec(record(stem))
     view = spec["layer_pattern"]["compressed_view"]
     assert sum(g["repeat"] * len(g["layers"]) for g in view) == spec["model"]["layers"]
     assert 1 <= len(spec["callouts"]) <= 5
-    for panel in spec["zoom_panels"].values():
-        assert panel["flow"] == "bottom to top, in the order listed" and panel["parts"]
+    targets = {"stack", "embedding"} | set(spec["zoom_panels"])
+    assert all(c["beside"] in targets for c in spec["callouts"])
+    for panel in list(spec["zoom_panels"].values()) + [spec["each_layer"]]:
+        ids = {n["id"] for n in panel["nodes"]}
+        assert all(_words(n["label"]) <= MAX_WORDS for n in panel["nodes"])
+        assert all(set(e.split(" -> ")) <= ids for e in panel["edges"])
+        touched = {x for e in panel["edges"] for x in e.split(" -> ")}
+        assert touched == ids  # no orphan nodes
+        assert not any("does not grow" in n["label"] for n in panel["nodes"])  # notes are captions
 
 
 def test_spec_requires_published_block_shapes():
@@ -98,14 +146,12 @@ def test_spec_rejects_tensor_shapes_that_disagree_with_published_facts():
 )
 def test_compress_always_covers_every_layer_once(seq):
     groups = compress(seq)
-    flat = [x for g in groups for _ in range(g["repeat"]) for x in g["layers"]]
-    assert flat == seq
+    assert [x for g in groups for _ in range(g["repeat"]) for x in g["layers"]] == seq
 
 
 def test_compress_splits_a_variant_repeat_into_its_own_group():
     seq = list("KKKD" * 23 + "D")
-    labels = ["Kd"] + seq[1:]
-    groups = compress(seq, labels)
+    groups = compress(seq, ["Kd"] + seq[1:])
     assert [(g["repeat"], g["layers"]) for g in groups] == [
         (1, ["Kd", "K", "K", "D"]),
         (22, ["K", "K", "K", "D"]),
@@ -135,8 +181,8 @@ def test_block_shapes_groups_by_config_type_and_ffn_signature():
     }
     out = weights.block_shapes(t, ["attn", "attn", "conv"], num_layers=3, quant_bits=4)
     assert out["mixers"]["attn"] == {"layers": 2, "tensors": {"self_attn.q_proj.weight": [8, 8]}}
-    assert out["mixers"]["conv"]["tensors"] == {"conv.in_proj.weight": [24, 8]}  # 4-bit packed columns unpacked
-    assert [g["layer_ranges"] for g in out["ffns"]] == [[[0, 0]], [[1, 2]]]  # experts excluded, scales skipped
+    assert out["mixers"]["conv"]["tensors"] == {"conv.in_proj.weight": [24, 8]}
+    assert [g["layer_ranges"] for g in out["ffns"]] == [[[0, 0]], [[1, 2]]]
     assert out["globals"] == {"embed_tokens.weight": [100, 8]}
 
 
@@ -146,37 +192,102 @@ def test_block_shapes_withholds_inconsistent_layers_of_one_type():
         "model.layers.1.self_attn.q_proj.weight": tensor([16, 8]),
     }
     assert weights.block_shapes(t, ["attn", "attn"], num_layers=2) is None
-    assert weights.block_shapes(t, ["attn"], num_layers=2) is None  # pattern/header length mismatch
+    assert weights.block_shapes(t, ["attn"], num_layers=2) is None
 
 
-# ---------------------------------------------------------------- SVG checks
+# ---------------------------------------------------------------- a contract-compliant reference SVG
 
 
-def good_svg(spec, *, height=1200, extra=""):
-    """A deliberately plain SVG that satisfies the structural contract for `spec`."""
-    out = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 {height}">',
-        '<rect width="1600" height="100%" fill="#fff"/>',
-    ]
-    y = 40
+def good_svg(spec, *, extra="", drop_edge=None, add_edge=None):
+    """A plain SVG that follows the fixed layout and draws every node and edge of `spec`."""
+    W, out, y = 1800, [], 130
+    t = lambda x, yy, s, a="start", size=14: (  # noqa: E731
+        f'<text x="{x}" y="{yy}" font-size="{size}" font-family="Arial" text-anchor="{a}">{escape(str(s))}</text>'
+    )
+    out.append('<g data-section="title">' + t(900, 50, spec["model"]["title_label"], "middle", 32))
+    out.append(t(900, 80, spec["model"]["summary_line"], "middle", 16) + "</g>")
+    marks = {}
 
-    def text(s, x=40, size=14):
+    def io(item):
         nonlocal y
-        y += 22
-        return f'<text x="{x}" y="{y}" font-size="{size}" font-family="Arial">{s}</text>'
+        marks[item["id"]] = y
+        out.append(
+            f'<g data-io="{item["id"]}"><rect x="40" y="{y}" width="400" height="24" fill="#fff" stroke="#333"/>'
+        )
+        out.append(t(48, y + 17, item["label"]) + "</g>")
+        y += 34
 
-    out.append(text(spec["model"]["title_label"], size=28))
-    for i, g in enumerate(spec["layer_pattern"]["compressed_view"], 1):
+    out.append('<g data-section="stack">')
+    stack_top = y
+    for item in reversed(spec["io"]["top"]):
+        io(item)
+    for i in range(len(spec["layer_pattern"]["compressed_view"]), 0, -1):
+        g = spec["layer_pattern"]["compressed_view"][i - 1]
         out.append(f'<g data-group="{i}" data-repeat="{g["repeat"]}">')
-        y += 6 * len(g["layers"])
-        for k, label in enumerate(g["layers"]):  # the first listed layer is the lowest bar
-            out.append(f'<rect data-layer="{label}" x="40" y="{y - 6 * k}" width="100" height="4" fill="#ccc"/>')
-        out.append(text(f"{g['repeat']} x") + "</g>")
+        top = y
+        for k, label in enumerate(reversed(g["layers"])):
+            out.append(f'<rect data-layer="{escape(label)}" x="40" y="{y}" width="260" height="8" fill="#ccc"/>')
+            y += 10
+        out.append(t(320, max(y - 2, top + 14), f"{g['repeat']} x") + "</g>")
+        y = max(y, top + 18) + 8
+    out.append(t(420, (stack_top + y) // 2, f"{spec['model']['layers']} layers"))
+    for item in reversed(spec["io"]["bottom"]):
+        io(item)
+    out.append("</g>")
+    stack_bottom = y
+
+    def graph(attr, key, title, panel, x0, y0):
+        out.append(f'<g {attr}="{key}">' + t(x0, y0 + 16, title))
+        rows = {n["id"]: y0 + 30 + 30 * i for i, n in enumerate(panel["nodes"])}
+        for n in panel["nodes"]:
+            r = rows[n["id"]]
+            out.append(
+                f'<g data-node="{n["id"]}"><rect x="{x0}" y="{r}" width="360" height="22" fill="#fff" stroke="#333"/>'
+            )
+            out.append(t(x0 + 6, r + 16, n["label"]) + "</g>")
+        lane = x0 + 380
+        es = [e for e in panel["edges"] if e != drop_edge]
+        if add_edge and set(add_edge.split(" -> ")) <= set(rows):
+            es.append(add_edge)
+        for e in es:
+            a, b = e.split(" -> ")
+            ya, yb = rows[a] + 11, rows[b] + 11
+            out.append(
+                f'<path data-edge="{a}->{b}" d="M{x0 + 360} {ya}H{lane}V{yb}H{x0 + 362}" fill="none" stroke="#333"/>'
+            )
+            lane += 6
+        yy = y0 + 30 + 30 * len(panel["nodes"]) + 10
+        for c in panel["caption"]:
+            out.append(t(x0, yy + 14, c))
+            yy += 20
+        out.append("</g>")
+        return yy + 20
+
+    out.append('<g data-section="each-layer">')
+    each_bottom = graph("data-each", "x", "Each layer", spec["each_layer"], 40, stack_bottom + 20)
+    out.append("</g>")
+    out.append('<g data-section="zooms">')
+    zy, tops, callout_bottom = 130, {}, 0
     for key, panel in spec["zoom_panels"].items():
-        out.append(f'<g data-zoom="{key}">' + text(panel["title"], x=800) + "</g>")
+        tops[key] = zy
+        zy = graph("data-zoom", key, panel["title"], panel, 920, zy)
+    out.append("</g>")
+    next_y = {"stack": stack_top, "embedding": marks["embedding"] + 14, **{k: v + 30 for k, v in tops.items()}}
     for i, c in enumerate(spec["callouts"], 1):
-        out.append(f'<g data-callout="{i}">' + text(c, x=800) + "</g>")
-    return "".join(out) + extra + "</svg>"
+        x = 640 if c["beside"] in ("stack", "embedding") else 1580
+        cy = next_y[c["beside"]]
+        lines = textwrap.wrap(c["text"], 24)
+        spans = "".join(
+            f'<tspan x="{x}" dy="{0 if k == 0 else 18}">{escape(line)}</tspan>' for k, line in enumerate(lines)
+        )
+        out.append(
+            f'<g data-callout="{i}"><text x="{x}" y="{cy}" font-size="14" font-family="Arial">{spans}</text></g>'
+        )
+        next_y[c["beside"]] = cy + 18 * len(lines) + 12
+        callout_bottom = max(callout_bottom, next_y[c["beside"]])
+    height = max(each_bottom, zy, callout_bottom, 1000) + 40
+    head = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {height}"><rect width="{W}" height="{height}" fill="#fff"/>'
+    return head + "".join(out) + extra + "</svg>"
 
 
 @pytest.fixture
@@ -186,7 +297,7 @@ def lfm_spec():
 
 def test_static_checks_pass_on_a_contract_compliant_svg(lfm_spec):
     checks = static_checks(good_svg(lfm_spec), lfm_spec, SETTINGS)
-    assert all(c["passed"] for c in checks.values()), checks
+    assert all(c["passed"] for c in checks.values()), [c["problems"] for c in checks.values() if not c["passed"]]
 
 
 @pytest.mark.parametrize(
@@ -197,12 +308,23 @@ def test_static_checks_pass_on_a_contract_compliant_svg(lfm_spec):
         (lambda s: s.replace('data-repeat="5"', 'data-repeat="6"'), "layer_sum"),
         (lambda s: s.replace('data-zoom="gqa"', 'data-zoom="attention"'), "zoom_panels_present"),
         (lambda s: s.replace('data-callout="2"', 'data-callout="9"'), "callouts_present"),
-        (lambda s: s.replace('viewBox="0 0 1600 1200"', 'viewBox="0 0 1200 900"'), "canvas_size"),
+        (lambda s: re.sub(r'viewBox="0 0 1800 (\d+)"', r'viewBox="0 0 1200 \1"', s), "canvas_size"),
+        (lambda s: s.replace(">24 layers<", ">24 x<"), "repeat_counts_once"),
+        (lambda s: s.replace('data-section="each-layer"', 'data-section="layer"'), "fixed_layout_sections"),
+        (lambda s: s.replace(">multiply with C<", ">multiply C<"), "graph_nodes_match_spec"),
     ],
 )
 def test_static_checks_catch_each_failure(lfm_spec, mutate, check):
     checks = static_checks(mutate(good_svg(lfm_spec)), lfm_spec, SETTINGS)
     assert not checks[check]["passed"]
+
+
+def test_edge_checks_catch_missing_and_invented_edges(lfm_spec):
+    missing = static_checks(good_svg(lfm_spec, drop_edge="in_proj -> mul_c"), lfm_spec, SETTINGS)
+    assert any("in_proj->mul_c is missing" in p for p in missing["graph_edges_match_spec"]["problems"])
+    # A sequential q -> k wire is exactly the wrong wiring a flat list produced.
+    extra = static_checks(good_svg(lfm_spec, add_edge="q -> k"), lfm_spec, SETTINGS)
+    assert any("q->k is drawn but not in the spec" in p for p in extra["graph_edges_match_spec"]["problems"])
 
 
 def test_do_not_include_catches_rope_for_nope_model():
@@ -232,23 +354,65 @@ def chrome_available():
         return False
 
 
-@pytest.mark.skipif(not chrome_available(), reason="installed Chrome is required for geometry checks")
+CHROME = pytest.mark.skipif(not chrome_available(), reason="installed Chrome is required for geometry checks")
+
+
+@CHROME
+@pytest.mark.parametrize("stem", SUBJECTS)
+def test_reference_svg_passes_every_check(stem):
+    spec = build_spec(record(stem))
+    result = review(good_svg(spec), spec, SETTINGS)
+    assert result["passed"], result["failures"]
+
+
+@CHROME
 def test_browser_checks_find_layout_problems(lfm_spec):
-    clean = review(good_svg(lfm_spec), lfm_spec, SETTINGS)
-    assert clean["passed"], clean["failures"]
     bad = good_svg(
         lfm_spec,
         extra=(
-            '<text x="60" y="62" font-size="28">LFM3-1.7B</text>'  # overlaps the title
-            '<text x="40" y="1195" font-size="14">2048</text>'  # inside the bottom margin
-            '<text x="40" y="1000" font-size="14">7680</text><rect x="30" y="985" width="80" height="20" fill="#000"/>'
-            '<line x1="0" y1="995" x2="200" y2="995" stroke="#000" stroke-dasharray="4 4"/>'
+            '<text x="900" y="50" font-size="28" text-anchor="middle">LFM3-1.7B</text>'
+            '<text x="40" y="{H}" font-size="14">2048</text>'
+            '<text x="1000" y="2000" font-size="14">7680</text><rect x="990" y="1985" width="80" height="20" fill="#000"/>'
+            '<line x1="960" y1="1995" x2="1200" y2="1995" stroke="#000" stroke-dasharray="4 4"/>'
         ),
     )
+    height = int(re.search(r'viewBox="0 0 1800 (\d+)"', bad).group(1))
+    bad = bad.replace("{H}", str(height - 4)).replace(f'0 0 1800 {height}"', '0 0 1800 2100"')
     checks = review(bad, lfm_spec, SETTINGS)["checks"]
-    for name in ("no_text_overlap", "inside_canvas_with_margin", "no_covered_text", "no_leader_lines"):
+    for name in (
+        "no_text_overlap",
+        "inside_canvas_with_margin",
+        "no_covered_text",
+        "no_leader_lines",
+        "no_lines_through_text",
+    ):
         assert not checks[name]["passed"], name
-    assert not checks["no_lines_through_text"]["passed"]
+
+
+@CHROME
+def test_layer_bars_must_match_spec_bottom_to_top(lfm_spec):
+    svg = good_svg(lfm_spec)
+    swapped = (
+        svg.replace('data-layer="Global GQA + FFN"', 'data-layer="TMP"')
+        .replace('data-layer="Sliding-window GQA + FFN"', 'data-layer="Global GQA + FFN"')
+        .replace('data-layer="TMP"', 'data-layer="Sliding-window GQA + FFN"')
+    )
+    check = review(swapped, lfm_spec, SETTINGS)["checks"]["layer_bars_match_spec"]
+    assert not check["passed"] and "group 2" in check["problems"][0]
+
+
+@CHROME
+def test_mislabelled_arrow_and_misplaced_parts_are_caught(lfm_spec):
+    svg = good_svg(lfm_spec)
+    # Relabel one drawn arrow so its attribute claims a different source: geometry no longer matches.
+    wrong = svg.replace('data-edge="in->q"', 'data-edge="TMP"').replace('data-edge="in->v"', 'data-edge="in->q"')
+    wrong = wrong.replace('data-edge="TMP"', 'data-edge="in->v"')
+    checks = review(wrong, lfm_spec, SETTINGS)["checks"]
+    assert not checks["edges_connect_their_nodes"]["passed"]
+    moved = re.sub(r'(<g data-callout="3">.*?</g>)', lambda m: m.group(1).replace('x="1580"', 'x="640"'), svg)
+    assert not review(moved, lfm_spec, SETTINGS)["checks"]["callouts_beside_their_part"]["passed"]
+    swapped = svg.replace('<g data-section="zooms">', '<g data-section="zooms" transform="translate(-880 0)">')
+    assert not review(swapped, lfm_spec, SETTINGS)["checks"]["fixed_layout_positions"]["passed"]
 
 
 # ---------------------------------------------------------------- provider adapter
@@ -268,7 +432,7 @@ class FakeResponse:
         return False
 
 
-def test_adapter_sends_system_instruction_and_enforces_budget(tmp_path, monkeypatch):
+def test_adapter_counts_every_call_against_the_one_daily_budget(tmp_path, monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     sent = []
 
@@ -277,17 +441,22 @@ def test_adapter_sends_system_instruction_and_enforces_budget(tmp_path, monkeypa
         return FakeResponse({"candidates": [{"content": {"parts": [{"text": "<svg/>"}]}, "finishReason": "STOP"}]})
 
     config = copy.deepcopy(CONFIG)
-    config["diagram_gen"]["max_generation_requests"] = 2
-    clock = iter(range(0, 10_000, 100))
-    client = Gemini(config, tmp_path / "ledger.json", opener=opener, clock=lambda: next(clock), wait=lambda s: None)
+    config["models"]["diagram"]["rpd"] = 3
+    ledger = tmp_path / "ledger.json"
+    # A call made by another tool earlier the same day already counts.
+    ledger.write_text(
+        json.dumps([dict(time=0, day="1969-12-31", model=config["models"]["diagram"]["id"], experiment="other")])
+    )
+    clock = iter(range(100, 10_000, 100))
+    client = Gemini(config, ledger, opener=opener, clock=lambda: next(clock), wait=lambda s: None)
     assert client.generate("SYSTEM", "hello")[0] == "<svg/>"
     client.generate("SYSTEM", "again")
-    with pytest.raises(ProviderError, match="budget"):
+    with pytest.raises(ProviderError, match="daily"):
         client.generate("SYSTEM", "third")
     assert sent[0]["systemInstruction"]["parts"][0]["text"] == "SYSTEM"
     assert sent[0]["generationConfig"]["maxOutputTokens"] == config["diagram_gen"]["max_output_tokens"]
-    assert len(json.loads((tmp_path / "ledger.json").read_text())) == 2
-    assert "test-key" not in (tmp_path / "ledger.json").read_text()
+    assert len(json.loads(ledger.read_text())) == 3
+    assert "test-key" not in ledger.read_text()
 
 
 def test_adapter_refuses_without_key_or_free_model(tmp_path, monkeypatch):
@@ -303,9 +472,8 @@ def test_adapter_refuses_without_key_or_free_model(tmp_path, monkeypatch):
 
 def test_no_model_names_in_python_sources():
     ids = [m["id"] for m in CONFIG["models"].values()]
-    for path in (ROOT / "src/archwatch").glob("*.py"):
-        text = path.read_text()
-        assert not any(i in text for i in ids), path
+    for path in list((ROOT / "src/archwatch").glob("*.py")) + list((ROOT / "tools").glob("*.py")):
+        assert not any(i in path.read_text() for i in ids), path
 
 
 # ---------------------------------------------------------------- repair loop
@@ -314,8 +482,7 @@ def test_no_model_names_in_python_sources():
 def test_repair_loop_sends_failures_and_stops_on_pass(tmp_path, monkeypatch):
     import importlib.util
 
-    spec_path = ROOT / "tools/diagram_gen.py"
-    module_spec = importlib.util.spec_from_file_location("diagram_gen", spec_path)
+    module_spec = importlib.util.spec_from_file_location("diagram_gen", ROOT / "tools/diagram_gen.py")
     gen = importlib.util.module_from_spec(module_spec)
     module_spec.loader.exec_module(gen)
     monkeypatch.setattr(gen, "OUT", tmp_path)
@@ -337,20 +504,6 @@ def test_repair_loop_sends_failures_and_stops_on_pass(tmp_path, monkeypatch):
     assert "number 4096" in client.prompts[1] and "PREVIOUS SVG" in client.prompts[1]
     folder = tmp_path / "LiquidAI__LFM3-1.7B"
     assert {p.name for p in folder.iterdir()} >= {"spec.yaml", "v1.svg", "v1.review.json", "v2.svg", "v2.review.json"}
-    # Resume: saved SVGs are reused, no new calls.
-    gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)
+    gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)  # resume: saved SVGs are reused, no new calls
     assert len(client.prompts) == 2
     shutil.rmtree(folder)
-
-
-@pytest.mark.skipif(not chrome_available(), reason="installed Chrome is required for geometry checks")
-def test_layer_bars_must_match_spec_bottom_to_top(lfm_spec):
-    svg = good_svg(lfm_spec)
-    assert review(svg, lfm_spec, SETTINGS)["checks"]["layer_bars_match_spec"]["passed"]
-    swapped = (
-        svg.replace('data-layer="Global GQA + FFN"', 'data-layer="TMP"')
-        .replace('data-layer="Sliding-window GQA + FFN"', 'data-layer="Global GQA + FFN"')
-        .replace('data-layer="TMP"', 'data-layer="Sliding-window GQA + FFN"')
-    )
-    check = review(swapped, lfm_spec, SETTINGS)["checks"]["layer_bars_match_spec"]
-    assert not check["passed"] and "group 2" in check["problems"][0]
