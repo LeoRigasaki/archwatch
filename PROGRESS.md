@@ -19,7 +19,7 @@ As of **14 November 2026**, after the watcher and source-driven cleanup merges, 
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **102 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
+- [x] **114 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
@@ -147,6 +147,20 @@ The implementation amendments approved on 14 November are recorded in [NEXT_STEP
 - [x] Fixed the automatic PR review's predecessor consistency finding: reanalysis refreshes existing JSON/YAML/SVG formats, architecture signatures and seen state together, while preserving source-pinned lineage. A regression checks the former stale-YAML/SVG case and subsequent no-op behavior.
 - [x] Gallery now derives 11 eligible model views from 13 saved records across ten publishers. Historical Liquid derivatives remain held and diagnostically available.
 - [x] Browser text geometry checks found zero text/text overlaps and zero labels outside the canvas across all 11 diagrams. Phi/Nemotron layouts were visually inspected. Sliders render cache estimates from published inputs.
-- [ ] Human review and backfill PR merge; discovery state PR #6 remains open and unmerged. Cron, Gemini calls and recurring generation remain disabled.
+- [x] Backfill PR #8 merged after green CI; outdated discovery PR #6 closed without merging and `daily-update` deleted. Cron and recurring generation remain disabled.
 
 Evidence: [processing](results/backfill-processing.json), [repeat no-op](results/backfill-no-op.json), [gold method](evals/README.md), [family rules](docs/FAMILY_RULES.md).
+
+## Newest-release phase
+
+- [x] Froze seven new primary-source gold labels before the first run; preserved code/source commits, label hashes and original records. Strict first-run exact match: **97/139 (69.8%)**.
+- [x] Kept two already-used newest models outside the held-out denominator. Meta access arrived mid-run; its separate late-access baseline is **11/16**, with the curation timing disclosed.
+- [x] Added tested native FP4/FP8 counting, metadata exclusion, main/auxiliary tensor isolation, fused expert layouts, modern attention/family facts and Llama4 MoE scheduling.
+- [x] Added bounded manual newest/predecessor processing with diagnostic records, explicit source/access review and stable repeat behavior.
+- [x] Adaptation reaches **138/139** plus **16/16** on Meta; DiffusionGemma's card/header parameter-scope disagreement remains withheld. These are not new held-out results.
+- [x] All ten selected newest models analyzed; seven remain held for new graph/cache qualification. Llama3.2 Vision predecessor access and Mistral Large3 native config support remain unresolved.
+- [x] Current inventory: 26 records, 12 eligible gallery views, 28 tracked sources; 114 offline tests pass.
+- [ ] Diagram route comparison on the four requested established records, in a separate PR. Gemini credentials are configured but no generation loop/explainer is authorized.
+- [ ] Optional Discord watcher notification, in its own small PR; credential stored without printing it.
+
+Evidence: [newest protocol and review limits](docs/NEWEST_BACKFILL.md), [first-run score](results/newest-first-run/heldout-exact-match.md), [adaptation score](results/newest-adaptation.md).

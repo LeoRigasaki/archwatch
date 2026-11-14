@@ -10,6 +10,16 @@
       "reason": "Hub base_model relation: finetune; historical derived record excluded",
       "status": "rejected"
     },
+    "LiquidAI/LFM2.5-24B-A2B-Base": {
+      "analyzed_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
+      "created_at": "2026-10-09T21:13:55+00:00",
+      "family": "lfm",
+      "last_observed_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Required published inputs are unavailable: moe_shared_experts",
+      "status": "review"
+    },
     "LiquidAI/LFM3-1.7B": {
       "architecture_hash": "5f69b11287b44e4da7c2a7c9e2c1e870b8677ab5f5a88d0585a49a58bace99cd",
       "created_at": "2026-10-23T21:35:42+00:00",
@@ -21,7 +31,8 @@
       "status": "rejected"
     },
     "LiquidAI/LFM3-1.7B-Base": {
-      "architecture_hash": "e25cd9410d7396ed2da99adc7f2b50b0f8d0bd3b8aa878d3bd9befae3ede331e",
+      "analyzed_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+      "architecture_hash": "ef3317861457551ff4d5473617c18aa157317348dee2e1d3e3f5362d0662ed0b",
       "attempts": 1,
       "created_at": "2026-10-26T16:28:49+00:00",
       "family": "lfm",
@@ -29,7 +40,7 @@
       "last_successful_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
       "pool": "core",
       "predecessor": null,
-      "reason": "No earlier same-org family release in the inspected catalog",
+      "reason": "Frozen primary-source backfill passed publication checks",
       "status": "ready_for_diagram"
     },
     "Qwen/Qwen3-0.6B-Base": {
@@ -44,6 +55,26 @@
       "reason": "No earlier same-org family release in the inspected catalog",
       "status": "ready_for_diagram"
     },
+    "Qwen/Qwen3.8-2.4T-A95B": {
+      "analyzed_commit": "4f885e51d6bbfee5866446d56d3f96f336c39723",
+      "created_at": "2026-08-08T01:50:52+00:00",
+      "family": "qwen",
+      "last_observed_commit": "4f885e51d6bbfee5866446d56d3f96f336c39723",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Layer pattern is not verified; architecture rendering is withheld",
+      "status": "review"
+    },
+    "Qwen/Qwen3.8-Flash-Next": {
+      "analyzed_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
+      "created_at": "2026-08-24T08:24:59+00:00",
+      "family": "qwen",
+      "last_observed_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
+    },
     "deepseek-ai/DeepSeek-V2-Lite": {
       "architecture_hash": "566c43f36d833b25735f78653f70e97dbd0b1369679172848841d735e8ef988e",
       "attempts": 1,
@@ -55,6 +86,36 @@
       "predecessor": null,
       "reason": "No earlier same-org family release in the inspected catalog",
       "status": "ready_for_diagram"
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash": {
+      "analyzed_commit": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+      "created_at": "2026-09-10T02:17:58+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
+      "analyzed_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+      "created_at": "2026-10-17T02:40:38+00:00",
+      "family": "deepseek-v",
+      "last_observed_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
+    },
+    "google/diffusiongemma-26B-A4B-it": {
+      "analyzed_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+      "created_at": "2026-06-09T12:40:12+00:00",
+      "family": "diffusion-gemma",
+      "last_observed_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
     },
     "google/gemma-3-1b-pt": {
       "architecture_hash": "e40b8c7cdd14940fa3609cf1469a84bd8abed8fdcbef9b8ee6cbcf5fab7d9dd0",
@@ -68,6 +129,16 @@
       "reason": "No earlier same-org family release in the inspected catalog",
       "status": "ready_for_diagram"
     },
+    "google/gemma-4-26B-A4B": {
+      "analyzed_commit": "24548b62aa021d562695c04aaf7758a1ea47990b",
+      "created_at": "2026-03-12T00:38:03+00:00",
+      "family": "gemma",
+      "last_observed_commit": "24548b62aa021d562695c04aaf7758a1ea47990b",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
+    },
     "meta-llama/Llama-3.1-8B": {
       "architecture_hash": "5755b913fd48f8cba6ad2c228e07379790799a0144fa974acd963e482f3beae3",
       "attempts": 1,
@@ -78,6 +149,32 @@
       "pool": "core",
       "predecessor": null,
       "reason": "No earlier same-org family release in the inspected catalog",
+      "status": "ready_for_diagram"
+    },
+    "meta-llama/Llama-3.2-90B-Vision": {
+      "last_observed_commit": "38850089f6a42b7394680c4e4bbd4c40fb62404f",
+      "reason": "HTTPError (HTTP 403)",
+      "status": "review"
+    },
+    "meta-llama/Llama-4-Maverick-17B-128E": {
+      "analyzed_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "created_at": "2025-04-02T17:35:27+00:00",
+      "family": "llama",
+      "last_observed_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
+    },
+    "microsoft/Mage-VL": {
+      "analyzed_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "architecture_hash": "e25e2ecd6c157a563e865c1378e3d7478c353f12b7ff9111d68b1eb8b4d4df49",
+      "created_at": "2026-07-25T08:29:09+00:00",
+      "family": "mage:vl",
+      "last_observed_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "last_successful_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "pool": "core",
+      "reason": "Frozen primary-source backfill passed publication checks",
       "status": "ready_for_diagram"
     },
     "microsoft/phi-2": {
@@ -104,18 +201,35 @@
       "reason": "No earlier same-org family release in the inspected catalog",
       "status": "ready_for_diagram"
     },
+    "mistralai/Mistral-Large-3-675B-Base-2512": {
+      "last_observed_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
+      "reason": "Missing root config.json or safetensors; source-format adapter/access required",
+      "status": "review"
+    },
+    "mistralai/Mistral-Large-4-1T-A52B": {
+      "analyzed_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+      "created_at": "2026-09-30T18:35:13+00:00",
+      "family": "mistral-large",
+      "last_observed_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
+    },
     "moonshotai/Kimi-K3": {
-      "architecture_hash": "39d0f3d0c2d4b6f8ab8e38d6288668146183860b25a61b6eab56e089be4801d6",
+      "analyzed_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+      "architecture_hash": "88ac13a726a914f1d0d1b778dcdd5555c4439f1e8a8588ad51932b6cb9603ae4",
       "created_at": "2026-06-13T06:42:57+00:00",
       "family": "kimi",
       "last_observed_commit": "f831ab66814297da540d832a5235f8e904f29d06",
       "last_successful_commit": "f831ab66814297da540d832a5235f8e904f29d06",
       "pool": "core",
-      "reason": "Predecessor refreshed with the current extraction rules",
+      "reason": "Frozen primary-source backfill passed publication checks",
       "status": "ready_for_diagram"
     },
     "moonshotai/Kimi-K3.1-Pro": {
-      "architecture_hash": "fd6845c97a6718b7c46570d9246b5382f452871299d3d9dd5620b5249feba219",
+      "analyzed_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "architecture_hash": "59927736ec4fa6fb4942538885214ebd480e55eeec36fc399772a07ecf5baa9f",
       "attempts": 1,
       "created_at": "2026-11-02T04:13:51+00:00",
       "family": "kimi",
@@ -123,8 +237,18 @@
       "last_successful_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
       "pool": "core",
       "predecessor": "moonshotai/Kimi-K3",
-      "reason": "Latest earlier Hub creation date in the inspected same-org family catalog",
+      "reason": "Frozen primary-source backfill passed publication checks",
       "status": "ready_for_diagram"
+    },
+    "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16": {
+      "analyzed_commit": "ee517dd388a9b348890ae1e00dacc5eb4d0c750d",
+      "created_at": "2026-10-16T18:25:29+00:00",
+      "family": "dory",
+      "last_observed_commit": "ee517dd388a9b348890ae1e00dacc5eb4d0c750d",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
     },
     "nvidia/Nemotron-H-8B-Base-8K": {
       "architecture_hash": "5f029337097c35808cb5ae65d099d9f50c12b23236144c5e5e967f13f87244da",
@@ -149,6 +273,26 @@
       "predecessor": null,
       "reason": "No earlier same-org family release in the inspected catalog",
       "status": "ready_for_diagram"
+    },
+    "zai-org/GLM-5.2": {
+      "analyzed_commit": "cf457fa734ab149ffef225f80893eb38c6ff5cdc",
+      "created_at": "2026-06-16T07:39:20+00:00",
+      "family": "glm",
+      "last_observed_commit": "cf457fa734ab149ffef225f80893eb38c6ff5cdc",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Layer pattern is not verified; architecture rendering is withheld",
+      "status": "review"
+    },
+    "zai-org/GLM-5.3-Flash-BF16": {
+      "analyzed_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+      "created_at": "2026-08-25T06:45:05+00:00",
+      "family": "glm",
+      "last_observed_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+      "last_successful_commit": null,
+      "pool": "core",
+      "reason": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review",
+      "status": "review"
     }
   },
   "schema_version": 1

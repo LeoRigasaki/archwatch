@@ -12,6 +12,18 @@ class PublicationError(ValueError):
 
 def render_values(record: dict) -> dict:
     values = dict(record["published"])
+    if values.get("generation_type") in ("block_diffusion", "latent_recurrent") or values.get("model_type") in {
+        "deepseek_v41",
+        "deepseek_v4",
+        "qwen4_exp",
+        "mistral_large4",
+        "llama4",
+        "glm5_next",
+        "gemma4",
+    }:
+        raise PublicationError(
+            "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
+        )
     checks = {check["field"]: check for check in record["checks"]}
     pattern = checks.get("layer_pattern_per_layer", {})
     if pattern.get("status") != "verified" or not pattern.get("published"):

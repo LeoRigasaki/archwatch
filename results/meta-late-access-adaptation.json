@@ -1,0 +1,99 @@
+{
+  "gold_models": 1,
+  "correct": 16,
+  "total": 16,
+  "exact_match": 1.0,
+  "fields": {
+    "activation": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "context_length": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "dense_ffn_intermediate": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "dense_layers": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "ffn_gated": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "head_dim": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "hidden_size": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_active_experts": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_expert_intermediate": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_num_experts": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "moe_shared_experts": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "num_attention_heads": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "num_kv_heads": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "num_layers": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "params_total": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    },
+    "vocab_size": {
+      "correct": 1,
+      "total": 1,
+      "missing": 0
+    }
+  },
+  "models": [
+    {
+      "id": "meta-llama/Llama-4-Maverick-17B-128E",
+      "source_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "revision_matches": true,
+      "correct": 16,
+      "total": 16,
+      "errors": {}
+    }
+  ],
+  "scope": "Post-fix adaptation on the separate late-access Meta label. Original unchanged baseline scored 11/16; not part of the pre-run-frozen seven-model score."
+}

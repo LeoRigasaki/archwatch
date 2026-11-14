@@ -136,10 +136,8 @@ def model_section(name, anchor):
         ("Total parameters", human(pub["params_total"]), "summed from weight shapes"),
         (
             "Active per token",
-            human(pub["params_active"])
-            if "params_active" in pub
-            else ("withheld" if "MoE" in pub["decoder_type"] else "all (dense)"),
-            "published counting convention" if "params_active" in pub else "see verifier evidence",
+            human(pub["params_active"]) if "params_active" in pub else "not reported",
+            "published counting convention" if "params_active" in pub else "no published active-count convention",
         ),
         ("Layers", f"{pub['num_layers']}", show("layer_type_counts", pub["layer_type_counts"])),
         ("Context", f"{int(ctx):,}", "tokens"),

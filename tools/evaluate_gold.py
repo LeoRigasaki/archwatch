@@ -100,8 +100,11 @@ def main():
     parser.add_argument("--records", type=Path, default=ROOT / "data/models")
     parser.add_argument("--gold", type=Path, default=ROOT / "evals/gold")
     parser.add_argument("--output", type=Path, default=ROOT / "results/gold-exact-match")
+    parser.add_argument("--scope", help="Explicit evaluation cohort/protocol description for a separate report")
     args = parser.parse_args()
     report = evaluate(args.gold, args.records)
+    if args.scope:
+        report["scope"] = args.scope
     write_report(report, args.output)
     print(f"{report['correct']}/{report['total']} published fields match ({report['gold_models']} models)")
 

@@ -1,0 +1,1910 @@
+{
+ "id": "mistralai/Mistral-Large-4-1T-A52B",
+ "source_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+ "hub_created": "2026-09-30T18:35:13+00:00",
+ "license": "other",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "SGLang",
+   "ar",
+   "bg",
+   "bn",
+   "conversational",
+   "cs",
+   "da",
+   "de",
+   "el",
+   "en",
+   "endpoints_compatible",
+   "es",
+   "et",
+   "eval-results",
+   "fa",
+   "fi",
+   "fp8",
+   "fr",
+   "ga",
+   "hi",
+   "hr",
+   "hu",
+   "id",
+   "image-text-to-text",
+   "it",
+   "ja",
+   "ko",
+   "license:other",
+   "llama.cpp",
+   "lt",
+   "lv",
+   "mistral_large4",
+   "ms",
+   "mt",
+   "ne",
+   "nl",
+   "pl",
+   "pt",
+   "region:us",
+   "ro",
+   "ru",
+   "sk",
+   "sl",
+   "sr",
+   "sv",
+   "tr",
+   "transformers",
+   "uk",
+   "vLLM",
+   "vi",
+   "zh"
+  ]
+ },
+ "analyzed_at": "2026-11-14T08:16:02+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "MistralLarge4ForConditionalGeneration",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "mistral_large4",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 72,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 6144,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "shared_kv_layers": {
+   "value": 9,
+   "evidence": "derived:text_config.kv_source_layers differs from layer index"
+  },
+  "vocab_size": {
+   "value": 204800,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 1048576,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla"
+   ],
+   "evidence": "config:text_config.layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:text_config.layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "indexed_mla": 72
+   },
+   "evidence": "config:text_config.layer_types"
+  },
+  "num_attention_heads": {
+   "value": 64,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 64,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 128,
+   "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+  },
+  "v_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "attention_type": {
+   "value": "MLA",
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_kv_lora_rank": {
+   "value": 512,
+   "evidence": "config:text_config.kv_lora_rank"
+  },
+  "mla_qk_nope_head_dim": {
+   "value": 64,
+   "evidence": "config:text_config.qk_nope_head_dim"
+  },
+  "mla_qk_rope_head_dim": {
+   "value": 64,
+   "evidence": "config:text_config.qk_rope_head_dim"
+  },
+  "mla_v_head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.v_head_dim"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.n_routed_experts"
+  },
+  "moe_num_experts": {
+   "value": 128,
+   "evidence": "config:text_config.n_routed_experts"
+  },
+  "moe_active_experts": {
+   "value": 4,
+   "evidence": "config:text_config.num_experts_per_tok"
+  },
+  "moe_shared_experts": {
+   "value": 1,
+   "evidence": "config:text_config.n_shared_experts"
+  },
+  "moe_expert_intermediate": {
+   "value": 6144,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "dense_layers": {
+   "value": 1,
+   "evidence": "config:text_config.first_k_dense_replace"
+  },
+  "dense_ffn_intermediate": {
+   "value": 24576,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "activation": {
+   "value": "silu",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "rope": {
+   "value": {
+    "attention_factor": 1.0,
+    "beta_fast": 32,
+    "beta_slow": 1,
+    "factor": 2048,
+    "original_max_position_embeddings": 512,
+    "rope_theta": 10000.0,
+    "rope_type": "yarn"
+   },
+   "evidence": "config:text_config.rope_parameters"
+  },
+  "released_weights_format": {
+   "value": "fp8",
+   "evidence": "config:text_config.quantization_config"
+  },
+  "vision_encoder_layers": {
+   "value": 30,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 2048,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "model_type",
+   "quantization_config.quant_method",
+   "text_config.first_k_dense_replace",
+   "text_config.hidden_act",
+   "text_config.hidden_size",
+   "text_config.intermediate_size",
+   "text_config.kv_lora_rank",
+   "text_config.kv_source_layers",
+   "text_config.layer_types",
+   "text_config.max_position_embeddings",
+   "text_config.model_type",
+   "text_config.moe_intermediate_size",
+   "text_config.n_routed_experts",
+   "text_config.n_shared_experts",
+   "text_config.num_attention_heads",
+   "text_config.num_experts_per_tok",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.qk_nope_head_dim",
+   "text_config.qk_rope_head_dim",
+   "text_config.rope_parameters.attention_factor",
+   "text_config.rope_parameters.beta_fast",
+   "text_config.rope_parameters.beta_slow",
+   "text_config.rope_parameters.factor",
+   "text_config.rope_parameters.original_max_position_embeddings",
+   "text_config.rope_parameters.rope_theta",
+   "text_config.rope_parameters.rope_type",
+   "text_config.v_head_dim",
+   "text_config.vocab_size",
+   "tie_word_embeddings",
+   "vision_config.hidden_size",
+   "vision_config.num_hidden_layers"
+  ],
+  "unconsumed": [
+   "dtype",
+   "image_token_index",
+   "multimodal_projector_bias",
+   "projector_hidden_act",
+   "quantization_config.activation_scheme",
+   "quantization_config.modules_to_not_convert",
+   "quantization_config.weight_block_size",
+   "spatial_merge_size",
+   "text_config.attention_bias",
+   "text_config.attention_dropout",
+   "text_config.bos_token_id",
+   "text_config.eos_token_id",
+   "text_config.final_logit_softcapping",
+   "text_config.head_dim",
+   "text_config.index_head_dim",
+   "text_config.index_n_heads",
+   "text_config.index_topk",
+   "text_config.indexer_types",
+   "text_config.initializer_range",
+   "text_config.mlp_layer_types",
+   "text_config.n_group",
+   "text_config.no_rope_layer_interval",
+   "text_config.no_rope_layers",
+   "text_config.output_router_logits",
+   "text_config.pad_token_id",
+   "text_config.qk_head_dim",
+   "text_config.rms_norm_eps",
+   "text_config.routed_scaling_factor",
+   "text_config.tie_word_embeddings",
+   "text_config.topk_group",
+   "text_config.use_cache",
+   "transformers_version",
+   "transformers_weights",
+   "vision_config.attention_dropout",
+   "vision_config.head_dim",
+   "vision_config.hidden_act",
+   "vision_config.image_size",
+   "vision_config.initializer_range",
+   "vision_config.intermediate_size",
+   "vision_config.model_type",
+   "vision_config.num_attention_heads",
+   "vision_config.num_channels",
+   "vision_config.patch_size",
+   "vision_config.rope_parameters.rope_theta",
+   "vision_config.rope_parameters.rope_type",
+   "vision_feature_layer"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "consolidated-00001-of-00054.safetensors",
+  "consolidated-00002-of-00054.safetensors",
+  "consolidated-00003-of-00054.safetensors",
+  "consolidated-00004-of-00054.safetensors",
+  "consolidated-00005-of-00054.safetensors",
+  "consolidated-00006-of-00054.safetensors",
+  "consolidated-00007-of-00054.safetensors",
+  "consolidated-00008-of-00054.safetensors",
+  "consolidated-00009-of-00054.safetensors",
+  "consolidated-00010-of-00054.safetensors",
+  "consolidated-00011-of-00054.safetensors",
+  "consolidated-00012-of-00054.safetensors",
+  "consolidated-00013-of-00054.safetensors",
+  "consolidated-00014-of-00054.safetensors",
+  "consolidated-00015-of-00054.safetensors",
+  "consolidated-00016-of-00054.safetensors",
+  "consolidated-00017-of-00054.safetensors",
+  "consolidated-00018-of-00054.safetensors",
+  "consolidated-00019-of-00054.safetensors",
+  "consolidated-00020-of-00054.safetensors",
+  "consolidated-00021-of-00054.safetensors",
+  "consolidated-00022-of-00054.safetensors",
+  "consolidated-00023-of-00054.safetensors",
+  "consolidated-00024-of-00054.safetensors",
+  "consolidated-00025-of-00054.safetensors",
+  "consolidated-00026-of-00054.safetensors",
+  "consolidated-00027-of-00054.safetensors",
+  "consolidated-00028-of-00054.safetensors",
+  "consolidated-00029-of-00054.safetensors",
+  "consolidated-00030-of-00054.safetensors",
+  "consolidated-00031-of-00054.safetensors",
+  "consolidated-00032-of-00054.safetensors",
+  "consolidated-00033-of-00054.safetensors",
+  "consolidated-00034-of-00054.safetensors",
+  "consolidated-00035-of-00054.safetensors",
+  "consolidated-00036-of-00054.safetensors",
+  "consolidated-00037-of-00054.safetensors",
+  "consolidated-00038-of-00054.safetensors",
+  "consolidated-00039-of-00054.safetensors",
+  "consolidated-00040-of-00054.safetensors",
+  "consolidated-00041-of-00054.safetensors",
+  "consolidated-00042-of-00054.safetensors",
+  "consolidated-00043-of-00054.safetensors",
+  "consolidated-00044-of-00054.safetensors",
+  "consolidated-00045-of-00054.safetensors",
+  "consolidated-00046-of-00054.safetensors",
+  "consolidated-00047-of-00054.safetensors",
+  "consolidated-00048-of-00054.safetensors",
+  "consolidated-00049-of-00054.safetensors",
+  "consolidated-00050-of-00054.safetensors",
+  "consolidated-00051-of-00054.safetensors",
+  "consolidated-00052-of-00054.safetensors",
+  "consolidated-00053-of-00054.safetensors",
+  "consolidated-00054-of-00054.safetensors",
+  "consolidated.safetensors.index.json"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 1053161553184,
+   "text_total": 1051474111776,
+   "by_component": {
+    "moe_routed_experts": 1029181538304,
+    "other": 11180336416,
+    "moe_shared_experts": 8040480768,
+    "dense_ffn": 1811939328,
+    "vision": 1687439360,
+    "embedding": 1258291200,
+    "norms": 1525760,
+    "vision_projector": 2048
+   },
+   "routed_expert_params": 1029181538304,
+   "moe_layers": 71,
+   "experts_per_moe_layer": [
+    128
+   ],
+   "layer_indices_in_weights": [
+    0,
+    71
+   ],
+   "tensor_count": 56563,
+   "skipped_scale_tensors": 27668,
+   "skipped_buffer_tensors": 0
+  },
+  "active": {
+   "text_active": 54454496544,
+   "text_active_without_embeddings": 53196205344,
+   "with_vision": 56141937952
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 0,
+  "grows_per_token_bytes_low": 0,
+  "constant_bytes": 0,
+  "constant_bytes_low": 0,
+  "naive_mha_per_token_bytes": 2359296,
+  "reduction_vs_naive_mha": null,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "32768": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "131072": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "262144": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "1048576": {
+    "bytes": 0,
+    "gib": 0.0
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "indexed_mla",
+    "layers": 72,
+    "grows_per_token_bytes": null,
+    "constant_bytes": null,
+    "formula": "unknown layer type: not counted"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "layer type 'indexed_mla' has no memory rule yet; sent to review"
+  ]
+ },
+ "code_scan": {
+  "files": [],
+  "classes": [],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {},
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 72,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 72,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 72,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 6144,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 6144,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 6144,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 204800,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 204800,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 204800,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 1048576,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1048576,
+     "evidence": "config:text_config.max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "derived:text_config.qk_nope_head_dim + qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "MLA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MLA",
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 128,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.n_routed_experts"
+    },
+    {
+     "value": 128,
+     "evidence": "weights:expert tensors per MoE layer"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:text_config.num_experts_per_tok"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.n_shared_experts"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 6144,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 6144,
+     "evidence": "config:text_config.moe_intermediate_size"
+    },
+    {
+     "value": 6144,
+     "evidence": "weights:experts.0.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 1,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.first_k_dense_replace"
+    },
+    {
+     "value": 1,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "indexed_mla": 72
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "indexed_mla": 72
+     },
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla"
+   ],
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": [
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:text_config.layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 1053161553184,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1053161553184,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 54454496544,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 54454496544,
+     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+    }
+   ]
+  },
+  {
+   "field": "model_type",
+   "value": "mistral_large4",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "mistral_large4",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
+   "field": "shared_kv_layers",
+   "value": 9,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 9,
+     "evidence": "derived:text_config.kv_source_layers differs from layer index"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla",
+    "indexed_mla"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla",
+      "indexed_mla"
+     ],
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.n_routed_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "attention_factor": 1.0,
+    "beta_fast": 32,
+    "beta_slow": 1,
+    "factor": 2048,
+    "original_max_position_embeddings": 512,
+    "rope_theta": 10000.0,
+    "rope_type": "yarn"
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "attention_factor": 1.0,
+      "beta_fast": 32,
+      "beta_slow": 1,
+      "factor": 2048,
+      "original_max_position_embeddings": 512,
+      "rope_theta": 10000.0,
+      "rope_type": "yarn"
+     },
+     "evidence": "config:text_config.rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "mla_kv_lora_rank",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.kv_lora_rank"
+    }
+   ]
+  },
+  {
+   "field": "mla_qk_rope_head_dim",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.qk_rope_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "v_head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.v_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "dense_ffn_intermediate",
+   "value": 24576,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 24576,
+     "evidence": "config:text_config.intermediate_size"
+    }
+   ]
+  },
+  {
+   "field": "vision_encoder_layers",
+   "value": 30,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 30,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 2048,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:text_config.hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "fp8",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "fp8",
+     "evidence": "config:text_config.quantization_config"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 1029181538304,
+    "other": 11180336416,
+    "moe_shared_experts": 8040480768,
+    "dense_ffn": 1811939328,
+    "vision": 1687439360,
+    "embedding": 1258291200,
+    "norms": 1525760,
+    "vision_projector": 2048
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 1029181538304,
+      "other": 11180336416,
+      "moe_shared_experts": 8040480768,
+      "dense_ffn": 1811939328,
+      "vision": 1687439360,
+      "embedding": 1258291200,
+      "norms": 1525760,
+      "vision_projector": 2048
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 56563,
+    "skipped_scale_tensors": 27668,
+    "skipped_buffer_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 56563,
+      "skipped_scale_tensors": 27668,
+      "skipped_buffer_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 72,
+  "hidden_size": 6144,
+  "vocab_size": 204800,
+  "context_length": 1048576,
+  "num_attention_heads": 64,
+  "num_kv_heads": 64,
+  "head_dim": 128,
+  "attention_type": "MLA",
+  "ffn_gated": true,
+  "moe_num_experts": 128,
+  "moe_active_experts": 4,
+  "moe_shared_experts": 1,
+  "moe_expert_intermediate": 6144,
+  "dense_layers": 1,
+  "layer_type_counts": {
+   "indexed_mla": 72
+  },
+  "layer_index_base_in_config": 0,
+  "params_total": 1053161553184,
+  "params_active": 54454496544,
+  "model_type": "mistral_large4",
+  "shared_kv_layers": 9,
+  "layer_types": [
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla",
+   "indexed_mla"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": false,
+  "rope": {
+   "attention_factor": 1.0,
+   "beta_fast": 32,
+   "beta_slow": 1,
+   "factor": 2048,
+   "original_max_position_embeddings": 512,
+   "rope_theta": 10000.0,
+   "rope_type": "yarn"
+  },
+  "mla_kv_lora_rank": 512,
+  "mla_qk_rope_head_dim": 64,
+  "v_head_dim": 128,
+  "dense_ffn_intermediate": 24576,
+  "vision_encoder_layers": 30,
+  "vision_hidden_size": 2048,
+  "activation": "silu",
+  "released_weights_format": "fp8",
+  "parameter_components": {
+   "moe_routed_experts": 1029181538304,
+   "other": 11180336416,
+   "moe_shared_experts": 8040480768,
+   "dense_ffn": 1811939328,
+   "vision": 1687439360,
+   "embedding": 1258291200,
+   "norms": 1525760,
+   "vision_projector": 2048
+  },
+  "weight_header_summary": {
+   "tensor_count": 56563,
+   "skipped_scale_tensors": 27668,
+   "skipped_buffer_tensors": 0
+  }
+ },
+ "review_queue": [
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla",
+    "dsa_mla"
+   ],
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": [
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla",
+      "dsa_mla",
+      "mla",
+      "mla",
+      "dsa_mla"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  }
+ ],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): dtype, image_token_index, multimodal_projector_bias, projector_hidden_act, quantization_config.activation_scheme, quantization_config.modules_to_not_convert, quantization_config.weight_block_size, spatial_merge_size, text_config.attention_bias, text_config.attention_dropout, text_config.bos_token_id, text_config.eos_token_id, text_config.final_logit_softcapping, text_config.head_dim, text_config.index_head_dim, text_config.index_n_heads, text_config.index_topk, text_config.indexer_types, text_config.initializer_range, text_config.mlp_layer_types, text_config.n_group, text_config.no_rope_layer_interval, text_config.no_rope_layers, text_config.output_router_logits, text_config.pad_token_id, text_config.qk_head_dim, text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.tie_word_embeddings, text_config.topk_group, text_config.use_cache, transformers_version, transformers_weights, vision_config.attention_dropout, vision_config.head_dim, vision_config.hidden_act, vision_config.image_size, vision_config.initializer_range, vision_config.intermediate_size, vision_config.model_type, vision_config.num_attention_heads, vision_config.num_channels, vision_config.patch_size, vision_config.rope_parameters.rope_theta, vision_config.rope_parameters.rope_type, vision_feature_layer"
+ ],
+ "weight_layer_kinds": [
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla",
+  "dsa_mla",
+  "mla",
+  "mla",
+  "dsa_mla"
+ ],
+ "predecessor": {
+  "id": "mistralai/Mistral-Large-3-675B-Base-2512",
+  "source_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
+  "selection": "Large product stream: use Large 3 Base as prior generation, not unrelated Medium/Small releases."
+ },
+ "predecessor_review": {
+  "status": "review",
+  "source_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
+  "error": "ValueError",
+  "http_status": null,
+  "reason": "Missing root config.json or safetensors; source-format adapter/access required"
+ },
+ "tensor_diff_vs_predecessor": {
+  "added": [
+   {
+    "pattern": "layers.*.attention.wq",
+    "params": 3623878656
+   },
+   {
+    "pattern": "layers.*.attention.indexer.wq_b",
+    "params": 1107296256
+   },
+   {
+    "pattern": "mtp_dspark.backbone.layers.*.feed_forward.w1",
+    "params": 452984832
+   },
+   {
+    "pattern": "mtp_dspark.backbone.layers.*.feed_forward.w2",
+    "params": 452984832
+   },
+   {
+    "pattern": "mtp_dspark.backbone.layers.*.feed_forward.w3",
+    "params": 452984832
+   },
+   {
+    "pattern": "mtp_dspark.backbone.target_projection",
+    "params": 188743680
+   }
+  ],
+  "added_total": 6874961696,
+  "added_count": 31,
+  "removed": [
+   {
+    "pattern": "layers.*.attention.wq_b",
+    "params": 2302672896
+   },
+   {
+    "pattern": "layers.*.attention.wq_a",
+    "params": 671612928
+   },
+   {
+    "pattern": "layers.*.attention.q_a_norm",
+    "params": 93696
+   }
+  ],
+  "removed_total": 2974379520,
+  "removed_count": 3
+ }
+}

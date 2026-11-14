@@ -1,0 +1,136 @@
+id: microsoft/Mage-VL
+source_commit: d88b153285f1633a61b2f693c59c8576693af185
+hub_created: '2026-07-25T08:29:09+00:00'
+license: apache-2.0
+analyzed_at: '2026-11-14T08:16:07+00:00'
+published:
+  num_layers: 36
+  hidden_size: 2560
+  vocab_size: 151936
+  context_length: 262144
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  attention_type: GQA
+  ffn_gated: true
+  ffn_intermediate: 9728
+  layer_type_counts:
+    full_attention: 36
+  layer_pattern_per_layer:
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  layer_index_base_in_config: 0
+  qk_norm: true
+  params_total: 5278537216
+  model_type: mage_vl
+  layer_types:
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  decoder_type: Dense
+  tied_embeddings: false
+  rope:
+    rope_theta: 5000000
+    rope_type: default
+  vision_encoder_layers: 24
+  vision_hidden_size: 1024
+  activation: silu
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 2689597440
+    attention_or_linear_mixer: 943727616
+    auxiliary: 482379264
+    embedding: 388956160
+    lm_head: 388956160
+    vision: 330369536
+    state_space_mixer: 39434240
+    other: 14919680
+    norms: 197120
+  weight_header_summary:
+    tensor_count: 760
+    skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig,
+  auto_map.AutoModel, auto_map.AutoModelForCausalLM, auto_map.AutoModelForImageTextToText,
+  auto_map.AutoProcessor, auto_map.AutoVideoProcessor, bos_token_id, eos_token_id,
+  image_token_id, text_config._name_or_path, text_config.architectures, text_config.attention_bias,
+  text_config.attention_dropout, text_config.bos_token_id, text_config.dtype, text_config.eos_token_id,
+  text_config.initializer_range, text_config.max_window_layers, text_config.rms_norm_eps,
+  text_config.rope_scaling, text_config.tie_word_embeddings, text_config.use_cache,
+  text_config.use_sliding_window, transformers_version, video_token_id, vision_config.attention_dropout,
+  vision_config.frame_windows_size, vision_config.hidden_act, vision_config.image_size,
+  vision_config.initializer_range, vision_config.intermediate_size, vision_config.layer_norm_eps,
+  vision_config.layer_norm_type, vision_config.max_position_embeddings, vision_config.model_type,
+  vision_config.num_attention_heads, vision_config.num_channels, vision_config.out_hidden_size,
+  vision_config.patch_size, vision_config.rope_theta, vision_config.spatial_merge_size,
+  vision_config.temporal_patch_size, vision_config.text_hidden_size, vision_config.tokens_per_second,
+  vision_config.use_head, vision_end_token_id, vision_start_token_id'
