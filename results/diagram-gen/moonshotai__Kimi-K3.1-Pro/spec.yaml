@@ -242,7 +242,7 @@ zoom_panels:
     caption:
     - 'routed experts work in a smaller latent: 7168 -> 3584 -> 7168'
     - 'shared experts: combined width 6144, every token, full 7168 space'
-    - sigmoid router scores
+    - router uses sigmoid gating
     - 'activation: SiTU-GLU (gated)'
 callouts:
 - text: 'Context length: 1M tokens'
