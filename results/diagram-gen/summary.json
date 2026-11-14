@@ -1,0 +1,18 @@
+[
+  {
+    "model": "moonshotai/Kimi-K3.1-Pro",
+    "attempts": 1,
+    "final_version": 1,
+    "passed": true,
+    "remaining_failures": [],
+    "errors": []
+  },
+  {
+    "model": "nvidia/Nemotron-H-8B-Base-8K",
+    "attempts": 1,
+    "final_version": 1,
+    "passed": true,
+    "remaining_failures": [],
+    "errors": []
+  }
+]
