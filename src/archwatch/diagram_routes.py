@@ -285,7 +285,9 @@ GEOMETRY_JS = r"""() => {
  const svg=document.querySelector('svg'),v=svg.viewBox.baseVal;
  const rect=e=>{const b=e.getBBox(),m=svg.getScreenCTM().inverse().multiply(e.getScreenCTM());const points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>new DOMPoint(x,y).matrixTransform(m));const xs=points.map(p=>p.x),ys=points.map(p=>p.y);return {x:Math.min(...xs),y:Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys)}};
  const visible=e=>{for(let n=e;n&&n!==document;n=n.parentElement){const s=getComputedStyle(n);if(s.display==='none'||s.visibility==='hidden'||Number(s.opacity)<=0)return false}return true};
- const texts=[...svg.querySelectorAll('text')].map(e=>{const m=e.getScreenCTM();return {id:e.dataset.labelId,box:rect(e),visible:visible(e),font:Number.parseFloat(getComputedStyle(e).fontSize)*Math.min(Math.hypot(m.a,m.b),Math.hypot(m.c,m.d))}});
+ const texts=[...svg.querySelectorAll('text')].map(e=>({id:e.dataset.labelId,box:rect(e),visible:visible(e)}));
+ const textRuns=[...svg.querySelectorAll('text,tspan')].filter(e=>[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()));
+ const readable=e=>{const m=e.getScreenCTM();return Number.parseFloat(getComputedStyle(e).fontSize)*Math.min(Math.hypot(m.a,m.b),Math.hypot(m.c,m.d))>=12.99};
  const overlaps=[];
  for(let i=0;i<texts.length;i++)for(let j=i+1;j<texts.length;j++){
   const a=texts[i].box,b=texts[j].box;
@@ -298,7 +300,7 @@ GEOMETRY_JS = r"""() => {
  for(let i=0;i<nodeBoxes.length;i++)for(let j=i+1;j<nodeBoxes.length;j++){const a=nodeBoxes[i].box,b=nodeBoxes[j].box;if(a&&b&&Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x)>.5&&Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y)>.5)nodeOverlaps.push([nodeBoxes[i].id,nodeBoxes[j].id]);}
  const overflow=[];
  for(const n of [...svg.querySelectorAll('[data-node-id]')]){const shape=n.querySelector('rect');if(!shape){overflow.push(n.dataset.nodeId);continue;}const a=rect(shape);for(const t of n.querySelectorAll('text')){const b=rect(t);if(b.x<a.x-.5||b.y<a.y-.5||b.x+b.width>a.x+a.width+.5||b.y+b.height>a.y+a.height+.5)overflow.push(t.dataset.labelId);}}
- return {canvas:{width:v.width,height:v.height},overlaps,outside,invisible,nodeOverlaps,text_node_overflow:overflow,no_text_overlap:overlaps.length===0,everything_inside_canvas:outside.length===0,all_labels_visible:invisible.length===0,readable_font_sizes:texts.every(t=>t.font>=12.99),no_node_overlap:nodeBoxes.every(n=>n.box)&&nodeOverlaps.length===0,text_fits_nodes:overflow.length===0};
+ return {canvas:{width:v.width,height:v.height},overlaps,outside,invisible,nodeOverlaps,text_node_overflow:overflow,no_text_overlap:overlaps.length===0,everything_inside_canvas:outside.length===0,all_labels_visible:invisible.length===0,readable_font_sizes:textRuns.length>0&&textRuns.every(readable),no_node_overlap:nodeBoxes.every(n=>n.box)&&nodeOverlaps.length===0,text_fits_nodes:overflow.length===0};
 }"""
 
 

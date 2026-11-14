@@ -43,3 +43,5 @@ uv run --frozen python tools/diagram_route_test.py --score
 ```
 
 The result is `results/diagram-route-test.md`. A winning route is recorded in `config/diagram-route-choice.yaml` with both generation loop and explainer disabled. The user must see the results before those later stages begin.
+
+Post-run review tightened font measurement to include descendant `tspan` overrides and invalidates a saved choice whenever its replacement report has no winner. Regression tests reproduce both gaps. The same eight cached outputs were rescored without generation; all results and the selected route remain unchanged. Prompts, facts, samples and the selection rule were not changed.

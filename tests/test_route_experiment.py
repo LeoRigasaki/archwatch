@@ -67,3 +67,21 @@ def test_cached_experiment_never_repeats_generation_or_selects_before_geometry(t
         for p in (tmp_path / "results").rglob("*")
         if p.is_file()
     }
+
+
+def test_incomplete_or_failed_report_invalidates_previous_choice(tmp_path):
+    cfg = yaml.safe_load((ROOT / "config/providers.yaml").read_text())
+    module = experiment()
+    choice = tmp_path / "config/diagram-route-choice.yaml"
+    choice.parent.mkdir()
+    for rows in (
+        [],
+        [
+            dict(id=repo, route=route, generated=True, scored=True, passed=False)
+            for repo in cfg["route_test"]["models"]
+            for route in ("A", "B")
+        ],
+    ):
+        choice.write_text("route: B\n")
+        result = module.report(tmp_path, cfg, rows)
+        assert result["winner"] is None and not choice.exists()

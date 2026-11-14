@@ -146,6 +146,7 @@ def report(root, config, rows):
             ]
     write_if_changed(root / "results/diagram-route-test.md", "\n".join(lines) + "\n")
     write_if_changed(root / "results/diagram-route-test.json", json.dumps(summary, indent=2) + "\n")
+    choice_path = root / "config/diagram-route-choice.yaml"
     if winner in ("A", "B"):
         choice = dict(
             schema_version=1,
@@ -155,7 +156,9 @@ def report(root, config, rows):
             generation_loop_enabled=False,
             explainer_enabled=False,
         )
-        write_if_changed(root / "config/diagram-route-choice.yaml", yaml.safe_dump(choice, sort_keys=False))
+        write_if_changed(choice_path, yaml.safe_dump(choice, sort_keys=False))
+    elif choice_path.exists():
+        choice_path.unlink()
     return summary
 
 

@@ -104,7 +104,7 @@ BROWSER_AVAILABLE = bool(
 
 
 @pytest.mark.skipif(not BROWSER_AVAILABLE, reason="Installed Chrome needed for browser geometry fixtures")
-@pytest.mark.parametrize("change", ["valid", "overlap", "translated_outside", "hidden"])
+@pytest.mark.parametrize("change", ["valid", "overlap", "translated_outside", "hidden", "tiny_tspan"])
 def test_browser_geometry_measures_rendered_transforms_and_visibility(change):
     s = spec()
     drawing = render_layout(layout(), s)
@@ -114,6 +114,8 @@ def test_browser_geometry_measures_rendered_transforms_and_visibility(change):
         drawing = drawing.replace("<g data-node-id", '<g transform="translate(500,0)" data-node-id')
     elif change == "hidden":
         drawing = drawing.replace("<g data-node-id", '<g opacity="0" data-node-id')
+    elif change == "tiny_tspan":
+        drawing = drawing.replace("hidden_size: 8", '<tspan font-size="6">hidden_size: 8</tspan>')
     checks = inspect_svg(drawing, s) | browser_geometry(drawing, s)
     if change == "valid":
         assert passed(checks)
@@ -121,5 +123,7 @@ def test_browser_geometry_measures_rendered_transforms_and_visibility(change):
         assert not checks["no_text_overlap"]
     elif change == "translated_outside":
         assert not checks["everything_inside_canvas"]
-    else:
+    elif change == "hidden":
         assert not checks["all_labels_visible"]
+    else:
+        assert not checks["readable_font_sizes"] and not passed(checks)

@@ -171,7 +171,7 @@ Evidence: [newest protocol and review limits](docs/NEWEST_BACKFILL.md), [first-r
 - [x] Generated one first-response SVG and one JSON layout for each of Kimi-K3.1-Pro, historical LFM3-1.7B, Nemotron-H-8B and Llama-3.1-8B. Every raw response, layout, SVG, preview, review and usage record is saved.
 - [x] Both routes pass 4/4 cases and 48/48 checks: fact/label coverage, layer sum, browser text/node overlap, canvas bounds, visibility and readable sizes. Route B wins the predeclared token tie-break: **2,106 vs 8,643** output tokens. This does not establish better aesthetics or exhaustive wiring correctness.
 - [x] Ten reserved calls: eight successful candidates, two HTTP 503 failures; unchanged prompts on resumption, no architecture repair, fallback or model-review calls. Weekly request cap remains 15.
-- [x] 138 offline tests pass locally, including real Chrome geometry fixtures; cached scoring makes zero model calls.
+- [x] 140 offline tests pass locally, including real Chrome geometry fixtures; cached scoring makes zero model calls.
 - [ ] Human review of route results before generation/repair loop or explainer work. Neither is started; cron remains disabled.
 
 Evidence: [route results and previews](results/diagram-route-test.md), [frozen protocol](docs/DIAGRAM_ROUTE_PROTOCOL.md), [request accounting](results/diagram-route-test/request-accounting.json).
