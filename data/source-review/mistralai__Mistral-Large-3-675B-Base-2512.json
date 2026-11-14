@@ -1,0 +1,6 @@
+{
+  "source_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
+  "error": "ValueError",
+  "http_status": null,
+  "reason": "Missing root config.json or safetensors; source-format adapter/access required"
+}

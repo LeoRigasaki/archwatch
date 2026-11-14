@@ -62,6 +62,10 @@ def check(field: str, cands: list[dict]) -> dict:
 
 
 TO_WEIGHT_KIND = {
+    "compressed_attention": "compressed_attention",
+    "gated_delta_net": "linear_delta",
+    "qwen_sparse_attention": "qsa",
+    "indexed_mla": "dsa_mla",
     "mamba2": "mamba2",
     "mlp": "mlp",
     "kda_linear": "linear_delta",
@@ -153,7 +157,26 @@ def verify(
             )
         )
         out.append(check("moe_active_experts", [c("moe_active_experts"), k("moe_active_experts")]))
-        out.append(check("moe_shared_experts", [c("moe_shared_experts"), k("moe_shared_experts")]))
+        out.append(
+            check(
+                "moe_shared_experts",
+                [
+                    c("moe_shared_experts"),
+                    k("moe_shared_experts"),
+                    w(
+                        wshape.get("shared_experts") if not c("moe_shared_experts") else None,
+                        "one shared expert module (config count absent; fused widths do not independently prove logical count)",
+                    ),
+                ],
+            )
+        )
+        if wshape.get("shared_expert_intermediate") is not None:
+            out.append(
+                check(
+                    "moe_shared_expert_intermediate",
+                    [w(wshape["shared_expert_intermediate"], "shared expert gate rows")],
+                )
+            )
         out.append(
             check(
                 "moe_expert_intermediate",
@@ -309,6 +332,25 @@ def verify(
     # Explicit rendering/calculator inputs get the same publication decision as
     # every other fact. Do not promote the raw facts dictionary in consumers.
     rendering_fields = (
+        "model_type",
+        "global_head_dim",
+        "num_global_kv_heads",
+        "linear_num_key_heads",
+        "linear_num_value_heads",
+        "linear_key_head_dim",
+        "linear_value_head_dim",
+        "linear_conv_kernel",
+        "ngram_layer_ids",
+        "hyper_connection_multiplier",
+        "num_mtp_layers",
+        "shared_kv_layers",
+        "generation_type",
+        "canvas_length",
+        "recurrent_loops",
+        "recurrent_layers",
+        "input_layers",
+        "output_layers",
+        "recurrent_kv_cache_mode",
         "layer_types",
         "decoder_type",
         "tied_embeddings",
@@ -348,6 +390,7 @@ def verify(
                         {
                             "tensor_count": wcount.get("tensor_count"),
                             "skipped_scale_tensors": wcount.get("skipped_scale_tensors"),
+                            "skipped_buffer_tensors": wcount.get("skipped_buffer_tensors", 0),
                         },
                         "tensor header inventory",
                     )

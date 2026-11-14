@@ -62,15 +62,16 @@ models:
 - id: meta-llama/Llama-4-Maverick-17B-128E
   source_commit: 10751cb97a4d7c90f7ed89196b98eb8220cfa1c2
   created_at: '2025-04-02T17:35:27+00:00'
-  split: access_blocked
+  split: late_access_first_run
   selection: Newest general foundation generation. Exclude later Llama Guard safety
     adaptation and Original-format packages. Scout is a parallel Llama 4 variant,
-    not a prior generation; use Llama 3.2 Vision as predecessor. Local account access
-    is pending.
+    not a prior generation; use Llama 3.2 Vision as predecessor. Maverick access was
+    approved during the baseline; predecessor access is pending.
   predecessor: meta-llama/Llama-3.2-90B-Vision
   predecessor_commit: 38850089f6a42b7394680c4e4bbd4c40fb62404f
-  gold: null
-  access_status: HTTP 403; owner requested access, not yet approved
+  gold: evals/heldout/late-access-2026-11-14/meta-llama__Llama-4-Maverick-17B-128E.yaml
+  access_status: Maverick access approved during baseline run; predecessor Llama-3.2-90B-Vision
+    remains HTTP 403
 - id: microsoft/Mage-VL
   source_commit: d88b153285f1633a61b2f693c59c8576693af185
   created_at: '2026-07-25T08:29:09+00:00'

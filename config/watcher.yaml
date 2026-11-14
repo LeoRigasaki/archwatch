@@ -14,6 +14,10 @@ request_attempts: 2
 max_retry_wait_seconds: 15
 max_attempts_per_commit: 3
 family_rules:
+  - {pattern: '^(?:nvidia-)?nemotron-labs-dory', family: dory}
+  - {pattern: '^diffusiongemma', family: diffusion-gemma}
+  - {pattern: '^mage', family: mage}
+  - {pattern: '^mistral-large', family: mistral-large}
   - {pattern: '^kimi', family: kimi}
   - {pattern: '^lfm', family: lfm}
   - {pattern: '^deepseek[-_]v', family: deepseek-v}

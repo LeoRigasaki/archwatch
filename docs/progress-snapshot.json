@@ -8,7 +8,7 @@
   "records_path": "data/models",
   "prototype_archive": "archwatch.zip",
   "prototype_archive_sha256": "e15bc174d60103bf0b5d030f54fcbc107f02975cdaabbd71d33e9f5abbaaa6ad",
-  "stage": "Ten-publisher primary backfill and development gold evaluation implemented; human review, held-out evaluation and LLM stages remain open.",
+  "stage": "Newest-release first-run evaluation and source-based adaptation implemented; new graph/cache qualification, human review and LLM stages remain open.",
   "models": [
     {
       "id": "LiquidAI/LFM2.5-1.2B-Instruct",
@@ -24,8 +24,27 @@
         "context_length"
       ],
       "code_files": [],
-      "cache_growth_bytes_per_token": 12288,
-      "fixed_cache_bytes": 122880
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Required published inputs are unavailable: context_length"
+    },
+    {
+      "id": "LiquidAI/LFM2.5-24B-A2B-Base",
+      "source_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
+      "total_parameters_from_saved_headers": 23971587712,
+      "field_checks": {
+        "verified": 10,
+        "single source": 17,
+        "conflict": 1
+      },
+      "published_fields": 27,
+      "review_fields": [
+        "dense_layers"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Required published inputs are unavailable: moe_shared_experts"
     },
     {
       "id": "LiquidAI/LFM3-1.7B-Base",
@@ -33,16 +52,17 @@
       "total_parameters_from_saved_headers": 1728801536,
       "field_checks": {
         "verified": 12,
-        "single source": 15
+        "single source": 16
       },
-      "published_fields": 27,
+      "published_fields": 28,
       "review_fields": [],
       "code_files": [
         "configuration_lfm3.py",
         "modeling_lfm3.py"
       ],
       "cache_growth_bytes_per_token": 12288,
-      "fixed_cache_bytes": 2994176
+      "fixed_cache_bytes": 2994176,
+      "rendering_review": null
     },
     {
       "id": "LiquidAI/LFM3-1.7B",
@@ -59,7 +79,8 @@
         "modeling_lfm3.py"
       ],
       "cache_growth_bytes_per_token": 12288,
-      "fixed_cache_bytes": 2994176
+      "fixed_cache_bytes": 2994176,
+      "rendering_review": null
     },
     {
       "id": "Qwen/Qwen3-0.6B-Base",
@@ -73,7 +94,41 @@
       "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 114688,
-      "fixed_cache_bytes": 0
+      "fixed_cache_bytes": 0,
+      "rendering_review": null
+    },
+    {
+      "id": "Qwen/Qwen3.8-2.4T-A95B",
+      "source_commit": "4f885e51d6bbfee5866446d56d3f96f336c39723",
+      "total_parameters_from_saved_headers": 2446182725504,
+      "field_checks": {
+        "verified": 8,
+        "single source": 27,
+        "conflict": 1
+      },
+      "published_fields": 35,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    {
+      "id": "Qwen/Qwen3.8-Flash-Next",
+      "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
+      "total_parameters_from_saved_headers": 179999981424,
+      "field_checks": {
+        "verified": 9,
+        "single source": 29
+      },
+      "published_fields": 38,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
     },
     {
       "id": "deepseek-ai/DeepSeek-V2-Lite",
@@ -90,7 +145,56 @@
         "modeling_deepseek.py"
       ],
       "cache_growth_bytes_per_token": 31104,
-      "fixed_cache_bytes": 0
+      "fixed_cache_bytes": 0,
+      "rendering_review": null
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "source_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+      "total_parameters_from_saved_headers": 763205315794,
+      "field_checks": {
+        "verified": 7,
+        "single source": 26
+      },
+      "published_fields": 33,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "source_commit": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+      "total_parameters_from_saved_headers": 763205315794,
+      "field_checks": {
+        "verified": 7,
+        "single source": 26
+      },
+      "published_fields": 33,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
+    },
+    {
+      "id": "google/diffusiongemma-26B-A4B-it",
+      "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+      "total_parameters_from_saved_headers": 25823781228,
+      "field_checks": {
+        "verified": 8,
+        "single source": 30,
+        "conflict": 1
+      },
+      "published_fields": 38,
+      "review_fields": [
+        "params_total"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
     },
     {
       "id": "google/gemma-3-1b-pt",
@@ -104,7 +208,26 @@
       "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 4096,
-      "fixed_cache_bytes": 11534336
+      "fixed_cache_bytes": 11534336,
+      "rendering_review": null
+    },
+    {
+      "id": "google/gemma-4-26B-A4B",
+      "source_commit": "24548b62aa021d562695c04aaf7758a1ea47990b",
+      "total_parameters_from_saved_headers": 25805936206,
+      "field_checks": {
+        "verified": 9,
+        "single source": 27,
+        "conflict": 1
+      },
+      "published_fields": 36,
+      "review_fields": [
+        "params_total"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
     },
     {
       "id": "meta-llama/Llama-3.1-8B",
@@ -118,7 +241,41 @@
       "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 131072,
-      "fixed_cache_bytes": 0
+      "fixed_cache_bytes": 0,
+      "rendering_review": null
+    },
+    {
+      "id": "meta-llama/Llama-4-Maverick-17B-128E",
+      "source_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "total_parameters_from_saved_headers": 401583781376,
+      "field_checks": {
+        "verified": 7,
+        "single source": 24
+      },
+      "published_fields": 31,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
+    },
+    {
+      "id": "microsoft/Mage-VL",
+      "source_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "total_parameters_from_saved_headers": 5278537216,
+      "field_checks": {
+        "verified": 5,
+        "single source": 21
+      },
+      "published_fields": 26,
+      "review_fields": [],
+      "code_files": [
+        "configuration_mage_vl.py",
+        "modeling_mage_vl.py"
+      ],
+      "cache_growth_bytes_per_token": 147456,
+      "fixed_cache_bytes": 0,
+      "rendering_review": null
     },
     {
       "id": "microsoft/phi-2",
@@ -132,7 +289,8 @@
       "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 327680,
-      "fixed_cache_bytes": 0
+      "fixed_cache_bytes": 0,
+      "rendering_review": null
     },
     {
       "id": "mistralai/Mistral-7B-v0.1",
@@ -146,7 +304,26 @@
       "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 0,
-      "fixed_cache_bytes": 536870912
+      "fixed_cache_bytes": 536870912,
+      "rendering_review": null
+    },
+    {
+      "id": "mistralai/Mistral-Large-4-1T-A52B",
+      "source_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+      "total_parameters_from_saved_headers": 1053161553184,
+      "field_checks": {
+        "verified": 6,
+        "single source": 28,
+        "conflict": 1
+      },
+      "published_fields": 34,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
     },
     {
       "id": "moonshotai/Kimi-K3.1-Pro",
@@ -154,15 +331,16 @@
       "total_parameters_from_saved_headers": 2780110363392,
       "field_checks": {
         "verified": 24,
-        "single source": 21
+        "single source": 24
       },
-      "published_fields": 45,
+      "published_fields": 48,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py"
       ],
       "cache_growth_bytes_per_token": 33792,
-      "fixed_cache_bytes": 449372160
+      "fixed_cache_bytes": 449372160,
+      "rendering_review": null
     },
     {
       "id": "moonshotai/Kimi-K3",
@@ -170,9 +348,9 @@
       "total_parameters_from_saved_headers": 2779931837184,
       "field_checks": {
         "verified": 20,
-        "single source": 21
+        "single source": 24
       },
-      "published_fields": 41,
+      "published_fields": 44,
       "review_fields": [],
       "code_files": [
         "configuration_kimi_k3.py",
@@ -180,7 +358,23 @@
         "modeling_kimi_linear.py"
       ],
       "cache_growth_bytes_per_token": 27648,
-      "fixed_cache_bytes": 449372160
+      "fixed_cache_bytes": 449372160,
+      "rendering_review": null
+    },
+    {
+      "id": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "source_commit": "ee517dd388a9b348890ae1e00dacc5eb4d0c750d",
+      "total_parameters_from_saved_headers": 3975229440,
+      "field_checks": {
+        "verified": 6,
+        "single source": 24
+      },
+      "published_fields": 30,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
     },
     {
       "id": "nvidia/Nemotron-H-8B-Base-8K",
@@ -197,7 +391,8 @@
         "modeling_nemotron_h.py"
       ],
       "cache_growth_bytes_per_token": 16384,
-      "fixed_cache_bytes": 102629376
+      "fixed_cache_bytes": 102629376,
+      "rendering_review": null
     },
     {
       "id": "zai-org/GLM-4-9B-0414",
@@ -211,36 +406,100 @@
       "review_fields": [],
       "code_files": [],
       "cache_growth_bytes_per_token": 40960,
-      "fixed_cache_bytes": 0
+      "fixed_cache_bytes": 0,
+      "rendering_review": null
+    },
+    {
+      "id": "zai-org/GLM-5.2",
+      "source_commit": "cf457fa734ab149ffef225f80893eb38c6ff5cdc",
+      "total_parameters_from_saved_headers": 753329940480,
+      "field_checks": {
+        "verified": 7,
+        "single source": 26,
+        "conflict": 1
+      },
+      "published_fields": 33,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    {
+      "id": "zai-org/GLM-5.3-Flash-BF16",
+      "source_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+      "total_parameters_from_saved_headers": 321323031390,
+      "field_checks": {
+        "verified": 8,
+        "single source": 31
+      },
+      "published_fields": 39,
+      "review_fields": [],
+      "code_files": [],
+      "cache_growth_bytes_per_token": null,
+      "fixed_cache_bytes": null,
+      "rendering_review": "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
     }
   ],
-  "record_count": 13,
-  "yaml_record_count": 11,
+  "record_count": 26,
+  "yaml_record_count": 13,
   "saved_record_check_totals": {
-    "verified": 119,
-    "conflict": 1,
-    "single source": 231
+    "verified": 216,
+    "conflict": 7,
+    "single source": 574
   },
   "test_run": {
-    "tests": 102,
+    "tests": 114,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 102,
+    "passed": 114,
     "python": "3.12.13",
     "command": "uv run --frozen pytest -q --junitxml=results/test-results.xml",
     "scope": "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."
   },
   "tensor_group_additions": [
     {
+      "id": "LiquidAI/LFM3-1.7B-Base",
+      "predecessor": "LiquidAI/LFM2.5-24B-A2B-Base",
+      "added_total": 46598912
+    },
+    {
       "id": "LiquidAI/LFM3-1.7B",
       "predecessor": "LiquidAI/LFM2.5-1.2B-Instruct",
       "added_total": 46598912
     },
     {
+      "id": "Qwen/Qwen3.8-Flash-Next",
+      "predecessor": "Qwen/Qwen3.8-2.4T-A95B",
+      "added_total": 176791650672
+    },
+    {
+      "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "predecessor": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "added_total": 0
+    },
+    {
+      "id": "google/diffusiongemma-26B-A4B-it",
+      "predecessor": "google/gemma-4-26B-A4B",
+      "added_total": 25823781228
+    },
+    {
+      "id": "mistralai/Mistral-Large-4-1T-A52B",
+      "predecessor": "mistralai/Mistral-Large-3-675B-Base-2512",
+      "added_total": 6874961696
+    },
+    {
       "id": "moonshotai/Kimi-K3.1-Pro",
       "predecessor": "moonshotai/Kimi-K3",
       "added_total": 178526208
+    },
+    {
+      "id": "zai-org/GLM-5.3-Flash-BF16",
+      "predecessor": "zai-org/GLM-5.2",
+      "added_total": 320688642910
     }
   ],
   "prototype_pipeline_implemented": true,
@@ -272,6 +531,19 @@
     "exact_match": 1.0
   },
   "backfill_source_run_evidence": "results/backfill-processing.json",
+  "newest_backfill_protocol": "docs/NEWEST_BACKFILL.md",
+  "first_run_holdout": {
+    "models": 7,
+    "correct": 97,
+    "total": 139,
+    "evidence": "results/newest-first-run/heldout-exact-match.json"
+  },
+  "late_access_baseline": {
+    "models": 1,
+    "correct": 11,
+    "total": 16,
+    "evidence": "results/newest-first-run/meta-late-access.json"
+  },
   "formal_archwatch_accuracy_measured": false,
   "legacy_research": {
     "path": "research-reference/private-notes",
