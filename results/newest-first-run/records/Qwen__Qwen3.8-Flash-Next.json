@@ -1,0 +1,1550 @@
+{
+ "id": "Qwen/Qwen3.8-Flash-Next",
+ "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
+ "hub_created": "2026-08-24T08:24:59+00:00",
+ "license": "qwen-community-1.0",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "conversational",
+   "endpoints_compatible",
+   "eval-results",
+   "image-text-to-text",
+   "license:other",
+   "qwen4_exp",
+   "region:us",
+   "safetensors",
+   "transformers"
+  ]
+ },
+ "analyzed_at": "2026-11-14T07:54:26+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "Qwen4ExpForConditionalGeneration",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "qwen4_exp",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 48,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 2560,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "vocab_size": {
+   "value": 248320,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 262144,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention"
+   ],
+   "evidence": "config:text_config.layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:text_config.layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "linear_attention": 36,
+    "full_attention": 12
+   },
+   "evidence": "config:text_config.layer_types"
+  },
+  "num_attention_heads": {
+   "value": 24,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 2,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 256,
+   "evidence": "config:text_config.head_dim"
+  },
+  "attention_type": {
+   "value": "GQA",
+   "evidence": "derived:num_key_value_heads(2) vs num_attention_heads(24)"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_num_experts": {
+   "value": 512,
+   "evidence": "config:text_config.num_experts"
+  },
+  "moe_active_experts": {
+   "value": 10,
+   "evidence": "config:text_config.num_experts_per_tok"
+  },
+  "moe_expert_intermediate": {
+   "value": 640,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "dense_layers": {
+   "value": 0,
+   "evidence": "default:0"
+  },
+  "dense_ffn_intermediate": {
+   "value": null,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "activation": {
+   "value": "silu",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "rope": {
+   "value": {
+    "mrope_interleaved": true,
+    "mrope_section": [
+     11,
+     11,
+     10
+    ],
+    "partial_rotary_factor": 0.25,
+    "rope_theta": 10000000,
+    "rope_type": "default"
+   },
+   "evidence": "config:text_config.rope_parameters"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  },
+  "vision_encoder_layers": {
+   "value": null,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1152,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "model_type",
+   "text_config.dtype",
+   "text_config.head_dim",
+   "text_config.hidden_act",
+   "text_config.hidden_size",
+   "text_config.layer_types",
+   "text_config.max_position_embeddings",
+   "text_config.model_type",
+   "text_config.moe_intermediate_size",
+   "text_config.num_attention_heads",
+   "text_config.num_experts",
+   "text_config.num_experts_per_tok",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.rope_parameters.mrope_interleaved",
+   "text_config.rope_parameters.mrope_section",
+   "text_config.rope_parameters.partial_rotary_factor",
+   "text_config.rope_parameters.rope_theta",
+   "text_config.rope_parameters.rope_type",
+   "text_config.vocab_size",
+   "tie_word_embeddings",
+   "vision_config.hidden_size"
+  ],
+  "unconsumed": [
+   "image_token_id",
+   "language_model_only",
+   "text_config.attention_bias",
+   "text_config.attention_dropout",
+   "text_config.bos_token_id",
+   "text_config.eos_token_id",
+   "text_config.full_attention_interval",
+   "text_config.hc_count",
+   "text_config.hc_lowrank",
+   "text_config.heads_per_ngram",
+   "text_config.indexer_budget",
+   "text_config.indexer_compress_ratio",
+   "text_config.indexer_head_dim",
+   "text_config.indexer_kv_heads",
+   "text_config.indexer_n_heads",
+   "text_config.initializer_range",
+   "text_config.linear_conv_kernel_dim",
+   "text_config.linear_key_head_dim",
+   "text_config.linear_num_key_heads",
+   "text_config.linear_num_value_heads",
+   "text_config.linear_value_head_dim",
+   "text_config.make_ngram_vocab_size_divisible_by",
+   "text_config.mamba_ssm_dtype",
+   "text_config.mtp.hybrid",
+   "text_config.mtp.layer_types",
+   "text_config.mtp.mtp_use_hidden_state_from_layer",
+   "text_config.mtp.num_hidden_layers",
+   "text_config.mtp.rope_theta",
+   "text_config.mtp_num_hidden_layers",
+   "text_config.mtp_use_dedicated_embeddings",
+   "text_config.ngram_size",
+   "text_config.ngram_vocab_size_base",
+   "text_config.output_gate_type",
+   "text_config.output_router_logits",
+   "text_config.pad_token_id",
+   "text_config.partial_rotary_factor",
+   "text_config.ple_conv_kernel_size",
+   "text_config.ple_embed_dim",
+   "text_config.ple_layer_ids",
+   "text_config.rms_norm_eps",
+   "text_config.router_aux_loss_coef",
+   "text_config.shared_expert_intermediate_size",
+   "text_config.split_ngram_parts",
+   "text_config.tie_word_embeddings",
+   "text_config.use_cache",
+   "transformers_version",
+   "video_token_id",
+   "vision_config.deepstack_visual_indexes",
+   "vision_config.depth",
+   "vision_config.hidden_act",
+   "vision_config.in_channels",
+   "vision_config.initializer_range",
+   "vision_config.intermediate_size",
+   "vision_config.model_type",
+   "vision_config.num_heads",
+   "vision_config.num_position_embeddings",
+   "vision_config.out_hidden_size",
+   "vision_config.patch_size",
+   "vision_config.spatial_merge_size",
+   "vision_config.temporal_patch_size",
+   "vision_end_token_id",
+   "vision_start_token_id"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "model-00001-of-00131.safetensors",
+  "model-00002-of-00131.safetensors",
+  "model-00003-of-00131.safetensors",
+  "model-00004-of-00131.safetensors",
+  "model-00005-of-00131.safetensors",
+  "model-00006-of-00131.safetensors",
+  "model-00007-of-00131.safetensors",
+  "model-00008-of-00131.safetensors",
+  "model-00009-of-00131.safetensors",
+  "model-00010-of-00131.safetensors",
+  "model-00011-of-00131.safetensors",
+  "model-00012-of-00131.safetensors",
+  "model-00013-of-00131.safetensors",
+  "model-00014-of-00131.safetensors",
+  "model-00015-of-00131.safetensors",
+  "model-00016-of-00131.safetensors",
+  "model-00017-of-00131.safetensors",
+  "model-00018-of-00131.safetensors",
+  "model-00019-of-00131.safetensors",
+  "model-00020-of-00131.safetensors",
+  "model-00021-of-00131.safetensors",
+  "model-00022-of-00131.safetensors",
+  "model-00023-of-00131.safetensors",
+  "model-00024-of-00131.safetensors",
+  "model-00025-of-00131.safetensors",
+  "model-00026-of-00131.safetensors",
+  "model-00027-of-00131.safetensors",
+  "model-00028-of-00131.safetensors",
+  "model-00029-of-00131.safetensors",
+  "model-00030-of-00131.safetensors",
+  "model-00031-of-00131.safetensors",
+  "model-00032-of-00131.safetensors",
+  "model-00033-of-00131.safetensors",
+  "model-00034-of-00131.safetensors",
+  "model-00035-of-00131.safetensors",
+  "model-00036-of-00131.safetensors",
+  "model-00037-of-00131.safetensors",
+  "model-00038-of-00131.safetensors",
+  "model-00039-of-00131.safetensors",
+  "model-00040-of-00131.safetensors",
+  "model-00041-of-00131.safetensors",
+  "model-00042-of-00131.safetensors",
+  "model-00043-of-00131.safetensors",
+  "model-00044-of-00131.safetensors",
+  "model-00045-of-00131.safetensors",
+  "model-00046-of-00131.safetensors",
+  "model-00047-of-00131.safetensors",
+  "model-00048-of-00131.safetensors",
+  "model-00049-of-00131.safetensors",
+  "model-00050-of-00131.safetensors",
+  "model-00051-of-00131.safetensors",
+  "model-00052-of-00131.safetensors",
+  "model-00053-of-00131.safetensors",
+  "model-00054-of-00131.safetensors",
+  "model-00055-of-00131.safetensors",
+  "model-00056-of-00131.safetensors",
+  "model-00057-of-00131.safetensors",
+  "model-00058-of-00131.safetensors",
+  "model-00059-of-00131.safetensors",
+  "model-00060-of-00131.safetensors",
+  "model-00061-of-00131.safetensors",
+  "model-00062-of-00131.safetensors",
+  "model-00063-of-00131.safetensors",
+  "model-00064-of-00131.safetensors",
+  "model-00065-of-00131.safetensors",
+  "model-00066-of-00131.safetensors",
+  "model-00067-of-00131.safetensors",
+  "model-00068-of-00131.safetensors",
+  "model-00069-of-00131.safetensors",
+  "model-00070-of-00131.safetensors",
+  "model-00071-of-00131.safetensors",
+  "model-00072-of-00131.safetensors",
+  "model-00073-of-00131.safetensors",
+  "model-00074-of-00131.safetensors",
+  "model-00075-of-00131.safetensors",
+  "model-00076-of-00131.safetensors",
+  "model-00077-of-00131.safetensors",
+  "model-00078-of-00131.safetensors",
+  "model-00079-of-00131.safetensors",
+  "model-00080-of-00131.safetensors",
+  "model-00081-of-00131.safetensors",
+  "model-00082-of-00131.safetensors",
+  "model-00083-of-00131.safetensors",
+  "model-00084-of-00131.safetensors",
+  "model-00085-of-00131.safetensors",
+  "model-00086-of-00131.safetensors",
+  "model-00087-of-00131.safetensors",
+  "model-00088-of-00131.safetensors",
+  "model-00089-of-00131.safetensors",
+  "model-00090-of-00131.safetensors",
+  "model-00091-of-00131.safetensors",
+  "model-00092-of-00131.safetensors",
+  "model-00093-of-00131.safetensors",
+  "model-00094-of-00131.safetensors",
+  "model-00095-of-00131.safetensors",
+  "model-00096-of-00131.safetensors",
+  "model-00097-of-00131.safetensors",
+  "model-00098-of-00131.safetensors",
+  "model-00099-of-00131.safetensors",
+  "model-00100-of-00131.safetensors",
+  "model-00101-of-00131.safetensors",
+  "model-00102-of-00131.safetensors",
+  "model-00103-of-00131.safetensors",
+  "model-00104-of-00131.safetensors",
+  "model-00105-of-00131.safetensors",
+  "model-00106-of-00131.safetensors",
+  "model-00107-of-00131.safetensors",
+  "model-00108-of-00131.safetensors",
+  "model-00109-of-00131.safetensors",
+  "model-00110-of-00131.safetensors",
+  "model-00111-of-00131.safetensors",
+  "model-00112-of-00131.safetensors",
+  "model-00113-of-00131.safetensors",
+  "model-00114-of-00131.safetensors",
+  "model-00115-of-00131.safetensors",
+  "model-00116-of-00131.safetensors",
+  "model-00117-of-00131.safetensors",
+  "model-00118-of-00131.safetensors",
+  "model-00119-of-00131.safetensors",
+  "model-00120-of-00131.safetensors",
+  "model-00121-of-00131.safetensors",
+  "model-00122-of-00131.safetensors",
+  "model-00123-of-00131.safetensors",
+  "model-00124-of-00131.safetensors",
+  "model-00125-of-00131.safetensors",
+  "model-00126-of-00131.safetensors",
+  "model-00127-of-00131.safetensors",
+  "model-00128-of-00131.safetensors",
+  "model-00129-of-00131.safetensors",
+  "model-00130-of-00131.safetensors",
+  "model-00131-of-00131.safetensors",
+  "model.safetensors.index.json"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 179999981459,
+   "text_total": 179551050403,
+   "by_component": {
+    "moe_routed_experts": 123312537600,
+    "other": 53992041891,
+    "attention_or_linear_mixer": 668804864,
+    "embedding": 635699200,
+    "lm_head": 635699200,
+    "vision": 448931056,
+    "dense_ffn": 240970240,
+    "moe_router": 64225280,
+    "norms": 1072128
+   },
+   "routed_expert_params": 123312537600,
+   "moe_layers": 48,
+   "experts_per_moe_layer": [],
+   "layer_indices_in_weights": [
+    0,
+    47
+   ],
+   "tensor_count": 1658,
+   "skipped_scale_tensors": 0
+  },
+  "active": {
+   "text_active": 58646960803,
+   "text_active_without_embeddings": 58011261603,
+   "with_vision": 59095891859
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 24576,
+  "grows_per_token_bytes_low": 24576,
+  "constant_bytes": 0,
+  "constant_bytes_low": 0,
+  "naive_mha_per_token_bytes": 1179648,
+  "reduction_vs_naive_mha": 48.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 201326592,
+    "gib": 0.188
+   },
+   "32768": {
+    "bytes": 805306368,
+    "gib": 0.75
+   },
+   "131072": {
+    "bytes": 3221225472,
+    "gib": 3.0
+   },
+   "262144": {
+    "bytes": 6442450944,
+    "gib": 6.0
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 12,
+    "grows_per_token_bytes": 24576,
+    "constant_bytes": 0,
+    "formula": "2 x 2 KV heads x 256 head_dim x 2 B x 12 layers"
+   },
+   {
+    "layer_type": "linear_attention",
+    "layers": 36,
+    "grows_per_token_bytes": null,
+    "constant_bytes": null,
+    "formula": "unknown layer type: not counted"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "layer type 'linear_attention' has no memory rule yet; sent to review"
+  ]
+ },
+ "code_scan": {
+  "files": [],
+  "classes": [],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {
+  "hidden_size": {
+   "raw": "2560",
+   "value": 2560.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "num_layers": {
+   "raw": "48",
+   "value": 48.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "num_attention_heads": {
+   "raw": "24 for Q and 2 for KV",
+   "value": 24.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "moe_num_experts": {
+   "raw": "512",
+   "value": 512.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "context_length": {
+   "raw": "262,144 natively and extensible up to 1,000,000 tokens.",
+   "value": 262144.0,
+   "tolerance": 0,
+   "k_suffix": false
+  }
+ },
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 48,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 48,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 48.0,
+     "evidence": "card:num_layers",
+     "raw": "48"
+    },
+    {
+     "value": 48,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 2560,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2560,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 2560.0,
+     "evidence": "card:hidden_size",
+     "raw": "2560"
+    },
+    {
+     "value": 2560,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 248320,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 248320,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 248320,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 262144,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 262144,
+     "evidence": "config:text_config.max_position_embeddings"
+    },
+    {
+     "value": 262144.0,
+     "evidence": "card:context_length",
+     "raw": "262,144 natively and extensible up to 1,000,000 tokens."
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 24,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 24,
+     "evidence": "config:text_config.num_attention_heads"
+    },
+    {
+     "value": 24.0,
+     "evidence": "card:num_attention_heads",
+     "raw": "24 for Q and 2 for KV"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 2,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "config:text_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "GQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "GQA",
+     "evidence": "derived:num_key_value_heads(2) vs num_attention_heads(24)"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 512,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.num_experts"
+    },
+    {
+     "value": 512.0,
+     "evidence": "card:moe_num_experts",
+     "raw": "512"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 10,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 10,
+     "evidence": "config:text_config.num_experts_per_tok"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 640,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 640,
+     "evidence": "config:text_config.moe_intermediate_size"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 0,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "default:0"
+    },
+    {
+     "value": 0,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "linear_attention": 36,
+    "full_attention": 12
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "linear_attention": 36,
+      "full_attention": 12
+     },
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention"
+   ],
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": [
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:text_config.layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "qk_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:q_norm/k_norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 179999981459,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 179999981459,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 58646960803,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 58646960803,
+     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "full_attention"
+     ],
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.num_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "mrope_interleaved": true,
+    "mrope_section": [
+     11,
+     11,
+     10
+    ],
+    "partial_rotary_factor": 0.25,
+    "rope_theta": 10000000,
+    "rope_type": "default"
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mrope_interleaved": true,
+      "mrope_section": [
+       11,
+       11,
+       10
+      ],
+      "partial_rotary_factor": 0.25,
+      "rope_theta": 10000000,
+      "rope_type": "default"
+     },
+     "evidence": "config:text_config.rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1152,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1152,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:text_config.hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 123312537600,
+    "other": 53992041891,
+    "attention_or_linear_mixer": 668804864,
+    "embedding": 635699200,
+    "lm_head": 635699200,
+    "vision": 448931056,
+    "dense_ffn": 240970240,
+    "moe_router": 64225280,
+    "norms": 1072128
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 123312537600,
+      "other": 53992041891,
+      "attention_or_linear_mixer": 668804864,
+      "embedding": 635699200,
+      "lm_head": 635699200,
+      "vision": 448931056,
+      "dense_ffn": 240970240,
+      "moe_router": 64225280,
+      "norms": 1072128
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 1658,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 1658,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 48,
+  "hidden_size": 2560,
+  "vocab_size": 248320,
+  "context_length": 262144,
+  "num_attention_heads": 24,
+  "num_kv_heads": 2,
+  "head_dim": 256,
+  "attention_type": "GQA",
+  "moe_num_experts": 512,
+  "moe_active_experts": 10,
+  "moe_expert_intermediate": 640,
+  "dense_layers": 0,
+  "layer_type_counts": {
+   "linear_attention": 36,
+   "full_attention": 12
+  },
+  "layer_index_base_in_config": 0,
+  "qk_norm": true,
+  "params_total": 179999981459,
+  "params_active": 58646960803,
+  "layer_types": [
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention",
+   "linear_attention",
+   "linear_attention",
+   "linear_attention",
+   "full_attention"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": false,
+  "rope": {
+   "mrope_interleaved": true,
+   "mrope_section": [
+    11,
+    11,
+    10
+   ],
+   "partial_rotary_factor": 0.25,
+   "rope_theta": 10000000,
+   "rope_type": "default"
+  },
+  "vision_hidden_size": 1152,
+  "activation": "silu",
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "moe_routed_experts": 123312537600,
+   "other": 53992041891,
+   "attention_or_linear_mixer": 668804864,
+   "embedding": 635699200,
+   "lm_head": 635699200,
+   "vision": 448931056,
+   "dense_ffn": 240970240,
+   "moe_router": 64225280,
+   "norms": 1072128
+  },
+  "weight_header_summary": {
+   "tensor_count": 1658,
+   "skipped_scale_tensors": 0
+  }
+ },
+ "review_queue": [
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "attention"
+   ],
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": [
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention",
+      "linear_attention",
+      "linear_attention",
+      "linear_attention",
+      "attention"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  }
+ ],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): image_token_id, language_model_only, text_config.attention_bias, text_config.attention_dropout, text_config.bos_token_id, text_config.eos_token_id, text_config.full_attention_interval, text_config.hc_count, text_config.hc_lowrank, text_config.heads_per_ngram, text_config.indexer_budget, text_config.indexer_compress_ratio, text_config.indexer_head_dim, text_config.indexer_kv_heads, text_config.indexer_n_heads, text_config.initializer_range, text_config.linear_conv_kernel_dim, text_config.linear_key_head_dim, text_config.linear_num_key_heads, text_config.linear_num_value_heads, text_config.linear_value_head_dim, text_config.make_ngram_vocab_size_divisible_by, text_config.mamba_ssm_dtype, text_config.mtp.hybrid, text_config.mtp.layer_types, text_config.mtp.mtp_use_hidden_state_from_layer, text_config.mtp.num_hidden_layers, text_config.mtp.rope_theta, text_config.mtp_num_hidden_layers, text_config.mtp_use_dedicated_embeddings, text_config.ngram_size, text_config.ngram_vocab_size_base, text_config.output_gate_type, text_config.output_router_logits, text_config.pad_token_id, text_config.partial_rotary_factor, text_config.ple_conv_kernel_size, text_config.ple_embed_dim, text_config.ple_layer_ids, text_config.rms_norm_eps, text_config.router_aux_loss_coef, text_config.shared_expert_intermediate_size, text_config.split_ngram_parts, text_config.tie_word_embeddings, text_config.use_cache, transformers_version, video_token_id, vision_config.deepstack_visual_indexes, vision_config.depth, vision_config.hidden_act, vision_config.in_channels, vision_config.initializer_range, vision_config.intermediate_size, vision_config.model_type, vision_config.num_heads, vision_config.num_position_embeddings, vision_config.out_hidden_size, vision_config.patch_size, vision_config.spatial_merge_size, vision_config.temporal_patch_size, vision_end_token_id, vision_start_token_id"
+ ],
+ "weight_layer_kinds": [
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla",
+  "linear_delta",
+  "linear_delta",
+  "linear_delta",
+  "dsa_mla"
+ ]
+}

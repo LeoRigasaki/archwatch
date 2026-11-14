@@ -1,0 +1,1173 @@
+{
+ "id": "microsoft/Mage-VL",
+ "source_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+ "hub_created": "2026-07-25T08:29:09+00:00",
+ "license": "apache-2.0",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "arxiv:2607.24904",
+   "conversational",
+   "custom_code",
+   "image-text-to-text",
+   "license:apache-2.0",
+   "mage-vl",
+   "mage_vl",
+   "multimodal",
+   "region:us",
+   "safetensors",
+   "streaming",
+   "transformers",
+   "video-understanding",
+   "vision-language-model"
+  ]
+ },
+ "analyzed_at": "2026-11-14T07:54:45+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "MageVLForConditionalGeneration",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "mage_vl",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 36,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 2560,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "vocab_size": {
+   "value": 151936,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 262144,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+   ],
+   "evidence": "config:text_config.layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:text_config.layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "full_attention": 36
+   },
+   "evidence": "config:text_config.layer_types"
+  },
+  "num_attention_heads": {
+   "value": 32,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 8,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 128,
+   "evidence": "config:text_config.head_dim"
+  },
+  "attention_type": {
+   "value": "GQA",
+   "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(32)"
+  },
+  "decoder_type": {
+   "value": "Dense",
+   "evidence": "derived:no expert keys"
+  },
+  "ffn_intermediate": {
+   "value": 9728,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "activation": {
+   "value": "silu",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "rope": {
+   "value": {
+    "rope_theta": 5000000,
+    "rope_type": "default"
+   },
+   "evidence": "config:text_config.rope_parameters"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  },
+  "vision_encoder_layers": {
+   "value": 24,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1024,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "dtype",
+   "model_type",
+   "text_config.head_dim",
+   "text_config.hidden_act",
+   "text_config.hidden_size",
+   "text_config.intermediate_size",
+   "text_config.layer_types",
+   "text_config.max_position_embeddings",
+   "text_config.model_type",
+   "text_config.num_attention_heads",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.rope_parameters.rope_theta",
+   "text_config.rope_parameters.rope_type",
+   "text_config.sliding_window",
+   "text_config.vocab_size",
+   "tie_word_embeddings",
+   "vision_config.hidden_size",
+   "vision_config.num_hidden_layers"
+  ],
+  "unconsumed": [
+   "auto_map.AutoConfig",
+   "auto_map.AutoModel",
+   "auto_map.AutoModelForCausalLM",
+   "auto_map.AutoModelForImageTextToText",
+   "auto_map.AutoProcessor",
+   "auto_map.AutoVideoProcessor",
+   "bos_token_id",
+   "eos_token_id",
+   "image_token_id",
+   "text_config._name_or_path",
+   "text_config.architectures",
+   "text_config.attention_bias",
+   "text_config.attention_dropout",
+   "text_config.bos_token_id",
+   "text_config.dtype",
+   "text_config.eos_token_id",
+   "text_config.initializer_range",
+   "text_config.max_window_layers",
+   "text_config.rms_norm_eps",
+   "text_config.rope_scaling",
+   "text_config.tie_word_embeddings",
+   "text_config.use_cache",
+   "text_config.use_sliding_window",
+   "transformers_version",
+   "video_token_id",
+   "vision_config.attention_dropout",
+   "vision_config.frame_windows_size",
+   "vision_config.hidden_act",
+   "vision_config.image_size",
+   "vision_config.initializer_range",
+   "vision_config.intermediate_size",
+   "vision_config.layer_norm_eps",
+   "vision_config.layer_norm_type",
+   "vision_config.max_position_embeddings",
+   "vision_config.model_type",
+   "vision_config.num_attention_heads",
+   "vision_config.num_channels",
+   "vision_config.out_hidden_size",
+   "vision_config.patch_size",
+   "vision_config.rope_theta",
+   "vision_config.spatial_merge_size",
+   "vision_config.temporal_patch_size",
+   "vision_config.text_hidden_size",
+   "vision_config.tokens_per_second",
+   "vision_config.use_head",
+   "vision_end_token_id",
+   "vision_start_token_id"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "configuration_mage_vl.py",
+  "model-00001-of-00002.safetensors",
+  "model-00002-of-00002.safetensors",
+  "model.safetensors.index.json",
+  "modeling_mage_vl.py",
+  "streammind_gate.safetensors"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 5278537216,
+   "text_total": 4948167680,
+   "by_component": {
+    "dense_ffn": 3067084800,
+    "attention_or_linear_mixer": 1048586240,
+    "embedding": 388961280,
+    "lm_head": 388961280,
+    "vision": 330369536,
+    "state_space_mixer": 39434240,
+    "other": 14919680,
+    "norms": 220160
+   },
+   "routed_expert_params": 0,
+   "moe_layers": 0,
+   "experts_per_moe_layer": [],
+   "layer_indices_in_weights": [
+    0,
+    35
+   ],
+   "tensor_count": 760,
+   "skipped_scale_tensors": 0
+  },
+  "active": null
+ },
+ "cache": {
+  "grows_per_token_bytes": 147456,
+  "grows_per_token_bytes_low": 147456,
+  "constant_bytes": 0,
+  "constant_bytes_low": 0,
+  "naive_mha_per_token_bytes": 589824,
+  "reduction_vs_naive_mha": 4.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 1207959552,
+    "gib": 1.125
+   },
+   "32768": {
+    "bytes": 4831838208,
+    "gib": 4.5
+   },
+   "131072": {
+    "bytes": 19327352832,
+    "gib": 18.0
+   },
+   "262144": {
+    "bytes": 38654705664,
+    "gib": 36.0
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 36,
+    "grows_per_token_bytes": 147456,
+    "constant_bytes": 0,
+    "formula": "2 x 8 KV heads x 128 head_dim x 2 B x 36 layers"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted"
+  ]
+ },
+ "code_scan": {
+  "files": [
+   "configuration_mage_vl.py",
+   "modeling_mage_vl.py"
+  ],
+  "classes": [
+   {
+    "name": "MageVLVisionConfig",
+    "file": "configuration_mage_vl.py",
+    "line": 8,
+    "doc": ""
+   },
+   {
+    "name": "MageVLConfig",
+    "file": "configuration_mage_vl.py",
+    "line": 36,
+    "doc": "This is the configuration class to store the configuration of a [`MageVLModel`]. It is used to instantiate a"
+   },
+   {
+    "name": "MageVLModelOutputWithPast",
+    "file": "modeling_mage_vl.py",
+    "line": 34,
+    "doc": "past_key_values (`Cache`, *optional*, returned when `use_cache=True` is passed or when `config.use_cache=True`):"
+   },
+   {
+    "name": "MageVLCausalLMOutputWithPast",
+    "file": "modeling_mage_vl.py",
+    "line": 55,
+    "doc": "loss (`torch.FloatTensor` of shape `(1,)`, *optional*, returned when `labels` is provided):"
+   },
+   {
+    "name": "VisionRotaryEmbedding",
+    "file": "modeling_mage_vl.py",
+    "line": 80,
+    "doc": "3D (T,H,W) Rotary frequency constructor with 4:6:6 split."
+   },
+   {
+    "name": "MageVLVisionEmbeddings",
+    "file": "modeling_mage_vl.py",
+    "line": 219,
+    "doc": "Patch embedding layer that converts pre-processed patches to embeddings."
+   },
+   {
+    "name": "MageVLVisionPatchMerger",
+    "file": "modeling_mage_vl.py",
+    "line": 259,
+    "doc": "Patch merger that merges spatial_merge_size x spatial_merge_size patches into one."
+   },
+   {
+    "name": "MageVLVisionAttention",
+    "file": "modeling_mage_vl.py",
+    "line": 386,
+    "doc": "Multi-headed attention with RoPE support, dispatched through",
+    "builds": [
+     "qkv=Linear",
+     "proj=Linear"
+    ]
+   },
+   {
+    "name": "MageVLVisionEncoderLayer",
+    "file": "modeling_mage_vl.py",
+    "line": 510,
+    "doc": "Vision encoder layer with pre-norm and Flash Attention 2."
+   },
+   {
+    "name": "MageVLVisionEncoder",
+    "file": "modeling_mage_vl.py",
+    "line": 552,
+    "doc": ""
+   },
+   {
+    "name": "MageVLPreTrainedModel",
+    "file": "modeling_mage_vl.py",
+    "line": 616,
+    "doc": ""
+   },
+   {
+    "name": "Siglip2MultiheadAttentionPoolingHead",
+    "file": "modeling_mage_vl.py",
+    "line": 644,
+    "doc": "Multi-Head Attention Pooling with a learned probe (PMA-style).",
+    "builds": [
+     "norm=RMSNorm"
+    ]
+   },
+   {
+    "name": "MageVLVisionPretrainedModel",
+    "file": "modeling_mage_vl.py",
+    "line": 675,
+    "doc": "Mage-VL Vision Model."
+   },
+   {
+    "name": "MageVLModel",
+    "file": "modeling_mage_vl.py",
+    "line": 956,
+    "doc": ""
+   },
+   {
+    "name": "MageVLForConditionalGeneration",
+    "file": "modeling_mage_vl.py",
+    "line": 1308,
+    "doc": ""
+   }
+  ],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": true,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {},
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 36,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 36,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 36,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 2560,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2560,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 2560,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 151936,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 151936,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 2,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 262144,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 262144,
+     "evidence": "config:text_config.max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 32,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32,
+     "evidence": "config:text_config.num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "GQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "GQA",
+     "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(32)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 9728,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 9728,
+     "evidence": "config:text_config.intermediate_size"
+    },
+    {
+     "value": 12288,
+     "evidence": "weights:feed_forward.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "full_attention": 36
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "full_attention": 36
+     },
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "config:text_config.layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:text_config.layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "qk_norm",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:q_norm/k_norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 5278537216,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 5278537216,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention"
+     ],
+     "evidence": "config:text_config.layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Dense",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Dense",
+     "evidence": "derived:no expert keys"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "rope_theta": 5000000,
+    "rope_type": "default"
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "rope_theta": 5000000,
+      "rope_type": "default"
+     },
+     "evidence": "config:text_config.rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "vision_encoder_layers",
+   "value": 24,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 24,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1024,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:text_config.hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 3067084800,
+    "attention_or_linear_mixer": 1048586240,
+    "embedding": 388961280,
+    "lm_head": 388961280,
+    "vision": 330369536,
+    "state_space_mixer": 39434240,
+    "other": 14919680,
+    "norms": 220160
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 3067084800,
+      "attention_or_linear_mixer": 1048586240,
+      "embedding": 388961280,
+      "lm_head": 388961280,
+      "vision": 330369536,
+      "state_space_mixer": 39434240,
+      "other": 14919680,
+      "norms": 220160
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 760,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 760,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 36,
+  "hidden_size": 2560,
+  "context_length": 262144,
+  "num_attention_heads": 32,
+  "num_kv_heads": 8,
+  "head_dim": 128,
+  "attention_type": "GQA",
+  "ffn_gated": true,
+  "layer_type_counts": {
+   "full_attention": 36
+  },
+  "layer_pattern_per_layer": [
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention"
+  ],
+  "layer_index_base_in_config": 0,
+  "qk_norm": true,
+  "params_total": 5278537216,
+  "layer_types": [
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention"
+  ],
+  "decoder_type": "Dense",
+  "tied_embeddings": false,
+  "rope": {
+   "rope_theta": 5000000,
+   "rope_type": "default"
+  },
+  "vision_encoder_layers": 24,
+  "vision_hidden_size": 1024,
+  "activation": "silu",
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "dense_ffn": 3067084800,
+   "attention_or_linear_mixer": 1048586240,
+   "embedding": 388961280,
+   "lm_head": 388961280,
+   "vision": 330369536,
+   "state_space_mixer": 39434240,
+   "other": 14919680,
+   "norms": 220160
+  },
+  "weight_header_summary": {
+   "tensor_count": 760,
+   "skipped_scale_tensors": 0
+  }
+ },
+ "review_queue": [
+  {
+   "field": "vocab_size",
+   "value": 151936,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 151936,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 2,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 9728,
+   "status": "conflict",
+   "confidence": 0.3,
+   "published": false,
+   "candidates": [
+    {
+     "value": 9728,
+     "evidence": "config:text_config.intermediate_size"
+    },
+    {
+     "value": 12288,
+     "evidence": "weights:feed_forward.w1 rows"
+    }
+   ]
+  }
+ ],
+ "unchecked_notes": [
+  "Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig, auto_map.AutoModel, auto_map.AutoModelForCausalLM, auto_map.AutoModelForImageTextToText, auto_map.AutoProcessor, auto_map.AutoVideoProcessor, bos_token_id, eos_token_id, image_token_id, text_config._name_or_path, text_config.architectures, text_config.attention_bias, text_config.attention_dropout, text_config.bos_token_id, text_config.dtype, text_config.eos_token_id, text_config.initializer_range, text_config.max_window_layers, text_config.rms_norm_eps, text_config.rope_scaling, text_config.tie_word_embeddings, text_config.use_cache, text_config.use_sliding_window, transformers_version, video_token_id, vision_config.attention_dropout, vision_config.frame_windows_size, vision_config.hidden_act, vision_config.image_size, vision_config.initializer_range, vision_config.intermediate_size, vision_config.layer_norm_eps, vision_config.layer_norm_type, vision_config.max_position_embeddings, vision_config.model_type, vision_config.num_attention_heads, vision_config.num_channels, vision_config.out_hidden_size, vision_config.patch_size, vision_config.rope_theta, vision_config.spatial_merge_size, vision_config.temporal_patch_size, vision_config.text_hidden_size, vision_config.tokens_per_second, vision_config.use_head, vision_end_token_id, vision_start_token_id"
+ ],
+ "weight_layer_kinds": [
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention"
+ ]
+}

@@ -1,0 +1,174 @@
+{
+  "baseline_implementation_commit": "5977d090797cad34f68645ae6eea47d3b9186716",
+  "labels_commit": "a0a3f88d07d2bfd2274b976118b0a4629f9a48db",
+  "label_hashes": {
+    "Qwen__Qwen3.8-Flash-Next.yaml": "3749b3c1aa3432af7e5cdc3ec556acb69dbbebf51ad7fcbd8496da8990400c68",
+    "deepseek-ai__DeepSeek-V4.1-Flash-1017.yaml": "fa742a4fc15dc248554fdab6c55bed91b8a7dc46d5d13db24c086f19a69a76cc",
+    "google__diffusiongemma-26B-A4B-it.yaml": "49612bfcfedf21e6201999ede60c71c1594b78c1cefe85d52b9fda56b68e77b6",
+    "microsoft__Mage-VL.yaml": "c8789ed0a524ab59928d77f4c1aa3db8f737005e714d67ab7dcd56f45f6f4678",
+    "mistralai__Mistral-Large-4-1T-A52B.yaml": "fe90556ecd5fc20250694a296ce2b7339bbcc0dd8138e5c1a13e91398b2cef86",
+    "nvidia__NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16.yaml": "521074d30d0817c449993bf17f79c9aafe50ec597ce11472474830df5f681659",
+    "zai-org__GLM-5.3-Flash-BF16.yaml": "e0a20083062dd1f9c9825ab690481d020c62264b746f35e4aeb807ca135dec42"
+  },
+  "outcomes": {
+    "LiquidAI/LFM2.5-24B-A2B-Base": {
+      "source_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
+      "published_fields": 26,
+      "review_fields": [
+        "dense_layers"
+      ],
+      "publication": "held",
+      "publication_reason": "Required published inputs are unavailable: moe_shared_experts"
+    },
+    "LiquidAI/LFM3-1.7B-Base": {
+      "source_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+      "published_fields": 27,
+      "review_fields": [],
+      "publication": "eligible"
+    },
+    "Qwen/Qwen3.8-2.4T-A95B": {
+      "source_commit": "4f885e51d6bbfee5866446d56d3f96f336c39723",
+      "published_fields": 25,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    "Qwen/Qwen3.8-Flash-Next": {
+      "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
+      "published_fields": 26,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash": {
+      "source_commit": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+      "published_fields": 27,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
+      "source_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+      "published_fields": 27,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    "google/diffusiongemma-26B-A4B-it": {
+      "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+      "published_fields": 29,
+      "review_fields": [
+        "params_total"
+      ],
+      "publication": "held",
+      "publication_reason": "Required published inputs are unavailable: moe_active_experts, moe_shared_experts, params_total"
+    },
+    "google/gemma-4-26B-A4B": {
+      "source_commit": "24548b62aa021d562695c04aaf7758a1ea47990b",
+      "published_fields": 29,
+      "review_fields": [
+        "params_total"
+      ],
+      "publication": "held",
+      "publication_reason": "Required published inputs are unavailable: moe_active_experts, moe_shared_experts, params_total"
+    },
+    "meta-llama/Llama-3.2-90B-Vision": {
+      "source_commit": "38850089f6a42b7394680c4e4bbd4c40fb62404f",
+      "error": "HTTPError",
+      "http_status": 403
+    },
+    "meta-llama/Llama-4-Maverick-17B-128E": {
+      "source_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+      "published_fields": 25,
+      "review_fields": [
+        "dense_layers"
+      ],
+      "publication": "held",
+      "publication_reason": "Required published inputs are unavailable: moe_expert_intermediate, moe_shared_experts"
+    },
+    "microsoft/Mage-VL": {
+      "source_commit": "d88b153285f1633a61b2f693c59c8576693af185",
+      "published_fields": 23,
+      "review_fields": [
+        "vocab_size",
+        "ffn_intermediate"
+      ],
+      "publication": "held",
+      "publication_reason": "Required published inputs are unavailable: ffn_intermediate, vocab_size"
+    },
+    "mistralai/Mistral-Large-3-675B-Base-2512": {
+      "source_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
+      "error": "AttributeError",
+      "http_status": null
+    },
+    "mistralai/Mistral-Large-4-1T-A52B": {
+      "source_commit": "af26e7869af601441d5cdf75a1272469ddc3d059",
+      "published_fields": 32,
+      "review_fields": [
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    "moonshotai/Kimi-K3": {
+      "source_commit": "f831ab66814297da540d832a5235f8e904f29d06",
+      "published_fields": 41,
+      "review_fields": [],
+      "publication": "eligible"
+    },
+    "moonshotai/Kimi-K3.1-Pro": {
+      "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+      "published_fields": 45,
+      "review_fields": [],
+      "publication": "eligible"
+    },
+    "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16": {
+      "source_commit": "ee517dd388a9b348890ae1e00dacc5eb4d0c750d",
+      "published_fields": 23,
+      "review_fields": [],
+      "publication": "eligible"
+    },
+    "zai-org/GLM-5.2": {
+      "source_commit": "cf457fa734ab149ffef225f80893eb38c6ff5cdc",
+      "published_fields": 28,
+      "review_fields": [
+        "num_layers",
+        "dense_layers",
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    },
+    "zai-org/GLM-5.3-Flash-BF16": {
+      "source_commit": "f9fed3bbc82291073373d67452e9f25317ef7577",
+      "published_fields": 32,
+      "review_fields": [
+        "num_layers",
+        "dense_layers",
+        "layer_pattern_per_layer"
+      ],
+      "publication": "held",
+      "publication_reason": "Layer pattern is not verified; architecture rendering is withheld"
+    }
+  },
+  "heldout": {
+    "models": 7,
+    "correct": 97,
+    "total": 139,
+    "exact_match": 0.697841726618705
+  },
+  "coverage": {
+    "core_publishers": 10,
+    "unseen_readable_labeled": 7,
+    "development_overlaps": 2,
+    "access_blocked": 1
+  }
+}
