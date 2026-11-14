@@ -161,6 +161,16 @@ Evidence: [processing](results/backfill-processing.json), [repeat no-op](results
 - [x] All ten selected newest models analyzed; seven remain held for new graph/cache qualification. Llama3.2 Vision predecessor access and Mistral Large3 native config support remain unresolved.
 - [x] Current inventory: 26 records, 12 eligible gallery views, 28 tracked sources; 116 offline tests pass.
 - [ ] Diagram route comparison on the four requested established records, in a separate PR. Gemini credentials are configured but no generation loop/explainer is authorized.
-- [ ] Optional Discord watcher notification, in its own small PR; credential stored without printing it.
+- [x] Optional Discord watcher notification implemented in its own branch; credential stored without printing it. Awaiting PR review/merge before workflow activation.
 
 Evidence: [newest protocol and review limits](docs/NEWEST_BACKFILL.md), [first-run score](results/newest-first-run/heldout-exact-match.md), [adaptation score](results/newest-adaptation.md).
+
+## Optional Discord notification
+
+- [x] Ephemeral watcher report records actual artifact content changes and current-run model events; no-change runs send nothing.
+- [x] One bounded text message includes processed/review models, access-request Hub links and the PR URL when available. No attachments, embeds or mentions.
+- [x] Missing `DISCORD_WEBHOOK_URL` skips silently; one failed attempt logs a generic redacted line and does not fail the workflow. The secret is scoped to the notification step only.
+- [x] 128 tests pass, including formatting, no-op/missing-secret silence, webhook errors, CLI report/no-op behavior and workflow secret scope. Fake transport only; no test message sent to Discord.
+- [ ] Merge notification PR and validate delivery during a deliberately changed manual watcher run. Cron remains disabled.
+
+Evidence: [notification operation and limits](docs/DISCORD_NOTIFICATIONS.md), `tests/test_notifications.py`.

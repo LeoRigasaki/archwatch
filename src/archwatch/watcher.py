@@ -567,6 +567,7 @@ def run(
                                 family=pred["family"],
                                 created_at=pred["created_at"],
                             )
+                            report["outcomes"][pred["id"]] = old_entry["status"]
                             signatures = {key: value for key, value in signatures.items() if value != pred["id"]}
                             published_signatures = {
                                 key: value for key, value in published_signatures.items() if value != pred["id"]
