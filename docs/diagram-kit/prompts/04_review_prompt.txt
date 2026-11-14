@@ -1,0 +1,19 @@
+Use this in a NEW chat with a Gemini text model (so it does not grade its own drawing).
+Attach the generated image AND the YAML spec, then send:
+
+---
+
+You are reviewing an LLM architecture diagram against its spec. The attached YAML is the truth.
+Read every piece of text in the image carefully, then check it against the spec.
+
+Return only JSON in this shape:
+{
+  "text_errors":      [{"seen": "...", "expected": "...", "where": "..."}],
+  "wrong_numbers":    [{"seen": "...", "expected": "...", "where": "..."}],
+  "invented_content": ["anything shown that is not in the spec"],
+  "missing_content":  ["anything in the spec (zoom panels, callouts, groups) that is missing"],
+  "layer_count_check": {"groups_seen": "...", "sum_of_layers": 0, "expected": 0, "ok": true},
+  "layout_problems":  ["overlaps, arrows through labels, cut-off text, unreadable text"],
+  "do_not_include_violations": ["..."],
+  "score": {"accuracy_0_10": 0, "readability_0_10": 0, "would_publish": false}
+}
