@@ -1,0 +1,50 @@
+schema_version: 1
+id: google/diffusiongemma-26B-A4B-it
+source_commit: f7f5b7f5fa82ffc52addd066915886d497f5517b
+split: heldout_first_run
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 30
+  hidden_size: 2816
+  vocab_size: 262144
+  num_attention_heads: 16
+  num_kv_heads: 8
+  head_dim: 256
+  global_head_dim: 512
+  num_global_kv_heads: 2
+  context_length: 262144
+  params_total: 25823781228
+  moe_num_experts: 128
+  moe_active_experts: 8
+  moe_shared_experts: 1
+  moe_expert_intermediate: 704
+  moe_shared_expert_intermediate: 2112
+  dense_layers: 0
+  activation: gelu_pytorch_tanh
+  ffn_gated: true
+  layer_type_counts:
+    sliding_attention: 25
+    full_attention: 5
+  sliding_window: 1024
+  generation_type: block_diffusion
+  canvas_length: 256
+evidence:
+  config: https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/config.json
+  card: https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/README.md
+  weight_files:
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00001-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00002-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00003-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00004-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00005-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00006-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00007-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00008-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00009-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00010-of-00011.safetensors
+  - https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/model-00011-of-00011.safetensors
+notes: Encoder/prefill and bidirectional canvas decoder share most text weights. One
+  dense shared path has width 2112 alongside 128 routed experts of width 704. Learned
+  layer/router scales are parameters; do not discard generic .scale tensors. Card
+  total may use a text-only convention; released total includes vision.

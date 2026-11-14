@@ -1,0 +1,34 @@
+schema_version: 1
+id: microsoft/Mage-VL
+source_commit: d88b153285f1633a61b2f693c59c8576693af185
+split: heldout_first_run
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 36
+  hidden_size: 2560
+  vocab_size: 151936
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  context_length: 262144
+  params_total: 5278537216
+  ffn_intermediate: 9728
+  activation: silu
+  ffn_gated: true
+  layer_type_counts:
+    full_attention: 36
+  qk_norm: true
+  vision_encoder_layers: 24
+  vision_hidden_size: 1024
+evidence:
+  config: https://huggingface.co/microsoft/Mage-VL/blob/d88b153285f1633a61b2f693c59c8576693af185/config.json
+  card: https://huggingface.co/microsoft/Mage-VL/blob/d88b153285f1633a61b2f693c59c8576693af185/README.md
+  weight_files:
+  - https://huggingface.co/microsoft/Mage-VL/blob/d88b153285f1633a61b2f693c59c8576693af185/model-00001-of-00002.safetensors
+  - https://huggingface.co/microsoft/Mage-VL/blob/d88b153285f1633a61b2f693c59c8576693af185/model-00002-of-00002.safetensors
+  - https://huggingface.co/microsoft/Mage-VL/blob/d88b153285f1633a61b2f693c59c8576693af185/streammind_gate.safetensors
+notes: Primary Mage visual architecture differs from FrogNano post-training. Checkpoint
+  also contains cls_net auxiliary language layers. Their 12288 FFN and two-row embedding
+  must not override the main language model dimensions. Total includes released auxiliary
+  classifier weights.

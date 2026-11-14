@@ -1,0 +1,11 @@
+# Newest-release first-run holdout
+
+`newest-2026-11-14/` freezes seven previously unprocessed checkpoints and 139 manually transcribed expected fields. Labels come from the pinned primary config, raw safetensors headers and card, not pipeline records. Gold is frozen before the first run and before any extraction/tensor/family fixes for this cohort. All labels remain `human_reviewed: false`.
+
+The ten-publisher selection is `config/newest-backfill.yaml`. Two newest releases (Liquid Base and Kimi-K3.1-Pro) were already development examples and are reported separately as overlap/regression cases. Meta Maverick and its prior-generation Vision release return HTTP 403 with the existing login; access was requested by the owner. No fields or exact weight counts are invented for that blocked checkpoint, and no older accessible release replaces it. Report access coverage separately from accuracy on the seven labeled, readable models.
+
+The frozen baseline implementation is merge commit `5977d090797cad34f68645ae6eea47d3b9186716`. Its **first-run** result is the held-out result. After inspecting it and fixing rules, all later scores on these labels are adaptation/regression scores, not a new held-out accuracy claim. Label values are not edited to match the pipeline. The original ten-model development labels remain in `evals/gold/`.
+
+Parameter labels count released logical tensor elements, including vision, auxiliary and MTP weights where present; known quantization metadata and integer lookup buffers are excluded. DeepSeek native expert FP4 matrices use two logical values per I8 element. Mistral FP8 `qscale_weight` tensors are metadata. DiffusionGemma's learned BF16 router/layer scales remain included. Exact conventions and mechanism caveats are recorded in each label.
+
+The selection groups format variants and excludes conversions, safety-only adaptations and card-identified post-training copies. A newer experimental primary architecture remains eligible: Qwen Flash-Next, DiffusionGemma and Dory replace the illustrative older release choices. Predecessors follow the product generation, avoiding parallel-size variants as a fictional previous generation; explicit primary-card architectural ancestors are identified as such.
