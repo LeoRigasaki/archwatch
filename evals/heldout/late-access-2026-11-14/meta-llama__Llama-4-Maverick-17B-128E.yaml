@@ -1,0 +1,88 @@
+schema_version: 1
+id: meta-llama/Llama-4-Maverick-17B-128E
+source_commit: 10751cb97a4d7c90f7ed89196b98eb8220cfa1c2
+split: late_access_first_run
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 48
+  hidden_size: 5120
+  vocab_size: 202048
+  num_attention_heads: 40
+  num_kv_heads: 8
+  head_dim: 128
+  context_length: 262144
+  params_total: 401583781376
+  moe_num_experts: 128
+  moe_active_experts: 1
+  moe_shared_experts: 1
+  moe_expert_intermediate: 8192
+  dense_layers: 24
+  dense_ffn_intermediate: 16384
+  activation: silu
+  ffn_gated: true
+evidence:
+  config: https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/config.json
+  card: https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/README.md
+  weight_files:
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00001-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00002-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00003-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00004-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00005-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00006-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00007-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00008-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00009-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00010-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00011-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00012-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00013-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00014-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00015-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00016-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00017-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00018-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00019-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00020-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00021-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00022-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00023-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00024-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00025-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00026-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00027-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00028-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00029-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00030-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00031-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00032-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00033-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00034-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00035-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00036-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00037-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00038-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00039-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00040-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00041-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00042-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00043-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00044-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00045-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00046-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00047-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00048-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00049-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00050-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00051-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00052-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00053-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00054-of-00055.safetensors
+  - https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/model-00055-of-00055.safetensors
+notes: 'Access was approved during the original baseline run. This label was entered
+  after that invocation, from primary config and header shapes, before looking at
+  the extracted values and before any code fixes. Report separately from the strictly
+  pre-run-frozen seven-model cohort. Alternating MoE/dense layers: 24 each; expert
+  gate/up is stored transposed [128,5120,16384]. Card context and config capacity
+  need explicit scope checks. Predecessor access is still pending.'

@@ -1,0 +1,6 @@
+{
+  "file": "evals/heldout/late-access-2026-11-14/meta-llama__Llama-4-Maverick-17B-128E.yaml",
+  "sha256": "09d07895fd73be1401e8807fbc5d8789ba7dac80721333e5b435902d98af8304",
+  "first_run_record": "records/meta-llama__Llama-4-Maverick-17B-128E.json",
+  "code_changes_before_label": false
+}

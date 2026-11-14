@@ -32,6 +32,27 @@ DIFF_FIELDS = [
     "params_total",
     "params_active",
     "kv_cache_per_token_bytes",
+    "model_type",
+    "ffn_gated",
+    "generation_type",
+    "canvas_length",
+    "hyper_connection_multiplier",
+    "global_head_dim",
+    "num_global_kv_heads",
+    "shared_kv_layers",
+    "ngram_layer_ids",
+    "num_mtp_layers",
+    "linear_num_key_heads",
+    "linear_num_value_heads",
+    "linear_key_head_dim",
+    "linear_value_head_dim",
+    "linear_conv_kernel",
+    "recurrent_loops",
+    "recurrent_layers",
+    "input_layers",
+    "output_layers",
+    "recurrent_kv_cache_mode",
+    "moe_shared_expert_intermediate",
 ]
 
 
@@ -39,8 +60,13 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
     # Refresh once per analysis; every subsequent file/header read uses this snapshot.
     info = info or hub.repo_info(repo, refresh=True)
     cfg = hub.get_json(repo, "config.json", revision=info["sha"])
+    if not isinstance(cfg, dict):
+        raise ValueError("No readable root config.json; this source format requires a separate adapter")
     facts, config_coverage = extract.extract_with_usage(cfg)
     bits = facts.get("_quant_bits", (None, ""))[0]
+    quantization = cfg.get("quantization_config") or {}
+    native_expert_bits = 4 if quantization.get("expert_dtype") == "fp4" else None
+    num_layers = facts["num_layers"][0]
 
     py = {
         f: hub.get_text(repo, f, revision=info["sha"])
@@ -55,9 +81,9 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
     wcount = wshape = active = wkinds = None
     if with_weights:
         tensors = hub.safetensors_headers(repo, info=info)
-        wcount = weights.count(tensors, bits)
-        wshape = weights.shape_facts(tensors, bits)
-        wkinds = weights.layer_kinds(tensors)
+        wcount = weights.count(tensors, bits, native_expert_bits=native_expert_bits, num_layers=num_layers)
+        wshape = weights.shape_facts(tensors, bits, native_expert_bits=native_expert_bits, num_layers=num_layers)
+        wkinds = weights.layer_kinds(tensors, num_layers=num_layers)
         active = weights.active_params(
             wcount, facts.get("moe_num_experts", (None,))[0], facts.get("moe_active_experts", (None,))[0]
         )
@@ -126,17 +152,23 @@ def tensor_diff(new_repo: str, old_repo: str, top: int = 6, *, new_info=None, ol
 
     Layer numbers and expert numbers are folded (layers.N -> layers.*) so a pattern names a kind of weight."""
     import re
-    from math import prod
 
     def groups(repo, info):
         g: dict[str, int] = {}
+        quantization = (
+            ((hub.get_json(repo, "config.json", revision=info["sha"]) or {}).get("quantization_config") or {})
+            if info
+            else {}
+        )
+        native_bits = 4 if quantization.get("expert_dtype") == "fp4" else None
         tensors = hub.safetensors_headers(repo, info=info) if info is not None else hub.safetensors_headers(repo)
         for k, t in tensors.items():
-            if k.endswith(weights.SCALE_SUFFIXES):
+            n = weights.logical_elements(k, t, native_expert_bits=native_bits)
+            if n is None:
                 continue
             pat = re.sub(r"\.(\d+)\.", ".*.", re.sub(r"^(language_model\.)?model\.", "", k))
             pat = re.sub(r"\.weight(_packed)?$", "", pat)
-            g[pat] = g.get(pat, 0) + prod(t["shape"]) * (2 if k.endswith("_packed") else 1)
+            g[pat] = g.get(pat, 0) + n
         return g
 
     a, b = groups(old_repo, old_info), groups(new_repo, new_info)

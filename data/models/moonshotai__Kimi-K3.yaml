@@ -1,0 +1,299 @@
+id: moonshotai/Kimi-K3
+source_commit: f831ab66814297da540d832a5235f8e904f29d06
+hub_created: '2026-06-13T06:42:57+00:00'
+license: kimi-k3
+analyzed_at: '2026-11-14T08:16:10+00:00'
+published:
+  num_layers: 93
+  hidden_size: 7168
+  vocab_size: 163840
+  context_length: 1048576
+  num_attention_heads: 96
+  num_kv_heads: 96
+  head_dim: 192
+  attention_type: MLA
+  ffn_gated: true
+  moe_num_experts: 896
+  moe_active_experts: 16
+  moe_shared_experts: 2
+  moe_shared_expert_intermediate: 6144
+  moe_expert_intermediate: 3072
+  moe_latent_dim: 3584
+  dense_layers: 1
+  layer_type_counts:
+    kda_linear: 69
+    full_attention_mla: 24
+  layer_pattern_per_layer:
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - linear_delta
+  - linear_delta
+  - linear_delta
+  - mla
+  - mla
+  mla_cached_width_per_token: 576
+  activation: situ
+  activation_card_name: SiTU-GLU
+  layer_index_base_in_config: 1
+  attention_output_gate: true
+  params_total: 2779931837184
+  params_active: 104189614848
+  vision_params: 401214464
+  model_type: kimi_k3
+  num_mtp_layers: 0
+  layer_types:
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - kda_linear
+  - kda_linear
+  - kda_linear
+  - full_attention_mla
+  - full_attention_mla
+  decoder_type: MoE
+  tied_embeddings: false
+  linear_attn_num_heads: 96
+  linear_attn_head_dim: 128
+  linear_attn_conv_kernel: 4
+  mla_kv_lora_rank: 512
+  mla_qk_rope_head_dim: 64
+  v_head_dim: 128
+  dense_ffn_intermediate: 33792
+  moe_router: sigmoid
+  vision_encoder_layers: 27
+  vision_hidden_size: 1024
+  released_weights_format: mxfp4-pack-quantized (4-bit)
+  parameter_components:
+    moe_routed_experts: 2722740830208
+    attention_or_linear_mixer: 36190795008
+    moe_shared_experts: 12155092992
+    moe_latent_projection: 4727310336
+    embedding: 1174405120
+    lm_head: 1174405120
+    dense_ffn: 726663168
+    moe_router: 590955008
+    vision: 401214464
+    vision_projector: 46144512
+    attention_residuals: 2680832
+    norms: 1340416
+  weight_header_summary:
+    tensor_count: 497220
+    skipped_scale_tensors: 247296
+    skipped_buffer_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig,
+  auto_map.AutoModel, auto_map.AutoModelForCausalLM, bos_token_id, dtype, eos_token_id,
+  ignore_index, image_placeholder, media_placeholder_token_id, pad_token_id, text_config._name_or_path,
+  text_config.activation_situ_beta, text_config.activation_situ_linear_beta, text_config.add_cross_attention,
+  text_config.architectures, text_config.attn_res_block_size, text_config.auto_map.AutoConfig,
+  text_config.auto_map.AutoModel, text_config.auto_map.AutoModelForCausalLM, text_config.bad_words_ids,
+  text_config.begin_suppress_tokens, text_config.bos_token_id, text_config.chunk_size_feed_forward,
+  text_config.cross_attention_hidden_size, text_config.decoder_start_token_id, text_config.diversity_penalty,
+  text_config.do_sample, text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size,
+  text_config.eos_token_id, text_config.exponential_decay_length_penalty, text_config.finetuning_task,
+  text_config.forced_bos_token_id, text_config.forced_eos_token_id, text_config.id2label.0,
+  text_config.id2label.1, text_config.initializer_range, text_config.is_decoder, text_config.is_encoder_decoder,
+  text_config.label2id.LABEL_0, text_config.label2id.LABEL_1, text_config.latent_moe_use_norm,
+  text_config.length_penalty, text_config.linear_attn_config.gate_lower_bound, text_config.linear_attn_config.use_full_rank_gate,
+  text_config.max_length, text_config.min_length, text_config.moe_layer_freq, text_config.moe_renormalize,
+  text_config.no_repeat_ngram_size, text_config.num_beam_groups, text_config.num_beams,
+  text_config.num_expert_group, text_config.num_return_sequences, text_config.output_attentions,
+  text_config.output_hidden_states, text_config.output_scores, text_config.pad_token_id,
+  text_config.prefix, text_config.problem_type, text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format,
+  text_config.quantization_config.config_groups.group_0.input_activations, text_config.quantization_config.config_groups.group_0.output_activations,
+  text_config.quantization_config.config_groups.group_0.targets, text_config.quantization_config.config_groups.group_0.weights.actorder,
+  text_config.quantization_config.config_groups.group_0.weights.block_structure, text_config.quantization_config.config_groups.group_0.weights.dynamic,
+  text_config.quantization_config.config_groups.group_0.weights.group_size, text_config.quantization_config.config_groups.group_0.weights.observer,
+  text_config.quantization_config.config_groups.group_0.weights.observer_kwargs, text_config.quantization_config.config_groups.group_0.weights.scale_dtype,
+  text_config.quantization_config.config_groups.group_0.weights.strategy, text_config.quantization_config.config_groups.group_0.weights.symmetric,
+  text_config.quantization_config.config_groups.group_0.weights.type, text_config.quantization_config.config_groups.group_0.weights.zp_dtype,
+  text_config.quantization_config.global_compression_ratio, text_config.quantization_config.ignore,
+  text_config.quantization_config.kv_cache_scheme, text_config.quantization_config.quant_method,
+  text_config.quantization_config.quantization_status, text_config.remove_invalid_values,
+  text_config.repetition_penalty, text_config.return_dict, text_config.return_dict_in_generate,
+  text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.sep_token_id,
+  text_config.suppress_tokens, text_config.task_specific_params, text_config.temperature,
+  text_config.tf_legacy_loss, text_config.tie_encoder_decoder, text_config.tie_word_embeddings,
+  text_config.tokenizer_class, text_config.top_k, text_config.top_p, text_config.topk_group,
+  text_config.topk_method, text_config.torchscript, text_config.transformers_version,
+  text_config.typical_p, text_config.use_bfloat16, text_config.use_cache, text_config.use_grouped_topk,
+  vision_config._attn_implementation, vision_config.activation_func, vision_config.attn_bias,
+  vision_config.init_pos_emb_height, vision_config.init_pos_emb_time, vision_config.init_pos_emb_width,
+  vision_config.linear_bias, vision_config.merge_kernel_size, vision_config.merge_type,
+  vision_config.mlp_type, vision_config.mm_hidden_size, vision_config.mm_projector_type,
+  vision_config.norm_type, vision_config.patch_embed_proj_bias, vision_config.patch_size,
+  vision_config.pos_emb_interpolation_mode, vision_config.pos_emb_type, vision_config.projector_hidden_act,
+  vision_config.projector_ln_eps, vision_config.qkv_hidden_size, vision_config.text_hidden_size,
+  vision_config.vt_intermediate_size, vision_config.vt_num_attention_heads'

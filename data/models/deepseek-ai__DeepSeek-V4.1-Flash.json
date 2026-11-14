@@ -1,0 +1,1338 @@
+{
+ "id": "deepseek-ai/DeepSeek-V4.1-Flash",
+ "source_commit": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+ "hub_created": "2026-09-10T02:17:58+00:00",
+ "license": "mit",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "8-bit",
+   "conversational",
+   "deepseek_v41",
+   "deploy:azure",
+   "deploy:sagemaker",
+   "endpoints_compatible",
+   "eval-results",
+   "fp8",
+   "image-text-to-text",
+   "license:mit",
+   "region:us",
+   "safetensors",
+   "text-generation",
+   "transformers"
+  ]
+ },
+ "analyzed_at": "2026-11-14T08:15:58+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "DeepseekV41ForCausalLM",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "deepseek_v41",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 40,
+   "evidence": "config:text_config.num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 5120,
+   "evidence": "config:text_config.hidden_size"
+  },
+  "ngram_layer_ids": {
+   "value": [
+    1,
+    14
+   ],
+   "evidence": "config:text_config.engram_layer_ids"
+  },
+  "hyper_connection_multiplier": {
+   "value": 4,
+   "evidence": "config:text_config.hc_mult"
+  },
+  "num_mtp_layers": {
+   "value": 3,
+   "evidence": "config:text_config.num_nextn_predict_layers"
+  },
+  "vocab_size": {
+   "value": 129280,
+   "evidence": "config:text_config.vocab_size"
+  },
+  "context_length": {
+   "value": 1048576,
+   "evidence": "config:text_config.max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention"
+   ],
+   "evidence": "config:text_config.model_type/compress_ratios"
+  },
+  "layer_type_counts": {
+   "value": {
+    "compressed_attention": 40
+   },
+   "evidence": "config:text_config.model_type/compress_ratios"
+  },
+  "num_attention_heads": {
+   "value": 64,
+   "evidence": "config:text_config.num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 1,
+   "evidence": "config:text_config.num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 512,
+   "evidence": "config:text_config.head_dim"
+  },
+  "attention_type": {
+   "value": "MQA",
+   "evidence": "derived:num_key_value_heads(1) vs num_attention_heads(64)"
+  },
+  "sliding_window": {
+   "value": 128,
+   "evidence": "config:text_config.sliding_window"
+  },
+  "decoder_type": {
+   "value": "MoE",
+   "evidence": "config:text_config.n_routed_experts"
+  },
+  "moe_num_experts": {
+   "value": 384,
+   "evidence": "config:text_config.n_routed_experts"
+  },
+  "moe_active_experts": {
+   "value": 6,
+   "evidence": "config:text_config.num_experts_per_tok"
+  },
+  "moe_shared_experts": {
+   "value": 1,
+   "evidence": "config:text_config.n_shared_experts"
+  },
+  "moe_expert_intermediate": {
+   "value": 2304,
+   "evidence": "config:text_config.moe_intermediate_size"
+  },
+  "dense_layers": {
+   "value": 0,
+   "evidence": "default:0"
+  },
+  "dense_ffn_intermediate": {
+   "value": null,
+   "evidence": "config:text_config.intermediate_size"
+  },
+  "activation": {
+   "value": "silu",
+   "evidence": "config:text_config.hidden_act"
+  },
+  "rope": {
+   "value": {
+    "rope_theta": 10000,
+    "scaling": {
+     "rope_type": "yarn",
+     "factor": 16,
+     "beta_fast": 32,
+     "beta_slow": 1,
+     "original_max_position_embeddings": 65536
+    }
+   },
+   "evidence": "config:text_config.rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+  },
+  "released_weights_format": {
+   "value": "fp8",
+   "evidence": "config:text_config.quantization_config"
+  },
+  "vision_encoder_layers": {
+   "value": 32,
+   "evidence": "config:vision_config"
+  },
+  "vision_hidden_size": {
+   "value": 1024,
+   "evidence": "config:vision_config"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "model_type",
+   "quantization_config.quant_method",
+   "text_config.engram_layer_ids",
+   "text_config.hc_mult",
+   "text_config.head_dim",
+   "text_config.hidden_act",
+   "text_config.hidden_size",
+   "text_config.max_position_embeddings",
+   "text_config.model_type",
+   "text_config.moe_intermediate_size",
+   "text_config.n_routed_experts",
+   "text_config.n_shared_experts",
+   "text_config.num_attention_heads",
+   "text_config.num_experts_per_tok",
+   "text_config.num_hidden_layers",
+   "text_config.num_key_value_heads",
+   "text_config.num_nextn_predict_layers",
+   "text_config.rope_scaling.beta_fast",
+   "text_config.rope_scaling.beta_slow",
+   "text_config.rope_scaling.factor",
+   "text_config.rope_scaling.original_max_position_embeddings",
+   "text_config.rope_scaling.rope_type",
+   "text_config.rope_theta",
+   "text_config.sliding_window",
+   "text_config.tie_word_embeddings",
+   "text_config.vocab_size",
+   "vision_config.hidden_size",
+   "vision_config.num_hidden_layers"
+  ],
+  "unconsumed": [
+   "bos_token_id",
+   "dtype",
+   "eos_token_id",
+   "image_token_id",
+   "pad_token_id",
+   "quantization_config.activation_scheme",
+   "quantization_config.expert_dtype",
+   "quantization_config.scale_fmt",
+   "quantization_config.weight_block_size",
+   "text_config.attention_bias",
+   "text_config.attention_dropout",
+   "text_config.candidate_block_size",
+   "text_config.candidate_source_layer_id",
+   "text_config.candidate_topk_blocks",
+   "text_config.compress_ratios",
+   "text_config.compress_rope_theta",
+   "text_config.dspark_block_size",
+   "text_config.dspark_markov_rank",
+   "text_config.dspark_n_routed_experts",
+   "text_config.dspark_noise_token_id",
+   "text_config.dspark_num_experts_per_tok",
+   "text_config.dspark_target_layer_ids",
+   "text_config.engram_compressed_vocab_size",
+   "text_config.engram_head_dim",
+   "text_config.engram_max_ngram_size",
+   "text_config.engram_n_heads",
+   "text_config.engram_num_embeddings",
+   "text_config.engram_pad_token_id",
+   "text_config.engram_vocab_size",
+   "text_config.hc_eps",
+   "text_config.hc_sinkhorn_iters",
+   "text_config.index_head_dim",
+   "text_config.index_n_heads",
+   "text_config.index_source_layer_ids",
+   "text_config.index_topk",
+   "text_config.initializer_range",
+   "text_config.kv_source_layer_ids",
+   "text_config.norm_topk_prob",
+   "text_config.o_groups",
+   "text_config.o_lora_rank",
+   "text_config.q_lora_rank",
+   "text_config.qk_rope_head_dim",
+   "text_config.rms_norm_eps",
+   "text_config.routed_scaling_factor",
+   "text_config.scoring_func",
+   "text_config.swiglu_limit",
+   "text_config.topk_method",
+   "text_config.use_cache",
+   "transformers_version",
+   "vision_config.downsample_ratio",
+   "vision_config.intermediate_size",
+   "vision_config.max_image_tokens",
+   "vision_config.max_wh_ratio",
+   "vision_config.min_pixels",
+   "vision_config.model_type",
+   "vision_config.num_attention_heads",
+   "vision_config.patch_size",
+   "vision_config.rope_theta"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "model-00001-of-00048.safetensors",
+  "model-00002-of-00048.safetensors",
+  "model-00003-of-00048.safetensors",
+  "model-00004-of-00048.safetensors",
+  "model-00005-of-00048.safetensors",
+  "model-00006-of-00048.safetensors",
+  "model-00007-of-00048.safetensors",
+  "model-00008-of-00048.safetensors",
+  "model-00009-of-00048.safetensors",
+  "model-00010-of-00048.safetensors",
+  "model-00011-of-00048.safetensors",
+  "model-00012-of-00048.safetensors",
+  "model-00013-of-00048.safetensors",
+  "model-00014-of-00048.safetensors",
+  "model-00015-of-00048.safetensors",
+  "model-00016-of-00048.safetensors",
+  "model-00017-of-00048.safetensors",
+  "model-00018-of-00048.safetensors",
+  "model-00019-of-00048.safetensors",
+  "model-00020-of-00048.safetensors",
+  "model-00021-of-00048.safetensors",
+  "model-00022-of-00048.safetensors",
+  "model-00023-of-00048.safetensors",
+  "model-00024-of-00048.safetensors",
+  "model-00025-of-00048.safetensors",
+  "model-00026-of-00048.safetensors",
+  "model-00027-of-00048.safetensors",
+  "model-00028-of-00048.safetensors",
+  "model-00029-of-00048.safetensors",
+  "model-00030-of-00048.safetensors",
+  "model-00031-of-00048.safetensors",
+  "model-00032-of-00048.safetensors",
+  "model-00033-of-00048.safetensors",
+  "model-00034-of-00048.safetensors",
+  "model-00035-of-00048.safetensors",
+  "model-00036-of-00048.safetensors",
+  "model-00037-of-00048.safetensors",
+  "model-00038-of-00048.safetensors",
+  "model-00039-of-00048.safetensors",
+  "model-00040-of-00048.safetensors",
+  "model-00041-of-00048.safetensors",
+  "model-00042-of-00048.safetensors",
+  "model-00043-of-00048.safetensors",
+  "model-00044-of-00048.safetensors",
+  "model-00045-of-00048.safetensors",
+  "model-00046-of-00048.safetensors",
+  "model-00047-of-00048.safetensors",
+  "model-00048-of-00048.safetensors",
+  "model.safetensors.index.json"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 763205315794,
+   "text_total": 762793473234,
+   "by_component": {
+    "moe_routed_experts": 543581798400,
+    "other": 202908332144,
+    "auxiliary": 14225362530,
+    "moe_shared_experts": 1415577600,
+    "embedding": 661913600,
+    "vision": 411842560,
+    "norms": 488960
+   },
+   "routed_expert_params": 543581798400,
+   "moe_layers": 40,
+   "experts_per_moe_layer": [
+    384
+   ],
+   "layer_indices_in_weights": [
+    0,
+    39
+   ],
+   "tensor_count": 96085,
+   "skipped_scale_tensors": 47589,
+   "skipped_buffer_tensors": 0
+  },
+  "active": {
+   "text_active": 227705140434,
+   "text_active_without_embeddings": 227043226834,
+   "with_vision": 228116982994
+  }
+ },
+ "cache": {
+  "grows_per_token_bytes": 0,
+  "grows_per_token_bytes_low": 0,
+  "constant_bytes": 0,
+  "constant_bytes_low": 0,
+  "naive_mha_per_token_bytes": 5242880,
+  "reduction_vs_naive_mha": null,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "32768": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "131072": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "262144": {
+    "bytes": 0,
+    "gib": 0.0
+   },
+   "1048576": {
+    "bytes": 0,
+    "gib": 0.0
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "compressed_attention",
+    "layers": 40,
+    "grows_per_token_bytes": null,
+    "constant_bytes": null,
+    "formula": "unknown layer type: not counted"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "layer type 'compressed_attention' has no memory rule yet; sent to review"
+  ]
+ },
+ "code_scan": {
+  "files": [],
+  "classes": [],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": false,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {},
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 40,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 40,
+     "evidence": "config:text_config.num_hidden_layers"
+    },
+    {
+     "value": 40,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 5120,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 5120,
+     "evidence": "config:text_config.hidden_size"
+    },
+    {
+     "value": 5120,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 129280,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 129280,
+     "evidence": "config:text_config.vocab_size"
+    },
+    {
+     "value": 129280,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 1048576,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1048576,
+     "evidence": "config:text_config.max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:text_config.num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 512,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 512,
+     "evidence": "config:text_config.head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "MQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MQA",
+     "evidence": "derived:num_key_value_heads(1) vs num_attention_heads(64)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 384,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 384,
+     "evidence": "config:text_config.n_routed_experts"
+    },
+    {
+     "value": 384,
+     "evidence": "weights:expert tensors per MoE layer"
+    }
+   ]
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 6,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 6,
+     "evidence": "config:text_config.num_experts_per_tok"
+    }
+   ]
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 1,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1,
+     "evidence": "config:text_config.n_shared_experts"
+    }
+   ]
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 2304,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2304,
+     "evidence": "config:text_config.moe_intermediate_size"
+    },
+    {
+     "value": 2304,
+     "evidence": "weights:experts.0.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "dense_layers",
+   "value": 0,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "default:0"
+    },
+    {
+     "value": 0,
+     "evidence": "weights:layers without expert tensors"
+    }
+   ]
+  },
+  {
+   "field": "sliding_window",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:text_config.sliding_window"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "compressed_attention": 40
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "compressed_attention": 40
+     },
+     "evidence": "config:text_config.model_type/compress_ratios"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention"
+     ],
+     "evidence": "config:text_config.model_type/compress_ratios (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 763205315794,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 763205315794,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "params_active",
+   "value": 227705140434,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 227705140434,
+     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+    }
+   ]
+  },
+  {
+   "field": "model_type",
+   "value": "deepseek_v41",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "deepseek_v41",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
+   "field": "ngram_layer_ids",
+   "value": [
+    1,
+    14
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      1,
+      14
+     ],
+     "evidence": "config:text_config.engram_layer_ids"
+    }
+   ]
+  },
+  {
+   "field": "hyper_connection_multiplier",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:text_config.hc_mult"
+    }
+   ]
+  },
+  {
+   "field": "num_mtp_layers",
+   "value": 3,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 3,
+     "evidence": "config:text_config.num_nextn_predict_layers"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention",
+    "compressed_attention"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention",
+      "compressed_attention"
+     ],
+     "evidence": "config:text_config.model_type/compress_ratios"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "MoE",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "MoE",
+     "evidence": "config:text_config.n_routed_experts"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "rope_theta": 10000,
+    "scaling": {
+     "rope_type": "yarn",
+     "factor": 16,
+     "beta_fast": 32,
+     "beta_slow": 1,
+     "original_max_position_embeddings": 65536
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "rope_theta": 10000,
+      "scaling": {
+       "rope_type": "yarn",
+       "factor": 16,
+       "beta_fast": 32,
+       "beta_slow": 1,
+       "original_max_position_embeddings": 65536
+      }
+     },
+     "evidence": "config:text_config.rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+    }
+   ]
+  },
+  {
+   "field": "vision_encoder_layers",
+   "value": 32,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "vision_hidden_size",
+   "value": 1024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1024,
+     "evidence": "config:vision_config"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:text_config.hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "fp8",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "fp8",
+     "evidence": "config:text_config.quantization_config"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "moe_routed_experts": 543581798400,
+    "other": 202908332144,
+    "auxiliary": 14225362530,
+    "moe_shared_experts": 1415577600,
+    "embedding": 661913600,
+    "vision": 411842560,
+    "norms": 488960
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "moe_routed_experts": 543581798400,
+      "other": 202908332144,
+      "auxiliary": 14225362530,
+      "moe_shared_experts": 1415577600,
+      "embedding": 661913600,
+      "vision": 411842560,
+      "norms": 488960
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 96085,
+    "skipped_scale_tensors": 47589,
+    "skipped_buffer_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 96085,
+      "skipped_scale_tensors": 47589,
+      "skipped_buffer_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 40,
+  "hidden_size": 5120,
+  "vocab_size": 129280,
+  "context_length": 1048576,
+  "num_attention_heads": 64,
+  "num_kv_heads": 1,
+  "head_dim": 512,
+  "attention_type": "MQA",
+  "ffn_gated": true,
+  "moe_num_experts": 384,
+  "moe_active_experts": 6,
+  "moe_shared_experts": 1,
+  "moe_expert_intermediate": 2304,
+  "dense_layers": 0,
+  "sliding_window": 128,
+  "layer_type_counts": {
+   "compressed_attention": 40
+  },
+  "layer_pattern_per_layer": [
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention"
+  ],
+  "params_total": 763205315794,
+  "params_active": 227705140434,
+  "model_type": "deepseek_v41",
+  "ngram_layer_ids": [
+   1,
+   14
+  ],
+  "hyper_connection_multiplier": 4,
+  "num_mtp_layers": 3,
+  "layer_types": [
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention",
+   "compressed_attention"
+  ],
+  "decoder_type": "MoE",
+  "tied_embeddings": false,
+  "rope": {
+   "rope_theta": 10000,
+   "scaling": {
+    "rope_type": "yarn",
+    "factor": 16,
+    "beta_fast": 32,
+    "beta_slow": 1,
+    "original_max_position_embeddings": 65536
+   }
+  },
+  "vision_encoder_layers": 32,
+  "vision_hidden_size": 1024,
+  "activation": "silu",
+  "released_weights_format": "fp8",
+  "parameter_components": {
+   "moe_routed_experts": 543581798400,
+   "other": 202908332144,
+   "auxiliary": 14225362530,
+   "moe_shared_experts": 1415577600,
+   "embedding": 661913600,
+   "vision": 411842560,
+   "norms": 488960
+  },
+  "weight_header_summary": {
+   "tensor_count": 96085,
+   "skipped_scale_tensors": 47589,
+   "skipped_buffer_tensors": 0
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
+  "Config keys not consumed by the extractor (including metadata/defaults): bos_token_id, dtype, eos_token_id, image_token_id, pad_token_id, quantization_config.activation_scheme, quantization_config.expert_dtype, quantization_config.scale_fmt, quantization_config.weight_block_size, text_config.attention_bias, text_config.attention_dropout, text_config.candidate_block_size, text_config.candidate_source_layer_id, text_config.candidate_topk_blocks, text_config.compress_ratios, text_config.compress_rope_theta, text_config.dspark_block_size, text_config.dspark_markov_rank, text_config.dspark_n_routed_experts, text_config.dspark_noise_token_id, text_config.dspark_num_experts_per_tok, text_config.dspark_target_layer_ids, text_config.engram_compressed_vocab_size, text_config.engram_head_dim, text_config.engram_max_ngram_size, text_config.engram_n_heads, text_config.engram_num_embeddings, text_config.engram_pad_token_id, text_config.engram_vocab_size, text_config.hc_eps, text_config.hc_sinkhorn_iters, text_config.index_head_dim, text_config.index_n_heads, text_config.index_source_layer_ids, text_config.index_topk, text_config.initializer_range, text_config.kv_source_layer_ids, text_config.norm_topk_prob, text_config.o_groups, text_config.o_lora_rank, text_config.q_lora_rank, text_config.qk_rope_head_dim, text_config.rms_norm_eps, text_config.routed_scaling_factor, text_config.scoring_func, text_config.swiglu_limit, text_config.topk_method, text_config.use_cache, transformers_version, vision_config.downsample_ratio, vision_config.intermediate_size, vision_config.max_image_tokens, vision_config.max_wh_ratio, vision_config.min_pixels, vision_config.model_type, vision_config.num_attention_heads, vision_config.patch_size, vision_config.rope_theta"
+ ],
+ "weight_layer_kinds": [
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention",
+  "compressed_attention"
+ ]
+}

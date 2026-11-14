@@ -6,7 +6,7 @@ The user-supplied prototype is integrated under `src/archwatch/`. The determinis
 
 ## Local demo
 
-[site/index.html](site/index.html) is a self-contained gallery built from model records and watcher state. It currently shows 11 eligible architectures across ten publishers, with generated SVGs, pinned source links, predecessor/tensor diffs and interactive cache calculators. Two historical derived records are held.
+[site/index.html](site/index.html) is a self-contained gallery built from model records and watcher state. It currently shows 12 eligible architectures across ten publishers, with generated SVGs, pinned source links, predecessor/tensor diffs and interactive cache calculators. Two historical derived records are held.
 
 ```bash
 python -m http.server 4173 --directory site
@@ -34,13 +34,15 @@ The fixed list in `watchlist.txt` remains the reproducible smoke test. `watch.py
 
 ## Validation
 
-[Backfill processing](results/backfill-processing.json) covers one primary release each from DeepSeek, Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai. [The exact selections](config/backfill.yaml) and [gold labels](evals/README.md) retain pinned primary links. The gallery holds 13 saved diagnostic records, of which 11 meet its current display policy.
+[Backfill processing](results/backfill-processing.json) covers one primary release each from DeepSeek, Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai. [The exact selections](config/backfill.yaml) and [gold labels](evals/README.md) retain pinned primary links. The gallery holds 26 saved diagnostic records, of which 12 meet its current display policy.
 
-The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **102 passing tests**.
+The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **116 passing tests**.
 
 The original four-model live run remains in [live-validation.json](results/live-validation.json). [Family rules](docs/FAMILY_RULES.md) document the new Phi parallel graph, Mistral all-layer sliding attention, GLM fused FFN and Nemotron-H operator-only graph. Cache estimates are not measured runtime VRAM.
 
 The Kimi diff still identifies exactly **178,526,208 added DSA-indexer parameters**. The LFM2.5 config's nominal 12,288-wide FFN becomes **8,192** under its explicit auto-adjust convention. Its card/config context disagreement remains held and is not described as a lab defect. See [the LFM investigation](docs/LFM_FINDINGS.md).
+
+The [newest-release backfill](docs/NEWEST_BACKFILL.md) is separate from that development set. Its strictly pre-run-frozen seven-model score is **97/139 (69.8%)**; late-access Meta scored **11/16** separately. After source-based fixes, adaptation is 138/139 plus 16/16 on Meta. Seven new topologies remain held for diagram/cache qualification, with primary facts retained. The original first-run results and gold hashes remain immutable.
 
 ## Run and develop
 
