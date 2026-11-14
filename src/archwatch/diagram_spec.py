@@ -196,235 +196,365 @@ def _need(tensors, *suffixes):
     return shape
 
 
-# ---------------------------------------------------------------- zoom panels
+# ---------------------------------------------------------------- zoom panels as small graphs
+
+
+MAX_WORDS = 6
+
+
+def _words(text: str) -> int:
+    return len(re.findall(r"[A-Za-z][A-Za-z0-9]*|\d[\d,]*(?:\.\d+)?", text))
+
+
+def _fit(text: str, short: str) -> str:
+    return text if _words(text) <= MAX_WORDS else short
+
+
+class _Graph:
+    """Nodes, directed edges (data flows bottom to top) and captions for notes that are not parts."""
+
+    def __init__(self, title):
+        self.title, self.nodes, self.edges, self.caption = title, [], [], []
+
+    def node(self, key, label):
+        if _words(label) > MAX_WORDS:
+            raise SpecError(f"Node label over {MAX_WORDS} words: {label!r}")
+        self.nodes.append(dict(id=key, label=label))
+        return key
+
+    def chain(self, *keys):
+        keys = [k for k in keys if k]
+        self.edges += [f"{a} -> {b}" for a, b in zip(keys, keys[1:])]
+
+    def spec(self):
+        ids = [n["id"] for n in self.nodes]
+        if len(set(ids)) != len(ids):
+            raise SpecError("Duplicate node id in " + self.title)
+        for edge in self.edges:
+            a, b = edge.split(" -> ")
+            if a not in ids or b not in ids:
+                raise SpecError(f"Edge {edge} names an unknown node in {self.title}")
+        return dict(title=self.title, nodes=self.nodes, edges=self.edges, caption=self.caption)
+
+
+def _io(g, hidden):
+    return g.node("in", f"input ({hidden})"), g.node("out", f"output ({hidden})")
+
+
+def _short(shape) -> str:
+    return f"{shape[1]} -> {shape[0]}"
 
 
 def _kda_panel(t, v, count, cache_rows):
     q, k, val = (_need(t, f"self_attn.{x}_proj.weight") for x in "qkv")
-    heads, hd = v["linear_attn_num_heads"], v["linear_attn_head_dim"]
-    parts = []
-    if q == k == val:
-        parts.append(f"q, k, v projections: {_linear(q)} each")
+    if not q == k == val:
+        raise SpecError("KDA q/k/v projections differ; the shared-node rule does not apply")
+    heads, hd, hidden = v["linear_attn_num_heads"], v["linear_attn_head_dim"], v["hidden_size"]
+    g = _Graph(f"Kimi Delta Attention (KDA), {count} layers")
+    inp, out = _io(g, hidden)
+    qkv = g.node("qkv", f"q, k, v: {_linear(q)}")
     conv = _find(t, "q_conv1d.weight")
-    if conv and _find(t, "k_conv1d.weight") and _find(t, "v_conv1d.weight"):
-        parts.append(f"short depthwise Conv1d (kernel {conv[-1]}) on q, k and v separately")
+    c = g.node("conv", f"Conv1d, kernel {conv[-1]}") if conv else None
+    delta = g.node("delta", "gated delta rule")
+    g.chain(inp, qkv, c, delta)
     beta = _find(t, "self_attn.b_proj.weight")
     if beta:
-        parts.append(f"beta: {_linear(beta)}" + (" (one per head)" if beta[0] == heads else ""))
+        g.chain(inp, g.node("beta", f"beta: {_linear(beta)}"), delta)
     fa, fb = _find(t, "self_attn.f_a_proj.weight"), _find(t, "self_attn.f_b_proj.weight")
     if fa and fb:
-        parts.append(f"decay gate: low-rank Linear {fa[1]} -> {fa[0]} -> {fb[0]}")
-    grows = cache_rows.get("kda_linear", {}).get("grows_per_token_bytes")
-    parts.append(
-        f"gated delta rule (fixed {hd} x {hd} state per head"
-        + ("; cache does not grow with context)" if grows == 0 else ")")
-    )
+        g.chain(inp, g.node("decay", f"decay: Linear {fa[1]} -> {fa[0]} -> {fb[0]}"), delta)
     onorm = _find(t, "self_attn.o_norm.weight")
-    if onorm:
-        parts.append(f"output norm (per head, {onorm[0]})")
+    norm = g.node("onorm", f"output norm ({onorm[0]})") if onorm else None
     gate = _find(t, "self_attn.g_proj.weight")
+    mul = g.node("mul", "multiply") if gate else None
+    oproj = g.node("oproj", f"output projection: {_short(_need(t, 'self_attn.o_proj.weight'))}")
+    g.chain(delta, norm, mul, oproj, out)
     if gate:
-        parts.append(f"output gate: {_linear(gate)}, multiplied in")
-    parts.append(f"output projection: {_linear(_need(t, 'self_attn.o_proj.weight'))}")
-    return dict(title=f"Kimi Delta Attention (KDA), {count} layers", heads=f"{heads} heads x {hd} dims", parts=parts)
+        g.chain(inp, g.node("gate", f"output gate: {_linear(gate)}"), mul)
+    g.caption.append(f"{heads} heads x {hd} dims")
+    if conv:
+        g.caption.append("short depthwise Conv1d on q, k and v separately")
+    if beta and beta[0] == heads:
+        g.caption.append("beta: one per head")
+    if fa and fb:
+        g.caption.append("decay gate is low-rank")
+    grows = cache_rows.get("kda_linear", {}).get("grows_per_token_bytes")
+    g.caption.append(f"fixed {hd} x {hd} state per head" + ("; cache does not grow with context" if grows == 0 else ""))
+    return g.spec()
 
 
-def _mla_parts(t, v):
+def _mla_graph(t, v, title, *, indexer):
     heads, hd, rope = v["num_attention_heads"], v["head_dim"], v["mla_qk_rope_head_dim"]
-    vdim, latent = v.get("v_head_dim"), v["mla_kv_lora_rank"]
-    parts = []
-    qa, qb = _find(t, "self_attn.q_a_proj.weight"), _find(t, "self_attn.q_b_proj.weight")
-    if qa and qb and qb[0] == heads * hd:
-        norm = ", norm" if _find(t, "self_attn.q_a_layernorm.weight") else ""
-        parts.append(f"query path: {_linear(qa)}{norm}, Linear {qb[1]} -> {heads} heads x {hd} ({hd - rope} + {rope})")
+    vdim, latent, hidden = v.get("v_head_dim"), v["mla_kv_lora_rank"], v["hidden_size"]
+    g = _Graph(title)
+    inp, out = _io(g, hidden)
+    qa, qb = _need(t, "self_attn.q_a_proj.weight"), _need(t, "self_attn.q_b_proj.weight")
+    if qb[0] != heads * hd:
+        raise SpecError("MLA query projection disagrees with published heads x head_dim")
+    qnorm = ", norm" if _find(t, "self_attn.q_a_layernorm.weight") else ""
     kva = _need(t, "self_attn.kv_a_proj_with_mqa.weight")
     if kva[0] != latent + rope:
         raise SpecError("MLA latent tensor disagrees with published latent/rope widths")
-    kv = f"KV path: {_linear(kva)} = {latent} latent + {rope} key dims"
-    if _find(t, "self_attn.kv_a_layernorm.weight"):
-        kv += f"; norm on the {latent} latent"
-    kvb = _find(t, "self_attn.kv_b_proj.weight")
-    if kvb and vdim and kvb[0] == heads * (hd - rope + vdim):
-        kv += f"; Linear {kvb[1]} -> {heads} heads x ({hd - rope} key + {vdim} value)"
-    parts.append(kv)
-    if v.get("mla_use_nope") is True:
-        parts.append("position encoding: NoPE (config mla_use_nope = true)")
-    return parts
-
-
-def _gate_and_out(t, parts):
+    kvb = _need(t, "self_attn.kv_b_proj.weight")
+    if not vdim or kvb[0] != heads * (hd - rope + vdim):
+        raise SpecError("MLA kv_b projection disagrees with published head widths")
+    nope = v.get("mla_use_nope") is True
+    attn = g.node("attn", ("sparse attention" if indexer else "attention") + (", NoPE" if nope else ""))
+    g.chain(inp, g.node("qa", f"q: {_linear(qa)}{qnorm}"), g.node("qb", f"Linear {qb[1]} -> {heads} x {hd}"), attn)
+    kv = g.node("kva", f"kv: {_linear(kva)}")
+    norm = g.node("kvnorm", f"norm on {latent} latent") if _find(t, "self_attn.kv_a_layernorm.weight") else None
+    g.chain(inp, kv, norm, g.node("kvb", f"Linear {kvb[1]} -> {heads} x ({hd - rope} + {vdim})"), attn)
+    g.chain(kv, attn)  # the decoupled key dims bypass the latent norm and kv_b
+    if indexer:
+        ih, idim, top = v["dsa_index_num_heads"], v["dsa_index_head_dim"], v["dsa_index_topk"]
+        wq, wk, wp = (_find(t, f"indexer.{x}.weight") for x in ("wq_b", "wk", "weights_proj"))
+        idx = g.node("indexer", f"indexer: {ih} heads x {idim}")
+        if wq and wq[1] == qa[0]:
+            g.chain("qa", idx)
+        g.chain(inp, idx, g.node("topk", f"select top {top} tokens"), attn)
+        detail = []
+        if wq and wq[0] == ih * idim:
+            detail.append(f"query from the {wq[1]} latent")
+        if wk:
+            detail.append(f"key {_linear(wk)}" + (" with norm" if _find(t, "indexer.k_norm.weight") else ""))
+        if wp:
+            detail.append(f"per-head weights {_linear(wp)}")
+        g.caption.append("indexer: " + ", ".join(detail))
+        g.caption.append(f"indexer picks the top {top} tokens; attention runs only on those")
     gate = _find(t, "self_attn.g_proj.weight")
+    mul = g.node("mul", "multiply") if gate else None
+    g.chain(attn, mul, g.node("oproj", f"output projection: {_short(_need(t, 'self_attn.o_proj.weight'))}"), out)
     if gate:
-        parts.append(f"output gate: {_linear(gate)}, multiplied in")
-    parts.append(f"output projection: {_linear(_need(t, 'self_attn.o_proj.weight'))}")
-    return parts
+        g.chain(inp, g.node("gate", f"output gate: {_linear(gate)}"), mul)
+    g.caption.append(f"{heads} heads; query/key {hd} = {hd - rope} + {rope}, value {vdim}")
+    g.caption.append(f"kv: {kva[0]} = {latent} latent + {rope} key dims; the {rope} key dims skip the latent norm")
+    if nope:
+        g.caption.append("position encoding: NoPE (config mla_use_nope = true)")
+    if indexer and v.get("dsa_index_key_width"):
+        g.caption.append(
+            f"cache per token: {kva[0]} MLA values + {v['dsa_index_key_width']} indexer key values per layer"
+        )
+    return g.spec()
 
 
 def _dsa_panel(t, v, count, cache_rows):
-    parts = _mla_parts(t, v)
-    ih, idim, top = v["dsa_index_num_heads"], v["dsa_index_head_dim"], v["dsa_index_topk"]
-    wq, wk, wp = (_find(t, f"indexer.{x}.weight") for x in ("wq_b", "wk", "weights_proj"))
-    detail = []
-    if wq and wq[0] == ih * idim:
-        detail.append(f"query from the {wq[1]} latent")
-    if wk:
-        detail.append(f"key {_linear(wk)}" + (" with norm" if _find(t, "indexer.k_norm.weight") else ""))
-    if wp:
-        detail.append(f"per-head weights {_linear(wp)}")
-    parts.append(f"indexer: {ih} heads x {idim} dims" + (f" ({', '.join(detail)})" if detail else ""))
-    parts.append(f"indexer picks the top {top} tokens; attention runs only on those")
-    _gate_and_out(t, parts)
-    kva = _need(t, "self_attn.kv_a_proj_with_mqa.weight")
-    panel = dict(title=f"Gated DeepSeek Sparse Attention (DSA), {count} layers", parts=parts)
-    if v.get("dsa_index_key_width"):
-        panel["cache_per_token"] = f"{kva[0]} MLA values + {v['dsa_index_key_width']} indexer key values per layer"
-    return panel
+    return _mla_graph(t, v, f"Gated DeepSeek Sparse Attention (DSA), {count} layers", indexer=True)
 
 
 def _mla_panel(t, v, count, cache_rows):
-    parts = _gate_and_out(t, _mla_parts(t, v))
-    return dict(title=f"Multi-head Latent Attention (MLA), {count} layers", parts=parts)
+    return _mla_graph(t, v, f"Multi-head Latent Attention (MLA), {count} layers", indexer=False)
 
 
 def _attention_panel(t, v, counts, kinds):
-    heads, kvh, hd = v["num_attention_heads"], v["num_kv_heads"], v["head_dim"]
+    heads, kvh, hd, hidden = v["num_attention_heads"], v["num_kv_heads"], v["head_dim"], v["hidden_size"]
     name = _attention_name(v)
     pre = "self_attn." if _find(t, "self_attn.q_proj.weight") else "mixer."
     q, k, val = (_need(t, f"{pre}{x}_proj.weight") for x in "qkv")
-    parts = [f"{heads} query heads, {kvh} key/value heads, head size {hd}"]
-    parts.append(
-        f"q: {_linear(q)}; k and v: {_linear(k)} each"
-        if k == val
-        else f"q: {_linear(q)}; k: {_linear(k)}; v: {_linear(val)}"
-    )
-    if v.get("qk_norm") and _find(t, f"{pre}q_norm.weight"):
-        parts.append(f"QK-norm on q and k (per head, {_find(t, f'{pre}q_norm.weight')[0]})")
-    rope = v.get("rope") or {}
     full, sliding = counts.get("full_attention", 0), counts.get("sliding_attention", 0)
+    if full and sliding:
+        title = f"{name} attention ({full} global + {sliding} sliding-window layers)"
+    else:
+        title = f"{name} attention ({full or sliding} layers)"
+    g = _Graph(title)
+    inp, out = _io(g, hidden)
+    qn = kn = None
+    if v.get("qk_norm") and _find(t, f"{pre}q_norm.weight") and _find(t, f"{pre}k_norm.weight"):
+        qn = g.node("qnorm", f"q norm ({_find(t, f'{pre}q_norm.weight')[0]})")
+        kn = g.node("knorm", f"k norm ({_find(t, f'{pre}k_norm.weight')[0]})")
+    rope = v.get("rope") or {}
+    rot = g.node("rotary", "rotary on q and k") if rope else None
+    attn = g.node("attn", f"attention: {heads} q / {kvh} kv heads")
+    g.chain(inp, g.node("q", f"q: {_linear(q)}"), qn, rot, attn)
+    g.chain(inp, g.node("k", f"k: {_linear(k)}"), kn, rot)
+    if not rot:
+        g.chain(kn or "k", attn)
+    g.chain(inp, g.node("v", f"v: {_linear(val)}"), attn)
+    gate = _find(t, f"{pre}gate_proj.weight") if v.get("attention_output_gate") else None
+    mul = g.node("mul", "multiply") if gate else None
+    g.chain(attn, mul, g.node("oproj", f"output projection: {_short(_need(t, f'{pre}o_proj.weight'))}"), out)
+    if gate:
+        g.chain(inp, g.node("gate", f"head gate: {_linear(gate)}"), mul)
+        if gate[0] == heads:
+            g.caption.append("head gate: one gate per head")
+    g.caption.append(f"{heads} query heads, {kvh} key/value heads, head size {hd}")
     if "sliding_attention" in kinds and "full_attention" in kinds:
-        g, s = rope.get("full_attention") or {}, rope.get("sliding_attention") or {}
-        pr = g.get("partial_rotary_factor")
-        gl = "global layers: "
+        gl, sl = rope.get("full_attention") or {}, rope.get("sliding_attention") or {}
+        pr = gl.get("partial_rotary_factor")
+        text = "global layers: "
         if pr:
-            gl += "partial rotary (half of each head)" if pr == 0.5 else f"partial rotary ({pr:g} of each head)"
-        elif g:
-            gl += "rotary"
-        if g.get("rope_theta"):
-            gl += f", theta {_commas(g['rope_theta'])}"
-        parts.append(gl.replace(": , ", ": ") + ", attend to all tokens")
-        sl = "sliding-window layers: "
-        if s:
-            sl += "full rotary" if not s.get("partial_rotary_factor") else "partial rotary"
-            if s.get("rope_theta"):
-                sl += f", theta {_commas(s['rope_theta'])}"
-            sl += ", "
-        parts.append(sl + f"attend to the last {v['sliding_window']} tokens only")
+            text += (
+                "partial rotary (half of each head)" if pr == 0.5 else f"partial rotary ({pr:g} of each head)"
+            ) + ", "
+        if gl.get("rope_theta"):
+            text += f"theta {_commas(gl['rope_theta'])}, "
+        g.caption.append(text + "attend to all tokens")
+        text = "sliding-window layers: "
+        if sl:
+            text += "full rotary, " if not sl.get("partial_rotary_factor") else "partial rotary, "
+            if sl.get("rope_theta"):
+                text += f"theta {_commas(sl['rope_theta'])}, "
+        g.caption.append(text + f"attend to the last {v['sliding_window']} tokens only")
     elif rope.get("rope_theta"):
         text = f"rotary position encoding, theta {_commas(rope['rope_theta'])}"
         scaling = rope.get("scaling") or {}
         if scaling.get("rope_type") and scaling.get("factor"):
             text += f" ({scaling['rope_type']} scaling, factor {scaling['factor']:g})"
-        parts.append(text)
-    gate = _find(t, f"{pre}gate_proj.weight")
-    if gate and v.get("attention_output_gate"):
-        parts.append(f"head-wise output gate: {_linear(gate)}" + (" (one gate per head)" if gate[0] == heads else ""))
-    parts.append(f"output projection: {_linear(_need(t, f'{pre}o_proj.weight'))}")
-    if full and sliding:
-        title = f"{name} attention ({full} global + {sliding} sliding-window layers)"
-    else:
-        title = f"{name} attention ({full or sliding} layers)"
-    return dict(title=title, parts=parts)
+        g.caption.append(text)
+    return g.spec()
 
 
 def _short_conv_panel(t, v, count, cache_rows):
-    inp, conv, out = _need(t, "conv.in_proj.weight"), _need(t, "conv.conv.weight"), _need(t, "conv.out_proj.weight")
+    inp_w, conv, out_w = _need(t, "conv.in_proj.weight"), _need(t, "conv.conv.weight"), _need(t, "conv.out_proj.weight")
     hidden = v["hidden_size"]
-    if inp[0] != 3 * hidden:
+    if inp_w[0] != 3 * hidden:
         raise SpecError("ShortConv in_proj is not the three-way gated split this rule describes")
-    parts = [
-        f"in_proj: {_linear(inp)}, split into three parts B, C and x ({hidden} each)",
-        f"B multiplied with x, then depthwise Conv1d (kernel {conv[-1]}), then multiplied with C",
-        f"out_proj: {_linear(out)}",
-    ]
+    g = _Graph(f"Gated ShortConv ({count} layers)")
+    inp, out = _io(g, hidden)
+    ip = g.node("in_proj", f"in_proj: {_linear(inp_w)}")
+    cmul = g.node("mul_c", "multiply with C")
+    g.chain(inp, ip, g.node("mul_bx", "multiply B and x"), g.node("conv", f"depthwise Conv1d, kernel {conv[-1]}"), cmul)
+    g.chain(ip, cmul)
+    g.chain(cmul, g.node("out_proj", f"out_proj: {_linear(out_w)}"), out)
+    g.caption.append(f"in_proj output splits into B, C and x ({hidden} each)")
     if cache_rows.get("short_conv", {}).get("grows_per_token_bytes") == 0:
-        parts.append("keeps only the last few inputs; cache does not grow with context")
-    return dict(title=f"Gated ShortConv ({count} layers)", parts=parts)
+        g.caption.append("keeps only the last few inputs; cache does not grow with context")
+    return g.spec()
 
 
 def _mamba_panel(t, v, count, cache_rows):
-    inp, out = _need(t, "mixer.in_proj.weight"), _need(t, "mixer.out_proj.weight")
+    inp_w, out_w = _need(t, "mixer.in_proj.weight"), _need(t, "mixer.out_proj.weight")
     conv = _need(t, "mixer.conv1d.weight")
     heads, hd, state, groups = v["mamba_num_heads"], v["mamba_head_dim"], v["mamba_state_size"], v["mamba_groups"]
     inner = heads * hd
-    if inp[0] != 2 * inner + 2 * groups * state + heads or conv[0] != inner + 2 * groups * state:
+    if inp_w[0] != 2 * inner + 2 * groups * state + heads or conv[0] != inner + 2 * groups * state:
         raise SpecError("Mamba-2 in_proj/conv widths disagree with the published head/state sizes")
-    parts = [
-        f"in_proj: {_linear(inp)}, split into z ({inner}), x ({inner}), B and C ({groups} groups x {state} each)"
-        f" and dt ({heads})",
-        f"depthwise Conv1d (kernel {conv[-1]}) on x, B and C ({conv[0]} channels)",
-        f"selective state-space scan: {heads} heads x {hd} dims, state size {state}"
+    g = _Graph(f"Mamba-2 ({count} layers)")
+    inp, out = _io(g, v["hidden_size"])
+    ip = g.node("in_proj", f"in_proj: {_linear(inp_w)}")
+    ssm = g.node("scan", f"scan: {heads} heads x {hd}")
+    g.chain(inp, ip, g.node("conv", f"Conv1d kernel {conv[-1]} ({conv[0]} channels)"), ssm)
+    g.chain(ip, ssm)  # dt
+    norm = _find(t, "mixer.norm.weight")
+    gn = g.node("norm", f"norm ({norm[0]}) gated by z") if norm else None
+    if gn:
+        g.chain(ip, gn)  # z
+    g.chain(ssm, gn, g.node("out_proj", f"out_proj: {_linear(out_w)}"), out)
+    g.caption.append(
+        f"in_proj splits into z ({inner}), x ({inner}), B and C ({groups} groups x {state} each) and dt ({heads})"
+    )
+    g.caption.append("selective state-space scan; Conv1d runs on x, B and C; dt goes to the scan; z gates the norm")
+    g.caption.append(
+        f"state size {state}"
         + (
             "; cache does not grow with context"
             if cache_rows.get("mamba2", {}).get("grows_per_token_bytes") == 0
             else ""
-        ),
-    ]
-    norm = _find(t, "mixer.norm.weight")
-    if norm:
-        parts.append(f"norm ({norm[0]}) gated by z")
-    parts.append(f"out_proj: {_linear(out)}")
-    return dict(title=f"Mamba-2 ({count} layers)", parts=parts)
+        )
+    )
+    return g.spec()
 
 
-def _dense_ffn_parts(t, v, act):
-    gate = _find(t, "gate_proj.weight", "w1.weight")
-    up = _find(t, "up_proj.weight", "w3.weight")
-    down = _need(t, "down_proj.weight", "w2.weight")
-    if gate and up:
-        if gate != up:
+ACT_NODE = {"silu": "SiLU", "gelu": "GELU", "situ": "SiTU", "relu2": "squared ReLU"}
+
+
+def _ffn_graph(title, t, v):
+    g = _Graph(title)
+    inp, out = _io(g, v["hidden_size"])
+    gate_w = _find(t, "gate_proj.weight", "w1.weight")
+    up_w = _find(t, "up_proj.weight", "w3.weight")
+    down_w = _need(t, "down_proj.weight", "w2.weight")
+    names = ("w1", "w3", "w2") if _find(t, "w1.weight") else ("gate", "up", "down")
+    act = ACT_NODE.get(v.get("activation"), v.get("activation"))
+    down = g.node("down", f"{names[2]}: {_linear(down_w)}")
+    if gate_w and up_w:
+        if gate_w != up_w:
             raise SpecError("Gate and up projections disagree")
-        names = ("w1", "w3") if _find(t, "w1.weight") else ("gate", "up")
-        act_text = f"; {act} on {names[0]}" if act and act not in ("SwiGLU", "GeGLU") else ""
-        if act and act.endswith("GLU") and act not in ("SwiGLU", "GeGLU"):
-            act_text = f"; combined by {act}"
-        if act in ("SwiGLU", "GeGLU"):
-            act_text = f"; {'SiLU' if act == 'SwiGLU' else 'GELU'} on {names[0]}"
-        first = f"{names[0]} and {names[1]}: {_linear(gate)} in parallel{act_text}; multiply"
+        mul = g.node("mul", "multiply")
+        g.chain(inp, g.node("gate", f"{names[0]}: {_linear(gate_w)}"), g.node("act", act) if act else None, mul)
+        g.chain(inp, g.node("up", f"{names[1]}: {_linear(up_w)}"), mul)
+        g.chain(mul, down, out)
     else:
-        first = f"up projection: {_linear(up)}" + (f"; {act}" if act else "")
-    return [first, f"{'w2' if _find(t, 'w2.weight') else 'down'}: {_linear(down)}"]
+        g.chain(inp, g.node("up", f"up: {_linear(up_w)}"), g.node("act", act) if act else None, down, out)
+    if v.get("activation_card_name"):
+        g.caption.append(f"activation: {v['activation_card_name']} (gated)")
+    return g
 
 
-def _moe_parts(t, v, act):
-    parts = []
-    router = _find(t, "gate.weight")
-    experts, top = v["moe_num_experts"], v["moe_active_experts"]
-    score = f", {v['moe_router']} scores" if v.get("moe_router") else ""
-    if router and router[0] == experts:
-        parts.append(f"router: {experts} routed experts{score}, top {top} per token")
+def _moe_panel(title, t, v):
+    g = _Graph(title)
     hidden, inter = v["hidden_size"], v["moe_expert_intermediate"]
+    experts, top = v["moe_num_experts"], v["moe_active_experts"]
+    inp, out = _io(g, hidden)
+    router = _need(t, "gate.weight")
+    if router[0] != experts:
+        raise SpecError("Router width disagrees with the published expert count")
+    total = g.node("sum", "sum")
+    r = g.node("router", f"router: {experts} experts, top {top}")
     latent = v.get("moe_latent_dim")
     if latent:
         down = _need(t, "routed_expert_down_proj.weight")
         up = _need(t, "routed_expert_up_proj.weight")
         if down != [latent, hidden] or up != [hidden, latent]:
             raise SpecError("Latent projection shapes disagree with the published latent width")
-        norm = " (with norm)" if _find(t, "routed_expert_norm.weight") else ""
-        parts.append(
-            f"routed experts work in a smaller latent: {hidden} -> {latent}{norm} -> expert {inter} -> {latent} -> {hidden}"
-        )
+        norm = ", norm" if _find(t, "routed_expert_norm.weight") else ""
+        ex = g.node("experts", f"{top} experts: {latent} -> {inter} -> {latent}")
+        g.chain(inp, g.node("latent_down", f"Linear {hidden} -> {latent}{norm}"), ex)
+        g.chain(ex, g.node("latent_up", f"Linear {latent} -> {hidden}"), total)
+        g.caption.append(f"routed experts work in a smaller latent: {hidden} -> {latent} -> {hidden}")
     else:
-        parts.append(f"each routed expert: {hidden} -> {inter} -> {hidden}")
+        ex = g.node("experts", f"{top} experts: {hidden} -> {inter} -> {hidden}")
+        g.chain(inp, ex, total)
+    g.chain(inp, r, ex)
     shared = v.get("moe_shared_experts")
     width = _find(t, "shared_experts.gate_proj.weight", "shared_expert.gate_proj.weight")
     if shared and width:
-        parts.append(
-            f"{shared} shared expert{'s' if shared > 1 else ''} (combined width {width[0]}), applied to every token"
-            f" in the full {hidden} space"
+        g.chain(inp, g.node("shared", f"{shared} shared experts ({width[0]})"), total)
+        g.caption.append(f"shared experts: combined width {width[0]}, every token, full {hidden} space")
+    g.chain(total, out)
+    if v.get("moe_router"):
+        g.caption.append(f"router uses {v['moe_router']} gating")
+    if v.get("activation_card_name"):
+        g.caption.append(f"activation: {v['activation_card_name']} (gated)")
+    return g.spec()
+
+
+def _each_layer(v, names, kinds, ffn_names, standalone, learned_res, ffn_where):
+    g = _Graph("Each layer")
+    inp, out = g.node("in", "layer input"), g.node("out", "layer output")
+    if standalone:
+        res = g.node("res", "residual add")
+        g.chain(
+            inp,
+            g.node("norm", "norm"),
+            g.node("op", _fit("operator: " + " or ".join(names[k] for k in kinds), "operator")),
+            res,
         )
-    if act:
-        parts.append(f"activation: {act}" + (" (gated)" if v.get("ffn_gated") else ""))
-    return parts
+        g.chain(inp, res)
+        g.chain(res, out)
+        g.caption.append("each layer is one operator: " + ", ".join(names[k] for k in kinds))
+        return g.spec()
+    res_label = "AttnRes mix" if learned_res else "residual add"
+    r1, r2 = g.node("res1", res_label), g.node("res2", res_label)
+    mixer_text = "token mixer: " + " or ".join(names[k] for k in kinds)
+    mixer = g.node("mixer", _fit(mixer_text, "token mixer"))
+    if _words(mixer_text) > MAX_WORDS:
+        g.caption.append(mixer_text)
+    post1 = g.node("post_mixer_norm", "norm (post-mixer)") if v.get("sandwich_norm") else None
+    g.chain(inp, g.node("pre_mixer_norm", "norm (pre-mixer)"), mixer, post1, r1)
+    g.chain(inp, r1)
+    ffn = g.node("ffn", "FFN: " + " or ".join(ffn_names) if ffn_names != ["FFN"] else "FFN")
+    post2 = g.node("post_ffn_norm", "norm (post-FFN)") if v.get("sandwich_norm") else None
+    g.chain(r1, g.node("pre_ffn_norm", "norm (pre-FFN)"), ffn, post2, r2)
+    g.chain(r1, r2)
+    g.chain(r2, out)
+    if learned_res:
+        g.caption.append(
+            "learned residual-mixing weights (self_attention_res_proj, mlp_res_proj)"
+            + (f"; config attn_res_block_size = {v['attn_res_block_size']}" if v.get("attn_res_block_size") else "")
+        )
+    if len(ffn_where) > 1:
+        g.caption.append("; ".join(f"{n}: {w}" for n, w in ffn_where))
+    return g.spec()
 
 
 # ---------------------------------------------------------------- the spec
@@ -466,19 +596,22 @@ def build_spec(record: dict) -> dict:
         for i, k in enumerate(kinds_seq)
     ]
     groups = compress(kinds_seq, labels)
-    total = sum(g["repeat"] * len(g["layers"]) for g in groups)
-    if total != v["num_layers"]:
+    if sum(g["repeat"] * len(g["layers"]) for g in groups) != v["num_layers"]:
         raise SpecError("Compressed layer groups do not add up to the published layer count")
     compressed = []
     for g in groups:
         end = g["start"] + g["repeat"] * len(g["layers"]) - 1
         compressed.append(dict(repeat=g["repeat"], layers=g["layers"], note=_layers([[g["start"], end]])))
 
-    act = _activation(v)
     vocab, ctx, hidden = v["vocab_size"], v["context_length"], v["hidden_size"]
     model = dict(
         name=record["id"].split("/", 1)[1],
         title_label=_title(record["id"], v),
+        summary_line=", ".join(
+            [f"{_params(v['params_total'])} parameters"]
+            + ([f"{_params(v['params_active'])} active"] if v.get("params_active") else [])
+            + [f"{v['num_layers']} layers", f"{_short_count(ctx)} context"]
+        ),
         total_params=_params(v["params_total"]),
     )
     if v.get("params_active"):
@@ -503,44 +636,15 @@ def build_spec(record: dict) -> dict:
         pattern["rule"] = rule
     pattern["compressed_view"] = compressed
 
-    # ---------- one decoder layer, bottom to top, from the published tensor names
     sample = next(iter(blocks["mixers"].values()))["tensors"]
-    has = lambda name: any(k == name or k.endswith("." + name) or k == name for k in sample)  # noqa: E731
-    learned_res = has("self_attention_res_proj.weight")
-    if standalone:
-        layer = ["norm", "operator: " + ", ".join(names[k] for k in kinds) + " (see zoom panels)", "residual add"]
-    else:
-        mixer_text = "Token mixer: " + " or ".join(names[k] for k in kinds) + " (see zoom panels)"
-        if len(kinds) == 1:
-            mixer_text = f"Token mixer: {names[kinds[0]]} (see zoom panels)"
-        ffn_names = list(dict.fromkeys(_ffn_name(g, v, moe_model) for g in ffns))
-        ffn_text = "FFN: " + " or ".join(
-            f"{n} ({_layers(next(g for g in ffns if _ffn_name(g, v, moe_model) == n)['layer_ranges'])})"
-            if len(ffn_names) > 1
-            else n
-            for n in ffn_names
-        )
-        layer = ["norm (pre-mixer)", mixer_text]
-        if v.get("sandwich_norm"):
-            layer.append("norm (post-mixer)")
-        if learned_res:
-            res = "Attention residual mix (learned"
-            res += (
-                f"; config attn_res_block_size = {v['attn_res_block_size']})" if v.get("attn_res_block_size") else ")"
-            )
-            layer.append(res)
-        else:
-            layer.append("residual add")
-        if ffn_text == "FFN: FFN":
-            ffn_text = "FFN (see zoom panels)"
-        layer += ["norm (pre-FFN)", ffn_text]
-        if v.get("sandwich_norm"):
-            layer.append("norm (post-FFN)")
-        layer.append("FFN residual mix (learned)" if learned_res else "residual add")
+    learned_res = any(k.endswith("self_attention_res_proj.weight") for k in sample)
+    ffn_names = list(dict.fromkeys(_ffn_name(g, v, moe_model) for g in ffns))
+    ffn_where = [(_ffn_name(g, v, moe_model), _layers(g["layer_ranges"])) for g in ffns]
+    each_layer = _each_layer(v, names, kinds, ffn_names, standalone, learned_res, ffn_where)
 
     # ---------- zoom panels
     panels = {}
-    attention_done = False
+    attention_key = None
     for kind in kinds:
         t = blocks["mixers"][kind]["tensors"]
         count = counts[kind]
@@ -551,10 +655,9 @@ def build_spec(record: dict) -> dict:
         elif kind == "full_attention_mla":
             panels["mla"] = _mla_panel(t, v, count, cache_rows)
         elif kind in ("full_attention", "sliding_attention"):
-            if not attention_done:
-                key = _attention_name(v).lower()
-                panels[key] = _attention_panel(t, v, counts, kinds)
-                attention_done = True
+            if attention_key is None:
+                attention_key = _attention_name(v).lower()
+                panels[attention_key] = _attention_panel(t, v, counts, kinds)
             elif blocks["mixers"].get("full_attention", {}).get("tensors") != blocks["mixers"].get(
                 "sliding_attention", {}
             ).get("tensors"):
@@ -564,64 +667,78 @@ def build_spec(record: dict) -> dict:
         elif kind == "mamba2":
             panels["mamba2"] = _mamba_panel(t, v, count, cache_rows)
         elif kind == "mlp":
-            panels["mlp"] = dict(title=f"MLP ({count} layers)", parts=_dense_ffn_parts(t, v, act))
+            panels["mlp"] = _ffn_graph(f"MLP ({count} layers)", t, v).spec()
+    moe_key = None
     for group in ffns:
         name = _ffn_name(group, v, moe_model)
         where = _layers(group["layer_ranges"])
         if _is_moe(group["tensors"]):
-            panels["latent_moe" if v.get("moe_latent_dim") else "moe"] = dict(
-                title=f"{name} FFN ({where})", parts=_moe_parts(group["tensors"], v, act)
-            )
+            moe_key = "latent_moe" if v.get("moe_latent_dim") else "moe"
+            panels[moe_key] = _moe_panel(f"{name} FFN ({where})", group["tensors"], v)
         elif moe_model:
             title = f"Dense FFN ({where} only)" if len(group["layer_ranges"]) == 1 else f"Dense FFN ({where})"
-            panels["dense_ffn"] = dict(title=title, parts=_dense_ffn_parts(group["tensors"], v, act))
+            panels["dense_ffn"] = _ffn_graph(title, group["tensors"], v).spec()
         else:
+            act = _activation(v)
             title = f"{act} FFN" if act in ("SwiGLU", "GeGLU") else "Gated FFN" if v.get("ffn_gated") else "FFN"
-            panels["ffn"] = dict(title=title, parts=_dense_ffn_parts(group["tensors"], v, act))
-    for panel in panels.values():
-        panel["flow"] = "bottom to top, in the order listed"
+            panels["ffn"] = _ffn_graph(title, group["tensors"], v).spec()
 
-    # ---------- input / output
+    # ---------- input / output (the main stack, bottom to top)
     g = blocks["globals"]
     embed = _find(g, "embed_tokens.weight", "embeddings.weight", "tok_embeddings.weight")
     if not embed or embed != [vocab, hidden]:
         raise SpecError("Embedding tensor disagrees with the published vocabulary/hidden size")
-    io = dict(bottom=["Tokenized text", f"Token embedding {_commas(vocab)} x {hidden}"], top=[])
+    bottom = [
+        dict(id="text", label="Tokenized text"),
+        dict(id="embedding", label=f"Token embedding {_commas(vocab)} x {hidden}"),
+    ]
+    top = []
     if _find(g, "output_attn_res_proj.weight"):
-        io["top"].append("Final AttnRes mix")
-    io["top"].append("Final norm")
+        top.append(dict(id="final_res", label="Final AttnRes mix"))
+    top.append(dict(id="final_norm", label="Final norm"))
     if v.get("tied_embeddings"):
-        io["top"].append("LM head (shares weights with the token embedding)")
+        top.append(dict(id="lm_head", label="LM head (tied to the token embedding)"))
     elif _find(g, "lm_head.weight") == [vocab, hidden]:
-        io["top"].append(f"LM head {hidden} -> {_commas(vocab)} (not tied to the embedding)")
+        top.append(dict(id="lm_head", label=f"LM head {hidden} -> {_commas(vocab)}"))
     else:
         raise SpecError("LM head shape is not published")
+    io = dict(bottom=bottom, top=top)
+    if not v.get("tied_embeddings"):
+        io["note"] = "LM head is not tied to the embedding"
     if v.get("vision_params") and v.get("vision_encoder_layers"):
         projector = (v.get("parameter_components") or {}).get("vision_projector")
         io["vision"] = (
             f"{v['vision_encoder_layers']}-layer vision encoder ({_params(v['vision_params'])})"
             + (f" + projector ({_params(projector)})" if projector else "")
-            + " feeds image tokens into the embedding sequence; show as a small side note only"
+            + " feeds image tokens into the embedding sequence"
         )
 
-    # ---------- callouts (margin labels, at most five)
-    callouts = [f"Context length: {_short_count(ctx)} tokens"]
+    # ---------- callouts: each sits beside the part it describes
+    callouts = [dict(text=f"Context length: {_short_count(ctx)} tokens", beside="stack")]
     if len(kinds) > 1:
-        callouts.append(composition)
-    dense = [g for g in ffns if not _is_moe(g["tensors"])]
-    sparse = [g for g in ffns if _is_moe(g["tensors"])]
+        callouts.append(dict(text=composition, beside="stack"))
+    dense = [x for x in ffns if not _is_moe(x["tensors"])]
+    sparse = [x for x in ffns if _is_moe(x["tensors"])]
     if dense and sparse:
         d, s = _layers(dense[0]["layer_ranges"]), _layers(sparse[0]["layer_ranges"])
-        callouts.append(f"{d[0].upper() + d[1:]} dense FFN; {s} {_ffn_name(sparse[0], v, True)}")
+        callouts.append(
+            dict(text=f"{d[0].upper() + d[1:]} dense FFN; {s} {_ffn_name(sparse[0], v, True)}", beside=moe_key)
+        )
     if sparse:
         shared = v.get("moe_shared_experts")
         callouts.append(
-            f"{v['moe_num_experts']} experts, {v['moe_active_experts']} active"
-            + (f" + {shared} shared" if shared else "")
+            dict(
+                text=f"{v['moe_num_experts']} experts, {v['moe_active_experts']} active"
+                + (f" + {shared} shared" if shared else ""),
+                beside=moe_key,
+            )
         )
-    if v.get("attention_type") in ("GQA", "MQA"):
-        callouts.append(f"{v['num_attention_heads']} Q / {v['num_kv_heads']} KV heads")
-    callouts += [f"Vocabulary: {_short_count(vocab)}", f"Embedding dimension: {hidden}"]
+    if v.get("attention_type") in ("GQA", "MQA") and attention_key:
+        callouts.append(dict(text=f"{v['num_attention_heads']} Q / {v['num_kv_heads']} KV heads", beside=attention_key))
+    callouts += [
+        dict(text=f"Vocabulary: {_short_count(vocab)}", beside="embedding"),
+        dict(text=f"Embedding dimension: {hidden}", beside="embedding"),
+    ]
     grows = cache["grows_per_token_bytes"]
     if grows:
         about = "about " if cache.get("grows_per_token_bytes_low", grows) != grows else ""
@@ -639,7 +756,10 @@ def build_spec(record: dict) -> dict:
                 for r in growing
             )
             text += f" (only the {n} {label} layers grow)"
-        callouts = callouts[:4] + [text]
+        target = {"gated_dsa_mla": "gated_dsa", "full_attention_mla": "mla"}.get(
+            growing[0]["layer_type"], attention_key
+        )
+        callouts = callouts[:4] + [dict(text=text, beside=target or "stack")]
     else:
         callouts = callouts[:5]
 
@@ -649,16 +769,15 @@ def build_spec(record: dict) -> dict:
     elif not v.get("rope"):
         dont.append("any position-encoding label (none is published for this model)")
 
-    spec = dict(model=model, layer_pattern=pattern, decoder_layer=layer)
-    if learned_res:
-        spec["residuals"] = (
-            "Residuals are not plain additions. Each layer has learned residual-mixing weights"
-            " (self_attention_res_proj and mlp_res_proj, plus their norms)"
-            + (", and a final output residual mix before the last norm" if "Final AttnRes mix" in io["top"] else "")
-            + '. Show this as a small "AttnRes mix" node on each residual path. Do not invent its internal math.'
-        )
-    spec.update(zoom_panels=panels, io=io, callouts=callouts, do_not_include=dont)
-    return spec
+    return dict(
+        model=model,
+        layer_pattern=pattern,
+        io=io,
+        each_layer=each_layer,
+        zoom_panels=panels,
+        callouts=callouts,
+        do_not_include=dont,
+    )
 
 
 def dump(spec: dict, record: dict) -> str:

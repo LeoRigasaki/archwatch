@@ -100,7 +100,7 @@ def main():
         from archwatch.gemini import Gemini, local_env
 
         local_env(ROOT / ".env")
-        client = Gemini(config, OUT / "request-ledger.json")
+        client = Gemini(config, ROOT / config["diagram_gen"]["ledger"])
     rows = [run_model(m, config, client, recheck=args.recheck) for m in args.models or config["diagram_gen"]["models"]]
     if not args.specs_only:
         write(OUT / "summary.json", json.dumps(rows, indent=2) + "\n")

@@ -33,15 +33,19 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class Gemini:
-    """One configured free model; every call is reserved in the ledger before it is sent."""
+    """One configured free model. Every call, by any tool, is reserved in one shared ledger before it is
+    sent and counts against that model's configured daily limit (one budget, no per-run allowances)."""
 
-    def __init__(self, config, ledger, *, section="diagram_gen", clock=time.time, wait=time.sleep, opener=None):
+    def __init__(
+        self, config, ledger, *, role="diagram", section="diagram_gen", clock=time.time, wait=time.sleep, opener=None
+    ):
         self.config, self.ledger, self.section = config, Path(ledger), config[section]
+        self.role = role
         self.clock, self.wait = clock, wait
         self.opener = opener or urllib.request.build_opener(NoRedirect()).open
-        model = config["models"]["diagram"]
+        model = config["models"][role]
         if not config.get("free_only") or not model.get("free"):
-            raise ProviderError("Only the explicitly configured free diagram model is permitted")
+            raise ProviderError("Only an explicitly configured free model is permitted")
         if config["endpoint"] != "https://generativelanguage.googleapis.com/v1beta":
             raise ProviderError("Unrecognized provider endpoint")
         self.key = os.environ.get(config["key_env"])
@@ -69,24 +73,20 @@ class Gemini:
     def _reserve(self, prompt_bytes):
         now = self.clock()
         entries = json.loads(self.ledger.read_text()) if self.ledger.exists() else []
-        model = self.config["models"]["diagram"]
+        model = self.config["models"][self.role]
         rpm = min(self.section["requests_per_minute"], model["rpm"])
         # Bytes over-count tokens, so this is a conservative per-minute token bound.
         if prompt_bytes + self.section["max_output_tokens"] > model["tpm"]:
             raise ProviderError("Conservative per-minute token bound exceeded")
-        if entries:
-            delay = max(0, 60 / rpm - (now - entries[-1]["time"]))
+        same = [e for e in entries if e["model"] == model["id"]]
+        if same:
+            delay = max(0, 60 / rpm - (now - same[-1]["time"]))
             if delay:
                 self.wait(delay)
                 now = self.clock()
         day = datetime.fromtimestamp(now, ZoneInfo("America/Los_Angeles")).date().isoformat()
         if sum(e["day"] == day and e["model"] == model["id"] for e in entries) >= model["rpd"]:
             raise ProviderError("Configured free daily request cap reached")
-        if (
-            sum(e["experiment"] == self.section["experiment"] for e in entries)
-            >= self.section["max_generation_requests"]
-        ):
-            raise ProviderError("Configured request budget for this run is used up")
         # Reserve before transport; a timeout may already have consumed a call.
         entries.append(dict(time=now, day=day, model=model["id"], experiment=self.section["experiment"]))
         self.ledger.parent.mkdir(parents=True, exist_ok=True)
@@ -94,7 +94,7 @@ class Gemini:
         return now
 
     def generate(self, system, prompt):
-        model = self.config["models"]["diagram"]
+        model = self.config["models"][self.role]
         started = self._reserve(len(system.encode()) + len(prompt.encode()))
         response = self._request(
             "/models/" + model["id"] + ":generateContent",

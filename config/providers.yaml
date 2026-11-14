@@ -23,20 +23,22 @@ models:
     rpm: 15
     tpm: 250000
     rpd: 500
-weekly_generation_request_cap: 15
 diagram_gen:
   # Spec-driven SVG generation with code checks and a repair loop. Manual runs only.
-  experiment: diagram-gen-v1
+  # One budget: every Gemini call is logged in the shared ledger and counts against
+  # the model's daily limit (models.*.rpd) above. There is no separate run budget.
+  experiment: diagram-gen-v2
+  ledger: data/gemini-requests.json
   requests_per_minute: 4
   max_output_tokens: 65536
   repairs: 2
-  max_generation_requests: 12   # 4 models x (1 generation + 2 repairs)
   fallback_enabled: false
   browser_channel: chrome
-  canvas_width: 1600
-  canvas_height_range: [1000, 2000]
+  canvas_width: 1800
+  canvas_height_range: [1000, 2400]
   margin_px: 16                 # checked; the prompt asks for 24
   min_font_px: 13.5             # checked; the prompt asks for 14
+  callout_gap_px: 360           # max horizontal gap between a callout and the part it sits beside
   models:
     - moonshotai/Kimi-K3.1-Pro
     - LiquidAI/LFM3-1.7B

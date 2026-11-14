@@ -22,6 +22,8 @@ ALLOWED = {
 }
 BENCHMARK_WORDS = {"mmlu", "gsm8k", "humaneval", "benchmark", "score", "accuracy"}
 POSITION_WORDS = {"rope", "rotary", "positional"}
+SECTIONS = ("title", "stack", "each-layer", "zooms")
+REPEAT_LABEL = re.compile(r"^\s*(\d+)\s*[x×]\s*$")
 
 
 # ---------------------------------------------------------------- tokens
@@ -46,13 +48,14 @@ def _tokens(text: str) -> list[str]:
     return [_word(t) if t[0].isalpha() else t for t in re.findall(r"[A-Za-z][A-Za-z0-9]*|\d+(?:\.\d+)?", text)]
 
 
-def _strings(value):
+def _strings(value, skip=("id", "beside", "edges")):
     if isinstance(value, dict):
-        for v in value.values():
-            yield from _strings(v)
+        for k, v in value.items():
+            if k not in skip:
+                yield from _strings(v, skip)
     elif isinstance(value, list):
         for v in value:
-            yield from _strings(v)
+            yield from _strings(v, skip)
     elif value is not None and not isinstance(value, bool):
         yield str(value)
 
@@ -60,6 +63,17 @@ def _strings(value):
 def vocabulary(spec: dict) -> tuple[set[str], set[str]]:
     body = "\n".join(_strings(spec))
     return set(_numbers(body)), set(_words(body))
+
+
+def graphs(spec: dict) -> dict:
+    """Every graph the diagram must draw, keyed by where it lives in the SVG."""
+    out = {("data-section", "each-layer"): spec["each_layer"]}
+    out.update({("data-zoom", key): panel for key, panel in spec["zoom_panels"].items()})
+    return out
+
+
+def _edge(text: str) -> str:
+    return "->".join(part.strip() for part in text.split("->"))
 
 
 # ---------------------------------------------------------------- parsing
@@ -114,8 +128,8 @@ def _visible_texts(root):
     return [e for e in root.iter() if _local(e.tag) == "text" and id(e) not in hidden]
 
 
-def _groups(root, attr):
-    return [e for e in root.iter() if _local(e.tag) == "g" and e.get(attr) is not None]
+def _find_all(root, attr, value=None):
+    return [e for e in root.iter() if e.get(attr) is not None and (value is None or e.get(attr) == value)]
 
 
 def _group_text(group) -> str:
@@ -125,6 +139,16 @@ def _group_text(group) -> str:
 def _subsequence(needle, haystack):
     n = len(needle)
     return any(haystack[i : i + n] == needle for i in range(len(haystack) - n + 1))
+
+
+def _within(root, element):
+    parents = {child: parent for parent in root.iter() for child in parent}
+    found = []
+    node = parents.get(element)
+    while node is not None:
+        found.append(node)
+        node = parents.get(node)
+    return found
 
 
 # ---------------------------------------------------------------- static checks
@@ -138,27 +162,25 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
         return {"svg_valid_and_safe": dict(passed=False, problems=[str(error)])}
     out["svg_valid_and_safe"] = dict(passed=True, problems=[])
 
+    def result(problems, **extra):
+        return dict(passed=not problems, problems=problems, **extra)
+
     view = [float(x) for x in (root.get("viewBox") or "").replace(",", " ").split()] or [0, 0, 0, 0]
     low, high = settings["canvas_height_range"]
     ok = len(view) == 4 and view[:3] == [0, 0, settings["canvas_width"]] and low <= view[3] <= high
-    out["canvas_size"] = dict(
-        passed=ok,
-        problems=[] if ok else [f"viewBox must be 0 0 {settings['canvas_width']} H with {low} <= H <= {high}"],
+    out["canvas_size"] = result(
+        [] if ok else [f"viewBox must be 0 0 {settings['canvas_width']} H, {low} <= H <= {high}"]
     )
 
     numbers, words = vocabulary(spec)
     texts = [_text_of(t) for t in _visible_texts(root)]
-    bad_numbers = sorted({(n, t) for t in texts for n in _numbers(t) if n not in numbers})
-    out["numbers_from_spec"] = dict(
-        passed=not bad_numbers, problems=[f'number {n} in "{t}" is not in the spec' for n, t in bad_numbers]
-    )
-    bad_words = sorted({(w, t) for t in texts for w in _words(t) if w not in words})
-    out["labels_from_spec"] = dict(
-        passed=not bad_words, problems=[f'word "{w}" in "{t}" is not in the spec' for w, t in bad_words]
-    )
+    bad = sorted({(n, t) for t in texts for n in _numbers(t) if n not in numbers})
+    out["numbers_from_spec"] = result([f'number {n} in "{t}" is not in the spec' for n, t in bad])
+    bad = sorted({(w, t) for t in texts for w in _words(t) if w not in words})
+    out["labels_from_spec"] = result([f'word "{w}" in "{t}" is not in the spec' for w, t in bad])
 
-    forbidden = set()
-    for item in spec.get("do_not_include", []):
+    forbidden, dont = set(), spec.get("do_not_include", [])
+    for item in dont:
         match = re.match(r"the word (\S+)", item)
         if match:
             forbidden.add(_word(match.group(1)))
@@ -167,13 +189,12 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
         if "benchmark" in item:
             forbidden |= BENCHMARK_WORDS
     hits = sorted({(w, t) for t in texts for w in _words(t) if w in forbidden})
-    hits += sorted({("%", t) for t in texts if "%" in t and "benchmark" in " ".join(spec.get("do_not_include", []))})
-    out["do_not_include"] = dict(
-        passed=not hits, problems=[f'"{w}" appears in "{t}" (do_not_include)' for w, t in hits]
-    )
+    hits += sorted({("%", t) for t in texts if "%" in t and any("benchmark" in d for d in dont)})
+    out["do_not_include"] = result([f'"{w}" appears in "{t}" (do_not_include)' for w, t in hits])
 
+    # ---- layer groups, sum and repeat labels (each repeat count appears exactly once)
     expected = spec["layer_pattern"]["compressed_view"]
-    found = {g.get("data-group"): g for g in _groups(root, "data-group")}
+    found = {g.get("data-group"): g for g in _find_all(root, "data-group")}
     problems, total = [], 0
     if sorted(found) != [str(i + 1) for i in range(len(expected))]:
         problems.append(f"expected data-group 1..{len(expected)}, found {sorted(found)}")
@@ -181,39 +202,106 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
         group = found.get(str(i))
         if group is None:
             continue
-        bars = [e for e in group.iter() if e.get("data-layer") is not None]
+        bars = _find_all(group, "data-layer")
         repeat = group.get("data-repeat")
         if repeat != str(entry["repeat"]):
             problems.append(f"group {i}: data-repeat is {repeat}, spec says {entry['repeat']}")
         if len(bars) != len(entry["layers"]):
             problems.append(f"group {i}: {len(bars)} layer bars, spec lists {len(entry['layers'])}")
-        if not re.search(rf"(?<![\d.]){entry['repeat']}\s*[x×]", _group_text(group)):
-            problems.append(f'group {i}: visible "{entry["repeat"]} x" label missing')
         total += int(repeat) * len(bars) if repeat and repeat.isdigit() else 0
     layers = spec["model"]["layers"]
     if total != layers:
         problems.append(f"drawn groups add up to {total} layers, spec says {layers}")
-    out["layer_sum"] = dict(passed=not problems, problems=problems, drawn_total=total, expected=layers)
+    out["layer_sum"] = result(problems, drawn_total=total, expected=layers)
 
-    zooms = {g.get("data-zoom"): g for g in _groups(root, "data-zoom")}
     problems = []
+    group_ids = {id(e): g.get("data-group") for g in found.values() for e in g.iter()}
+    labels = [(t, REPEAT_LABEL.match(_text_of(t))) for t in _visible_texts(root)]
+    for i, entry in enumerate(expected, 1):
+        inside = [m.group(1) for t, m in labels if m and group_ids.get(id(t)) == str(i)]
+        if inside != [str(entry["repeat"])]:
+            problems.append(f'group {i} must show its repeat label "{entry["repeat"]} x" exactly once, found {inside}')
+    stray = [_text_of(t) for t, m in labels if m and id(t) not in group_ids]
+    problems += [f'repeat-style label "{s}" outside a layer group; label the total as "{layers} layers"' for s in stray]
+    out["repeat_counts_once"] = result(problems)
+
+    # ---- fixed layout sections and title
+    problems = [f'missing <g data-section="{s}">' for s in SECTIONS if not _find_all(root, "data-section", s)]
+    title = _find_all(root, "data-section", "title")
+    if title:
+        tt = _tokens(_group_text(title[0]))
+        for key in ("title_label", "summary_line"):
+            if not _subsequence(_tokens(spec["model"][key]), tt):
+                problems.append(f'title section must show model.{key} "{spec["model"][key]}"')
+    stack = _find_all(root, "data-section", "stack")
+    if stack:
+        inside = {id(e) for e in stack[0].iter()}
+        problems += [f"layer group {g} is outside the stack section" for g, e in found.items() if id(e) not in inside]
+        for item in spec["io"]["bottom"] + spec["io"]["top"]:
+            boxes = [e for e in _find_all(root, "data-io", item["id"]) if id(e) in inside]
+            if not boxes:
+                problems.append(f'io box "{item["id"]}" ({item["label"]}) missing from the stack section')
+            elif _tokens(_group_text(boxes[0])) != _tokens(item["label"]):
+                problems.append(f'io box "{item["id"]}" must read "{item["label"]}"')
+    zooms = _find_all(root, "data-section", "zooms")
+    if zooms:
+        inside = {id(e) for e in zooms[0].iter()}
+        problems += [
+            f'zoom panel "{z.get("data-zoom")}" is outside the zooms section'
+            for z in _find_all(root, "data-zoom")
+            if id(z) not in inside
+        ]
+    out["fixed_layout_sections"] = result(problems)
+
+    # ---- zoom panels and graphs: every node and edge, nothing extra
+    zoom_found = {z.get("data-zoom"): z for z in _find_all(root, "data-zoom")}
+    problems = [
+        f'zoom panel "{k}" ({p["title"]}) is missing' for k, p in spec["zoom_panels"].items() if k not in zoom_found
+    ]
+    problems += [f'unexpected zoom panel "{k}"' for k in zoom_found if k not in spec["zoom_panels"]]
     for key, panel in spec["zoom_panels"].items():
-        if key not in zooms:
-            problems.append(f'zoom panel "{key}" ({panel["title"]}) is missing')
-        elif not _subsequence(_tokens(panel["title"]), _tokens(_group_text(zooms[key]))):
+        if key in zoom_found and not _subsequence(_tokens(panel["title"]), _tokens(_group_text(zoom_found[key]))):
             problems.append(f'zoom panel "{key}" does not show its title "{panel["title"]}"')
-    problems += [f'unexpected zoom panel "{k}"' for k in zooms if k not in spec["zoom_panels"]]
-    out["zoom_panels_present"] = dict(passed=not problems, problems=problems)
+    out["zoom_panels_present"] = result(problems)
 
-    calls = {g.get("data-callout"): g for g in _groups(root, "data-callout")}
+    node_problems, edge_problems = [], []
+    for (attr, key), graph in graphs(spec).items():
+        holders = _find_all(root, attr, key)
+        where = f"{'zoom panel' if attr == 'data-zoom' else 'section'} {key}"
+        if not holders:
+            continue  # reported by the section/panel checks
+        holder = holders[0]
+        drawn = {}
+        for n in _find_all(holder, "data-node"):
+            drawn.setdefault(n.get("data-node"), []).append(n)
+        for node in graph["nodes"]:
+            got = drawn.get(node["id"], [])
+            if len(got) != 1:
+                node_problems.append(f'{where}: node "{node["id"]}" ({node["label"]}) drawn {len(got)} times')
+            elif _tokens(_group_text(got[0])) != _tokens(node["label"]):
+                node_problems.append(f'{where}: node "{node["id"]}" must read "{node["label"]}"')
+        extra = set(drawn) - {n["id"] for n in graph["nodes"]}
+        node_problems += [f'{where}: node "{n}" is not in the spec' for n in sorted(extra)]
+        want = sorted(_edge(e) for e in graph["edges"])
+        got = sorted(_edge(e.get("data-edge")) for e in _find_all(holder, "data-edge"))
+        for e in sorted(set(want) - set(got)):
+            edge_problems.append(f"{where}: edge {e} is missing")
+        for e in sorted(set(got) - set(want)):
+            edge_problems.append(f"{where}: edge {e} is drawn but not in the spec")
+        for e in sorted({e for e in got if got.count(e) > 1}):
+            edge_problems.append(f"{where}: edge {e} is drawn more than once")
+    out["graph_nodes_match_spec"] = result(node_problems)
+    out["graph_edges_match_spec"] = result(edge_problems)
+
+    calls = {g.get("data-callout"): g for g in _find_all(root, "data-callout")}
     problems = []
-    for i, text in enumerate(spec["callouts"], 1):
+    for i, callout in enumerate(spec["callouts"], 1):
         group = calls.get(str(i))
         if group is None:
-            problems.append(f'callout {i} "{text}" is missing')
-        elif _tokens(_group_text(group)) != _tokens(text):
-            problems.append(f'callout {i} reads "{_group_text(group)}", spec says "{text}"')
-    out["callouts_present"] = dict(passed=not problems, problems=problems)
+            problems.append(f'callout {i} "{callout["text"]}" is missing')
+        elif _tokens(_group_text(group)) != _tokens(callout["text"]):
+            problems.append(f'callout {i} reads "{_group_text(group)}", spec says "{callout["text"]}"')
+    out["callouts_present"] = result(problems)
     return out
 
 
@@ -240,28 +328,64 @@ GEOMETRY_JS = r"""(settings) => {
    if(a>t.b.w*t.b.h*0.2){covered.push(t.t);break;}}}
  const strokes=all.filter(e=>['line','polyline','path'].includes(e.tagName)).filter(e=>{const s=getComputedStyle(e);return s.stroke!=='none'&&(e.tagName!=='path'||s.fill==='none')});
  const leaders=strokes.filter(e=>{const d=getComputedStyle(e).strokeDasharray;const closed=e.tagName==='path'&&/z\s*$/i.test(e.getAttribute('d')||'');return d&&d!=='none'&&!closed}).length;
+ const pts=e=>{const len=e.getTotalLength?e.getTotalLength():0;const t=svg.getScreenCTM().inverse().multiply(e.getScreenCTM());const o=[];if(!len)return o;for(let d=0;d<=len;d+=2)o.push(e.getPointAtLength(d).matrixTransform(t));o.push(e.getPointAtLength(len).matrixTransform(t));return o};
  const through=[];
- for(const s of strokes){const len=s.getTotalLength?s.getTotalLength():0;if(!len)continue;const t=svg.getScreenCTM().inverse().multiply(s.getScreenCTM());
-   const hit=new Set();for(let d=0;d<=len;d+=2){const p=s.getPointAtLength(d).matrixTransform(t);
-     for(const x of texts){const b=x.b;if(p.x>b.x+2&&p.x<b.x+b.w-2&&p.y>b.y+2&&p.y<b.y+b.h-2)hit.add(x.t);}}
-   for(const h of hit)through.push(h);}
+ for(const s of strokes){const hit=new Set();for(const p of pts(s)){for(const x of texts){const b=x.b;if(p.x>b.x+2&&p.x<b.x+b.w-2&&p.y>b.y+2&&p.y<b.y+b.h-2)hit.add(x.t);}}for(const h of hit)through.push(h);}
  const bg=e=>e.tagName==='rect'&&(()=>{const b=box(e);return b.w>=v.width*0.99&&b.h>=v.height*0.99})();
  const outside=all.filter(e=>['text','rect','path','line','polyline','polygon'].includes(e.tagName)&&!bg(e)).filter(e=>{const b=box(e);
    return b.w+b.h>0&&(b.x<v.x+m-0.5||b.y<v.y+m-0.5||b.x+b.w>v.x+v.width-m+0.5||b.y+b.h>v.y+v.height-m+0.5)}).map(e=>e.tagName==='text'?label(e):e.tagName+(e.closest('[data-zoom]')?' in zoom '+e.closest('[data-zoom]').dataset.zoom:''));
  const runs=[...svg.querySelectorAll('text,tspan')].filter(e=>!hidden(e)&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()));
  const small=runs.filter(e=>{const c=e.getScreenCTM();return Number.parseFloat(getComputedStyle(e).fontSize)*Math.min(Math.hypot(c.a,c.b),Math.hypot(c.c,c.d))<settings.min_font_px}).map(label);
  const bars=[...svg.querySelectorAll('[data-group]')].map(g=>({group:g.dataset.group,bars:[...g.querySelectorAll('[data-layer]')].map(b=>{const r=box(b);return {label:b.dataset.layer,y:r.y+r.h/2}}).sort((a,b)=>b.y-a.y).map(b=>b.label)}));
- return {canvas:{width:v.width,height:v.height},bars,overlaps,covered:[...new Set(covered)],through:[...new Set(through)],leaders,outside:[...new Set(outside)],small:[...new Set(small)]};
+ // edges: the arrow must start at its source box and end at its target box (within 14 px)
+ const near=(p,b,d)=>p.x>=b.x-d&&p.x<=b.x+b.w+d&&p.y>=b.y-d&&p.y<=b.y+b.h+d;
+ const nodeBox=(holder,id)=>{const n=holder.querySelector(`[data-node="${CSS.escape(id)}"]`);if(!n)return null;const r=n.querySelector('rect');return box(r||n)};
+ const edges=[];
+ for(const e of svg.querySelectorAll('[data-edge]')){const holder=e.closest('[data-zoom],[data-section]');if(!holder)continue;
+   const [a,b]=e.dataset.edge.split('->').map(s=>s.trim());const A=nodeBox(holder,a),B=nodeBox(holder,b);const p=pts(e);
+   if(!A||!B||!p.length){edges.push({edge:e.dataset.edge,where:holder.dataset.zoom||holder.dataset.section,ok:false,why:'unknown node or empty line'});continue;}
+   const s=p[0],t=p[p.length-1];const fwd=near(s,A,14)&&near(t,B,14),rev=near(s,B,14)&&near(t,A,14);
+   edges.push({edge:e.dataset.edge,where:holder.dataset.zoom||holder.dataset.section,ok:fwd,why:fwd?'':(rev?'arrow points the wrong way':'arrow does not connect its two boxes')});}
+ const sec=n=>{const e=svg.querySelector(`[data-section="${n}"]`);return e?box(e):null};
+ const target=k=>{if(k==='stack')return sec('stack');if(k==='embedding'){const e=svg.querySelector('[data-io="embedding"]');return e?box(e):null}
+   const z=svg.querySelector(`[data-zoom="${CSS.escape(k)}"]`);return z?box(z):null};
+ const callouts=settings.callouts.map((c,i)=>{const e=svg.querySelector(`[data-callout="${i+1}"]`);const T=target(c.beside);if(!e||!T)return {i:i+1,ok:false,why:'callout or its target missing'};
+   const b=box(e);const gap=b.x-(T.x+T.w);const level=b.y+b.h>T.y-10&&b.y<T.y+T.h+10;
+   return {i:i+1,ok:gap>=-4&&gap<=settings.callout_gap_px&&level,why:`gap ${Math.round(gap)} px, ${level?'level':'not level'} with ${c.beside}`}});
+ return {canvas:{width:v.width,height:v.height},bars,edges,callouts,sections:{title:sec('title'),stack:sec('stack'),each:sec('each-layer'),zooms:sec('zooms')},
+   overlaps,covered:[...new Set(covered)],through:[...new Set(through)],leaders,outside:[...new Set(outside)],small:[...new Set(small)]};
 }"""
+
+
+def _layout_problems(s, width):
+    """Same sections in the same places for every model."""
+    problems = []
+    if not all(s.values()):
+        return ["layout sections missing; see fixed_layout_sections"]
+    title, stack, each, zooms = s["title"], s["stack"], s["each"], s["zooms"]
+    if abs(title["x"] + title["w"] / 2 - width / 2) > width * 0.05:
+        problems.append("title section is not centered")
+    if title["y"] + title["h"] > min(stack["y"], zooms["y"]) + 1:
+        problems.append("title section must sit above the stack and the zoom panels")
+    if stack["x"] + stack["w"] > width * 0.36:
+        problems.append(f"stack section must stay in the left column (right edge {round(stack['x'] + stack['w'])} px)")
+    if each["y"] < stack["y"] + stack["h"] - 1:
+        problems.append("the Each layer box must sit under the stack")
+    if each["x"] + each["w"] > width * 0.49:
+        problems.append("the Each layer box must stay in the left half")
+    if zooms["x"] < width * 0.49:
+        problems.append(f"zoom panels must sit in the right column (left edge {round(zooms['x'])} px)")
+    return problems
 
 
 def browser_checks(svg: str, settings: dict, *, spec=None, screenshot=None) -> dict:
     parse(svg)  # reject active content before a browser ever loads model output
     from playwright.sync_api import sync_playwright
 
+    js_settings = dict(settings, callouts=(spec or {}).get("callouts", []), callout_gap_px=settings["callout_gap_px"])
     with sync_playwright() as p:
         browser = p.chromium.launch(channel=settings["browser_channel"], headless=True)
-        context = browser.new_context(viewport={"width": 1700, "height": 2100}, device_scale_factor=1)
+        context = browser.new_context(viewport={"width": 1900, "height": 2500}, device_scale_factor=1)
         context.route("**/*", lambda route: route.abort())
         page = context.new_page()
         page.set_content("<!doctype html><style>body{margin:0;background:white}</style>" + svg)
@@ -270,12 +394,12 @@ def browser_checks(svg: str, settings: dict, *, spec=None, screenshot=None) -> d
             "s.style.width=v.width+'px';s.style.height=v.height+'px'; }"
         )
         page.evaluate("document.fonts.ready")
-        geo = page.evaluate(GEOMETRY_JS, settings)
+        geo = page.evaluate(GEOMETRY_JS, js_settings)
         if screenshot:
             page.locator("svg").screenshot(path=str(screenshot))
         browser.close()
 
-    def result(items, message):
+    def result(items, message="{}"):
         return dict(passed=not items, problems=[message.format(i) for i in items])
 
     order = []
@@ -288,26 +412,39 @@ def browser_checks(svg: str, settings: dict, *, spec=None, screenshot=None) -> d
                     f"group {i}: bars from bottom to top are {got}, spec says {entry['layers']} "
                     "(data-layer must be each layer's exact label)"
                 )
-    return {
-        "layer_bars_match_spec": result(order, "{}"),
-        "no_text_overlap": result([f'"{a}" / "{b}"' for a, b in geo["overlaps"]], "text overlaps text: {}"),
-        "no_covered_text": result(geo["covered"], 'a shape is drawn on top of the text "{}"'),
-        "no_lines_through_text": result(geo["through"], 'a line or arrow passes through the text "{}"'),
-        "no_leader_lines": dict(
-            passed=geo["leaders"] == 0,
-            problems=[
-                f"{geo['leaders']} dashed/dotted connector line(s) found; callouts and panels need no leader lines"
+    checks = {"layer_bars_match_spec": result(order)}
+    if spec:
+        checks["edges_connect_their_nodes"] = result(
+            [f"{e['where']}: edge {e['edge']}: {e['why']}" for e in geo["edges"] if not e["ok"]]
+        )
+        checks["fixed_layout_positions"] = result(_layout_problems(geo["sections"], settings["canvas_width"]))
+        checks["callouts_beside_their_part"] = result(
+            [
+                f'callout {c["i"]} "{spec["callouts"][c["i"] - 1]["text"]}" is not beside its part ({c["why"]})'
+                for c in geo["callouts"]
+                if not c["ok"]
             ]
-            if geo["leaders"]
-            else [],
-        ),
-        "inside_canvas_with_margin": result(
-            geo["outside"], "{} is outside the canvas or within " + str(settings["margin_px"]) + " px of its edge"
-        ),
-        "readable_font_sizes": result(
-            geo["small"], 'text "{}" is smaller than ' + str(settings["min_font_px"]) + " px"
-        ),
-    }
+        )
+    checks.update(
+        {
+            "no_text_overlap": result([f'"{a}" / "{b}"' for a, b in geo["overlaps"]], "text overlaps text: {}"),
+            "no_covered_text": result(geo["covered"], 'a shape is drawn on top of the text "{}"'),
+            "no_lines_through_text": result(geo["through"], 'a line or arrow passes through the text "{}"'),
+            "no_leader_lines": dict(
+                passed=geo["leaders"] == 0,
+                problems=[f"{geo['leaders']} dashed/dotted connector line(s) found; nothing needs leader lines"]
+                if geo["leaders"]
+                else [],
+            ),
+            "inside_canvas_with_margin": result(
+                geo["outside"], "{} is outside the canvas or within " + str(settings["margin_px"]) + " px of its edge"
+            ),
+            "readable_font_sizes": result(
+                geo["small"], 'text "{}" is smaller than ' + str(settings["min_font_px"]) + " px"
+            ),
+        }
+    )
+    return checks
 
 
 def review(svg: str, spec: dict, settings: dict, *, screenshot=None, browser=True) -> dict:

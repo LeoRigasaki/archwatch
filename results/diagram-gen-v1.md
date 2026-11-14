@@ -1,4 +1,4 @@
-# Spec-driven diagram generation (diagram-gen-v1)
+# First diagram run (diagram-gen-v1, superseded by v2 graph panels)
 
 Each spec is built by code from published record fields (`archwatch.diagram_spec`); Gemini
 (`models.diagram` in `config/providers.yaml`) writes the full SVG; code checks it
@@ -24,4 +24,4 @@ Spec numbers match the hand-written kit specs (`docs/diagram-kit/specs`) except 
 inconsistency: the kit's "5.7 MB" plain-MHA cache uses 10^6 while its "33 KB" uses 1024; the
 builder uses 1024 for both (5.4 MB).
 
-Previews: `results/diagram-gen/<model>/vN.png`. Not human-reviewed yet.
+Previews: `results/diagram-gen-v1/<model>/vN.png`. Not human-reviewed yet.
