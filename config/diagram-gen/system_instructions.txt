@@ -43,7 +43,9 @@ STYLE
 REQUIRED SVG STRUCTURE (checked by code)
 - Root: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 H">, with a white background <rect> first.
 - Each compressed_view entry i (1 = the first entry, at the bottom): <g data-group="i" data-repeat="N"> containing
-  exactly one <rect data-layer="..."> per layer bar of that entry, and its visible "N x" label.
+  exactly one <rect data-layer="LABEL"> per layer bar of that entry, and its visible "N x" label.
+  LABEL is that layer's exact text from the spec, and the bars go bottom to top in the order listed
+  (the first listed layer is the lowest bar).
 - Each zoom panel: <g data-zoom="KEY"> (KEY = its key under zoom_panels, for example data-zoom="kda"),
   containing the panel, its exact title text and its parts.
 - Each callout i (1 = the first in the list): <g data-callout="i"> containing that callout's text, worded exactly

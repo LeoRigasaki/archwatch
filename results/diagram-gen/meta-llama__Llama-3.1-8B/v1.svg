@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1600" height="1000" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#1f2937"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="800" y="58" text-anchor="middle" font-size="34" font-weight="bold" fill="#111827">Llama-3.1-8B</text>
+
+  <!-- Main panel -->
+  <rect x="36" y="88" width="760" height="844" rx="14" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+
+  <!-- Output arrow out of top -->
+  <line x1="340" y1="154" x2="340" y2="104" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- io.top: LM head -->
+  <rect x="175" y="154" width="330" height="54" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+  <text x="340" y="187" text-anchor="middle" font-size="16" fill="#111827">LM head 4096 -&gt; 128,256</text>
+
+  <line x1="340" y1="260" x2="340" y2="208" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- io.top: Final norm -->
+  <rect x="230" y="260" width="220" height="52" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+  <text x="340" y="292" text-anchor="middle" font-size="16" fill="#111827">Final norm</text>
+
+  <line x1="340" y1="406" x2="340" y2="312" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Compressed layer stack -->
+  <g data-group="1" data-repeat="32">
+    <rect x="175" y="406" width="330" height="220" rx="14" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/>
+    <rect data-layer="GQA + FFN" x="195" y="458" width="290" height="88" rx="10" fill="#f4b0a9" stroke="#d95b4f" stroke-width="2"/>
+    <text x="340" y="509" text-anchor="middle" font-size="18" font-weight="bold" fill="#111827">GQA + FFN</text>
+    <text x="340" y="586" text-anchor="middle" font-size="15" fill="#4b5563">layers 1-32</text>
+    <text x="156" y="524" text-anchor="end" font-size="22" font-weight="bold" fill="#111827">32 x</text>
+  </g>
+
+  <!-- Large brace beside whole stack -->
+  <path d="M 522,406 C 534,406 530,416 530,432 L 530,494 C 530,508 534,516 542,516 C 534,516 530,524 530,538 L 530,600 C 530,616 534,626 522,626" fill="none" stroke="#374151" stroke-width="2"/>
+  <text x="554" y="524" font-size="24" font-weight="bold" fill="#111827">32 x</text>
+
+  <line x1="340" y1="714" x2="340" y2="626" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- io.bottom: Token embedding -->
+  <rect x="165" y="714" width="350" height="54" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+  <text x="340" y="747" text-anchor="middle" font-size="16" fill="#111827">Token embedding 128,256 x 4096</text>
+
+  <line x1="340" y1="830" x2="340" y2="768" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- io.bottom: Tokenized text -->
+  <rect x="230" y="830" width="220" height="52" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+  <text x="340" y="862" text-anchor="middle" font-size="16" fill="#111827">Tokenized text</text>
+
+  <!-- Zoom panel: GQA -->
+  <g data-zoom="gqa">
+    <rect x="830" y="88" width="500" height="436" rx="14" fill="#ffffff" stroke="#d95b4f" stroke-width="2.5" stroke-dasharray="6,6"/>
+    <text x="1080" y="126" text-anchor="middle" font-size="20" font-weight="bold" fill="#d95b4f">GQA attention (32 layers)</text>
+
+    <!-- Top part (4): output projection -->
+    <rect x="860" y="156" width="440" height="50" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+    <text x="1080" y="187" text-anchor="middle" font-size="16" fill="#111827">output: Linear 4096 -&gt; 4096</text>
+
+    <line x1="1080" y1="252" x2="1080" y2="206" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Part 3: rotary position encoding -->
+    <rect x="860" y="252" width="440" height="50" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+    <text x="1080" y="283" text-anchor="middle" font-size="16" fill="#111827">rotary position, theta 500,000, factor 8</text>
+
+    <line x1="1080" y1="348" x2="1080" y2="302" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Part 2: q, k, v linear -->
+    <rect x="860" y="348" width="440" height="50" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+    <text x="1080" y="379" text-anchor="middle" font-size="16" fill="#111827">q: 4096 -&gt; 4096; k, v -&gt; 1024</text>
+
+    <line x1="1080" y1="444" x2="1080" y2="398" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Bottom part (1): heads -->
+    <rect x="860" y="444" width="440" height="50" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+    <text x="1080" y="475" text-anchor="middle" font-size="16" fill="#111827">32 query, 8 key/value, head 128</text>
+  </g>
+
+  <!-- Zoom panel: SwiGLU FFN -->
+  <g data-zoom="ffn">
+    <rect x="830" y="584" width="500" height="242" rx="14" fill="#ffffff" stroke="#6b7280" stroke-width="2.5" stroke-dasharray="6,6"/>
+    <text x="1080" y="622" text-anchor="middle" font-size="20" font-weight="bold" fill="#6b7280">SwiGLU FFN</text>
+
+    <!-- Top part (2): down projection -->
+    <rect x="860" y="650" width="440" height="50" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+    <text x="1080" y="681" text-anchor="middle" font-size="16" fill="#111827">down: Linear 14336 -&gt; 4096</text>
+
+    <line x1="1080" y1="746" x2="1080" y2="700" stroke="#1f2937" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Bottom part (1): gate and up -->
+    <rect x="860" y="746" width="440" height="50" rx="10" fill="#ffffff" stroke="#4b5563" stroke-width="1.5"/>
+    <text x="1080" y="777" text-anchor="middle" font-size="16" fill="#111827">gate, up 4096 -&gt; 14336; SiLU; multiply</text>
+  </g>
+
+  <!-- Callouts -->
+  <g data-callout="1">
+    <text x="1352" y="272" font-size="16" font-weight="bold" fill="#111827">
+      <tspan x="1352" dy="0">Context length:</tspan>
+      <tspan x="1352" dy="22">128K tokens</tspan>
+    </text>
+  </g>
+
+  <g data-callout="2">
+    <text x="1352" y="475" font-size="16" font-weight="bold" fill="#111827">32 Q / 8 KV heads</text>
+  </g>
+
+  <g data-callout="3">
+    <text x="540" y="187" font-size="16" font-weight="bold" fill="#111827">Vocabulary: 128,256</text>
+  </g>
+
+  <g data-callout="4">
+    <text x="540" y="735" font-size="16" font-weight="bold" fill="#111827">
+      <tspan x="540" dy="0">Embedding dimension:</tspan>
+      <tspan x="540" dy="22">4096</tspan>
+    </text>
+  </g>
+
+  <g data-callout="5">
+    <text x="1352" y="368" font-size="16" font-weight="bold" fill="#111827">
+      <tspan x="1352" dy="0">KV cache:</tspan>
+      <tspan x="1352" dy="22">128 KB per token</tspan>
+    </text>
+  </g>
+</svg>

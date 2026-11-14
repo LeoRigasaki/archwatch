@@ -168,9 +168,9 @@ def good_svg(spec, *, height=1200, extra=""):
     out.append(text(spec["model"]["title_label"], size=28))
     for i, g in enumerate(spec["layer_pattern"]["compressed_view"], 1):
         out.append(f'<g data-group="{i}" data-repeat="{g["repeat"]}">')
-        for _ in g["layers"]:
-            y += 6
-            out.append(f'<rect data-layer="x" x="40" y="{y}" width="100" height="4" fill="#ccc"/>')
+        y += 6 * len(g["layers"])
+        for k, label in enumerate(g["layers"]):  # the first listed layer is the lowest bar
+            out.append(f'<rect data-layer="{label}" x="40" y="{y - 6 * k}" width="100" height="4" fill="#ccc"/>')
         out.append(text(f"{g['repeat']} x") + "</g>")
     for key, panel in spec["zoom_panels"].items():
         out.append(f'<g data-zoom="{key}">' + text(panel["title"], x=800) + "</g>")
@@ -341,3 +341,16 @@ def test_repair_loop_sends_failures_and_stops_on_pass(tmp_path, monkeypatch):
     gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)
     assert len(client.prompts) == 2
     shutil.rmtree(folder)
+
+
+@pytest.mark.skipif(not chrome_available(), reason="installed Chrome is required for geometry checks")
+def test_layer_bars_must_match_spec_bottom_to_top(lfm_spec):
+    svg = good_svg(lfm_spec)
+    assert review(svg, lfm_spec, SETTINGS)["checks"]["layer_bars_match_spec"]["passed"]
+    swapped = (
+        svg.replace('data-layer="Global GQA + FFN"', 'data-layer="TMP"')
+        .replace('data-layer="Sliding-window GQA + FFN"', 'data-layer="Global GQA + FFN"')
+        .replace('data-layer="TMP"', 'data-layer="Sliding-window GQA + FFN"')
+    )
+    check = review(swapped, lfm_spec, SETTINGS)["checks"]["layer_bars_match_spec"]
+    assert not check["passed"] and "group 2" in check["problems"][0]

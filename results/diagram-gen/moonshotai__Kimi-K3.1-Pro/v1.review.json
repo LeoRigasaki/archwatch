@@ -1,0 +1,74 @@
+{
+  "passed": false,
+  "checks": {
+    "svg_valid_and_safe": {
+      "passed": true,
+      "problems": []
+    },
+    "canvas_size": {
+      "passed": true,
+      "problems": []
+    },
+    "numbers_from_spec": {
+      "passed": true,
+      "problems": []
+    },
+    "labels_from_spec": {
+      "passed": false,
+      "problems": [
+        "word \"decoder\" in \"Decoder layer\" is not in the spec",
+        "word \"x192\" in \"query: 7168 -> 1536, norm -> 96x192\" is not in the spec"
+      ]
+    },
+    "do_not_include": {
+      "passed": true,
+      "problems": []
+    },
+    "layer_sum": {
+      "passed": true,
+      "problems": [],
+      "drawn_total": 93,
+      "expected": 93
+    },
+    "zoom_panels_present": {
+      "passed": true,
+      "problems": []
+    },
+    "callouts_present": {
+      "passed": true,
+      "problems": []
+    },
+    "layer_bars_match_spec": {
+      "passed": true,
+      "problems": []
+    },
+    "no_text_overlap": {
+      "passed": true,
+      "problems": []
+    },
+    "no_covered_text": {
+      "passed": true,
+      "problems": []
+    },
+    "no_lines_through_text": {
+      "passed": true,
+      "problems": []
+    },
+    "no_leader_lines": {
+      "passed": true,
+      "problems": []
+    },
+    "inside_canvas_with_margin": {
+      "passed": true,
+      "problems": []
+    },
+    "readable_font_sizes": {
+      "passed": true,
+      "problems": []
+    }
+  },
+  "failures": [
+    "word \"decoder\" in \"Decoder layer\" is not in the spec",
+    "word \"x192\" in \"query: 7168 -> 1536, norm -> 96x192\" is not in the spec"
+  ]
+}

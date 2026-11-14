@@ -1,0 +1,28 @@
+[
+  {
+    "model": "moonshotai/Kimi-K3.1-Pro",
+    "attempts": 2,
+    "final_version": 2,
+    "passed": true,
+    "remaining_failures": [],
+    "errors": []
+  },
+  {
+    "model": "nvidia/Nemotron-H-8B-Base-8K",
+    "attempts": 2,
+    "final_version": 2,
+    "passed": false,
+    "remaining_failures": [
+      "group 2: bars from bottom to top are ['MLP', 'Mamba-2', 'MLP', 'GQA', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP'], spec says ['Mamba-2', 'MLP', 'Mamba-2', 'GQA', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP', 'Mamba-2', 'MLP'] (data-layer must be each layer's exact label)"
+    ],
+    "errors": []
+  },
+  {
+    "model": "meta-llama/Llama-3.1-8B",
+    "attempts": 1,
+    "final_version": 1,
+    "passed": true,
+    "remaining_failures": [],
+    "errors": []
+  }
+]
