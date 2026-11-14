@@ -1,0 +1,59 @@
+schema_version: 1
+id: meta-llama/Llama-3.1-8B
+source_commit: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
+label_method: manual_primary_source_inspection
+human_reviewed: false
+expected:
+  num_layers: 32
+  hidden_size: 4096
+  vocab_size: 128256
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  ffn_intermediate: 14336
+  context_length: 131072
+  params_total: 8030261248
+  layer_type_counts:
+    full_attention: 32
+  ffn_gated: true
+  activation: silu
+evidence:
+  config: https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/config.json
+  card: https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/README.md
+  weight_files:
+  - https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/model-00001-of-00004.safetensors
+  - https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/model-00002-of-00004.safetensors
+  - https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/model-00003-of-00004.safetensors
+  - https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/model-00004-of-00004.safetensors
+  weight_header_sample:
+    model.embed_tokens.weight:
+    - 128256
+    - 4096
+    model.layers.0.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.0.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.1.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.1.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.7.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.7.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+    model.layers.8.mlp.gate_proj.weight:
+    - 14336
+    - 4096
+    model.layers.8.self_attn.q_proj.weight:
+    - 4096
+    - 4096
+parameter_count_basis: Independent raw-header shape sum; 2x U8 packed 4-bit weights;
+  quantization scales excluded.
+notes: Config values checked against released tensor shapes and model-card scope;
+  no pipeline record was used to assign these labels.

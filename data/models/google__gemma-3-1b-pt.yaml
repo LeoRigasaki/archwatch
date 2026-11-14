@@ -1,0 +1,102 @@
+id: google/gemma-3-1b-pt
+source_commit: fcf18a2a879aab110ca39f8bffbccd5d49d8eb29
+hub_created: '2025-02-20T21:21:06+00:00'
+license: gemma
+analyzed_at: '2026-11-13T20:58:37+00:00'
+published:
+  num_layers: 26
+  hidden_size: 1152
+  vocab_size: 262144
+  context_length: 32768
+  num_attention_heads: 4
+  num_kv_heads: 1
+  head_dim: 256
+  attention_type: MQA
+  ffn_gated: true
+  sandwich_norm: true
+  ffn_intermediate: 6912
+  sliding_window: 512
+  layer_type_counts:
+    sliding_attention: 22
+    full_attention: 4
+  layer_pattern_per_layer:
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  qk_norm: true
+  params_total: 999885952
+  layer_types:
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - full_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - full_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - full_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - full_attention
+  - sliding_attention
+  - sliding_attention
+  decoder_type: Dense
+  tied_embeddings: false
+  rope:
+    full_attention:
+      rope_theta: 1000000
+    sliding_attention:
+      rope_theta: 10000
+  activation: gelu_pytorch_tanh
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 621084672
+    embedding: 301989888
+    attention_or_linear_mixer: 76690432
+    norms: 120960
+  weight_header_summary:
+    tensor_count: 340
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
+  activation) are read from config, card and tensor names only, not from code.'
+- 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,
+  attention_dropout, attn_logit_softcapping, bos_token_id, cache_implementation, eos_token_id,
+  final_logit_softcapping, initializer_range, pad_token_id, query_pre_attn_scalar,
+  rms_norm_eps, transformers_version, use_cache'

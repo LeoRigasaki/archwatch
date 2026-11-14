@@ -1,0 +1,125 @@
+id: zai-org/GLM-4-9B-0414
+source_commit: 645b8482494e31b6b752272bf7f7f273ef0f3caf
+hub_created: '2025-04-07T11:57:02+00:00'
+license: mit
+analyzed_at: '2026-11-13T20:58:42+00:00'
+published:
+  num_layers: 40
+  hidden_size: 4096
+  vocab_size: 151552
+  context_length: 32768
+  num_attention_heads: 32
+  num_kv_heads: 2
+  head_dim: 128
+  attention_type: GQA
+  ffn_gated: true
+  sandwich_norm: true
+  ffn_intermediate: 13696
+  layer_type_counts:
+    full_attention: 40
+  layer_pattern_per_layer:
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  params_total: 9400279040
+  layer_types:
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  - full_attention
+  decoder_type: Dense
+  tied_embeddings: false
+  rope:
+    rope_theta: 10000.0
+    partial_rotary_factor: 0.5
+  activation: silu
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 6731857920
+    attention_or_linear_mixer: 1426411520
+    embedding: 620756992
+    lm_head: 620756992
+    norms: 495616
+  weight_header_summary:
+    tensor_count: 523
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
+  activation) are read from config, card and tensor names only, not from code.'
+- 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,
+  attention_dropout, eos_token_id, initializer_range, pad_token_id, rms_norm_eps,
+  transformers_version, use_cache'

@@ -19,6 +19,8 @@ KIND = {
     "short_conv": ("Gated short conv", "k-conv"),
     "sliding_attention": ("Sliding-window attention", "k-swa"),
     "full_attention": ("Global attention", "k-full"),
+    "mamba2": ("Mamba-2", "k-mamba"),
+    "mlp": ("MLP", "k-mlp"),
 }
 STYLE = """
 .t{font:600 17px system-ui,-apple-system,Segoe UI,sans-serif;fill:#1f2328}
@@ -32,6 +34,8 @@ STYLE = """
 .mix.k-kda{fill:#2a9d8f22;stroke:#2a9d8f}.mix.k-dsa{fill:#e76f5122;stroke:#e76f51}.mix.k-mla{fill:#f4a26122;stroke:#f4a261}
 .mix.k-conv{fill:#5b7fbf22;stroke:#5b7fbf}.mix.k-swa{fill:#8ab17d22;stroke:#8ab17d}.mix.k-full{fill:#e76f5122;stroke:#e76f51}
 .mix{stroke-width:2}
+.k-mamba{fill:#a17bbb}.k-mlp{fill:#c69b50}
+.mix.k-mamba{fill:#a17bbb22;stroke:#a17bbb}.mix.k-mlp{fill:#c69b5022;stroke:#c69b50}
 """
 
 
@@ -93,7 +97,7 @@ def _mixer_lines(kind: str, v: dict) -> list[str]:
             additions,
         ]
     if kind == "full_attention":
-        r = rope.get("full_attention") or {}
+        r = rope.get("full_attention") or rope
         pr = r.get("partial_rotary_factor")
         return [
             f"{v.get('attention_type', 'Attention')} {v['num_attention_heads']} q / {v['num_kv_heads']} kv, head {v['head_dim']}",
@@ -104,8 +108,108 @@ def _mixer_lines(kind: str, v: dict) -> list[str]:
     return ["no rule for this layer type"]
 
 
+def _alternative_layout(rec: dict, v: dict) -> str:
+    """Operator-only hybrids and parallel residual blocks need different graphs."""
+    out, width, cx = [], 960, 480
+    name, types = rec["id"].split("/")[-1], v["layer_types"]
+    out += [
+        _t(24, 32, f"{name}: architecture", "t", "start"),
+        _t(
+            24,
+            54,
+            f"{_human(v['params_total'])} parameters · {len(types)} blocks · context {v['context_length']:,}",
+            "q",
+            "start",
+        ),
+    ]
+    cell = 912 / len(types)
+    for i, kind in enumerate(types):
+        cls = KIND[kind][1]
+        out.append(f'<rect x="{24 + i * cell:.2f}" y="86" width="{cell - 1:.2f}" height="32" class="{cls}"/>')
+        if i % 4 == 0 or i == len(types) - 1:
+            out.append(_t(24 + (i + 0.5) * cell, 136, i + 1, "q"))
+    out.append(_t(24, 76, "Block map (block 1 on the left)", "h", "start"))
+
+    def box(x, y, w, h, title, lines=(), cls="box"):
+        out.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" class="{cls}"/>')
+        out.append(_t(x + w / 2, y + 22, title, "h"))
+        for j, line in enumerate(lines):
+            out.append(_t(x + w / 2, y + 44 + 18 * j, line, "q"))
+
+    def arrow(x, bottom, top, dest=None):
+        dest = x if dest is None else dest
+        mid = (bottom + top) / 2
+        out.append(f'<path d="M{x} {bottom}V{mid}H{dest}V{top}" class="edge" marker-end="url(#ar)"/>')
+
+    box(285, 164, 390, 52, "Final norm + LM head")
+    if v["block_layout"] == "standalone":
+        kinds = list(dict.fromkeys(types))
+        w, gap = 280, 24
+        for j, kind in enumerate(kinds):
+            x = (width - (w * len(kinds) + gap * (len(kinds) - 1))) / 2 + j * (w + gap)
+            if kind == "mamba2":
+                lines = [
+                    f"{v['mamba_num_heads']} heads x {v['mamba_head_dim']} dims",
+                    f"state size {v['mamba_state_size']}, {v['mamba_groups']} groups",
+                    f"conv: {v['mamba_conv_channels']} channels, k={v['mamba_conv_kernel']}",
+                ]
+            elif kind == "mlp":
+                lines = [
+                    f"{v['hidden_size']} → {v['ffn_intermediate']} → {v['hidden_size']}",
+                    f"activation: {v.get('activation', 'unverified')}",
+                    "ungated FFN" if v.get("ffn_gated") is False else "FFN",
+                ]
+            else:
+                lines = _mixer_lines(kind, v)
+            box(x, 300, w, 128, f"{KIND[kind][0]} x {types.count(kind)}", lines, f"mix {KIND[kind][1]}")
+            box(x + 25, 458, w - 50, 44, "Pre-norm")
+            arrow(x + w / 2, 458, 428)
+            arrow(cx, 548, 502, x + w / 2)
+            arrow(x + w / 2, 300, 216, cx)
+        emb_y = 548
+    else:
+        box(325, 270, 310, 44, "Input + attention + MLP")
+        box(110, 358, 330, 128, KIND["full_attention"][0], _mixer_lines("full_attention", v), "mix k-full")
+        box(
+            520,
+            358,
+            330,
+            128,
+            "Ungated FFN" if v.get("ffn_gated") is False else "FFN",
+            [
+                f"{v['hidden_size']} → {v['ffn_intermediate']} → {v['hidden_size']}",
+                f"activation: {v.get('activation', 'unverified')}",
+            ],
+        )
+        box(325, 532, 310, 44, "Shared pre-norm input")
+        for x in (275, 685):
+            arrow(cx, 532, 486, x)
+            arrow(x, 358, 314, cx)
+        arrow(cx, 270, 216)
+        out.append('<path d="M480 624H48V292H325" class="edge" marker-end="url(#ar)"/>')
+        arrow(cx, 624, 576)
+        emb_y = 624
+    box(285, emb_y, 390, 52, f"Embedding {v['vocab_size']:,} x {v['hidden_size']}")
+    caption = (
+        "One operator per residual block; operators follow the block map"
+        if v["block_layout"] == "standalone"
+        else f"Parallel residual block x {len(types)}"
+    )
+    out.append(_t(cx, emb_y + 76, caption, "h"))
+    if v["block_layout"] == "standalone":
+        out.append(_t(cx, emb_y + 96, "Residual connection surrounds each operator", "q"))
+    height = emb_y + 112
+    defs = '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8c959f"/></marker></defs>'
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img" aria-label="{escape(name)} architecture">'
+        f'<style>{STYLE}</style>{defs}<rect width="{width}" height="{height}" fill="#fff"/>' + "".join(out) + "</svg>"
+    )
+
+
 def render(rec: dict) -> str:
     v = render_values(rec)
+    if v.get("block_layout") in ("standalone", "parallel"):
+        return _alternative_layout(rec, v)
     types: list[str] = v["layer_types"]
     n = len(types)
     W = 960
@@ -193,8 +297,11 @@ def render(rec: dict) -> str:
                 f"dense prefix: FFN {v['hidden_size']} -> {v['dense_ffn_intermediate']} -> {v['hidden_size']}"
             )
     else:
-        ffn_title = f"Gated FFN: {v['hidden_size']} -> {v.get('ffn_intermediate')} -> {v['hidden_size']}"
-        ffn_lines.append("w1 and w3 in parallel, gated, then w2")
+        ffn_title = f"{'Gated FFN' if v.get('ffn_gated') else 'FFN'}: {v['hidden_size']} -> {v.get('ffn_intermediate')} -> {v['hidden_size']}"
+        if v.get("ffn_gated"):
+            ffn_lines.append("gate and up projections, then down projection")
+        if v.get("activation"):
+            ffn_lines.append(f"activation: {v['activation']}")
     ffn_h = 40 + 16 * len(ffn_lines)
     sandwich = bool(v.get("sandwich_norm"))
     norm_h = 30

@@ -1,0 +1,27 @@
+{
+  "batches": [
+    {
+      "discovery_errors": [],
+      "outcomes": {
+        "LiquidAI/LFM3-1.7B-Base": "ready_for_diagram",
+        "Qwen/Qwen3-0.6B-Base": "ready_for_diagram",
+        "deepseek-ai/DeepSeek-V2-Lite": "ready_for_diagram",
+        "mistralai/Mistral-7B-v0.1": "ready_for_diagram",
+        "nvidia/Nemotron-H-8B-Base-8K": "ready_for_diagram"
+      },
+      "processed": 5
+    },
+    {
+      "discovery_errors": [],
+      "outcomes": {
+        "google/gemma-3-1b-pt": "ready_for_diagram",
+        "meta-llama/Llama-3.1-8B": "ready_for_diagram",
+        "microsoft/phi-2": "ready_for_diagram",
+        "moonshotai/Kimi-K3.1-Pro": "ready_for_diagram",
+        "zai-org/GLM-4-9B-0414": "ready_for_diagram"
+      },
+      "processed": 5
+    }
+  ],
+  "source_policy": "Current Hub metadata, pinned config/card/safetensors headers; no weight payloads or model execution."
+}

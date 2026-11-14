@@ -41,7 +41,18 @@ def main():
     tests["command"] = "uv run --frozen pytest -q --junitxml=results/test-results.xml"
     tests["scope"] = "Offline unit/integration tests and saved-record checks; no fresh Hub or weight-header rerun."
     total_checks = Counter(c["status"] for rec in records for c in rec["checks"])
-    kimi = next(rec for rec in records if rec["id"] == "moonshotai/Kimi-K3.1-Pro")
+    gold_count = len(list((ROOT / "evals/gold").glob("*.yaml")))
+    gold_path = ROOT / "results/gold-exact-match.json"
+    gold_report = json.loads(gold_path.read_text()) if gold_path.exists() else None
+    tensor_deltas = [
+        {
+            "id": rec["id"],
+            "predecessor": rec["predecessor"]["id"],
+            "added_total": rec["tensor_diff_vs_predecessor"]["added_total"],
+        }
+        for rec in records
+        if rec.get("predecessor") and rec.get("tensor_diff_vs_predecessor")
+    ]
     import_info = json.loads((ROOT / "docs/prototype-import.json").read_text())
     acceptance_path = ROOT / "results/github-workflow-acceptance.json"
     acceptance = json.loads(acceptance_path.read_text()) if acceptance_path.exists() else {}
@@ -56,13 +67,13 @@ def main():
         "records_path": "data/models",
         "prototype_archive": import_info["archive"],
         "prototype_archive_sha256": import_info["archive_sha256"],
-        "stage": "Deterministic prototype and bounded Hub watcher implemented; independent gold-set evaluation and LLM stages remain open.",
+        "stage": "Ten-publisher primary backfill and development gold evaluation implemented; human review, held-out evaluation and LLM stages remain open.",
         "models": summaries,
         "record_count": len(records),
         "yaml_record_count": len(list((ROOT / "data/models").glob("*.yaml"))),
         "saved_record_check_totals": dict(total_checks),
         "test_run": tests,
-        "dsa_indexer_parameter_delta": kimi["tensor_diff_vs_predecessor"]["added_total"],
+        "tensor_group_additions": tensor_deltas,
         "prototype_pipeline_implemented": True,
         "watcher_implemented": True,
         "watcher_policy": "config/watcher.yaml",
@@ -82,7 +93,12 @@ def main():
             ).returncode
             == 0,
         },
-        "formal_gold_set_models": 0,
+        "formal_gold_set_models": gold_count,
+        "gold_label_method": "Assistant manual primary-source inspection; human_reviewed=false",
+        "development_gold_evaluation": {k: gold_report[k] for k in ("correct", "total", "exact_match")}
+        if gold_report
+        else None,
+        "backfill_source_run_evidence": "results/backfill-processing.json",
         "formal_archwatch_accuracy_measured": False,
         "legacy_research": {
             "path": "research-reference/private-notes",
@@ -99,7 +115,7 @@ def main():
     lines = [
         "# Saved prototype results",
         "",
-        "Generated from four saved records refreshed on 13 November 2026. This summary command does not refetch sources; the separate live run is recorded in [live-validation.json](live-validation.json).",
+        f"Generated from {len(records)} saved records. This command does not refetch sources. The ten-publisher backfill run is recorded in [backfill-processing.json](backfill-processing.json); original-prototype evidence remains in [live-validation.json](live-validation.json).",
         "",
         "| Model | Parameters in saved header counts | Verified fields | Single-source fields | Conflicts |",
         "|---|---:|---:|---:|---:|",
@@ -113,9 +129,9 @@ def main():
         "",
         f"Offline tests: {tests['passed']} passed; {tests['failures']} failures; {tests['errors']} errors. Python {tests['python']}.",
         "",
-        f"Recorded Kimi DSA-indexer addition: {snapshot['dsa_indexer_parameter_delta']:,} parameters.",
+        "Tensor-group additions: " + "; ".join(f"{d['id']}: {d['added_total']:,}" for d in tensor_deltas) + ".",
         "",
-        "The LFM2.5-1.2B-Instruct FFN width now applies the model's auto-adjust convention and agrees with the weights. The independent 30-model gold set is still open.",
+        f"Manual primary-source gold labels: {gold_count}. [Per-field exact match](gold-exact-match.md) reports the development set; it is not human-reviewed or held-out accuracy. The longer-term 30-model evaluation remains open.",
     ]
     (ROOT / "results/README.md").write_text("\n".join(lines) + "\n")
     print(f"Summarized {len(records)} saved records; {tests['passed']} passing offline tests.")

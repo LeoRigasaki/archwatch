@@ -1,16 +1,25 @@
 # Saved prototype results
 
-Generated from four saved records refreshed on 13 November 2026. This summary command does not refetch sources; the separate live run is recorded in [live-validation.json](live-validation.json).
+Generated from 13 saved records. This command does not refetch sources. The ten-publisher backfill run is recorded in [backfill-processing.json](backfill-processing.json); original-prototype evidence remains in [live-validation.json](live-validation.json).
 
 | Model | Parameters in saved header counts | Verified fields | Single-source fields | Conflicts |
 |---|---:|---:|---:|---:|
 | LiquidAI/LFM2.5-1.2B-Instruct | 1,170,340,608 | 6 | 14 | 1 |
+| LiquidAI/LFM3-1.7B-Base | 1,728,801,536 | 12 | 15 | 0 |
 | LiquidAI/LFM3-1.7B | 1,728,801,536 | 11 | 14 | 0 |
-| moonshotai/Kimi-K3.1-Pro | 2,780,110,363,392 | 24 | 20 | 0 |
-| moonshotai/Kimi-K3 | 2,779,931,837,184 | 20 | 20 | 0 |
+| Qwen/Qwen3-0.6B-Base | 596,049,920 | 6 | 16 | 0 |
+| deepseek-ai/DeepSeek-V2-Lite | 15,706,484,224 | 8 | 23 | 0 |
+| google/gemma-3-1b-pt | 999,885,952 | 5 | 19 | 0 |
+| meta-llama/Llama-3.1-8B | 8,030,261,248 | 5 | 16 | 0 |
+| microsoft/phi-2 | 2,779,683,840 | 6 | 16 | 0 |
+| mistralai/Mistral-7B-v0.1 | 7,241,732,096 | 5 | 17 | 0 |
+| moonshotai/Kimi-K3.1-Pro | 2,780,110,363,392 | 24 | 21 | 0 |
+| moonshotai/Kimi-K3 | 2,779,931,837,184 | 20 | 21 | 0 |
+| nvidia/Nemotron-H-8B-Base-8K | 8,100,852,736 | 6 | 22 | 0 |
+| zai-org/GLM-4-9B-0414 | 9,400,279,040 | 5 | 17 | 0 |
 
-Offline tests: 83 passed; 0 failures; 0 errors. Python 3.12.13.
+Offline tests: 102 passed; 0 failures; 0 errors. Python 3.12.13.
 
-Recorded Kimi DSA-indexer addition: 178,526,208 parameters.
+Tensor-group additions: LiquidAI/LFM3-1.7B: 46,598,912; moonshotai/Kimi-K3.1-Pro: 178,526,208.
 
-The LFM2.5-1.2B-Instruct FFN width now applies the model's auto-adjust convention and agrees with the weights. The independent 30-model gold set is still open.
+Manual primary-source gold labels: 10. [Per-field exact match](gold-exact-match.md) reports the development set; it is not human-reviewed or held-out accuracy. The longer-term 30-model evaluation remains open.

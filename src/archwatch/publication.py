@@ -45,6 +45,18 @@ def render_values(record: dict) -> dict:
         required.update(("dsa_index_num_heads", "dsa_index_head_dim", "dsa_index_topk"))
     if "kda_linear" in kinds:
         required.update(("linear_attn_num_heads", "linear_attn_head_dim", "linear_attn_conv_kernel"))
+    if "mamba2" in kinds:
+        required.update(
+            (
+                "block_layout",
+                "mamba_num_heads",
+                "mamba_head_dim",
+                "mamba_state_size",
+                "mamba_conv_kernel",
+                "mamba_groups",
+                "mamba_conv_channels",
+            )
+        )
     if "moe_num_experts" in values:
         required.update(("moe_active_experts", "moe_shared_experts", "moe_expert_intermediate"))
         if values.get("dense_layers", 0):

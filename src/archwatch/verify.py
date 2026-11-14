@@ -62,6 +62,8 @@ def check(field: str, cands: list[dict]) -> dict:
 
 
 TO_WEIGHT_KIND = {
+    "mamba2": "mamba2",
+    "mlp": "mlp",
     "kda_linear": "linear_delta",
     "gated_dsa_mla": "dsa_mla",
     "full_attention_mla": "mla",
@@ -120,6 +122,23 @@ def verify(
     out.append(check("num_kv_heads", [c("num_kv_heads")]))
     out.append(check("head_dim", [c("head_dim")]))
     out.append(check("attention_type", [c("attention_type")]))
+    out.append(check("ffn_gated", [w(wshape.get("ffn_gated"), "FFN gate/up/down tensor layout")]))
+    out.append(
+        check("sandwich_norm", [c("sandwich_norm"), w(wshape.get("sandwich_norm"), "post-mixer/post-FFN norm tensors")])
+    )
+    if "mamba_num_heads" in V:
+        channels = (
+            V["mamba_num_heads"][0] * V["mamba_head_dim"][0] + 2 * V["mamba_groups"][0] * V["mamba_state_size"][0]
+        )
+        out.append(
+            check(
+                "mamba_conv_channels",
+                [
+                    {"value": channels, "evidence": "derived:mamba heads*head_dim + 2*groups*state_size"},
+                    w(wshape.get("mamba_conv_channels"), "mixer.conv1d channels"),
+                ],
+            )
+        )
 
     if "moe_num_experts" in V:
         epl = wcount.get("experts_per_moe_layer") or []
@@ -307,10 +326,17 @@ def verify(
         "vision_hidden_size",
         "activation",
         "released_weights_format",
+        "block_layout",
+        "mamba_num_heads",
+        "mamba_head_dim",
+        "mamba_state_size",
+        "mamba_conv_kernel",
+        "mamba_groups",
+        "mamba_activation",
     )
     checked = {r["field"] for r in out}
     for field in rendering_fields:
-        if field in V and field not in checked:
+        if (field in V or field in cf) and field not in checked:
             out.append(check(field, [c(field), cd(field)]))
     if wcount:
         out.append(check("parameter_components", [w(wcount.get("by_component"), "parameter totals by tensor group")]))
