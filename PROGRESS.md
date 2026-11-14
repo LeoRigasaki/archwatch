@@ -19,7 +19,7 @@ As of **14 November 2026**, after the watcher and source-driven cleanup merges, 
 - [x] Header reads reject full-body range responses and oversized headers.
 - [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
 - [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **114 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
+- [x] **116 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
 - [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
 - [x] GitHub repository configured at `LeoRigasaki/archwatch`.
 - [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
@@ -159,7 +159,7 @@ Evidence: [processing](results/backfill-processing.json), [repeat no-op](results
 - [x] Added bounded manual newest/predecessor processing with diagnostic records, explicit source/access review and stable repeat behavior.
 - [x] Adaptation reaches **138/139** plus **16/16** on Meta; DiffusionGemma's card/header parameter-scope disagreement remains withheld. These are not new held-out results.
 - [x] All ten selected newest models analyzed; seven remain held for new graph/cache qualification. Llama3.2 Vision predecessor access and Mistral Large3 native config support remain unresolved.
-- [x] Current inventory: 26 records, 12 eligible gallery views, 28 tracked sources; 114 offline tests pass.
+- [x] Current inventory: 26 records, 12 eligible gallery views, 28 tracked sources; 116 offline tests pass.
 - [ ] Diagram route comparison on the four requested established records, in a separate PR. Gemini credentials are configured but no generation loop/explainer is authorized.
 - [ ] Optional Discord watcher notification, in its own small PR; credential stored without printing it.
 

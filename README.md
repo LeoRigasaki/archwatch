@@ -36,7 +36,7 @@ The fixed list in `watchlist.txt` remains the reproducible smoke test. `watch.py
 
 [Backfill processing](results/backfill-processing.json) covers one primary release each from DeepSeek, Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai. [The exact selections](config/backfill.yaml) and [gold labels](evals/README.md) retain pinned primary links. The gallery holds 26 saved diagnostic records, of which 12 meet its current display policy.
 
-The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **114 passing tests**.
+The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **116 passing tests**.
 
 The original four-model live run remains in [live-validation.json](results/live-validation.json). [Family rules](docs/FAMILY_RULES.md) document the new Phi parallel graph, Mistral all-layer sliding attention, GLM fused FFN and Nemotron-H operator-only graph. Cache estimates are not measured runtime VRAM.
 

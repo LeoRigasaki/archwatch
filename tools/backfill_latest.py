@@ -121,15 +121,28 @@ def run(root, manifest, policy, *, batch=0, source=None):
                     "source_commit": selection["predecessor_commit"],
                     "selection": selection["selection"],
                 }
-                if old:
-                    record["diff_vs_predecessor"] = pipeline.diff(record, old)
-                    record["tensor_diff_vs_predecessor"] = source.tensor_diff(repo, pred, infos[repo], infos[pred])
-                else:
-                    record["predecessor_review"] = results[pred]
-                    if pred in infos and results[pred].get("http_status") is None:
-                        # A native-format predecessor can expose readable tensor
-                        # headers while still lacking the required HF config.
+                try:
+                    if old:
+                        record["diff_vs_predecessor"] = pipeline.diff(record, old)
                         record["tensor_diff_vs_predecessor"] = source.tensor_diff(repo, pred, infos[repo], infos[pred])
+                    else:
+                        record["predecessor_review"] = results[pred]
+                        if pred in infos and results[pred].get("http_status") is None:
+                            # Native headers may remain readable without config.
+                            record["tensor_diff_vs_predecessor"] = source.tensor_diff(
+                                repo, pred, infos[repo], infos[pred]
+                            )
+                except Exception as comparison_error:
+                    record["predecessor_review"] = {
+                        "status": "review",
+                        "error": type(comparison_error).__name__,
+                        "reason": "Predecessor comparison unavailable; primary analysis retained",
+                    }
+                    diagnostic = dict(
+                        field="predecessor_comparison", status="missing", confidence=0.0, published=False, candidates=[]
+                    )
+                    record["checks"].append(diagnostic)
+                    record["review_queue"].append(diagnostic)
             persist(record)
         except Exception as exc:
             error(repo, revision, exc)

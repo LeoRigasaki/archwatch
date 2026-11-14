@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 from test_watcher import Source, files, model, policy
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,3 +54,31 @@ def test_upstream_change_after_freeze_never_analyzes_a_different_revision(tmp_pa
     assert not source.analyzed
     assert report["outcomes"][rec["id"]]["status"] == "review"
     assert not list((tmp_path / "data/models").glob("*.json"))
+
+
+@pytest.mark.parametrize("native_predecessor", [False, True])
+def test_failed_predecessor_comparison_preserves_successful_primary_analysis(tmp_path, native_predecessor):
+    old = model("lab/Family1", "2025-01-01T00:00:00Z")
+    new = model("lab/Family2", "2026-01-01T00:00:00Z", sha="b" * 40)
+    source = Source([old, new])
+    if native_predecessor:
+        source.infos[old["id"]]["files"] = ["model.safetensors", "params.json"]
+
+    def unavailable(*args):
+        raise TimeoutError("headers unavailable")
+
+    source.tensor_diff = unavailable
+    selection = dict(
+        id=new["id"],
+        source_commit=new["source_commit"],
+        predecessor=old["id"],
+        predecessor_commit=old["source_commit"],
+        selection="Primary-source predecessor",
+    )
+    report = runner().run(tmp_path, dict(models=[selection]), policy(), source=source)
+    assert report["outcomes"][new["id"]]["status"] == "ready_for_diagram"
+    saved = json.loads((tmp_path / "data/models/lab__Family2.json").read_text())
+    assert saved["published"]["context_length"] == 128000
+    assert saved["predecessor_review"]["error"] == "TimeoutError"
+    assert any(item["field"] == "predecessor_comparison" for item in saved["review_queue"])
+    assert (tmp_path / "diagrams/lab__Family2.svg").exists()
