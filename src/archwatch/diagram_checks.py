@@ -250,11 +250,12 @@ GEOMETRY_JS = r"""(settings) => {
    return b.w+b.h>0&&(b.x<v.x+m-0.5||b.y<v.y+m-0.5||b.x+b.w>v.x+v.width-m+0.5||b.y+b.h>v.y+v.height-m+0.5)}).map(e=>e.tagName==='text'?label(e):e.tagName+(e.closest('[data-zoom]')?' in zoom '+e.closest('[data-zoom]').dataset.zoom:''));
  const runs=[...svg.querySelectorAll('text,tspan')].filter(e=>!hidden(e)&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()));
  const small=runs.filter(e=>{const c=e.getScreenCTM();return Number.parseFloat(getComputedStyle(e).fontSize)*Math.min(Math.hypot(c.a,c.b),Math.hypot(c.c,c.d))<settings.min_font_px}).map(label);
- return {canvas:{width:v.width,height:v.height},overlaps,covered:[...new Set(covered)],through:[...new Set(through)],leaders,outside:[...new Set(outside)],small:[...new Set(small)]};
+ const bars=[...svg.querySelectorAll('[data-group]')].map(g=>({group:g.dataset.group,bars:[...g.querySelectorAll('[data-layer]')].map(b=>{const r=box(b);return {label:b.dataset.layer,y:r.y+r.h/2}}).sort((a,b)=>b.y-a.y).map(b=>b.label)}));
+ return {canvas:{width:v.width,height:v.height},bars,overlaps,covered:[...new Set(covered)],through:[...new Set(through)],leaders,outside:[...new Set(outside)],small:[...new Set(small)]};
 }"""
 
 
-def browser_checks(svg: str, settings: dict, *, screenshot=None) -> dict:
+def browser_checks(svg: str, settings: dict, *, spec=None, screenshot=None) -> dict:
     parse(svg)  # reject active content before a browser ever loads model output
     from playwright.sync_api import sync_playwright
 
@@ -277,7 +278,18 @@ def browser_checks(svg: str, settings: dict, *, screenshot=None) -> dict:
     def result(items, message):
         return dict(passed=not items, problems=[message.format(i) for i in items])
 
+    order = []
+    if spec:
+        drawn = {g["group"]: g["bars"] for g in geo["bars"]}
+        for i, entry in enumerate(spec["layer_pattern"]["compressed_view"], 1):
+            got = drawn.get(str(i))
+            if got is not None and got != entry["layers"]:
+                order.append(
+                    f"group {i}: bars from bottom to top are {got}, spec says {entry['layers']} "
+                    "(data-layer must be each layer's exact label)"
+                )
     return {
+        "layer_bars_match_spec": result(order, "{}"),
         "no_text_overlap": result([f'"{a}" / "{b}"' for a, b in geo["overlaps"]], "text overlaps text: {}"),
         "no_covered_text": result(geo["covered"], 'a shape is drawn on top of the text "{}"'),
         "no_lines_through_text": result(geo["through"], 'a line or arrow passes through the text "{}"'),
@@ -301,6 +313,6 @@ def browser_checks(svg: str, settings: dict, *, screenshot=None) -> dict:
 def review(svg: str, spec: dict, settings: dict, *, screenshot=None, browser=True) -> dict:
     checks = static_checks(svg, spec, settings)
     if checks["svg_valid_and_safe"]["passed"] and browser:
-        checks.update(browser_checks(svg, settings, screenshot=screenshot))
+        checks.update(browser_checks(svg, settings, spec=spec, screenshot=screenshot))
     failures = [p for name, c in checks.items() if not c["passed"] for p in c["problems"][:12]]
     return dict(passed=all(c["passed"] for c in checks.values()), checks=checks, failures=failures)

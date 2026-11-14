@@ -1,0 +1,38 @@
+[
+  {
+    "time": 1794650864.344037,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651042.5153332,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651181.454719,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651196.4599948,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651406.5753422,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651594.672866,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  }
+]
