@@ -17,7 +17,7 @@ The generator is Gemini 4 Hydrogen, resolved from configuration. The [official m
 
 Each candidate is checked automatically for:
 
-1. All visible labels/numbers match their allowed, source-linked published text; geometric coordinates are not architecture facts.
+1. All visible labels/numbers match their allowed, source-linked published text, ignoring whitespace around colons and numeric thousands separators; geometric coordinates are not architecture facts.
 2. Every required label, node and edge occurs once, with labels on the correct semantic node.
 3. The visible per-kind layer counts sum to the published total.
 4. Browser-measured text boxes do not overlap, including translated/rotated groups.

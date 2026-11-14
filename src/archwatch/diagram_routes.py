@@ -202,6 +202,13 @@ def render_layout(layout, spec):
 
 
 def inspect_svg(svg, spec):
+    def external_url(value):
+        return any(not url.strip().strip("\"'").startswith("#") for url in re.findall(r"url\(([^)]*)\)", value, re.I))
+
+    def canonical(text):
+        text = re.sub(r"(?<=\d),(?=\d)", "", text)
+        return re.sub(r"\s*:\s*", ":", " ".join(text.split()))
+
     if len(svg.encode()) > 1024 * 1024 or re.search(r"<!DOCTYPE|<!ENTITY", svg, re.I):
         raise ValueError("Unsafe or oversized SVG")
     root = ET.fromstring(svg)
@@ -232,9 +239,11 @@ def inspect_svg(svg, spec):
             raise ValueError("Unsafe SVG element")
         for key, value in element.attrib.items():
             key = key.rsplit("}", 1)[-1].lower()
-            if key.startswith("on") or key in ("href", "src") or re.search(r'url\(\s*["\']?[^#]', value, re.I):
+            if key.startswith("on") or key in ("href", "src") or external_url(value):
                 raise ValueError("Unsafe SVG resource/event")
-        if tag == "style" and re.search(r'@import|https?:|url\(\s*["\']?[^#]', element.text or "", re.I):
+        if tag == "style" and (
+            re.search(r"@import|https?:", element.text or "", re.I) or external_url(element.text or "")
+        ):
             raise ValueError("Unsafe SVG stylesheet")
         if element.get("data-node-id"):
             nodes.append(element.get("data-node-id"))
@@ -247,7 +256,11 @@ def inspect_svg(svg, spec):
                 ancestor = parents.get(ancestor)
             if ancestor is None or ancestor.get("data-node-id") != expected_owner.get(element.get("data-label-id")):
                 misplaced.append(element.get("data-label-id"))
-    unknown = [dict(id=k, text=t) for k, t in texts if k not in spec["labels"] or t != spec["labels"][k]["text"]]
+    unknown = [
+        dict(id=k, text=t)
+        for k, t in texts
+        if k not in spec["labels"] or canonical(t) != canonical(spec["labels"][k]["text"])
+    ]
     counts = Counter(k for k, _ in texts)
     coverage = counts == Counter({k: 1 for k in spec["labels"]})
     layer_sum = 0

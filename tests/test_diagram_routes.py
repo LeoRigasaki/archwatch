@@ -40,6 +40,10 @@ def test_constrained_layout_copies_all_labels_without_accepting_facts_from_model
     result = inspect_svg(drawing, s)
     assert result["labels_and_numbers_from_published"] and result["label_coverage"]
     assert result["layer_sum_matches"] and result["labels_attached_to_nodes"]
+    formatted = inspect_svg(
+        drawing.replace("hidden_size: 8", "hidden_size:8").replace("url(#arrow)", "url('#arrow')"), s
+    )
+    assert formatted["labels_and_numbers_from_published"]
     bad = layout()
     bad["nodes"][0]["label"] = "invented width: 999"
     with pytest.raises(ValueError, match="Unexpected"):
