@@ -1,0 +1,1139 @@
+{
+ "id": "LiquidAI/LFM3-1.7B-Base",
+ "source_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
+ "hub_created": "2026-10-26T16:28:49+00:00",
+ "license": "lfm1.0",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "ar",
+   "conversational",
+   "custom_code",
+   "de",
+   "edge",
+   "en",
+   "endpoints_compatible",
+   "es",
+   "fr",
+   "hi",
+   "id",
+   "it",
+   "ja",
+   "ko",
+   "lfm3",
+   "license:other",
+   "liquid",
+   "pl",
+   "pt",
+   "region:us",
+   "ru",
+   "safetensors",
+   "text-generation",
+   "th",
+   "transformers",
+   "vi",
+   "zh"
+  ]
+ },
+ "analyzed_at": "2026-11-13T20:58:36+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "Lfm3ForCausalLM",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "lfm3",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 24,
+   "evidence": "config:num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 2048,
+   "evidence": "config:hidden_size"
+  },
+  "vocab_size": {
+   "value": 128000,
+   "evidence": "config:vocab_size"
+  },
+  "context_length": {
+   "value": 262144,
+   "evidence": "config:max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": true,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "short_conv",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv"
+   ],
+   "evidence": "config:layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "short_conv": 13,
+    "full_attention": 6,
+    "sliding_attention": 5
+   },
+   "evidence": "config:layer_types"
+  },
+  "num_attention_heads": {
+   "value": 16,
+   "evidence": "config:num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 4,
+   "evidence": "config:num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 128,
+   "evidence": "config:head_dim"
+  },
+  "attention_type": {
+   "value": "GQA",
+   "evidence": "derived:num_key_value_heads(4) vs num_attention_heads(16)"
+  },
+  "sliding_window": {
+   "value": 256,
+   "evidence": "config:sliding_window"
+  },
+  "short_conv_kernel": {
+   "value": 7,
+   "evidence": "config:conv_L_cache"
+  },
+  "decoder_type": {
+   "value": "Hybrid (dense)",
+   "evidence": "config:layer_types"
+  },
+  "ffn_intermediate": {
+   "value": 7680,
+   "evidence": "config:intermediate_size"
+  },
+  "sandwich_norm": {
+   "value": true,
+   "evidence": "config:use_sandwich_norm"
+  },
+  "rope": {
+   "value": {
+    "full_attention": {
+     "partial_rotary_factor": 0.5,
+     "rope_theta": 1000000.0,
+     "rope_type": "default"
+    },
+    "sliding_attention": {
+     "rope_theta": 10000,
+     "rope_type": "default"
+    }
+   },
+   "evidence": "config:rope_parameters"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "conv_L_cache",
+   "dtype",
+   "head_dim",
+   "hidden_size",
+   "intermediate_size",
+   "layer_types",
+   "max_position_embeddings",
+   "model_type",
+   "num_attention_heads",
+   "num_hidden_layers",
+   "num_key_value_heads",
+   "rope_parameters.full_attention.partial_rotary_factor",
+   "rope_parameters.full_attention.rope_theta",
+   "rope_parameters.full_attention.rope_type",
+   "rope_parameters.sliding_attention.rope_theta",
+   "rope_parameters.sliding_attention.rope_type",
+   "sliding_window",
+   "tie_word_embeddings",
+   "use_sandwich_norm",
+   "vocab_size"
+  ],
+  "unconsumed": [
+   "auto_map.AutoConfig",
+   "auto_map.AutoModel",
+   "auto_map.AutoModelForCausalLM",
+   "bos_token_id",
+   "conv_bias",
+   "eos_token_id",
+   "norm_eps",
+   "pad_token_id",
+   "transformers_version",
+   "use_cache"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "configuration_lfm3.py",
+  "model.safetensors",
+  "modeling_lfm3.py"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 1728801536,
+   "text_total": 1728801536,
+   "by_component": {
+    "dense_ffn": 1132462080,
+    "embedding": 262144000,
+    "short_conv_mixer": 218290176,
+    "attention_or_linear_mixer": 115706624,
+    "norms": 198656
+   },
+   "routed_expert_params": 0,
+   "moe_layers": 0,
+   "experts_per_moe_layer": [],
+   "layer_indices_in_weights": [
+    0,
+    23
+   ],
+   "tensor_count": 286,
+   "skipped_scale_tensors": 0
+  },
+  "active": null
+ },
+ "cache": {
+  "grows_per_token_bytes": 12288,
+  "grows_per_token_bytes_low": 12288,
+  "constant_bytes": 2994176,
+  "constant_bytes_low": 2994176,
+  "naive_mha_per_token_bytes": 196608,
+  "reduction_vs_naive_mha": 16.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 103657472,
+    "gib": 0.097
+   },
+   "32768": {
+    "bytes": 405647360,
+    "gib": 0.378
+   },
+   "131072": {
+    "bytes": 1613606912,
+    "gib": 1.503
+   },
+   "262144": {
+    "bytes": 3224219648,
+    "gib": 3.003
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 6,
+    "grows_per_token_bytes": 12288,
+    "constant_bytes": 0,
+    "formula": "2 x 4 KV heads x 128 head_dim x 2 B x 6 layers"
+   },
+   {
+    "layer_type": "short_conv",
+    "layers": 13,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 372736,
+    "formula": "2048 channels x 7 taps x 2 B x 13 layers (upper bound)"
+   },
+   {
+    "layer_type": "sliding_attention",
+    "layers": 5,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 2621440,
+    "formula": "window 256 x 2 x 4 x 128 x 2 B x 5 layers (capped)"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "short-conv state taken as hidden x kernel (7); real kernels may keep kernel-1"
+  ]
+ },
+ "code_scan": {
+  "files": [
+   "configuration_lfm3.py",
+   "modeling_lfm3.py"
+  ],
+  "classes": [
+   {
+    "name": "Lfm3Config",
+    "file": "configuration_lfm3.py",
+    "line": 22,
+    "doc": "rope_parameters (`dict[str, RopeParameters]`, *optional*):"
+   },
+   {
+    "name": "Lfm3RMSNorm",
+    "file": "modeling_lfm3.py",
+    "line": 52,
+    "doc": ""
+   },
+   {
+    "name": "Lfm3RotaryEmbedding",
+    "file": "modeling_lfm3.py",
+    "line": 72,
+    "doc": "Rotary embedding per attention layer type, like Gemma 3; `conv` layers register no buffers. Partial RoPE keeps the"
+   },
+   {
+    "name": "Lfm3MLP",
+    "file": "modeling_lfm3.py",
+    "line": 149,
+    "doc": ""
+   },
+   {
+    "name": "Lfm3Attention",
+    "file": "modeling_lfm3.py",
+    "line": 213,
+    "doc": "Llama attention with QK RMSNorm, a sigmoid output gate per head, a sliding window on `sliding_attention`",
+    "builds": [
+     "q_proj=Linear",
+     "k_proj=Linear",
+     "v_proj=Linear",
+     "o_proj=Linear",
+     "q_norm=Lfm3RMSNorm",
+     "k_norm=Lfm3RMSNorm",
+     "gate_proj=Linear"
+    ]
+   },
+   {
+    "name": "Lfm3ShortConv",
+    "file": "modeling_lfm3.py",
+    "line": 332,
+    "doc": "LFM2 gated short convolution with packed-document boundaries (`seq_idx`), the padding mask re-applied after a",
+    "builds": [
+     "conv=Conv1d",
+     "in_proj=Linear",
+     "out_proj=Linear"
+    ]
+   },
+   {
+    "name": "Lfm3DecoderLayer",
+    "file": "modeling_lfm3.py",
+    "line": 445,
+    "doc": ""
+   },
+   {
+    "name": "Lfm3PreTrainedModel",
+    "file": "modeling_lfm3.py",
+    "line": 534,
+    "doc": ""
+   },
+   {
+    "name": "Lfm3Model",
+    "file": "modeling_lfm3.py",
+    "line": 588,
+    "doc": "LFM2 model with sliding-attention layers as a third layer type: the mask and the rotary embedding are built per"
+   },
+   {
+    "name": "Lfm3ForCausalLM",
+    "file": "modeling_lfm3.py",
+    "line": 803,
+    "doc": ""
+   }
+  ],
+  "facts": {
+   "activation": {
+    "value": "silu",
+    "evidence": "code:modeling_lfm3.py#L157"
+   },
+   "qk_norm": {
+    "value": true,
+    "evidence": "code:modeling_lfm3.py#L230"
+   },
+   "attention_output_gate": {
+    "value": true,
+    "evidence": "code:modeling_lfm3.py#L231"
+   },
+   "sliding_window_applies_to": {
+    "value": "sliding_attention layers only",
+    "evidence": "code:modeling_lfm3.py#L232"
+   },
+   "modeling_code_in_repo": {
+    "value": true,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {
+  "params_total": {
+   "raw": "1.73B",
+   "value": 1730000000.0,
+   "tolerance": 5000000.0,
+   "k_suffix": false
+  },
+  "architecture": {
+   "raw": "24 layers: 13 gated short convolutions, 5 sliding-window attention, 6 global attention"
+  },
+  "context_length": {
+   "raw": "256K tokens (input + output)",
+   "value": 256000.0,
+   "tolerance": 500.0,
+   "k_suffix": true
+  },
+  "vocab_size": {
+   "raw": "128,000 tokens",
+   "value": 128000.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "license": {
+   "raw": "LFM Open License v1.0"
+  },
+  "layer_composition": {
+   "raw": "24 layers: 13 gated short convolutions, 5 sliding-window attention, 6 global attention",
+   "parts": {
+    "gated short convolutions": 13,
+    "sliding-window attention": 5,
+    "global attention": 6
+   }
+  }
+ },
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 24,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 24,
+     "evidence": "config:num_hidden_layers"
+    },
+    {
+     "value": 24,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 2048,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:hidden_size"
+    },
+    {
+     "value": 2048,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 128000,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128000,
+     "evidence": "config:vocab_size"
+    },
+    {
+     "value": 128000.0,
+     "evidence": "card:vocab_size",
+     "raw": "128,000 tokens"
+    },
+    {
+     "value": 128000,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 262144,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 262144,
+     "evidence": "config:max_position_embeddings"
+    },
+    {
+     "value": 256000.0,
+     "evidence": "card:context_length",
+     "raw": "256K tokens (input + output)"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 16,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 16,
+     "evidence": "config:num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "GQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "GQA",
+     "evidence": "derived:num_key_value_heads(4) vs num_attention_heads(16)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "sandwich_norm",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:use_sandwich_norm"
+    },
+    {
+     "value": true,
+     "evidence": "weights:post-mixer/post-FFN norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 7680,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 7680,
+     "evidence": "config:intermediate_size"
+    },
+    {
+     "value": 7680,
+     "evidence": "weights:feed_forward.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "short_conv_kernel",
+   "value": 7,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 7,
+     "evidence": "config:conv_L_cache"
+    },
+    {
+     "value": 7,
+     "evidence": "weights:conv.conv.weight last dim"
+    }
+   ]
+  },
+  {
+   "field": "sliding_window",
+   "value": 256,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 256,
+     "evidence": "config:sliding_window"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "short_conv": 13,
+    "full_attention": 6,
+    "sliding_attention": 5
+   },
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "short_conv": 13,
+      "full_attention": 6,
+      "sliding_attention": 5
+     },
+     "evidence": "config:layer_types"
+    },
+    {
+     "value": {
+      "short_conv": 13,
+      "sliding_attention": 5,
+      "full_attention": 6
+     },
+     "evidence": "card:layer_composition",
+     "raw": "24 layers: 13 gated short convolutions, 5 sliding-window attention, 6 global attention"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "short_conv",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv",
+    "attention",
+    "short_conv"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "short_conv",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv"
+     ],
+     "evidence": "config:layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "short_conv",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv",
+      "attention",
+      "short_conv"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "qk_norm",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "code:modeling_lfm3.py#L230"
+    },
+    {
+     "value": true,
+     "evidence": "weights:q_norm/k_norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "attention_output_gate",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "code:modeling_lfm3.py#L231"
+    },
+    {
+     "value": true,
+     "evidence": "weights:gate_proj/g_proj tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 1728801536,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 1728801536,
+     "evidence": "weights:sum of tensor shapes"
+    },
+    {
+     "value": 1730000000.0,
+     "evidence": "card:params_total",
+     "raw": "1.73B"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "short_conv",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv",
+    "sliding_attention",
+    "short_conv",
+    "full_attention",
+    "short_conv"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv"
+     ],
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Hybrid (dense)",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Hybrid (dense)",
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "full_attention": {
+     "partial_rotary_factor": 0.5,
+     "rope_theta": 1000000.0,
+     "rope_type": "default"
+    },
+    "sliding_attention": {
+     "rope_theta": 10000,
+     "rope_type": "default"
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "full_attention": {
+       "partial_rotary_factor": 0.5,
+       "rope_theta": 1000000.0,
+       "rope_type": "default"
+      },
+      "sliding_attention": {
+       "rope_theta": 10000,
+       "rope_type": "default"
+      }
+     },
+     "evidence": "config:rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "code:modeling_lfm3.py#L157"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 1132462080,
+    "embedding": 262144000,
+    "short_conv_mixer": 218290176,
+    "attention_or_linear_mixer": 115706624,
+    "norms": 198656
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 1132462080,
+      "embedding": 262144000,
+      "short_conv_mixer": 218290176,
+      "attention_or_linear_mixer": 115706624,
+      "norms": 198656
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 286,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 286,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 24,
+  "hidden_size": 2048,
+  "vocab_size": 128000,
+  "context_length": 262144,
+  "num_attention_heads": 16,
+  "num_kv_heads": 4,
+  "head_dim": 128,
+  "attention_type": "GQA",
+  "ffn_gated": true,
+  "sandwich_norm": true,
+  "ffn_intermediate": 7680,
+  "short_conv_kernel": 7,
+  "sliding_window": 256,
+  "layer_type_counts": {
+   "short_conv": 13,
+   "full_attention": 6,
+   "sliding_attention": 5
+  },
+  "layer_pattern_per_layer": [
+   "short_conv",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv",
+   "attention",
+   "short_conv"
+  ],
+  "layer_index_base_in_config": 0,
+  "qk_norm": true,
+  "attention_output_gate": true,
+  "params_total": 1728801536,
+  "layer_types": [
+   "short_conv",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv",
+   "sliding_attention",
+   "short_conv",
+   "full_attention",
+   "short_conv"
+  ],
+  "decoder_type": "Hybrid (dense)",
+  "tied_embeddings": true,
+  "rope": {
+   "full_attention": {
+    "partial_rotary_factor": 0.5,
+    "rope_theta": 1000000.0,
+    "rope_type": "default"
+   },
+   "sliding_attention": {
+    "rope_theta": 10000,
+    "rope_type": "default"
+   }
+  },
+  "activation": "silu",
+  "released_weights_format": "bfloat16",
+  "parameter_components": {
+   "dense_ffn": 1132462080,
+   "embedding": 262144000,
+   "short_conv_mixer": 218290176,
+   "attention_or_linear_mixer": 115706624,
+   "norms": 198656
+  },
+  "weight_header_summary": {
+   "tensor_count": 286,
+   "skipped_scale_tensors": 0
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig, auto_map.AutoModel, auto_map.AutoModelForCausalLM, bos_token_id, conv_bias, eos_token_id, norm_eps, pad_token_id, transformers_version, use_cache"
+ ],
+ "weight_layer_kinds": [
+  "short_conv",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv",
+  "attention",
+  "short_conv"
+ ]
+}

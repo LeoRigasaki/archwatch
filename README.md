@@ -2,11 +2,11 @@
 
 ArchWatch extracts architecture facts from a model's own Hugging Face config, tensor headers, Python code and model card, checks their agreement, and generates an architecture page with evidence. Conflicting fields are withheld from the record's `published` dictionary and from architecture views.
 
-The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core has been run live on four models. Bounded Hub discovery and analysis are implemented. LLM readers, independent evaluation and the issue review queue remain open.
+The user-supplied prototype is integrated under `src/archwatch/`. The deterministic core and bounded watcher now cover a primary-source backfill from all ten core publishers. Ten manually transcribed development labels and per-field evaluation are included; human review, held-out evaluation, LLM readers and the issue review queue remain open.
 
 ## Local demo
 
-[site/index.html](site/index.html) is a self-contained two-model demo with generated SVGs, source evidence, predecessor/tensor diffs and an interactive cache calculator.
+[site/index.html](site/index.html) is a self-contained gallery built from model records and watcher state. It currently shows 11 eligible architectures across ten publishers, with generated SVGs, pinned source links, predecessor/tensor diffs and interactive cache calculators. Two historical derived records are held.
 
 ```bash
 python -m http.server 4173 --directory site
@@ -22,10 +22,10 @@ The earlier third-party-gallery reconstruction is private research material, sep
 | Config | Nested text configs, dense/hybrid/MoE, latent MoE, MLA/DSA/KDA, explicit layer lists and one-based indexing; LFM effective FFN dimensions |
 | Weights | Tensor-shape parameter totals, supported packed-weight handling, component counts and active-parameter conventions |
 | Code | Static AST classes/patterns with file and line citations; remote code is not executed |
-| Model card | Structured table claims with rounding tolerances |
-| Calculator | GQA, sliding-window, short-convolution, MLA, DSA-index and KDA cache estimates with stated assumptions |
+| Model card | HTML and Markdown pipe tables plus key/value bullets, with rounding tolerances |
+| Calculator | GQA, sliding-window, short-convolution, MLA, DSA-index, KDA and Mamba-2 state estimates with stated assumptions |
 | Verifier | Verified/single-source/conflict decisions; conflicts withheld; rendering inputs carry explicit publication decisions |
-| Diff | Published-field and tensor-group diffs against an explicitly supplied predecessor |
+| Diff | Published-field and tensor-group diffs; watcher selects predecessors from inspected same-org/family history |
 | Diagram/site | Published inputs only; verified weight-kind layer pattern required; site cache estimates and field comparisons recomputed |
 | Watcher | Ten core publishers plus outside trending/recent discovery, pinned admission/analysis, duplicate architecture withholding, predecessor selection and restartable seen state |
 | Tooling | uv lock, ruff, pre-commit and offline PR CI configured; source-only ZIP exporter |
@@ -34,14 +34,13 @@ The fixed list in `watchlist.txt` remains the reproducible smoke test. `watch.py
 
 ## Validation
 
-[Results](results/README.md), [offline validation](results/prototype-validation.json) and [live-run comparison](results/live-validation.json) cover:
+[Backfill processing](results/backfill-processing.json) covers one primary release each from DeepSeek, Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai. [The exact selections](config/backfill.yaml) and [gold labels](evals/README.md) retain pinned primary links. The gallery holds 13 saved diagnostic records, of which 11 meet its current display policy.
 
-- `moonshotai/Kimi-K3` and `moonshotai/Kimi-K3.1-Pro`;
-- `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM3-1.7B`.
+The ten-model development comparison improved from **117/144 to 144/144 published-field exact matches** after family fixes. [Per-field results](results/gold-exact-match.md) include missing fields in the denominator. Labels were manually transcribed by the assistant from configs, cards and raw weight headers before the fixes; **they are not human-reviewed or a held-out accuracy estimate**. The offline suite has **101 passing tests**.
 
-On 13 November 2026, a fresh primary-source run reproduced all four source commits and exact parameter totals. The original 81 core verdicts were unchanged except for the resolved LFM FFN field. With added decisions for rendering inputs, the records now contain **61 verified checks, 67 single-source checks and zero conflicts**. These are agreement counts, not independent accuracy scores. The offline suite has **66 passing tests**.
+The original four-model live run remains in [live-validation.json](results/live-validation.json). [Family rules](docs/FAMILY_RULES.md) document the new Phi parallel graph, Mistral all-layer sliding attention, GLM fused FFN and Nemotron-H operator-only graph. Cache estimates are not measured runtime VRAM.
 
-The Kimi diff still identifies exactly **178,526,208 added DSA-indexer parameters**. The LFM2.5 config's nominal 12,288-wide FFN becomes **8,192** under its explicit auto-adjust convention, agreeing with the tensors. The extractor now handles that rule; the initial flag was an extractor gap, not evidence of a mistake by Liquid AI. See [the LFM investigation](docs/LFM_FINDINGS.md).
+The Kimi diff still identifies exactly **178,526,208 added DSA-indexer parameters**. The LFM2.5 config's nominal 12,288-wide FFN becomes **8,192** under its explicit auto-adjust convention. Its card/config context disagreement remains held and is not described as a lab defect. See [the LFM investigation](docs/LFM_FINDINGS.md).
 
 ## Run and develop
 
@@ -54,6 +53,7 @@ uv run --frozen ruff check .
 uv run --frozen ruff format --check .
 uv run --frozen pytest -q --junitxml=results/test-results.xml
 uv run --frozen python build_site.py
+uv run --frozen python tools/evaluate_gold.py
 uv run --frozen python tools/summarize_prototype.py
 ```
 
@@ -73,6 +73,8 @@ uv run --frozen python tools/package_source.py
 
 The output is `dist/archwatch-source.zip`.
 
+For a controlled backfill, pass explicit repositories from `config/backfill.yaml` to `watch.py --process`, at most five per run. `--reprocess` deliberately reanalyzes unchanged commits after rule/schema changes; ordinary runs leave unchanged artifacts untouched. Approved gated sources use the local Hugging Face login. Cross-host redirects strip its credential. Remote model code is never executed.
+
 ## Automation and next work
 
 The GitHub remote is configured. `.github/workflows/ci.yml` runs offline lint, formatting, tests and the site build on pull requests and pushes to main. [Foundations PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) merged after [remote CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541); main CI also passed.
@@ -83,7 +85,7 @@ The watcher uses the ten preferred labs plus outside discovery. A live temporary
 
 ## Limits of the evidence
 
-- Four live-checked records and two displayed successors are current coverage; the independent 30-model gold set and 95% target have not been measured.
+- Ten primary releases form the current development gold set. Human review, the independent held-out 30-model evaluation and the 95% target remain open.
 - Confidence scores are prototype rules, not calibrated probabilities. Single-source values remain publishable and are labeled as such.
 - Weight-kind pattern agreement cannot independently distinguish sliding from global attention when their tensor layouts are identical. Effective mechanisms need config/code/report evidence and broader family tests.
 - Public renderers reject unverified patterns, missing required inputs and unsupported cache rules. Unknown families can remain withheld until supported.

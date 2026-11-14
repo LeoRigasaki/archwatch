@@ -130,6 +130,21 @@ def test_analyzes_new_release_selects_predecessor_and_restart_is_no_op(tmp_path)
     assert source.analyzed == [new["id"]]
 
 
+def test_explicit_reprocess_refreshes_schema_at_same_commit_and_keeps_ready(tmp_path):
+    rec = model("lab/Family1", "2025-01-01T00:00:00Z")
+    source = Source([rec])
+    watcher.run(tmp_path, policy(), source=source, repos=[rec["id"]], process=True)
+    source.records[rec["id"]]["config_coverage"] = {"consumed": ["context"], "unconsumed": []}
+    watcher.run(tmp_path, policy(), source=source, repos=[rec["id"]], process=True, reprocess=True)
+    saved = json.loads((tmp_path / "data/models/lab__Family1.json").read_text())
+    assert saved["config_coverage"]["consumed"] == ["context"]
+    assert state(tmp_path, rec["id"])["status"] == "ready_for_diagram"
+    assert source.analyzed == [rec["id"], rec["id"]]
+    before = files(tmp_path)
+    watcher.run(tmp_path, policy(), source=source, repos=[rec["id"]], process=True)
+    assert files(tmp_path) == before
+
+
 @pytest.mark.parametrize("files_present", [[], ["config.json"], ["model.safetensors"], ["config.json", "model.gguf"]])
 def test_admission_requires_existing_config_and_safetensors(tmp_path, files_present):
     rec = model("lab/Family1", "2025-01-01T00:00:00Z")

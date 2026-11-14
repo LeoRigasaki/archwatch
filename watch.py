@@ -16,11 +16,19 @@ def main():
     parser.add_argument("--process", action="store_true", help="Analyze up to the configured per-run limit")
     parser.add_argument("--retry-review", action="store_true", help="Recheck held records after rule changes")
     parser.add_argument(
+        "--reprocess", action="store_true", help="Reanalyze unchanged admitted commits after schema/rule changes"
+    )
+    parser.add_argument(
         "--root", type=Path, default=ROOT, help="Output root, e.g. a temporary directory for a live smoke test"
     )
     args = parser.parse_args()
     report = run(
-        args.root, load_policy(args.policy), repos=args.repo, process=args.process, retry_review=args.retry_review
+        args.root,
+        load_policy(args.policy),
+        repos=args.repo,
+        process=args.process,
+        retry_review=args.retry_review,
+        reprocess=args.reprocess,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     # Per-model failures are persisted for review/retry, not discarded by failing

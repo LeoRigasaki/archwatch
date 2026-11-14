@@ -51,6 +51,14 @@ ARCH_FIELDS |= {
     "attention_output_gate",
     "vision_encoder_layers",
     "vision_hidden_size",
+    "ffn_gated",
+    "block_layout",
+    "mamba_num_heads",
+    "mamba_head_dim",
+    "mamba_state_size",
+    "mamba_conv_kernel",
+    "mamba_groups",
+    "mamba_conv_channels",
 }
 DONE = {"recorded", "duplicate", "ready_for_diagram", "rejected", "review"}
 
@@ -284,7 +292,9 @@ def _load_records(root):
     }
 
 
-def run(root: Path, policy: dict, *, source=None, repos=None, process=False, retry_review=False) -> dict:
+def run(
+    root: Path, policy: dict, *, source=None, repos=None, process=False, retry_review=False, reprocess=False
+) -> dict:
     source = source or HubSource(policy)
     path = root / "data/seen.json"
     state = json.loads(path.read_text()) if path.exists() else {"schema_version": 1, "models": {}}
@@ -368,6 +378,7 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
     for candidate in candidates:
         repo = candidate["id"]
         previous = dict(entries.get(repo, {}))
+        candidate["was_diagram_ready"] = previous.get("status") == "ready_for_diagram"
         entry = entries.setdefault(repo, {})
         if timestamp(entry.get("retry_after")) and timestamp(entry["retry_after"]) > datetime.now(timezone.utc):
             report["outcomes"][repo] = "rate_limit_deferred"
@@ -385,8 +396,10 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 )
                 report["outcomes"][repo] = "rejected"
                 continue
-            if previous.get("last_observed_commit") != info["sha"] or (
-                retry_review and previous.get("status") == "review"
+            if (
+                reprocess
+                or previous.get("last_observed_commit") != info["sha"]
+                or (retry_review and previous.get("status") == "review")
             ):
                 entry["attempts"] = 0
             if entry.get("attempts", 0) >= policy["max_attempts_per_commit"]:
@@ -396,7 +409,7 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                 report["outcomes"][repo] = "review"
                 continue
             if previous.get("last_observed_commit") == info["sha"] and previous.get("status") in DONE:
-                if not (retry_review and previous["status"] == "review"):
+                if not reprocess and not (retry_review and previous["status"] == "review"):
                     report["outcomes"][repo] = "unchanged"
                     continue
             files = info["files"]
@@ -508,7 +521,7 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                         old_info = source.metadata(pred["id"])
                         if old_info["sha"] != pred["source_commit"]:
                             raise ValueError("Predecessor changed since selection; retry discovery")
-                        if old is None or old["source_commit"] != old_info["sha"]:
+                        if reprocess or old is None or old["source_commit"] != old_info["sha"]:
                             old = source.analyze(pred["id"], old_info)
                         record["predecessor"] = {
                             "id": pred["id"],
@@ -517,7 +530,7 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                         }
                         record["diff_vs_predecessor"] = pipeline.diff(record, old)
                         record["tensor_diff_vs_predecessor"] = source.tensor_diff(repo, pred["id"], info, old_info)
-                        if pred["id"] not in records:
+                        if reprocess or pred["id"] not in records:
                             save_record(old, root / "data/models")
                             records[pred["id"]] = old
                     changed_architecture = (
@@ -527,7 +540,9 @@ def run(root: Path, policy: dict, *, source=None, repos=None, process=False, ret
                     records[repo], signatures[signature] = record, repo
                     published_signatures[published_hash(record)] = repo
                     entry.update(
-                        status="ready_for_diagram" if changed_architecture else "recorded",
+                        status="ready_for_diagram"
+                        if changed_architecture or candidate["was_diagram_ready"]
+                        else "recorded",
                         reason=reason,
                         architecture_hash=signature,
                         last_successful_commit=info["sha"],

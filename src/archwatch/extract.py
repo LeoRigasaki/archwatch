@@ -56,7 +56,19 @@ def _config_paths(value, prefix=""):
 
 def extract_with_usage(config):
     consumed = set()
-    facts = _extract(_Config(config, consumed))
+
+    def plain(value):
+        # Forwarded structured facts (e.g. RoPE scaling) consume their leaves,
+        # and must not leak tracking wrappers into safe YAML serialization.
+        if isinstance(value, dict):
+            return {key: plain(child) for key, child in value.items()}
+        if isinstance(value, list):
+            return [plain(child) for child in value]
+        if isinstance(value, tuple):
+            return tuple(plain(child) for child in value)
+        return value
+
+    facts = plain(_extract(_Config(config, consumed)))
     paths = set(_config_paths(config))
     return facts, {"consumed": sorted(paths & consumed), "unconsumed": sorted(paths - consumed)}
 
@@ -74,6 +86,15 @@ def _first(cfg: dict, keys: list[str], prefix: str) -> Fact | None:
 
 def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str, int | None]:
     """Return a per-layer mixer list (0-based), the evidence, and the index base the config used."""
+    if text.get("model_type") == "nemotron_h" and text.get("hybrid_override_pattern"):
+        pattern = text["hybrid_override_pattern"]
+        if len(pattern) != n_layers or set(pattern) - set("M*-"):
+            raise ValueError("Invalid Nemotron-H block pattern")
+        return (
+            [{"M": "mamba2", "*": "full_attention", "-": "mlp"}[p] for p in pattern],
+            f"config:{prefix}hybrid_override_pattern",
+            None,
+        )
     if isinstance(text.get("layer_types"), list):
         mapping = {
             "conv": "short_conv",
@@ -109,6 +130,8 @@ def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str
             f"config:{prefix}sliding_window_pattern",
             None,
         )
+    if window and text.get("model_type") == "mistral":
+        return ["sliding_attention"] * n_layers, f"config:{prefix}sliding_window (Mistral all-layer rule)", None
     kind = "full_attention_mla" if text.get("kv_lora_rank") else "full_attention"
     return [kind] * n_layers, "config:(no per-layer pattern; all layers assumed identical)", None
 
@@ -123,6 +146,22 @@ def _extract(config: dict) -> dict[str, Fact]:
     n_layers = text["num_hidden_layers"]
     f["num_layers"] = (n_layers, f"config:{prefix}num_hidden_layers")
     f["hidden_size"] = (text["hidden_size"], f"config:{prefix}hidden_size")
+    if text.get("model_type") == "nemotron_h":
+        f["block_layout"] = ("standalone", f"config:{prefix}hybrid_override_pattern (one operator per block)")
+        for key, source in (
+            ("mamba_num_heads", "mamba_num_heads"),
+            ("mamba_head_dim", "mamba_head_dim"),
+            ("mamba_state_size", "ssm_state_size"),
+            ("mamba_conv_kernel", "conv_kernel"),
+            ("mamba_groups", "n_groups"),
+            ("mamba_activation", "mamba_hidden_act"),
+        ):
+            f[key] = (text.get(source), f"config:{prefix}{source}")
+    if text.get("model_type") == "phi":
+        f["block_layout"] = (
+            "parallel",
+            "derived:PhiDecoderLayer parallel attention/MLP residual rule (Transformers v4.37.0)",
+        )
     f["vocab_size"] = (text.get("vocab_size"), f"config:{prefix}vocab_size")
     ctx = _first(text, ["max_position_embeddings", "max_seq_len", "seq_length"], prefix)
     if ctx:
@@ -152,10 +191,9 @@ def _extract(config: dict) -> dict[str, Fact]:
         )
         f["v_head_dim"] = (text.get("v_head_dim"), f"config:{prefix}v_head_dim")
     else:
-        head_dim = text.get("head_dim") or (text["hidden_size"] // heads if heads else None)
-        f["head_dim"] = (
-            head_dim,
-            f"config:{prefix}head_dim" if text.get("head_dim") else "derived:hidden_size/num_attention_heads",
+        f["head_dim"] = _first(text, ["head_dim", "attention_head_dim"], prefix) or (
+            text["hidden_size"] // heads if heads else None,
+            "derived:hidden_size/num_attention_heads",
         )
     if text.get("kv_lora_rank"):
         f["attention_type"] = ("MLA", f"config:{prefix}kv_lora_rank")
@@ -211,7 +249,9 @@ def _extract(config: dict) -> dict[str, Fact]:
             f["moe_router"] = (text["moe_router_activation_func"], f"config:{prefix}moe_router_activation_func")
     else:
         mixers = set(types)
-        hybrid = len(mixers) > 1 and any(m in mixers for m in ("short_conv", "kda_linear", "linear_attention"))
+        hybrid = len(mixers) > 1 and any(
+            m in mixers for m in ("short_conv", "kda_linear", "linear_attention", "mamba2")
+        )
         f["decoder_type"] = ("Hybrid (dense)" if hybrid else "Dense", ev if hybrid else "derived:no expert keys")
         width = text.get("block_ff_dim") if "block_ff_dim" in text else text.get("intermediate_size")
         width_key = "block_ff_dim" if "block_ff_dim" in text else "intermediate_size"
@@ -230,16 +270,13 @@ def _extract(config: dict) -> dict[str, Fact]:
                 f"derived:Lfm2MLP({prefix}{width_key}={width}, block_auto_adjust_ff_dim=true, "
                 f"block_ffn_dim_multiplier={multiplier}, block_multiple_of={multiple})",
             )
-    act = _first(text, ["hidden_act", "hidden_activation", "activation"], prefix)
+    act = _first(text, ["hidden_act", "hidden_activation", "mlp_hidden_act", "activation"], prefix)
     if act:
         f["activation"] = act
 
     # norms and positions
-    norm_bits = ["RMSNorm"]
-    if text.get("use_sandwich_norm"):
-        norm_bits.append("sandwich (post-mixer + post-FFN)")
-        f["sandwich_norm"] = (True, f"config:{prefix}use_sandwich_norm")
-    f["norm"] = (", ".join(norm_bits), f"config:{prefix}{'norm_eps' if 'norm_eps' in text else 'rms_norm_eps'}")
+    if text.get("use_sandwich_norm") is not None:
+        f["sandwich_norm"] = (bool(text["use_sandwich_norm"]), f"config:{prefix}use_sandwich_norm")
     rp = text.get("rope_parameters")
     if isinstance(rp, dict):
         f["rope"] = (
@@ -249,7 +286,17 @@ def _extract(config: dict) -> dict[str, Fact]:
             f"config:{prefix}rope_parameters",
         )
     elif text.get("rope_theta"):
-        f["rope"] = ({"rope_theta": text["rope_theta"]}, f"config:{prefix}rope_theta")
+        rope = {"rope_theta": text["rope_theta"]}
+        if text.get("partial_rotary_factor") is not None:
+            rope["partial_rotary_factor"] = text["partial_rotary_factor"]
+        if text.get("rope_scaling"):
+            rope["scaling"] = text["rope_scaling"]
+        if text.get("rope_local_base_freq"):
+            rope = {"full_attention": rope, "sliding_attention": {"rope_theta": text["rope_local_base_freq"]}}
+        f["rope"] = (
+            rope,
+            f"config:{prefix}rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)",
+        )
 
     q = text.get("quantization_config") or config.get("quantization_config")
     if q:

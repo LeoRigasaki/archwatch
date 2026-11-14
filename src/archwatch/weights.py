@@ -18,7 +18,7 @@ def _component(name: str) -> str:
         return "vision_projector"
     if "vision_tower" in n or "visual." in n:
         return "vision"
-    if "embed_tokens" in n:
+    if "embed_tokens" in n or n == "backbone.embeddings.weight":
         return "embedding"
     if "lm_head" in n:
         return "lm_head"
@@ -32,6 +32,12 @@ def _component(name: str) -> str:
         return "moe_router"
     if "self_attn" in n:
         return "attention_or_linear_mixer"
+    if ".mixer." in n and any(s in n for s in ("in_proj", "conv1d", "A_log", "dt_bias", ".D", "out_proj")):
+        return "state_space_mixer"
+    if ".mixer." in n and any(s in n for s in ("q_proj", "k_proj", "v_proj", "o_proj")):
+        return "attention_or_linear_mixer"
+    if ".mixer." in n and any(s in n for s in ("up_proj", "down_proj")):
+        return "dense_ffn"
     if ".conv." in n:
         return "short_conv_mixer"
     if "feed_forward" in n or ".mlp." in n:
@@ -115,12 +121,16 @@ def layer_kinds(tensors: dict[str, dict]) -> list[str]:
             out.append("dsa_mla")
         elif "kv_a_proj_with_mqa" in s:
             out.append("mla")
+        elif ".mixer.A_log" in s and ".mixer.conv1d.weight" in s:
+            out.append("mamba2")
         elif "self_attn.A_log" in s or "dt_bias" in s:
             out.append("linear_delta")
         elif ".conv.conv." in s or ".conv.in_proj" in s:
             out.append("short_conv")
-        elif "self_attn.q_proj" in s:
+        elif "self_attn.q_proj" in s or ".mixer.q_proj" in s:
             out.append("attention")
+        elif ".mixer.up_proj" in s and ".mixer.down_proj" in s:
+            out.append("mlp")
         else:
             out.append("unknown")
     return out
@@ -131,16 +141,23 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None) -> dict:
     out: dict = {}
     mult = 8 // (quant_bits or 4)
     for name, t in sorted(tensors.items()):
-        if re.search(r"experts\.0\.w1\.weight(_packed)?$", name) and "expert_intermediate" not in out:
+        if "vision" in name or "visual." in name:
+            continue
+        if re.search(r"experts\.0\.(w1|gate_proj)\.weight(_packed)?$", name) and "expert_intermediate" not in out:
             rows, cols = t["shape"]
             out["expert_intermediate"] = rows
             out["expert_input_dim"] = cols * (mult if name.endswith("_packed") else 1)
         if name.endswith("routed_expert_up_proj.weight") and "latent_dim" not in out:
             out["latent_dim"] = t["shape"][1] if t["shape"][0] > t["shape"][1] else t["shape"][0]
-        if name.endswith("embed_tokens.weight") and "vocab_rows" not in out:
+        if (name.endswith("embed_tokens.weight") or name == "backbone.embeddings.weight") and "vocab_rows" not in out:
             out["vocab_rows"], out["hidden_size"] = t["shape"]
         if name.endswith("feed_forward.w1.weight") and "ffn_intermediate" not in out:
             out["ffn_intermediate"] = t["shape"][0]
+        if not any(s in name for s in (".experts.", ".shared_experts.")) and "ffn_intermediate" not in out:
+            if name.endswith(("mlp.gate_proj.weight", "mlp.fc1.weight", "mixer.up_proj.weight")):
+                out["ffn_intermediate"] = t["shape"][0]
+            elif name.endswith("mlp.gate_up_proj.weight"):
+                out["ffn_intermediate"] = t["shape"][0] // 2
         if name.endswith("conv.conv.weight") and "conv_kernel" not in out:
             out["conv_kernel"] = t["shape"][-1]
         if name.endswith("self_attn.q_norm.weight") or name.endswith("self_attn.k_norm.weight"):
@@ -153,4 +170,18 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None) -> dict:
             out["mla_cached_width"] = t["shape"][0]  # kv_lora_rank + qk_rope_head_dim
         if name.endswith("indexer.wk.weight") and "dsa_index_key_width" not in out:
             out["dsa_index_key_width"] = t["shape"][0]
+        if name.endswith("mixer.conv1d.weight"):
+            out["mamba_conv_channels"] = t["shape"][0]
+    language = [n for n in tensors if "vision" not in n and "visual." not in n]
+    if any(
+        n.endswith(
+            ("feed_forward.w3.weight", "mlp.gate_proj.weight", "mlp.gate_up_proj.weight", "experts.0.w3.weight_packed")
+        )
+        for n in language
+    ):
+        out["ffn_gated"] = True
+    elif any(n.endswith(("mlp.fc1.weight", "mixer.up_proj.weight")) for n in language):
+        out["ffn_gated"] = False
+    if any("post_feedforward_layernorm" in n or "post_ffn_norm" in n or "post_mlp_layernorm" in n for n in language):
+        out["sandwich_norm"] = True
     return out

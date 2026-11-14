@@ -1,0 +1,107 @@
+id: mistralai/Mistral-7B-v0.1
+source_commit: 27d67f1b5f57dc0953326b2601d68371d40ea8da
+hub_created: '2023-09-20T13:03:50+00:00'
+license: apache-2.0
+analyzed_at: '2026-11-13T20:58:36+00:00'
+published:
+  num_layers: 32
+  hidden_size: 4096
+  vocab_size: 32000
+  context_length: 32768
+  num_attention_heads: 32
+  num_kv_heads: 8
+  head_dim: 128
+  attention_type: GQA
+  ffn_gated: true
+  ffn_intermediate: 14336
+  sliding_window: 4096
+  layer_type_counts:
+    sliding_attention: 32
+  layer_pattern_per_layer:
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  - attention
+  params_total: 7241732096
+  layer_types:
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  - sliding_attention
+  decoder_type: Dense
+  tied_embeddings: false
+  rope:
+    rope_theta: 10000.0
+  activation: silu
+  released_weights_format: bfloat16
+  parameter_components:
+    dense_ffn: 5637144576
+    attention_or_linear_mixer: 1342177280
+    embedding: 131072000
+    lm_head: 131072000
+    norms: 266240
+  weight_header_summary:
+    tensor_count: 291
+    skipped_scale_tensors: 0
+review_queue: []
+unchecked_notes:
+- 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
+  activation) are read from config, card and tensor names only, not from code.'
+- 'Config keys not consumed by the extractor (including metadata/defaults): bos_token_id,
+  eos_token_id, initializer_range, rms_norm_eps, transformers_version, use_cache'

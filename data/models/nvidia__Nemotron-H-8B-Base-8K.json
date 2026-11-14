@@ -1,0 +1,1332 @@
+{
+ "id": "nvidia/Nemotron-H-8B-Base-8K",
+ "source_commit": "94ea861e008c2dfced3e8e1302094024077aa04e",
+ "hub_created": "2025-03-19T23:37:16+00:00",
+ "license": "nvidia-internal-scientific-research-and-development-model-license",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "arxiv:2504.03624",
+   "conversational",
+   "de",
+   "en",
+   "endpoints_compatible",
+   "es",
+   "fr",
+   "it",
+   "jp",
+   "ko",
+   "license:other",
+   "nemotron-h",
+   "nvidia",
+   "pt",
+   "pytorch",
+   "region:us",
+   "ru",
+   "safetensors",
+   "text-generation",
+   "transformers",
+   "zh"
+  ]
+ },
+ "analyzed_at": "2026-11-13T20:58:36+00:00",
+ "facts": {
+  "architecture_class": {
+   "value": "NemotronHForCausalLM",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "nemotron_h",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 52,
+   "evidence": "config:num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 4096,
+   "evidence": "config:hidden_size"
+  },
+  "block_layout": {
+   "value": "standalone",
+   "evidence": "config:hybrid_override_pattern (one operator per block)"
+  },
+  "mamba_num_heads": {
+   "value": 128,
+   "evidence": "config:mamba_num_heads"
+  },
+  "mamba_head_dim": {
+   "value": 64,
+   "evidence": "config:mamba_head_dim"
+  },
+  "mamba_state_size": {
+   "value": 128,
+   "evidence": "config:ssm_state_size"
+  },
+  "mamba_conv_kernel": {
+   "value": 4,
+   "evidence": "config:conv_kernel"
+  },
+  "mamba_groups": {
+   "value": 8,
+   "evidence": "config:n_groups"
+  },
+  "mamba_activation": {
+   "value": "silu",
+   "evidence": "config:mamba_hidden_act"
+  },
+  "vocab_size": {
+   "value": 131072,
+   "evidence": "config:vocab_size"
+  },
+  "context_length": {
+   "value": 8192,
+   "evidence": "config:max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": false,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp"
+   ],
+   "evidence": "config:hybrid_override_pattern"
+  },
+  "layer_type_counts": {
+   "value": {
+    "mamba2": 24,
+    "mlp": 24,
+    "full_attention": 4
+   },
+   "evidence": "config:hybrid_override_pattern"
+  },
+  "num_attention_heads": {
+   "value": 32,
+   "evidence": "config:num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 8,
+   "evidence": "config:num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 128,
+   "evidence": "config:attention_head_dim"
+  },
+  "attention_type": {
+   "value": "GQA",
+   "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(32)"
+  },
+  "decoder_type": {
+   "value": "Hybrid (dense)",
+   "evidence": "config:hybrid_override_pattern"
+  },
+  "ffn_intermediate": {
+   "value": 21504,
+   "evidence": "config:intermediate_size"
+  },
+  "activation": {
+   "value": "relu2",
+   "evidence": "config:mlp_hidden_act"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "attention_head_dim",
+   "conv_kernel",
+   "hidden_size",
+   "hybrid_override_pattern",
+   "intermediate_size",
+   "mamba_head_dim",
+   "mamba_hidden_act",
+   "mamba_num_heads",
+   "max_position_embeddings",
+   "mlp_hidden_act",
+   "model_type",
+   "n_groups",
+   "num_attention_heads",
+   "num_hidden_layers",
+   "num_key_value_heads",
+   "sliding_window",
+   "ssm_state_size",
+   "tie_word_embeddings",
+   "torch_dtype",
+   "vocab_size"
+  ],
+  "unconsumed": [
+   "attention_bias",
+   "attention_dropout",
+   "auto_map.AutoConfig",
+   "auto_map.AutoModelForCausalLM",
+   "bos_token_id",
+   "chunk_size",
+   "eos_token_id",
+   "expand",
+   "hidden_dropout",
+   "initializer_range",
+   "layer_norm_epsilon",
+   "mamba_proj_bias",
+   "mlp_bias",
+   "num_logits_to_keep",
+   "pad_token_id",
+   "rescale_prenorm_residual",
+   "residual_in_fp32",
+   "rms_norm_eps",
+   "time_step_floor",
+   "time_step_limit",
+   "time_step_max",
+   "time_step_min",
+   "time_step_rank",
+   "transformers_version",
+   "use_bias",
+   "use_cache",
+   "use_conv_bias",
+   "use_mamba_kernels"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "configuration_nemotron_h.py",
+  "model-00001-of-00004.safetensors",
+  "model-00002-of-00004.safetensors",
+  "model-00003-of-00004.safetensors",
+  "model-00004-of-00004.safetensors",
+  "model.safetensors.index.json",
+  "modeling_nemotron_h.py"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 8100852736,
+   "text_total": 8100852736,
+   "by_component": {
+    "dense_ffn": 4227858432,
+    "state_space_mixer": 2631066624,
+    "embedding": 536870912,
+    "lm_head": 536870912,
+    "attention_or_linear_mixer": 167772160,
+    "norms": 413696
+   },
+   "routed_expert_params": 0,
+   "moe_layers": 0,
+   "experts_per_moe_layer": [],
+   "layer_indices_in_weights": [
+    0,
+    51
+   ],
+   "tensor_count": 311,
+   "skipped_scale_tensors": 0
+  },
+  "active": null
+ },
+ "cache": {
+  "grows_per_token_bytes": 16384,
+  "grows_per_token_bytes_low": 16384,
+  "constant_bytes": 102629376,
+  "constant_bytes_low": 52297728,
+  "naive_mha_per_token_bytes": 851968,
+  "reduction_vs_naive_mha": 52.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 236847104,
+    "gib": 0.221
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 4,
+    "grows_per_token_bytes": 16384,
+    "constant_bytes": 0,
+    "formula": "2 x 8 KV heads x 128 head_dim x 2 B x 4 layers"
+   },
+   {
+    "layer_type": "mamba2",
+    "layers": 24,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 102629376,
+    "constant_bytes_low": 52297728,
+    "formula": "(128 heads x 64 dim x 128 state x 4 B + 10240 conv channels x 4 taps x 2 B) x 24 blocks"
+   },
+   {
+    "layer_type": "mlp",
+    "layers": 24,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 0,
+    "formula": "standalone MLP: no persistent decoding state"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted",
+   "Mamba-2 mathematical state budget: fp32 recurrent state, bf16 convolution buffer; low bound uses bf16 recurrent state. Runtime allocation is not qualified."
+  ]
+ },
+ "code_scan": {
+  "files": [
+   "configuration_nemotron_h.py",
+   "modeling_nemotron_h.py"
+  ],
+  "classes": [
+   {
+    "name": "NemotronHConfig",
+    "file": "configuration_nemotron_h.py",
+    "line": 27,
+    "doc": "This is the configuration class to store the configuration of a [`NemotronHModel`]. It is used to instantiate a"
+   },
+   {
+    "name": "HybridMambaAttentionDynamicCache",
+    "file": "modeling_nemotron_h.py",
+    "line": 155,
+    "doc": "A dynamic cache that can handle both the attention cache (which has a seq_len dimension) and the mamba cache",
+    "builds": []
+   },
+   {
+    "name": "MambaRMSNormGated",
+    "file": "modeling_nemotron_h.py",
+    "line": 262,
+    "doc": ""
+   },
+   {
+    "name": "NemotronHMamba2Mixer",
+    "file": "modeling_nemotron_h.py",
+    "line": 280,
+    "doc": "Compute \u2206, A, B, C, and D the state space parameters and compute the `contextualized_states`.",
+    "builds": [
+     "conv1d=Conv1d",
+     "in_proj=Linear",
+     "norm=MambaRMSNormGated",
+     "out_proj=Linear"
+    ]
+   },
+   {
+    "name": "NemotronHRMSNorm",
+    "file": "modeling_nemotron_h.py",
+    "line": 723,
+    "doc": ""
+   },
+   {
+    "name": "NemotronHBlock",
+    "file": "modeling_nemotron_h.py",
+    "line": 740,
+    "doc": ""
+   },
+   {
+    "name": "NemotronHMLP",
+    "file": "modeling_nemotron_h.py",
+    "line": 794,
+    "doc": ""
+   },
+   {
+    "name": "NemotronHAttention",
+    "file": "modeling_nemotron_h.py",
+    "line": 828,
+    "doc": "Multi-headed attention from 'Attention Is All You Need' paper",
+    "builds": [
+     "q_proj=Linear",
+     "k_proj=Linear",
+     "v_proj=Linear",
+     "o_proj=Linear"
+    ]
+   },
+   {
+    "name": "NemotronHFlashAttention2",
+    "file": "modeling_nemotron_h.py",
+    "line": 916,
+    "doc": "Jamba flash attention module. This module inherits from `JambaAttention` as the weights of the module stays",
+    "builds": []
+   },
+   {
+    "name": "NemotronHSdpaAttention",
+    "file": "modeling_nemotron_h.py",
+    "line": 1013,
+    "doc": "Jamba attention module using torch.nn.functional.scaled_dot_product_attention. This module inherits from",
+    "builds": []
+   },
+   {
+    "name": "NemotronHPreTrainedModel",
+    "file": "modeling_nemotron_h.py",
+    "line": 1102,
+    "doc": "An abstract class to handle weights initialization and a simple interface for downloading and loading pretrained"
+   },
+   {
+    "name": "NemotronHOutput",
+    "file": "modeling_nemotron_h.py",
+    "line": 1160,
+    "doc": "Class for the NemotronH model outputs."
+   },
+   {
+    "name": "NemotronHCausalLMOutput",
+    "file": "modeling_nemotron_h.py",
+    "line": 1187,
+    "doc": "Base class for causal language model (or autoregressive) outputs."
+   },
+   {
+    "name": "NemotronHModel",
+    "file": "modeling_nemotron_h.py",
+    "line": 1278,
+    "doc": ""
+   },
+   {
+    "name": "NemotronHForCausalLM",
+    "file": "modeling_nemotron_h.py",
+    "line": 1471,
+    "doc": ""
+   }
+  ],
+  "facts": {
+   "modeling_code_in_repo": {
+    "value": true,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {},
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 52,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 52,
+     "evidence": "config:num_hidden_layers"
+    },
+    {
+     "value": 52,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 4096,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4096,
+     "evidence": "config:hidden_size"
+    },
+    {
+     "value": 4096,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 131072,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 131072,
+     "evidence": "config:vocab_size"
+    },
+    {
+     "value": 131072,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 8192,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8192,
+     "evidence": "config:max_position_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 32,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32,
+     "evidence": "config:num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:attention_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "GQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "GQA",
+     "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(32)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "mamba_conv_channels",
+   "value": 10240,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 10240,
+     "evidence": "derived:mamba heads*head_dim + 2*groups*state_size"
+    },
+    {
+     "value": 10240,
+     "evidence": "weights:mixer.conv1d channels"
+    }
+   ]
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 21504,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 21504,
+     "evidence": "config:intermediate_size"
+    },
+    {
+     "value": 21504,
+     "evidence": "weights:feed_forward.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "mamba2": 24,
+    "mlp": 24,
+    "full_attention": 4
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mamba2": 24,
+      "mlp": 24,
+      "full_attention": 4
+     },
+     "evidence": "config:hybrid_override_pattern"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp"
+     ],
+     "evidence": "config:hybrid_override_pattern (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 8100852736,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8100852736,
+     "evidence": "weights:sum of tensor shapes"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "full_attention",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp",
+    "mamba2",
+    "mlp"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "full_attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "full_attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "full_attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "full_attention",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp",
+      "mamba2",
+      "mlp"
+     ],
+     "evidence": "config:hybrid_override_pattern"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Hybrid (dense)",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Hybrid (dense)",
+     "evidence": "config:hybrid_override_pattern"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "relu2",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "relu2",
+     "evidence": "config:mlp_hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "block_layout",
+   "value": "standalone",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "standalone",
+     "evidence": "config:hybrid_override_pattern (one operator per block)"
+    }
+   ]
+  },
+  {
+   "field": "mamba_num_heads",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:mamba_num_heads"
+    }
+   ]
+  },
+  {
+   "field": "mamba_head_dim",
+   "value": 64,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 64,
+     "evidence": "config:mamba_head_dim"
+    }
+   ]
+  },
+  {
+   "field": "mamba_state_size",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:ssm_state_size"
+    }
+   ]
+  },
+  {
+   "field": "mamba_conv_kernel",
+   "value": 4,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 4,
+     "evidence": "config:conv_kernel"
+    }
+   ]
+  },
+  {
+   "field": "mamba_groups",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:n_groups"
+    }
+   ]
+  },
+  {
+   "field": "mamba_activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:mamba_hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 4227858432,
+    "state_space_mixer": 2631066624,
+    "embedding": 536870912,
+    "lm_head": 536870912,
+    "attention_or_linear_mixer": 167772160,
+    "norms": 413696
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 4227858432,
+      "state_space_mixer": 2631066624,
+      "embedding": 536870912,
+      "lm_head": 536870912,
+      "attention_or_linear_mixer": 167772160,
+      "norms": 413696
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 311,
+    "skipped_scale_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 311,
+      "skipped_scale_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 52,
+  "hidden_size": 4096,
+  "vocab_size": 131072,
+  "context_length": 8192,
+  "num_attention_heads": 32,
+  "num_kv_heads": 8,
+  "head_dim": 128,
+  "attention_type": "GQA",
+  "ffn_gated": false,
+  "mamba_conv_channels": 10240,
+  "ffn_intermediate": 21504,
+  "layer_type_counts": {
+   "mamba2": 24,
+   "mlp": 24,
+   "full_attention": 4
+  },
+  "layer_pattern_per_layer": [
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp"
+  ],
+  "params_total": 8100852736,
+  "layer_types": [
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "full_attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "full_attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "full_attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "full_attention",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp",
+   "mamba2",
+   "mlp"
+  ],
+  "decoder_type": "Hybrid (dense)",
+  "tied_embeddings": false,
+  "activation": "relu2",
+  "released_weights_format": "bfloat16",
+  "block_layout": "standalone",
+  "mamba_num_heads": 128,
+  "mamba_head_dim": 64,
+  "mamba_state_size": 128,
+  "mamba_conv_kernel": 4,
+  "mamba_groups": 8,
+  "mamba_activation": "silu",
+  "parameter_components": {
+   "dense_ffn": 4227858432,
+   "state_space_mixer": 2631066624,
+   "embedding": 536870912,
+   "lm_head": 536870912,
+   "attention_or_linear_mixer": 167772160,
+   "norms": 413696
+  },
+  "weight_header_summary": {
+   "tensor_count": 311,
+   "skipped_scale_tensors": 0
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "Config keys not consumed by the extractor (including metadata/defaults): attention_bias, attention_dropout, auto_map.AutoConfig, auto_map.AutoModelForCausalLM, bos_token_id, chunk_size, eos_token_id, expand, hidden_dropout, initializer_range, layer_norm_epsilon, mamba_proj_bias, mlp_bias, num_logits_to_keep, pad_token_id, rescale_prenorm_residual, residual_in_fp32, rms_norm_eps, time_step_floor, time_step_limit, time_step_max, time_step_min, time_step_rank, transformers_version, use_bias, use_cache, use_conv_bias, use_mamba_kernels"
+ ],
+ "weight_layer_kinds": [
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "attention",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "attention",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "attention",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "attention",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp",
+  "mamba2",
+  "mlp"
+ ]
+}
