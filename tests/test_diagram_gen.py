@@ -525,15 +525,25 @@ def test_repair_loop_sends_failures_and_stops_on_pass(tmp_path, monkeypatch):
     class Client:
         prompts = []
 
-        def generate(self, system, prompt):
+        images = []
+
+        def generate(self, system, prompt, images=()):
             self.prompts.append(prompt)
+            self.images.append(list(images))
             return (bad if len(self.prompts) == 1 else "```svg\n" + good + "\n```"), {"usage": {}}
 
-    monkeypatch.setattr(gen, "review", lambda svg, s, st, screenshot=None: review(svg, s, st, browser=False))
+    def fake_review(svg, s, st, screenshot=None):
+        Path(screenshot).write_bytes(b"PNG-of-" + str(Path(screenshot).name).encode())
+        return review(svg, s, st, browser=False)
+
+    monkeypatch.setattr(gen, "review", fake_review)
     client = Client()
     row = gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)
     assert row["passed"] and row["final_version"] == 2 and len(client.prompts) == 2
     assert "number 4096" in client.prompts[1] and "PREVIOUS SVG" in client.prompts[1]
+    reference_png = (ROOT / "docs/diagram-kit/reference.png").read_bytes()
+    assert client.images[0] == [reference_png] and "HOUSE STYLE" in client.prompts[0]
+    assert client.images[1] == [b"PNG-of-v1.png", reference_png]  # render of the failed attempt + house style
     folder = tmp_path / "LiquidAI__LFM3-1.7B"
     assert {p.name for p in folder.iterdir()} >= {"spec.yaml", "v1.svg", "v1.review.json", "v2.svg", "v2.review.json"}
     gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)  # resume: saved SVGs are reused, no new calls
@@ -563,3 +573,66 @@ def test_unbalanced_columns_are_caught(lfm_spec):
     svg = re.sub(r'viewBox="0 0 (\d+) (\d+)"', lambda m: f'viewBox="0 0 {m.group(1)} 2400"', svg)
     check = review(svg, lfm_spec, SETTINGS)["checks"]["columns_balanced"]
     assert not check["passed"] and "under 25%" in check["problems"][0]
+
+
+def test_repairs_stop_after_three_calls(tmp_path, monkeypatch):
+    import importlib.util
+
+    module_spec = importlib.util.spec_from_file_location("diagram_gen", ROOT / "tools/diagram_gen.py")
+    gen = importlib.util.module_from_spec(module_spec)
+    module_spec.loader.exec_module(gen)
+    monkeypatch.setattr(gen, "OUT", tmp_path)
+    bad = good_svg(build_spec(record("LiquidAI__LFM3-1.7B"))).replace(
+        "</svg>", '<text x="50" y="900">4096</text></svg>'
+    )
+
+    class Client:
+        calls = 0
+
+        def generate(self, system, prompt, images=()):
+            self.calls += 1
+            return bad, {"usage": {}}
+
+    def fake_review(svg, s, st, screenshot=None):
+        Path(screenshot).write_bytes(b"png")
+        return review(svg, s, st, browser=False)
+
+    monkeypatch.setattr(gen, "review", fake_review)
+    client = Client()
+    row = gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)
+    assert client.calls == 3 and not row["passed"] and row["final_version"] == 3
+
+
+# ---------------------------------------------------------------- house-style reference
+
+
+def test_reference_must_be_archwatch_output_with_matching_hashes(tmp_path):
+    from archwatch import house_style
+
+    svg_text, png = house_style.load(ROOT)  # the committed reference is valid
+    assert svg_text.startswith("<svg") and png[:8] == b"\x89PNG\r\n\x1a\n"
+    meta = json.loads((ROOT / "docs/diagram-kit/reference.json").read_text())
+    assert meta["origin"] == "archwatch-generated" and meta["source"].startswith("results/diagram-gen")
+
+    (tmp_path / "docs/diagram-kit").mkdir(parents=True)
+    for name in house_style.NAMES:
+        shutil.copy(ROOT / "docs/diagram-kit" / name, tmp_path / "docs/diagram-kit" / name)
+    (tmp_path / "docs/diagram-kit/reference.svg").write_text(svg_text + "<!-- edited -->")
+    with pytest.raises(house_style.ReferenceError, match="hashes"):
+        house_style.load(tmp_path)
+    for outside in ("downloads/gallery.svg", "research-reference/x.svg", "docs/other.png"):
+        with pytest.raises(house_style.ReferenceError, match="ArchWatch"):
+            house_style.approve(tmp_path, outside)
+
+
+def test_adapter_sends_images_as_inline_png(tmp_path, monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    sent = []
+
+    def opener(request, timeout):
+        sent.append(json.loads(request.data))
+        return FakeResponse({"candidates": [{"content": {"parts": [{"text": "<svg/>"}]}}]})
+
+    Gemini(CONFIG, tmp_path / "l.json", opener=opener, wait=lambda s: None).generate("S", "P", [b"\x89PNG-a", b"b"])
+    parts = sent[0]["contents"][0]["parts"]
+    assert parts[0] == {"text": "P"} and [p["inline_data"]["mime_type"] for p in parts[1:]] == ["image/png"] * 2

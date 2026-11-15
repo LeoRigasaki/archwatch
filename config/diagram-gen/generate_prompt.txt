@@ -12,5 +12,7 @@ Before writing, check:
 SPEC:
 {spec}
 
-HOUSE STYLE REFERENCE (a different model; match its look only):
+HOUSE STYLE: match this layout and styling, not its content. It is an approved ArchWatch diagram of a
+different model; the attached image is its render and the SVG source follows. Where it differs from the
+fixed layout rules in the system instructions, the system instructions win.
 {house_style}

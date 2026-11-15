@@ -31,7 +31,7 @@ diagram_gen:
   ledger: data/gemini-requests.json
   requests_per_minute: 4
   max_output_tokens: 65536
-  repairs: 2
+  repairs: 2                    # max 3 calls per diagram: generate, visual review + fix, final repair
   fallback_enabled: false
   browser_channel: chrome
   canvas_height_range: [1000, 2400]
