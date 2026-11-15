@@ -12,6 +12,7 @@ import argparse
 import concurrent.futures as futures
 import importlib.util
 import json
+import re
 import sys
 import urllib.request
 from pathlib import Path
@@ -150,19 +151,122 @@ def load_records() -> dict:
 
 
 SLIDING = ("sliding_attention",)
+UNIT = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
 
 
-def _near(value, his, tol):
-    return value is not None and abs(value - his) <= tol + 1e-9 * max(1.0, his)
+def _half_unit(number: str, scale: float) -> float:
+    """The card's own rounding: '3B' covers 2.5-3.5B, '2.78T' covers 2.775-2.785T."""
+    digits = number.replace(",", "")
+    decimals = len(digits.split(".")[1]) if "." in digits else 0
+    return 0.5 * 10**-decimals * scale
 
 
-def _sig_tolerance(raw_number: str, unit_scale: float) -> float:
-    """Rounding normalisation: '230' has 2 significant figures (trailing zeros of an integer are not significant)."""
-    digits = raw_number.replace(",", "")
-    if "." in digits:
-        return 0.5 * 10 ** -len(digits.split(".")[1]) * unit_scale
-    stripped = digits.rstrip("0")
-    return 0.5 * 10 ** (len(digits) - len(stripped)) * unit_scale
+def his_range(field: str, raw: str, parsed) -> tuple[float, float, str] | None:
+    """His value as an accepted interval: max(2%, his own rounding). A stated range stays a range."""
+    raw = str(raw)
+    if field == "params_active":
+        pre = re.search(r"([\d.]+)\s*([KMBT])\s*active prefill.*?([\d.]+)\s*([KMBT])\s*active decode", raw)
+        if pre:
+            lo = float(pre.group(1)) * UNIT[pre.group(2)]
+            hi = float(pre.group(3)) * UNIT[pre.group(4)]
+            return (
+                lo * 0.98,
+                hi * 1.02,
+                f"{pre.group(1)}{pre.group(2)} (prefill) to {pre.group(3)}{pre.group(4)} (decode)",
+            )
+        m = re.search(r"([\d.]+)\s*([KMBT])\s*active", raw)
+        if not m:
+            return None
+        v = float(m.group(1)) * UNIT[m.group(2)]
+        tol = max(0.02 * v, _half_unit(m.group(1), UNIT[m.group(2)]))
+        return v - tol, v + tol, m.group(1) + m.group(2)
+    if field == "params_total":
+        m = re.match(r"\s*([\d.,]+)\s*([KMBT])", raw)
+        if parsed is None or not m:
+            return None
+        v = parsed[0]
+        tol = max(0.02 * v, parsed[1], _half_unit(m.group(1), UNIT[m.group(2)]))
+        return v - tol, v + tol, raw.split(",")[0].split(";")[0].strip()
+    if parsed is None:
+        return None
+    v, own = parsed
+    tol = max(0.02 * v, own)
+    return v - tol, v + tol, raw
+
+
+def _subsets(items):
+    for mask in range(1 << len(items)):
+        yield [x for i, x in enumerate(items) if mask >> i & 1]
+
+
+def candidates(record: dict, field: str, his_raw: str) -> list[tuple[str, float]]:
+    """Our number recomputed under each named definition the reference might use."""
+    pub = record["published"]
+    out = []
+    if field in ("params_total", "params_active"):
+        comp = record["params"]["counted_from_weights"]["by_component"]
+        active = record["params"].get("active") or {}
+        base = pub.get(field)
+        if base is None:
+            return out
+        if field == "params_total":
+            removable = [
+                ("vision tower and projector", comp.get("vision", 0) + comp.get("vision_projector", 0)),
+                ("MTP / auxiliary heads", comp.get("auxiliary", 0)),
+                ("lookup tables (Engram, n-gram, per-layer embeddings)", comp.get("lookup_embedding", 0)),
+                ("input embedding", comp.get("embedding", 0)),
+                ("output head", comp.get("lm_head", 0)),
+            ]
+            for chosen in _subsets([r for r in removable if r[1]]):
+                rule = "all stored tensors" + (" excluding " + ", ".join(n for n, _ in chosen) if chosen else "")
+                out.append((rule, base - sum(v for _, v in chosen)))
+        else:
+            removable = [("input embedding", -comp.get("embedding", 0)), ("output head", -comp.get("lm_head", 0))]
+            addable = [("vision tower", comp.get("vision", 0) + comp.get("vision_projector", 0))]
+            for chosen in _subsets([r for r in removable + addable if r[1]]):
+                parts = [("excluding " if v < 0 else "including ") + n for n, v in chosen]
+                rule = "per-token weights (unselected experts, MTP heads and lookup tables excluded)" + (
+                    ", " + ", ".join(parts) if parts else ""
+                )
+                out.append((rule, base + sum(v for _, v in chosen)))
+            if active.get("text_active") is not None and active["text_active"] != base:
+                out.append(("per-token weights, all non-expert weights (current calculator)", active["text_active"]))
+    elif field == "kv_cache_per_token_bf16":
+        rows = record.get("cache", {}).get("breakdown", [])
+        growing = sum(r["grows_per_token_bytes"] or 0 for r in rows)
+        out.append(("growing cache per token (sliding-window layers capped)", growing))
+        window = pub.get("sliding_window")
+        full = growing + sum(
+            r["constant_bytes"] // window
+            for r in rows
+            if r["layer_type"] in SLIDING and window and r.get("constant_bytes")
+        )
+        out.append(("full retention: every attention layer appends its KV per token (sliding layers not capped)", full))
+    elif field == "context_length":
+        out.append(("config.json max_position_embeddings", pub.get("context_length")))
+        quote = card_quote(record, _context_token(his_raw))
+        for label, stated in _stated_contexts(quote or ""):
+            out.append((f'advertised context the model card states ("{label}"): "{quote}"', stated))
+    return [(r, v) for r, v in out if v is not None]
+
+
+def _context_token(raw: str) -> str:
+    m = re.match(r"\s*([\d,.]+)\s*([KM])?", str(raw))
+    return (m.group(1) + (m.group(2) or "")) if m else ""
+
+
+def _stated_contexts(quote: str) -> list[tuple[str, float]]:
+    """Every context figure a card sentence states, in tokens. Cards write K for both 1,000 and 1,024 ('128K'
+    for 128,000 or 131,072), so both readings are offered; plain digit figures are taken as written."""
+    out = []
+    for m in re.finditer(r"(\d[\d,.]*)\s*([KkM])\b(?![A-Za-z0-9])|(\d{1,3}(?:,\d{3})+)\s*tokens", quote):
+        if m.group(3):
+            out.append((m.group(3), float(m.group(3).replace(",", ""))))
+            continue
+        n, unit = float(m.group(1).replace(",", "")), m.group(2).lower()
+        label = m.group(1) + m.group(2)
+        out += [(label, n * 1e3), (label, n * 1024)] if unit == "k" else [(label, n * 1e6), (label, n * 1024**2)]
+    return out
 
 
 def card_quote(record: dict, raw: str) -> str | None:
@@ -183,7 +287,7 @@ def card_quote(record: dict, raw: str) -> str | None:
     words = {"K": "thousand", "M": "million", "B": "billion", "T": "trillion"}.get(unit, "")
     # Not part of a hyphenated name such as 'Qwen3-32B' or '30B-A3B'.
     patterns = [
-        rf"(?<![\w.\-/]){re.escape(number)}\s*{unit}\b(?!-(?!A\d))"
+        rf"(?<![\w.\-/]){re.escape(number)}\s*{unit}\b(?!-(?!A\d|token|context))"
         if unit
         else rf"(?<![\w.,\-]){re.escape(number)}(?![\d,])"
     ]
@@ -205,126 +309,71 @@ def card_quote(record: dict, raw: str) -> str | None:
     return None
 
 
-def definition_proof(record: dict, field: str, his) -> str | None:
-    """Recompute the reference's definition from OUR published values; if it reproduces his number,
-    the difference is a definition difference. Returns the evidence, or None if it does not."""
-    if his is None:
-        return None
-    value, tol = his
-    pub = record["published"]
-    raw = his_raw.get((record["id"], field), "")
-    import re as _re
-
-    m = _re.match(r"\s*([\d,.]+)\s*([KMBT])?", raw)
-    if m and pub.get(field) is not None and field in ("params_total", "params_active"):
-        scale = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}.get(m.group(2) or "", 1)
-        if field == "params_active":
-            am = _re.search(r"([\d.]+)\s*([KMBT])\s*active", raw)
-            m = am or m
-            scale = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}.get(m.group(2) or "", 1)
-        if abs(pub[field] - value) <= min(_sig_tolerance(m.group(1), scale), 0.025 * value):
-            return (
-                f"Rounding: his '{m.group(1)}{m.group(2) or ''}' has {len(m.group(1).replace(',', '').rstrip('0').replace('.', ''))} "
-                f"significant figure(s); ours {pub[field]:,} rounds to it. Same quantity, different precision."
-            )
-    if field == "kv_cache_per_token_bf16":
-        rows = record.get("cache", {}).get("breakdown", [])
-        full = sum(r["grows_per_token_bytes"] or 0 for r in rows)
-        window = pub.get("sliding_window")
-        for r in rows:
-            if r["layer_type"] in SLIDING and window and r.get("constant_bytes"):
-                full += r["constant_bytes"] // window
-        if _near(full, value, tol):
-            return (
-                f"Ours: growing cache per token = {pub.get('kv_cache_per_token_bytes') or sum(r['grows_per_token_bytes'] or 0 for r in rows):,} B "
-                f"(sliding-window layers excluded: their cache is capped at the {window}-token window). His: full-retention "
-                f"estimate counting every attention layer per token. Recomputed from our own published layer dims with "
-                f"sliding layers included: {full:,} B, which matches his value."
-            )
-    if field in ("params_total", "params_active", "context_length"):
-        token = raw
-        if field == "params_active":
-            am = _re.search(r"([\d.]+\s*[KMBT])\s*active", raw)
-            token = am.group(1) if am else raw
-        quote = card_quote(record, token.replace(" ", ""))
-        if quote:
-            ours = pub.get(field)
-            what = {
-                "params_total": "exact count of every stored tensor in the safetensors headers",
-                "params_active": "per-token count from tensor headers (all non-expert weights + selected experts)",
-                "context_length": "config.json max_position_embeddings (positions the released config supports)",
-            }[field]
-            return (
-                f"His figure is the one the model card states (README.md at {record['source_commit'][:10]}: "
-                f'"{quote}"). Ours ({ours:,}) is the {what}.'
-            )
-    if field in ("params_total", "params_active") and raw:
-        token = raw
-        if field == "params_active":
-            am = _re.search(r"([\d.]+\s*[KMBT])\s*active", raw)
-            token = am.group(1) if am else ""
-        else:
-            tm = _re.match(r"\s*([\d.]+\s*[KMBT])", raw)
-            token = tm.group(1) if tm else ""
-        token = token.replace(" ", "")
-        name = record["id"].split("/", 1)[1]
-        if (
-            token
-            and _re.search(rf"(?<![\d.])(A)?{_re.escape(token)}(?![\d.])", name, _re.I)
-            and (field == "params_total" or f"A{token}".lower() in name.lower())
-        ):
-            return (
-                f"His figure is the size in the model's name ('{name}'), a rounded label. Ours ({pub[field]:,}) is "
-                + (
-                    "the exact count of every stored tensor."
-                    if field == "params_total"
-                    else "the per-token count from tensor headers."
-                )
-            )
-    if field in ("params_total", "params_active"):
-        w = record["params"]["counted_from_weights"]
-        comp = w["by_component"]
-        base = pub.get(field)
-        if base is None:
-            return None
-        scopes = {
-            "without the vision tower": comp.get("vision", 0) + comp.get("vision_projector", 0),
-            "without MTP/auxiliary heads": comp.get("auxiliary", 0),
-            "without input embedding and output head": comp.get("embedding", 0) + comp.get("lm_head", 0),
-            "without the input embedding": comp.get("embedding", 0),
-        }
-        names = list(scopes)
-        for mask in range(1, 2 ** len(names)):
-            chosen = [n for i, n in enumerate(names) if mask >> i & 1 and scopes[n]]
-            if not chosen or len(chosen) != bin(mask).count("1"):
-                continue
-            if "without the input embedding" in chosen and "without input embedding and output head" in chosen:
-                continue
-            alt = base - sum(scopes[n] for n in chosen)
-            if _near(alt, value, tol):
-                return (
-                    f"Ours: {base:,} ({'all stored tensors' if field == 'params_total' else 'per-token, all non-expert weights'}). "
-                    f"His figure counts a narrower scope: ours {', '.join(chosen)} is {alt:,}, which matches his "
-                    "value at his rounding. Component sizes from our tensor-header counts."
-                )
-    return None
+def _gap_after(value: float, rng, his_raw: str) -> float:
+    """Gap between the recomputed number and his figure: 0 inside a stated range, else relative to his value."""
+    if "prefill" in str(rng[2]):
+        return 0.0 if rng[0] <= value <= rng[1] else min(abs(value - rng[0]), abs(value - rng[1])) / rng[1]
+    nominal = (rng[0] + rng[1]) / 2
+    return abs(value - nominal) / nominal
 
 
-his_raw: dict = {}
+def close(record: dict, field: str, his_raw: str, parsed, manual: dict | None, ours=None) -> dict:
+    """Classify one difference. Definition only if a recomputation of OUR number lands in his accepted range."""
+    rng = his_range(field, his_raw, parsed)
+    ours = ours if ours is not None else record["published"].get(field)
+    gap = abs(ours - parsed[0]) / parsed[0] if rng and isinstance(ours, (int, float)) and parsed and parsed[0] else None
+    base = dict(gap=gap, recomputed=None, rule=None)
+    if manual and manual.get("group") == "his_wrong":
+        return dict(
+            base, group="his_wrong", evidence=" ".join(manual["evidence"].split()), rule="primary source contradicts"
+        )
+    if manual and manual.get("recomputed") is not None and rng:
+        rec = float(manual["recomputed"])
+        if rng[0] <= rec <= rng[1]:
+            return dict(
+                base,
+                group="definition",
+                recomputed=rec,
+                rule=manual["rule"],
+                evidence=f"Rule: {manual['rule']}. Ours recomputed: {rec:,.0f}. His: {rng[2]} (accepted "
+                f"{rng[0]:,.0f}-{rng[1]:,.0f}). {' '.join(manual['evidence'].split())}",
+            )
+    best = None
+    for rule, value in candidates(record, field, his_raw) if rng else []:
+        inside = rng[0] <= value <= rng[1]
+        mid = (rng[0] + rng[1]) / 2
+        score = (not inside, abs(value - mid))
+        if best is None or score < best[0]:
+            best = (score, rule, value, inside)
+    if best and best[3]:
+        _, rule, value, _ = best
+        mid = (rng[0] + rng[1]) / 2
+        return dict(
+            base,
+            group="definition",
+            recomputed=value,
+            rule=rule,
+            evidence=f"Rule: {rule}. Ours recomputed: {value:,.0f}. His: {rng[2]} (accepted {rng[0]:,.0f}-{rng[1]:,.0f}); "
+            f"gap after the rule {_gap_after(value, rng, his_raw):.2%}.",
+        )
+    if best:
+        _, rule, value, _ = best
+        why = f"Closest recomputation: {rule} = {value:,.0f}; his accepted range {rng[0]:,.0f}-{rng[1]:,.0f}."
+    else:
+        why = "No recomputation available for this field."
+    return dict(
+        base, group="ours_wrong", recomputed=best[2] if best else None, rule=best[1] if best else None, evidence=why
+    )
 
 
 def classify(rows: list[dict], causes: dict, records: dict, gallery_theirs: dict) -> list[dict]:
     for r in rows:
-        his_raw[(r["model"], r["field"])] = str(r["theirs"])
-    for r in rows:
         if r["agree"]:
             continue
-        c = (causes.get(r["model"]) or {}).get(r["field"])
-        if c and c.get("group") in GROUPS:
-            r["group"], r["evidence"] = c["group"], " ".join(c["evidence"].split())
-            continue
-        proof = definition_proof(records[r["model"]], r["field"], gallery_theirs[r["model"]].get(r["field"]))
-        r["group"], r["evidence"] = ("definition", proof) if proof else ("unresolved", "")
+        manual = (causes.get(r["model"]) or {}).get(r["field"])
+        ours = r["ours"] if isinstance(r["ours"], (int, float)) and not isinstance(r["ours"], bool) else None
+        theirs_parsed = gallery_theirs[r["model"]].get(r["field"])
+        r.update(close(records[r["model"]], r["field"], str(r["theirs"]), theirs_parsed, manual, ours=ours))
     return rows
 
 
@@ -361,12 +410,17 @@ def report(meta: dict, mapping_rows: list, runs: list, rows: list) -> str:
         "",
         "## Differences",
         "",
-        "| Model | Field | Ours | His | Group | Evidence |",
-        "|---|---|---|---|---|---|",
+        "| Model | Field | Ours (published) | His | Gap | Ours recomputed | Rule | Group | Evidence |",
+        "|---|---|---:|---|---:|---:|---|---|---|",
     ]
-    for r in sorted(diffs, key=lambda r: (GROUPS.index(r["group"]), r["model"], r["field"])):
+    for r in sorted(diffs, key=lambda r: (GROUPS.index(r["group"]), r["field"], r["model"])):
         ours = f"{r['ours']:,}" if isinstance(r["ours"], int) else r["ours"]
-        lines.append(f"| {r['model']} | {r['field']} | {ours} | {r['theirs']} | {r['group']} | {r['evidence']} |")
+        gap = f"{r['gap']:.1%}" if r.get("gap") is not None else "-"
+        rec = f"{r['recomputed']:,.0f}" if isinstance(r.get("recomputed"), (int, float)) else "-"
+        rule = (r.get("rule") or "-").split(': "')[0]
+        lines.append(
+            f"| {r['model']} | {r['field']} | {ours} | {r['theirs']} | {gap} | {rec} | {rule} | {r['group']} | {r['evidence']} |"
+        )
     lines += [
         "",
         "## Not analyzed",

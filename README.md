@@ -89,7 +89,7 @@ The watcher uses the ten preferred labs plus outside discovery. A live temporary
 
 [results/reference-agreement.md](results/reference-agreement.md) compares published fields with the fact sheets in
 an external author's [reference gallery](https://github.com/owner/reference) (Apache-2.0),
-fetched at a pinned commit by `tools/reference_agreement.py` and not vendored. At that commit 44 of 52 compared
+fetched at a pinned commit by `tools/reference_agreement.py` and not vendored. At that commit 45 of 52 compared
 values agree across 9 shared models; each disagreement is listed with ArchWatch's own evidence. The same file lists
 gallery models ArchWatch has not processed. It is a comparison only: never a source for published fields or gold
 labels, and its images are not downloaded or used. See [NOTICE](NOTICE) and [hard rules](docs/HARD_RULES.md).

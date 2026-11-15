@@ -168,6 +168,7 @@ def tensor_diff(new_repo: str, old_repo: str, top: int = 6, *, new_info=None, ol
         cfg = (hub.get_json(repo, "config.json", revision=info["sha"]) or {}) if info else {}
         native_bits = native_expert_bits_of(cfg)
         tensors = hub.safetensors_headers(repo, info=info) if info is not None else hub.safetensors_headers(repo)
+        weights.annotate_packed_fp4(tensors)
         for k, t in tensors.items():
             n = weights.logical_elements(k, t, native_expert_bits=native_bits)
             if n is None:
