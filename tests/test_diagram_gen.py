@@ -284,7 +284,8 @@ def good_svg(spec, *, extra="", drop_edge=None, add_edge=None):
         out.append(t(320, max(y - 2, top + 14), f"{g['repeat']} x") + "</g>")
         y = max(y, top + 18) + group_gap
     groups_bottom = y
-    out.append(t(420, (stack_top + y) // 2, f"{spec['model']['layers']} layers"))
+    if n_groups > 1:
+        out.append(t(420, (stack_top + y) // 2, f"{spec['model']['layers']} layers"))
     for item in reversed(spec["io"]["bottom"]):
         io(item)
     wanted = []
@@ -636,3 +637,13 @@ def test_adapter_sends_images_as_inline_png(tmp_path, monkeypatch):
     Gemini(CONFIG, tmp_path / "l.json", opener=opener, wait=lambda s: None).generate("S", "P", [b"\x89PNG-a", b"b"])
     parts = sent[0]["contents"][0]["parts"]
     assert parts[0] == {"text": "P"} and [p["inline_data"]["mime_type"] for p in parts[1:]] == ["image/png"] * 2
+
+
+def test_single_group_shows_its_count_once():
+    spec = build_spec(record("meta-llama__Llama-3.1-8B"))
+    assert len(spec["layer_pattern"]["compressed_view"]) == 1
+    svg = good_svg(spec)
+    assert static_checks(svg, spec, SETTINGS)["repeat_counts_once"]["passed"]
+    doubled = svg.replace("</svg>", '<text x="420" y="300" font-size="14">32 layers</text></svg>')
+    check = static_checks(doubled, spec, SETTINGS)["repeat_counts_once"]
+    assert not check["passed"] and "drop the brace" in check["problems"][0]

@@ -18,7 +18,8 @@ FIXED LAYOUT (identical for every model; exact x ranges are in the spec's "layou
   Bottom: the "io.bottom" boxes. Then one rounded group per "layer_pattern.compressed_view" entry, its layers drawn
   as stacked colored bars, first listed layer lowest, with one "N x" label (N = repeat) beside the group.
   Then the "io.top" boxes, with an arrow out of the top. Arrows connect the stack from bottom to top.
-  Beside the whole stack draw a brace labelled "<layers> layers" (for example "93 layers").
+  When there are two or more groups, draw a brace beside the whole stack labelled "<layers> layers"
+  (for example "93 layers"). With a single group, draw no brace and no total label: the group's "N x" says it.
   Each repeat count appears exactly once: only the group's own "N x" label. Never write "<layers> x".
   "io.note" and "io.vision", if present, are small grey notes next to their box, without connector lines.
 - Callouts sit INSIDE the left panel, in its right margin (x range layout.callout_margin_x), each directly beside
