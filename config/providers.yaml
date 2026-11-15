@@ -45,6 +45,16 @@ diagram_gen:
     - LiquidAI/LFM3-1.7B
     - nvidia/Nemotron-H-8B-Base-8K
     - meta-llama/Llama-3.1-8B
+explainer:
+  # "What changed vs predecessor" text from the diff JSON only, written by models.review.
+  experiment: explainer-v1
+  ledger: data/gemini-requests.json   # the same one budget as diagrams
+  requests_per_minute: 10
+  max_output_tokens: 2048
+  repairs: 1                          # at most 2 calls per explanation
+  max_words_base: 60                 # word limit: base + per changed field, capped
+  max_words_per_change: 10
+  max_words_cap: 220
 schedule:
   # Both crons stay commented out in .github/workflows until the owner approves them.
   daily:

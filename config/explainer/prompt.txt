@@ -1,0 +1,7 @@
+Predecessor: {old}
+Successor: {new}
+
+DIGEST (computed by code from the diff JSON):
+{diff}
+
+Write the note.

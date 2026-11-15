@@ -1,0 +1,91 @@
+{
+  "model": "moonshotai/Kimi-K3.1-Pro",
+  "predecessor": "moonshotai/Kimi-K3",
+  "input": {
+    "predecessor": "moonshotai/Kimi-K3",
+    "successor": "moonshotai/Kimi-K3.1-Pro",
+    "changes": [
+      {
+        "what": "Layer mix",
+        "before": "69 KDA linear attention + 24 MLA (full)",
+        "after": "69 KDA linear attention + 24 Gated DSA on MLA",
+        "direction": null
+      },
+      {
+        "what": "DSA top-k",
+        "before": "not published for moonshotai/Kimi-K3",
+        "after": "2,048",
+        "direction": null
+      },
+      {
+        "what": "Total parameters",
+        "before": "2,779,931,837,184",
+        "after": "2,780,110,363,392",
+        "direction": "up"
+      },
+      {
+        "what": "Active parameters",
+        "before": "104,189,614,848",
+        "after": "104,368,141,056",
+        "direction": "up"
+      },
+      {
+        "what": "Growing cache per token (bytes; sliding-window and constant states excluded)",
+        "before": "27,648",
+        "after": "33,792",
+        "direction": "up"
+      },
+      {
+        "what": "Model type",
+        "before": "kimi_k3",
+        "after": "kimi_k31",
+        "direction": null
+      }
+    ],
+    "weights": "5 tensor groups added (178,526,208 parameters); none removed."
+  },
+  "input_sha256": "02f986d412417e2459e93a4d9bda33995e66321e0d604b8ab343d11272e093c0",
+  "text": "The model type changed from kimi_k3 to kimi_k31. Layer mix shifted from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the DSA top-k value is 2,048, having been not published for moonshotai/Kimi-K3. Total parameters increased from 2,779,931,837,184 to 2,780,110,363,392. Active parameters increased from 104,189,614,848 to 104,368,141,056. The growing cache per token, excluding sliding-window and constant states, increased in bytes from 27,648 to 33,792. Regarding weights, 5 tensor groups were added, totaling 178,526,208 parameters, with none removed.",
+  "passed": true,
+  "attempts": [
+    {
+      "text": "The model type changed from kimi_k3 to kimi_k31. Layer mix shifted from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the DSA top-k value is 2,048, having been not published for moonshotai/Kimi-K3. Total parameters increased from 2,779,931,837,184 to 2,780,110,363,392. Active parameters increased from 104,189,614,848 to 104,368,141,056. The growing cache per token, excluding sliding-window and constant states, increased in bytes from 27,648 to 33,792. Regarding weights, 5 tensor groups were added, totaling 178,526,208 parameters, with none removed.",
+      "check": {
+        "passed": true,
+        "problems": [],
+        "numbers": [
+          "3",
+          "31",
+          "69",
+          "24",
+          "69",
+          "24",
+          "2048",
+          "3",
+          "2779931837184",
+          "2780110363392",
+          "104189614848",
+          "104368141056",
+          "27648",
+          "33792",
+          "5",
+          "178526208"
+        ],
+        "words": 88
+      },
+      "usage": {
+        "promptTokenCount": 739,
+        "candidatesTokenCount": 226,
+        "totalTokenCount": 965,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 739
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "model": "gemini-3.5-flash-lite"
+    }
+  ]
+}
