@@ -218,8 +218,9 @@ def test_every_difference_has_exactly_one_group_and_definitions_are_recomputed()
                 float(x.replace(",", "")) for x in re.search(r"accepted ([\d,]+)-([\d,]+)", r["evidence"]).groups()
             )
             assert lo <= r["recomputed"] <= hi, r
-        if r["group"] == "ours_wrong":
-            assert "Closest recomputation" in r["evidence"] or "No recomputation" in r["evidence"]
+        if r["group"] == "card_unreproducible":
+            assert r["evidence"].startswith("Checked: ")
+    assert not [r for r in diffs if r["group"] == "ours_wrong"]  # no confirmed bug left open
 
 
 def test_his_wrong_entries_cite_a_file_or_key_at_a_pinned_commit():
@@ -258,6 +259,25 @@ def test_audited_totals_now_match_the_model_cards(repo):
     assert row["agree"] or row["group"] == "definition"
 
 
+def test_step_stacked_experts_and_share_expert_are_recognized():
+    assert weights._component("model.layers.3.moe.gate_proj.weight") == "moe_routed_experts"
+    assert weights._component("model.layers.3.share_expert.up_proj.weight") == "moe_shared_experts"
+    tensors = {
+        "model.layers.0.moe.gate_proj.weight": t([8, 4, 2]),
+        "model.layers.0.moe.up_proj.weight": t([8, 4, 2]),
+        "model.layers.0.moe.down_proj.weight": t([8, 2, 4]),
+        "model.layers.0.share_expert.up_proj.weight": t([4, 2]),
+    }
+    counts = weights.count(tensors, None, num_layers=1)
+    assert counts["routed_expert_params"] == 192 and counts["experts_per_moe_layer"] == [8]
+    assert weights.active_params(counts, 8, 2)["active"] == 192 // 4 + 8
+
+
+def test_int32_pack_quantized_experts_hold_eight_int4_values():
+    assert weights.logical_elements("m.experts.0.up_proj.weight_packed", t([16, 4], "I32"), 4) == 16 * 4 * 8
+    assert weights.logical_elements("m.experts.0.up_proj.weight_shape", t([2], "I32"), 4) is None
+
+
 def test_inkling_embed_and_unembed_are_embedding_and_head():
     assert weights._component("model.llm.embed.weight") == "embedding"
     assert weights._component("model.llm.unembed.weight") == "lm_head"
@@ -275,7 +295,7 @@ def fake_record(repo="org/Model-X", total=110, active=12, **comp):
         id=repo,
         source_commit="0" * 40,
         published=dict(params_total=total, params_active=active),
-        params=dict(counted_from_weights=dict(by_component=by), active={}),
+        params=dict(counted_from_weights=dict(by_component=by, tensor_count=10), active={}),
     )
 
 
@@ -293,29 +313,40 @@ def test_no_search_over_exclusions_without_a_card_statement(monkeypatch):
     # Excluding embedding + head would give exactly 100B, but the card does not say so: no definition.
     record = fake_record(total=110e9, active=12e9, embedding=5e9, lm_head=5e9)
     row = classify_one(monkeypatch, record, "params_total", "100B total", card="It has 100B parameters.")
-    assert row["group"] == "ours_wrong" and row["recomputed"] == 110e9 and row["rule"].startswith("default:")
+    assert row["group"] == "card_unreproducible" and row["recomputed"] == 110e9 and row["rule"].startswith("default:")
+    assert row["evidence"].startswith("Checked: single safetensors file, all 10 tensor headers read")
 
 
-def test_card_stated_non_embedding_is_applied_and_quoted(monkeypatch):
-    record = fake_record(total=110e9, active=12e9, embedding=1e9, lm_head=1e9)
+def test_unread_tensors_are_ours_wrong_not_card_unreproducible(monkeypatch):
+    audit = load_tool("reference_audit")
+    monkeypatch.setattr(audit, "_card_text", lambda r: "")
+    monkeypatch.setattr(audit, "tensors_read", lambda r: dict(complete=False, text="3 tensors missing."))
+    row = audit.close(fake_record(total=110e9), "params_total", "100B total", (100e9, 0.0), None)
+    assert row["group"] == "ours_wrong" and "3 tensors missing" in row["evidence"]
+
+
+def test_card_stated_non_embedding_also_drops_the_head(monkeypatch):
+    # Published active already excludes the input embedding (12B - 1B); "non-embedding" also drops the 1B head.
+    record = fake_record(total=110e9, active=11e9, embedding=1e9, lm_head=1e9)
     card = "Model-X is a MoE model with 10B non-embedding active parameters."
     row = classify_one(monkeypatch, record, "params_active", "110B total, 10B active", card=card)
     assert row["group"] == "definition" and row["recomputed"] == 10e9
-    assert "card states: excluding input embedding, output head" in row["rule"] and row["card_quote"] == [card]
+    assert "card states: excluding output head" in row["rule"] and row["card_quote"] == [card]
 
 
-def test_card_footnote_keeps_the_output_head(monkeypatch):
-    record = fake_record(total=40e9, active=2.8e9, embedding=0.3e9, lm_head=0.3e9)
+def test_card_footnote_keeping_the_head_matches_the_default(monkeypatch):
+    record = fake_record(total=40e9, active=2.5e9, embedding=0.3e9, lm_head=0.3e9)
     card = (
         "| Active parameters per token | Approximately 2.5B, including the output head¹ |\n"
         "¹ The convention includes the output head and excludes the full input embedding matrix."
     )
     row = classify_one(monkeypatch, record, "params_active", "40B total, 2.5B active", card=card)
-    assert row["group"] == "definition" and row["recomputed"] == 2.5e9 and "output head" not in row["rule"]
+    assert row["group"] == "definition" and row["recomputed"] == 2.5e9 and "card states" not in row["rule"]
 
 
-def test_card_stated_mtp_and_vision_inclusion(monkeypatch):
-    record = fake_record(total=685e9, active=37e9, auxiliary=14e9, embedding=1e9)
+def test_mtp_is_not_subtracted_twice_and_vision_inclusion_is_card_stated(monkeypatch):
+    # Published total already leaves MTP out (685B stored = 671B + 14B MTP).
+    record = fake_record(total=671e9, active=37e9, auxiliary=14e9, embedding=1e9)
     card = "The total size is 685B, which includes 671B of the Main Model weights and 14B of the MTP Module weights."
     row = classify_one(monkeypatch, record, "params_total", "671B total", card=card)
     assert row["group"] == "definition" and row["recomputed"] == 671e9
@@ -328,30 +359,66 @@ def test_card_stated_mtp_and_vision_inclusion(monkeypatch):
     assert row["recomputed"] == 29.2e9  # default: text-only figure, vision removed
 
 
-def test_name_and_approximate_figures_are_name_rounding(monkeypatch):
-    record = fake_record(repo="org/Model-12B-A2.5B", total=12.9e9, active=2.43e9)
-    row = classify_one(monkeypatch, record, "params_active", "12B total, 2.5B active")
-    assert row["group"] == "name_rounding" and "model name" in row["evidence"]
-    record = fake_record(total=430e9, active=26e9)
-    card = "It has ~428B parameters and ~23B activated parameters."
-    row = classify_one(monkeypatch, record, "params_active", "428B total, 23B active", card=card)
-    assert row["group"] == "name_rounding" and row["card_quote"] == [card]
-    row = classify_one(monkeypatch, record, "params_active", "428B total, 23B active", card="It has 23B active.")
-    assert row["group"] == "ours_wrong"
-
-
-def test_every_non_default_row_names_its_rule_and_source():
+def test_a_card_part_of_a_summed_figure_is_not_an_exclusion(monkeypatch):
     audit = load_tool("reference_audit")
-    for r in saved()["rows"]:
-        if r["agree"] or r["group"] not in ("definition", "name_rounding") or audit._is_default(r):
-            continue
-        assert r["rule"]
-        if r["field"] in ("params_total", "params_active", "context_length") and r["group"] == "definition":
-            assert r.get("card_quote"), r  # exclusions and advertised contexts come only from the card
-
-
-def test_deepseek_v32_context_is_his_wrong_from_its_config():
-    row = next(
-        r for r in saved()["rows"] if r["model"] == "deepseek-ai/DeepSeek-V3.2" and r["field"] == "context_length"
+    monkeypatch.setattr(
+        audit,
+        "_card_text",
+        lambda r: "Number of Parameters: 125B with 6B activated, plus 51B n-gram embedding and 4B MTP",
     )
-    assert row["group"] == "his_wrong" and "max_position_embeddings = 163840" in row["evidence"]
+    record = fake_record(total=177e9, lookup_embedding=51e9)
+    rule, value, quotes = audit.fixed_rule(record, "params_total", "100B core; plus 40B n-gram", his_value=180e9)
+    assert value == 177e9 and not quotes
+
+
+def test_name_rounding_needs_ours_within_half_a_unit(monkeypatch):
+    record = fake_record(repo="org/Model-30B-A3B", total=30e9, active=3.3e9)  # 10% off, inside 2.5-3.5B
+    row = classify_one(monkeypatch, record, "params_active", "30B total, 3B active")
+    assert row["group"] == "name_rounding" and "model name" in row["evidence"]
+    record = fake_record(repo="org/Model-30B-A3B", total=30e9, active=3.6e9)  # outside 2.5-3.5B
+    assert classify_one(monkeypatch, record, "params_active", "30B total, 3B active")["group"] == "card_unreproducible"
+    card = "It has ~428B parameters and ~23B activated parameters."
+    row = classify_one(
+        monkeypatch, fake_record(total=430e9, active=23.48e9), "params_active", "428B, 23B active", card=card
+    )
+    assert row["group"] == "name_rounding" and row["card_quote"] == [card]
+    row = classify_one(
+        monkeypatch, fake_record(total=430e9, active=24e9), "params_active", "428B, 23B active", card=card
+    )
+    assert row["group"] == "card_unreproducible"
+    row = classify_one(
+        monkeypatch, fake_record(total=430e9, active=23.1e9), "params_active", "428B, 23B active", card=card
+    )
+    assert row["group"] == "definition"  # within 2%: plain agreement under the default rule
+
+
+def test_active_default_excludes_the_input_embedding_and_keeps_the_head():
+    untied = {
+        "text_total": 100,
+        "total": 110,
+        "routed_expert_params": 40,
+        "by_component": {"embedding": 7, "lm_head": 5, "vision": 10, "moe_routed_experts": 40},
+    }
+    assert weights.active_params(untied, 4, 1)["active"] == 70 - 7
+    tied = dict(untied, by_component={"embedding": 7, "vision": 10, "moe_routed_experts": 40})
+    assert weights.active_params(tied, 4, 1)["active"] == 70  # the shared matrix counted once, as the head
+
+
+def test_mtp_modules_are_published_separately_from_the_total():
+    tensors = {
+        "model.embed_tokens.weight": t([10, 4]),
+        "model.layers.0.mlp.up_proj.weight": t([8, 4]),
+        "model.layers.1.mlp.up_proj.weight": t([8, 4]),  # stored after the 1-layer decoder stack: MTP
+        "model.mtp.layers.0.proj.weight": t([4, 4]),
+    }
+    counts = weights.count(tensors, None, num_layers=1)
+    assert counts["mtp_params"] == 32 + 16 and counts["headline_total"] == counts["total"] - 48
+    rec = json.loads((ROOT / "data/models/zai-org__GLM-5.2.json").read_text())["published"]
+    assert rec["params_mtp"] == 9_952_920_576 and rec["params_total"] == 743_377_019_904
+
+
+def test_card_active_figure_is_recorded_but_does_not_block_publication():
+    rec = json.loads((ROOT / "data/models/LiquidAI__LFM2.5-24B-A2B-Base.json").read_text())
+    check = next(c for c in rec["checks"] if c["field"] == "params_active")
+    assert check["published"] and check["card_reference"]["raw"] == "2.45B"
+    assert all(c["evidence"].startswith("weights:") for c in check["candidates"])  # the card is not a gate

@@ -2,7 +2,7 @@ id: deepseek-ai/DeepSeek-V2-Lite
 source_commit: 604d5664dddd88a0433dbae533b7fe9472482de0
 hub_created: '2024-05-15T05:31:53+00:00'
 license: deepseek
-analyzed_at: '2026-11-15T08:35:31+00:00'
+analyzed_at: '2026-11-15T18:08:06+00:00'
 published:
   num_layers: 27
   hidden_size: 2048
@@ -13,6 +13,7 @@ published:
   head_dim: 192
   attention_type: MLA
   ffn_gated: true
+  tied_embeddings: false
   moe_num_experts: 64
   moe_active_experts: 6
   moe_shared_experts: 2
@@ -51,7 +52,8 @@ published:
   - mla
   mla_cached_width_per_token: 576
   params_total: 15706484224
-  params_active: 2661150208
+  params_active: 2451435008
+  params_active_non_embedding: 2241719808
   model_type: deepseek_v2
   layer_types:
   - full_attention_mla
@@ -82,7 +84,6 @@ published:
   - full_attention_mla
   - full_attention_mla
   decoder_type: MoE
-  tied_embeddings: false
   rope:
     rope_theta: 10000
     scaling:
