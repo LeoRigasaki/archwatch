@@ -1,7 +1,8 @@
 name: daily
 on:
-  # Keep cron disabled until the user explicitly approves it after manual acceptance.
-  # Weekly Gemini generation will use a separate bounded queue; it is not wired here.
+  # Daily job: watcher + deterministic records only. It makes no LLM calls.
+  # Keep cron disabled until the owner explicitly approves it. A scheduled run uses
+  # mode "process"; diagrams run in the separate diagrams.yml (Mon/Wed/Fri).
   # schedule:
   #   - cron: "17 2 * * *"   # 07:17 Asia/Karachi
   workflow_dispatch:
@@ -28,12 +29,12 @@ jobs:
           version: "0.11.8"
       - run: uv sync --locked --python 3.12
       - name: Analyze watched models
-        if: inputs.mode == 'fixed' || inputs.mode == ''
+        if: inputs.mode == 'fixed'
         run: uv run --frozen python run.py $(cat watchlist.txt)
       - name: Discover or process Hub candidates
-        if: inputs.mode == 'discover' || inputs.mode == 'process'
+        if: inputs.mode != 'fixed'
         env:
-          ARCHWATCH_MODE: ${{ inputs.mode }}
+          ARCHWATCH_MODE: ${{ inputs.mode || 'process' }}
         run: |
           if [ "$ARCHWATCH_MODE" = "process" ]; then
             uv run --frozen python watch.py --process --report "$RUNNER_TEMP/archwatch-report.json"
@@ -66,7 +67,7 @@ jobs:
           labels: ${{ steps.conflicts.outputs.n != '0' && 'needs-review' || 'auto-merge' }}
           body: Records rebuilt from the Hub. Fields in review are listed in each model's YAML.
       - name: Optional Discord watcher summary
-        if: always() && (inputs.mode == 'discover' || inputs.mode == 'process')
+        if: always() && inputs.mode != 'fixed'
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
