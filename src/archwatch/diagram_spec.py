@@ -165,8 +165,8 @@ def _activation(v):
     act, gated = v.get("activation"), v.get("ffn_gated")
     if act == "silu" and gated:
         return "SwiGLU"
-    if act == "gelu" and gated:
-        return "GeGLU"
+    if act and act.startswith("gelu"):
+        return "GeGLU" if gated else "GELU"
     if act == "relu2":
         return "squared ReLU"
     return act
@@ -288,8 +288,9 @@ def _mla_graph(t, v, title, *, indexer):
     vdim, latent, hidden = v.get("v_head_dim"), v["mla_kv_lora_rank"], v["hidden_size"]
     g = _Graph(title)
     inp, out = _io(g, hidden)
-    qa, qb = _need(t, "self_attn.q_a_proj.weight"), _need(t, "self_attn.q_b_proj.weight")
-    if qb[0] != heads * hd:
+    qa, qb = _find(t, "self_attn.q_a_proj.weight"), _find(t, "self_attn.q_b_proj.weight")
+    q_direct = _find(t, "self_attn.q_proj.weight") if not (qa and qb) else None
+    if (qb or q_direct)[0] != heads * hd:
         raise SpecError("MLA query projection disagrees with published heads x head_dim")
     qnorm = ", norm" if _find(t, "self_attn.q_a_layernorm.weight") else ""
     kva = _need(t, "self_attn.kv_a_proj_with_mqa.weight")
@@ -300,7 +301,10 @@ def _mla_graph(t, v, title, *, indexer):
         raise SpecError("MLA kv_b projection disagrees with published head widths")
     nope = v.get("mla_use_nope") is True
     attn = g.node("attn", ("sparse attention" if indexer else "attention") + (", NoPE" if nope else ""))
-    g.chain(inp, g.node("qa", f"q: {_linear(qa)}{qnorm}"), g.node("qb", f"Linear {qb[1]} -> {heads} x {hd}"), attn)
+    if q_direct:
+        g.chain(inp, g.node("q", f"q: Linear {q_direct[1]} -> {heads} x {hd}"), attn)
+    else:
+        g.chain(inp, g.node("qa", f"q: {_linear(qa)}{qnorm}"), g.node("qb", f"Linear {qb[1]} -> {heads} x {hd}"), attn)
     kv = g.node("kva", f"kv: {_linear(kva)}")
     norm = g.node("kvnorm", f"norm on {latent} latent") if _find(t, "self_attn.kv_a_layernorm.weight") else None
     g.chain(inp, kv, norm, g.node("kvb", f"Linear {kvb[1]} -> {heads} x ({hd - rope} + {vdim})"), attn)
@@ -309,7 +313,7 @@ def _mla_graph(t, v, title, *, indexer):
         ih, idim, top = v["dsa_index_num_heads"], v["dsa_index_head_dim"], v["dsa_index_topk"]
         wq, wk, wp = (_find(t, f"indexer.{x}.weight") for x in ("wq_b", "wk", "weights_proj"))
         idx = g.node("indexer", f"indexer: {ih} heads x {idim}")
-        if wq and wq[1] == qa[0]:
+        if wq and qa and wq[1] == qa[0]:
             g.chain("qa", idx)
         g.chain(inp, idx, g.node("topk", f"select top {top} tokens"), attn)
         detail = []
@@ -330,6 +334,8 @@ def _mla_graph(t, v, title, *, indexer):
     g.caption.append(f"kv: {kva[0]} = {latent} latent + {rope} key dims; the {rope} key dims skip the latent norm")
     if nope:
         g.caption.append("position encoding: NoPE (config mla_use_nope = true)")
+    elif v.get("rope", {}).get("rope_theta"):
+        g.caption.append(f"rotary position encoding on the {rope} decoupled key dims, " + _rope_text(v["rope"]))
     if indexer and v.get("dsa_index_key_width"):
         g.caption.append(
             f"cache per token: {kva[0]} MLA values + {v['dsa_index_key_width']} indexer key values per layer"
@@ -343,6 +349,15 @@ def _dsa_panel(t, v, count, cache_rows):
 
 def _mla_panel(t, v, count, cache_rows):
     return _mla_graph(t, v, f"Multi-head Latent Attention (MLA), {count} layers", indexer=False)
+
+
+def _rope_text(rope: dict) -> str:
+    text = f"theta {_commas(rope['rope_theta'])}"
+    scaling = rope.get("scaling") or {}
+    kind = scaling.get("rope_type") or scaling.get("type")
+    if kind and scaling.get("factor"):
+        text += f" ({kind} scaling, factor {scaling['factor']:g})"
+    return text
 
 
 def _attention_panel(t, v, counts, kinds):
@@ -371,7 +386,8 @@ def _attention_panel(t, v, counts, kinds):
     g.chain(inp, g.node("v", f"v: {_linear(val)}"), attn)
     gate = _find(t, f"{pre}gate_proj.weight") if v.get("attention_output_gate") else None
     mul = g.node("mul", "multiply") if gate else None
-    g.chain(attn, mul, g.node("oproj", f"output projection: {_short(_need(t, f'{pre}o_proj.weight'))}"), out)
+    o_proj = _need(t, f"{pre}o_proj.weight", f"{pre}dense.weight")
+    g.chain(attn, mul, g.node("oproj", f"output projection: {_short(o_proj)}"), out)
     if gate:
         g.chain(inp, g.node("gate", f"head gate: {_linear(gate)}"), mul)
         if gate[0] == heads:
@@ -395,11 +411,9 @@ def _attention_panel(t, v, counts, kinds):
                 text += f"theta {_commas(sl['rope_theta'])}, "
         g.caption.append(text + f"attend to the last {v['sliding_window']} tokens only")
     elif rope.get("rope_theta"):
-        text = f"rotary position encoding, theta {_commas(rope['rope_theta'])}"
-        scaling = rope.get("scaling") or {}
-        if scaling.get("rope_type") and scaling.get("factor"):
-            text += f" ({scaling['rope_type']} scaling, factor {scaling['factor']:g})"
-        g.caption.append(text)
+        pr = rope.get("partial_rotary_factor")
+        part = f" on {pr:g} of each head" if pr else ""
+        g.caption.append(f"rotary position encoding{part}, " + _rope_text(rope))
     return g.spec()
 
 
@@ -454,16 +468,28 @@ def _mamba_panel(t, v, count, cache_rows):
     return g.spec()
 
 
-ACT_NODE = {"silu": "SiLU", "gelu": "GELU", "situ": "SiTU", "relu2": "squared ReLU"}
+ACT_NODE = {
+    "silu": "SiLU",
+    "gelu": "GELU",
+    "gelu_new": "GELU",
+    "gelu_pytorch_tanh": "GELU (tanh)",
+    "situ": "SiTU",
+    "relu2": "squared ReLU",
+}
 
 
 def _ffn_graph(title, t, v):
     g = _Graph(title)
     inp, out = _io(g, v["hidden_size"])
     gate_w = _find(t, "gate_proj.weight", "w1.weight")
-    up_w = _find(t, "up_proj.weight", "w3.weight")
-    down_w = _need(t, "down_proj.weight", "w2.weight")
-    names = ("w1", "w3", "w2") if _find(t, "w1.weight") else ("gate", "up", "down")
+    up_w = _find(t, "up_proj.weight", "w3.weight", "fc1.weight")
+    down_w = _need(t, "down_proj.weight", "w2.weight", "fc2.weight")
+    if _find(t, "w1.weight"):
+        names = ("w1", "w3", "w2")
+    elif _find(t, "fc1.weight"):
+        names = ("gate", "fc1", "fc2")
+    else:
+        names = ("gate", "up", "down")
     act = ACT_NODE.get(v.get("activation"), v.get("activation"))
     down = g.node("down", f"{names[2]}: {_linear(down_w)}")
     if gate_w and up_w:
@@ -474,7 +500,7 @@ def _ffn_graph(title, t, v):
         g.chain(inp, g.node("up", f"{names[1]}: {_linear(up_w)}"), mul)
         g.chain(mul, down, out)
     else:
-        g.chain(inp, g.node("up", f"up: {_linear(up_w)}"), g.node("act", act) if act else None, down, out)
+        g.chain(inp, g.node("up", f"{names[1]}: {_linear(up_w)}"), g.node("act", act) if act else None, down, out)
     if v.get("activation_card_name"):
         g.caption.append(f"activation: {v['activation_card_name']} (gated)")
     return g
@@ -521,6 +547,16 @@ def _moe_panel(title, t, v):
 def _each_layer(v, names, kinds, ffn_names, standalone, learned_res, ffn_where):
     g = _Graph("Each layer")
     inp, out = g.node("in", "layer input"), g.node("out", "layer output")
+    if v.get("block_layout") == "parallel":
+        total = g.node("add", "add input and both branches")
+        norm = g.node("norm", "norm (shared)")
+        mixer = g.node("mixer", _fit("attention: " + " or ".join(names[k] for k in kinds), "attention"))
+        g.chain(inp, norm, mixer, total)
+        g.chain(norm, g.node("ffn", "FFN"), total)
+        g.chain(inp, total)
+        g.chain(total, out)
+        g.caption.append("parallel block: attention and the FFN both read the same normed input")
+        return g.spec()
     if standalone:
         res = g.node("res", "residual add")
         g.chain(

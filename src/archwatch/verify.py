@@ -128,6 +128,16 @@ def verify(
     out.append(check("head_dim", [c("head_dim")]))
     out.append(check("attention_type", [c("attention_type")]))
     out.append(check("ffn_gated", [w(wshape.get("ffn_gated"), "FFN gate/up/down tensor layout")]))
+    if wcount:
+        out.append(
+            check(
+                "tied_embeddings",
+                [
+                    c("tied_embeddings"),
+                    w(not bool(wshape.get("has_lm_head")), "separate lm_head tensor present or absent"),
+                ],
+            )
+        )
     out.append(
         check("sandwich_norm", [c("sandwich_norm"), w(wshape.get("sandwich_norm"), "post-mixer/post-FFN norm tensors")])
     )

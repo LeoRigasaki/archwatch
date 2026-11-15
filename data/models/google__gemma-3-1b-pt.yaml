@@ -2,7 +2,7 @@ id: google/gemma-3-1b-pt
 source_commit: fcf18a2a879aab110ca39f8bffbccd5d49d8eb29
 hub_created: '2025-02-20T21:21:06+00:00'
 license: gemma
-analyzed_at: '2026-11-15T08:35:32+00:00'
+analyzed_at: '2026-11-15T09:58:46+00:00'
 published:
   num_layers: 26
   hidden_size: 1152
@@ -13,6 +13,7 @@ published:
   head_dim: 256
   attention_type: MQA
   ffn_gated: true
+  tied_embeddings: true
   sandwich_norm: true
   ffn_intermediate: 6912
   sliding_window: 512
@@ -77,7 +78,6 @@ published:
   - sliding_attention
   - sliding_attention
   decoder_type: Dense
-  tied_embeddings: false
   rope:
     full_attention:
       rope_theta: 1000000
