@@ -1,0 +1,302 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1560">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#333333"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; fill: #1F2937; }
+      .title { font-size: 34px; font-weight: 700; text-anchor: middle; }
+      .summary { font-size: 16px; fill: #4B5563; text-anchor: middle; }
+      .panel-title { font-size: 18px; font-weight: 700; }
+      .box-label { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+      .bar-label { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .repeat-label { font-size: 16px; font-weight: 700; fill: #374151; dominant-baseline: central; }
+      .note-text { font-size: 14px; fill: #6B7280; }
+      .caption { font-size: 14px; fill: #6B7280; }
+      .callout { font-size: 14px; font-weight: 700; fill: #1F2937; }
+      .edge { fill: none; stroke: #333333; stroke-width: 1.6; }
+      .node-box { fill: #FFFFFF; stroke: #4B5563; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1480" height="1560" fill="#FFFFFF"/>
+
+  <g data-section="title">
+    <text x="740" y="60" class="title">Nemotron-H-8B-Base-8K</text>
+    <text x="740" y="92" class="summary">8.10B parameters, 52 layers, 8K context</text>
+  </g>
+
+  <g data-section="stack">
+    <rect x="24" y="130" width="756" height="938" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+
+    <line x1="196" y1="174" x2="196" y2="146" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="lm_head">
+      <rect x="48" y="174" width="296" height="40" rx="8" class="node-box"/>
+      <text x="196" y="194" class="box-label">LM head 4096 -&gt; 131,072</text>
+    </g>
+    <text x="360" y="188" class="note-text">LM head is not tied
+      <tspan x="360" dy="18">to the embedding</tspan>
+    </text>
+
+    <line x1="196" y1="238" x2="196" y2="214" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="final_norm">
+      <rect x="48" y="238" width="296" height="40" rx="8" class="node-box"/>
+      <text x="196" y="258" class="box-label">Final norm</text>
+    </g>
+
+    <line x1="196" y1="302" x2="196" y2="278" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="3" data-repeat="2">
+      <rect x="38" y="302" width="316" height="84" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="MLP" x="48" y="312" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="326" class="bar-label">MLP</text>
+      <rect data-layer="Mamba-2" x="48" y="348" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="362" class="bar-label">Mamba-2</text>
+      <text x="368" y="344" class="repeat-label">2 x</text>
+    </g>
+
+    <line x1="196" y1="410" x2="196" y2="386" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="2" data-repeat="4">
+      <rect x="38" y="410" width="316" height="398" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="MLP" x="48" y="420" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="434" class="bar-label">MLP</text>
+      <rect data-layer="Mamba-2" x="48" y="455" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="469" class="bar-label">Mamba-2</text>
+      <rect data-layer="MLP" x="48" y="490" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="504" class="bar-label">MLP</text>
+      <rect data-layer="Mamba-2" x="48" y="525" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="539" class="bar-label">Mamba-2</text>
+      <rect data-layer="MLP" x="48" y="560" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="574" class="bar-label">MLP</text>
+      <rect data-layer="Mamba-2" x="48" y="595" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="609" class="bar-label">Mamba-2</text>
+      <rect data-layer="MLP" x="48" y="630" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="644" class="bar-label">MLP</text>
+      <rect data-layer="GQA" x="48" y="665" width="296" height="28" rx="5" fill="#F4A8A4" stroke="#B84742" stroke-width="1.2"/>
+      <text x="196" y="679" class="bar-label">GQA</text>
+      <rect data-layer="Mamba-2" x="48" y="700" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="714" class="bar-label">Mamba-2</text>
+      <rect data-layer="MLP" x="48" y="735" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="749" class="bar-label">MLP</text>
+      <rect data-layer="Mamba-2" x="48" y="770" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="784" class="bar-label">Mamba-2</text>
+      <text x="368" y="609" class="repeat-label">4 x</text>
+    </g>
+
+    <line x1="196" y1="832" x2="196" y2="808" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="1" data-repeat="2">
+      <rect x="38" y="832" width="316" height="84" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="MLP" x="48" y="842" width="296" height="28" rx="5" fill="#E2E5EA" stroke="#5A6270" stroke-width="1.2"/>
+      <text x="196" y="856" class="bar-label">MLP</text>
+      <rect data-layer="Mamba-2" x="48" y="878" width="296" height="28" rx="5" fill="#C9B2E8" stroke="#6E4B9E" stroke-width="1.2"/>
+      <text x="196" y="892" class="bar-label">Mamba-2</text>
+      <text x="368" y="874" class="repeat-label">2 x</text>
+    </g>
+
+    <path d="M 406 302 C 416 302 416 312 416 324 L 416 597 C 416 605 422 609 428 609 C 422 609 416 613 416 621 L 416 894 C 416 906 416 916 406 916" fill="none" stroke="#4B5563" stroke-width="1.8"/>
+    <text x="436" y="609" class="repeat-label">52 layers</text>
+
+    <line x1="196" y1="940" x2="196" y2="916" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="embedding">
+      <rect x="48" y="940" width="296" height="40" rx="8" class="node-box"/>
+      <text x="196" y="960" class="box-label">Token embedding 131,072 x 4096</text>
+    </g>
+
+    <line x1="196" y1="1004" x2="196" y2="980" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="text">
+      <rect x="48" y="1004" width="296" height="40" rx="8" class="node-box"/>
+      <text x="196" y="1024" class="box-label">Tokenized text</text>
+    </g>
+
+    <g data-callout="1">
+      <text x="560" y="445" class="callout">Context length:
+        <tspan x="560" dy="19">8K tokens</tspan>
+      </text>
+    </g>
+    <g data-callout="2">
+      <text x="560" y="525" class="callout">24 Mamba-2 + 24 MLP
+        <tspan x="560" dy="19">+ 4 GQA</tspan>
+      </text>
+    </g>
+    <g data-callout="3">
+      <text x="560" y="666" class="callout">32 Q / 8 KV heads</text>
+    </g>
+    <g data-callout="4">
+      <text x="560" y="965" class="callout">Vocabulary: 128K</text>
+    </g>
+    <g data-callout="5">
+      <text x="560" y="692" class="callout">KV cache: 16 KB per
+        <tspan x="560" dy="19">token (only the 4 GQA</tspan>
+        <tspan x="560" dy="19">layers grow)</tspan>
+      </text>
+    </g>
+  </g>
+
+  <g data-section="each-layer">
+    <rect x="24" y="1092" width="756" height="432" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <text x="44" y="1124" class="panel-title">Each layer</text>
+
+    <g data-node="out">
+      <rect x="360" y="1140" width="160" height="40" rx="8" class="node-box"/>
+      <text x="440" y="1160" class="box-label">layer output</text>
+    </g>
+    <g data-node="res">
+      <rect x="360" y="1216" width="160" height="40" rx="8" class="node-box"/>
+      <text x="440" y="1236" class="box-label">residual add</text>
+    </g>
+    <g data-node="op">
+      <rect x="200" y="1292" width="140" height="40" rx="8" class="node-box"/>
+      <text x="270" y="1312" class="box-label">operator</text>
+    </g>
+    <g data-node="norm">
+      <rect x="210" y="1368" width="120" height="40" rx="8" class="node-box"/>
+      <text x="270" y="1388" class="box-label">norm</text>
+    </g>
+    <g data-node="in">
+      <rect x="360" y="1444" width="160" height="40" rx="8" class="node-box"/>
+      <text x="440" y="1464" class="box-label">layer input</text>
+    </g>
+
+    <polyline data-edge="in->norm" points="360,1464 270,1464 270,1408" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="norm->op" x1="270" y1="1368" x2="270" y2="1332" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="op->res" points="270,1292 270,1236 360,1236" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="in->res" x1="480" y1="1444" x2="480" y2="1256" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="res->out" x1="440" y1="1216" x2="440" y2="1180" class="edge" marker-end="url(#arrow)"/>
+
+    <text x="44" y="1506" class="caption">each layer is one operator: Mamba-2, MLP, GQA</text>
+  </g>
+
+  <g data-section="zooms">
+    <g data-zoom="mamba2">
+      <rect x="810" y="130" width="640" height="594" rx="10" fill="#FFFFFF" stroke="#6E4B9E" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="160" class="panel-title" style="fill: #6E4B9E;">Mamba-2 (24 layers)</text>
+
+      <g data-node="out">
+        <rect x="990" y="180" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1070" y="198" class="box-label">output (4096)</text>
+      </g>
+      <g data-node="out_proj">
+        <rect x="930" y="244" width="280" height="36" rx="8" class="node-box"/>
+        <text x="1070" y="262" class="box-label">out_proj: Linear 8192 -&gt; 4096</text>
+      </g>
+      <g data-node="norm">
+        <rect x="958" y="308" width="224" height="36" rx="8" class="node-box"/>
+        <text x="1070" y="326" class="box-label">norm (8192) gated by z</text>
+      </g>
+      <g data-node="scan">
+        <rect x="965" y="372" width="210" height="36" rx="8" class="node-box"/>
+        <text x="1070" y="390" class="box-label">scan: 128 heads x 64</text>
+      </g>
+      <g data-node="conv">
+        <rect x="860" y="436" width="300" height="36" rx="8" class="node-box"/>
+        <text x="1010" y="454" class="box-label">Conv1d kernel 4 (10240 channels)</text>
+      </g>
+      <g data-node="in_proj">
+        <rect x="930" y="500" width="280" height="36" rx="8" class="node-box"/>
+        <text x="1070" y="518" class="box-label">in_proj: Linear 4096 -&gt; 18560</text>
+      </g>
+      <g data-node="in">
+        <rect x="990" y="564" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1070" y="582" class="box-label">input (4096)</text>
+      </g>
+
+      <line data-edge="in->in_proj" x1="1070" y1="564" x2="1070" y2="536" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="in_proj->conv" x1="1010" y1="500" x2="1010" y2="472" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="conv->scan" x1="1010" y1="436" x2="1010" y2="408" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in_proj->scan" points="1210,512 1290,512 1290,390 1175,390" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in_proj->norm" points="1210,524 1360,524 1360,326 1182,326" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="scan->norm" x1="1070" y1="372" x2="1070" y2="344" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="norm->out_proj" x1="1070" y1="308" x2="1070" y2="280" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="out_proj->out" x1="1070" y1="244" x2="1070" y2="216" class="edge" marker-end="url(#arrow)"/>
+
+      <text x="830" y="628" class="caption">in_proj splits into z (8192), x (8192), B and C (8 groups x 128 each)
+        <tspan x="830" dy="18">and dt (128)</tspan>
+        <tspan x="830" dy="20">selective state-space scan; Conv1d runs on x, B and C; dt goes to</tspan>
+        <tspan x="830" dy="18">the scan; z gates the norm</tspan>
+        <tspan x="830" dy="20">state size 128; cache does not grow with context</tspan>
+      </text>
+    </g>
+
+    <g data-zoom="mlp">
+      <rect x="810" y="748" width="640" height="362" rx="10" fill="#FFFFFF" stroke="#5A6270" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="778" class="panel-title" style="fill: #5A6270;">MLP (24 layers)</text>
+
+      <g data-node="out">
+        <rect x="1050" y="798" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="816" class="box-label">output (4096)</text>
+      </g>
+      <g data-node="down">
+        <rect x="1000" y="862" width="260" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="880" class="box-label">down: Linear 21504 -&gt; 4096</text>
+      </g>
+      <g data-node="act">
+        <rect x="1050" y="926" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="944" class="box-label">squared ReLU</text>
+      </g>
+      <g data-node="up">
+        <rect x="1005" y="990" width="250" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1008" class="box-label">up: Linear 4096 -&gt; 21504</text>
+      </g>
+      <g data-node="in">
+        <rect x="1050" y="1054" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1072" class="box-label">input (4096)</text>
+      </g>
+
+      <line data-edge="in->up" x1="1130" y1="1054" x2="1130" y2="1026" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="up->act" x1="1130" y1="990" x2="1130" y2="962" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="act->down" x1="1130" y1="926" x2="1130" y2="898" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="down->out" x1="1130" y1="862" x2="1130" y2="834" class="edge" marker-end="url(#arrow)"/>
+    </g>
+
+    <g data-zoom="gqa">
+      <rect x="810" y="1134" width="640" height="390" rx="10" fill="#FFFFFF" stroke="#B84742" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="1164" class="panel-title" style="fill: #B84742;">GQA attention (4 layers)</text>
+
+      <g data-node="out">
+        <rect x="1050" y="1184" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1202" class="box-label">output (4096)</text>
+      </g>
+      <g data-node="oproj">
+        <rect x="985" y="1248" width="290" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1266" class="box-label">output projection: 4096 -&gt; 4096</text>
+      </g>
+      <g data-node="attn">
+        <rect x="997" y="1312" width="266" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1330" class="box-label">attention: 32 q / 8 kv heads</text>
+      </g>
+      <g data-node="q">
+        <rect x="824" y="1376" width="188" height="36" rx="8" class="node-box"/>
+        <text x="918" y="1394" class="box-label">q: Linear 4096 -&gt; 4096</text>
+      </g>
+      <g data-node="k">
+        <rect x="1036" y="1376" width="188" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1394" class="box-label">k: Linear 4096 -&gt; 1024</text>
+      </g>
+      <g data-node="v">
+        <rect x="1248" y="1376" width="188" height="36" rx="8" class="node-box"/>
+        <text x="1342" y="1394" class="box-label">v: Linear 4096 -&gt; 1024</text>
+      </g>
+      <g data-node="in">
+        <rect x="1050" y="1440" width="160" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1458" class="box-label">input (4096)</text>
+      </g>
+
+      <polyline data-edge="in->q" points="1090,1440 1090,1426 918,1426 918,1412" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="in->k" x1="1130" y1="1440" x2="1130" y2="1412" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in->v" points="1170,1440 1170,1426 1342,1426 1342,1412" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="q->attn" points="918,1376 918,1362 1050,1362 1050,1348" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="k->attn" x1="1130" y1="1376" x2="1130" y2="1348" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="v->attn" points="1342,1376 1342,1362 1210,1362 1210,1348" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="attn->oproj" x1="1130" y1="1312" x2="1130" y2="1284" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="oproj->out" x1="1130" y1="1248" x2="1130" y2="1220" class="edge" marker-end="url(#arrow)"/>
+
+      <text x="830" y="1506" class="caption">32 query heads, 8 key/value heads, head size 128</text>
+    </g>
+  </g>
+</svg>

@@ -1,12 +1,13 @@
 """Build the static gallery page from verified records: site/index.html (one self-contained file)."""
 
+import base64
 import hashlib
 import html
 import json
 from pathlib import Path
 from urllib.parse import quote
 
-from archwatch import diagram, pipeline
+from archwatch import diagram, generated, pipeline
 from archwatch.artifacts import write_if_changed
 from archwatch.publication import PublicationError, render_cache, render_values
 
@@ -156,7 +157,17 @@ def model_section(name, anchor):
         for a, b, c in tiles
     )
 
-    svg = diagram.render(rec)
+    generated_diagram = generated.select(rec)
+    if generated_diagram:
+        data = base64.b64encode(generated_diagram[0].encode()).decode()
+        svg = f'<img src="data:image/svg+xml;base64,{data}" alt="{e(repo)} architecture diagram">'
+        diagram_label = (
+            f"Generated diagram: drawn by Gemini from the verified spec; passed all "
+            f"{len(generated_diagram[1]['checks_passed'])} code checks."
+        )
+    else:
+        svg = diagram.render(rec)
+        diagram_label = "Code-drawn diagram: no generated diagram has passed every check for this record."
 
     # verification table
     order = {"verified": 0, "single source": 1, "conflict": 2}
@@ -245,6 +256,7 @@ def model_section(name, anchor):
 
   <h3>Architecture</h3>
   <div class="diagram">{svg}</div>
+  <p class="diagram-source">{e(diagram_label)}</p>
 
   <h3>Inference cache calculator</h3>
   <p>Drag to a context length. Layers whose cache grows with context are the only ones that matter at long context; the rest cost a fixed amount.</p>
@@ -354,7 +366,7 @@ a{{color:var(--acc)}}code{{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospa
 .stage{{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--soft)}}.stage b{{display:block;font-size:13.5px}}.stage span{{font-size:12.5px;color:var(--mut)}}
 .tiles{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}}
 .tile{{border:1px solid var(--line);border-radius:10px;padding:12px}}.tl{{font-size:12.5px;color:var(--mut)}}.tv{{font-size:22px;font-weight:650;margin:2px 0}}.ts{{font-size:12px;color:var(--mut)}}
-.diagram{{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;overflow-x:auto}}.diagram svg{{width:100%;height:auto;min-width:640px;display:block}}
+.diagram{{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;overflow-x:auto}}.diagram svg,.diagram img{{width:100%;height:auto;min-width:640px;display:block}}.diagram-source{{font-size:12px;color:var(--muted,#59636e);margin:4px 0 0}}
 table{{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}}th,td{{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}}
 th{{font-weight:600;color:var(--mut);font-size:12.5px}}.num{{text-align:right;font-variant-numeric:tabular-nums}}
 .tablewrap{{overflow-x:auto}}.vt td.ev{{font-size:12.5px;color:var(--mut);min-width:340px}}
