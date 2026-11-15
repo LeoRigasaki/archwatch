@@ -244,5 +244,65 @@
     "day": "2026-11-15",
     "model": "gemini-3.5-flash-lite",
     "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736047.558315,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736053.563554,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736059.56669,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736079.42686,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736085.432144,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736091.437232,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736114.106313,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736120.110681,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736127.90956,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736133.914742,
+    "day": "2026-11-15",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "explainer-v1"
   }
 ]
