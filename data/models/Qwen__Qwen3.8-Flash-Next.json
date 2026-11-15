@@ -18,7 +18,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:00+00:00",
+ "analyzed_at": "2026-11-15T09:52:58+00:00",
  "facts": {
   "architecture_class": {
    "value": "Qwen4ExpForConditionalGeneration",
@@ -468,8 +468,8 @@
    "skipped_buffer_tensors": 3
   },
   "active": {
-   "text_active": 61114391168,
-   "text_active_without_embeddings": 60478691968,
+   "text_active": 58507240320,
+   "text_active_without_embeddings": 57871541120,
    "with_vision": 61563322224
   }
  },
@@ -1031,13 +1031,13 @@
   },
   {
    "field": "params_active",
-   "value": 61114391168,
+   "value": 58507240320,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 61114391168,
+     "value": 58507240320,
      "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
     }
    ]
@@ -1485,7 +1485,7 @@
   "layer_index_base_in_config": 0,
   "qk_norm": true,
   "params_total": 179999981424,
-  "params_active": 61114391168,
+  "params_active": 58507240320,
   "model_type": "qwen4_exp",
   "linear_num_key_heads": 16,
   "linear_num_value_heads": 48,
@@ -1683,7 +1683,7 @@
   {
    "field": "params_active",
    "before": 121665894272,
-   "after": 61114391168
+   "after": 58507240320
   },
   {
    "field": "model_type",

@@ -84,10 +84,12 @@ def test_every_recorded_disagreement_has_a_checked_cause():
     for r in bad:
         entry = causes[r["model"]][r["field"]]
         assert entry["cause"] == r["cause"] and len(entry["why"]) > 40
-    # The one ArchWatch error found is the Mistral speculative-decoding head counted as active.
-    assert [(r["model"], r["field"]) for r in bad if r["cause"] == "error-ours"] == [
-        ("mistralai/Mistral-Large-4-1T-A52B", "params_active")
+    # The Mistral speculative-decoding-head error is fixed; its active count now agrees with the card.
+    assert not [r for r in bad if r["cause"] == "error-ours"]
+    mistral = [
+        r for r in saved["rows"] if r["model"] == "mistralai/Mistral-Large-4-1T-A52B" and r["field"] == "params_active"
     ]
+    assert mistral and mistral[0]["agree"]
 
 
 def test_site_labels_the_growing_cache_definition():
