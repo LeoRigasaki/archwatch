@@ -252,7 +252,106 @@ def test_audit_workflow_is_weekly_change_gated_and_llm_free():
     assert "git diff --quiet -- data/gemini-requests.json" in text and "needs-review" in text
 
 
-@pytest.mark.parametrize("repo", ["openai/gpt-oss-120b", "deepseek-ai/DeepSeek-V4-Flash", "xai-org/grok-2"])
+@pytest.mark.parametrize("repo", ["openai/gpt-oss-120b", "deepseek-ai/DeepSeek-V3", "xai-org/grok-2"])
 def test_audited_totals_now_match_the_model_cards(repo):
     row = next(r for r in saved()["rows"] if r["model"] == repo and r["field"] == "params_total")
     assert row["agree"] or row["group"] == "definition"
+
+
+def test_inkling_embed_and_unembed_are_embedding_and_head():
+    assert weights._component("model.llm.embed.weight") == "embedding"
+    assert weights._component("model.llm.unembed.weight") == "lm_head"
+    assert weights._component("mtp.2.markov_head.embed.weight") == "auxiliary"  # MTP stays auxiliary
+    assert weights._component("visual.patch_embed.weight") == "vision"
+
+
+# ---------------------------------------------------------------- one fixed rule, card-stated exclusions only
+
+
+def fake_record(repo="org/Model-X", total=110, active=12, **comp):
+    by = dict(embedding=5, lm_head=5, vision=0, auxiliary=0, lookup_embedding=0)
+    by.update(comp)
+    return dict(
+        id=repo,
+        source_commit="0" * 40,
+        published=dict(params_total=total, params_active=active),
+        params=dict(counted_from_weights=dict(by_component=by), active={}),
+    )
+
+
+def classify_one(monkeypatch, record, field, his, card=""):
+    audit = load_tool("reference_audit")
+    monkeypatch.setattr(audit, "_card_text", lambda r: card)
+    parsed = None
+    if field == "params_total":
+        number, unit = audit._his_number(field, his)
+        parsed = (float(number) * audit.UNIT[unit], 0.0)
+    return audit.close(record, field, his, parsed, None)
+
+
+def test_no_search_over_exclusions_without_a_card_statement(monkeypatch):
+    # Excluding embedding + head would give exactly 100B, but the card does not say so: no definition.
+    record = fake_record(total=110e9, active=12e9, embedding=5e9, lm_head=5e9)
+    row = classify_one(monkeypatch, record, "params_total", "100B total", card="It has 100B parameters.")
+    assert row["group"] == "ours_wrong" and row["recomputed"] == 110e9 and row["rule"].startswith("default:")
+
+
+def test_card_stated_non_embedding_is_applied_and_quoted(monkeypatch):
+    record = fake_record(total=110e9, active=12e9, embedding=1e9, lm_head=1e9)
+    card = "Model-X is a MoE model with 10B non-embedding active parameters."
+    row = classify_one(monkeypatch, record, "params_active", "110B total, 10B active", card=card)
+    assert row["group"] == "definition" and row["recomputed"] == 10e9
+    assert "card states: excluding input embedding, output head" in row["rule"] and row["card_quote"] == [card]
+
+
+def test_card_footnote_keeps_the_output_head(monkeypatch):
+    record = fake_record(total=40e9, active=2.8e9, embedding=0.3e9, lm_head=0.3e9)
+    card = (
+        "| Active parameters per token | Approximately 2.5B, including the output head¹ |\n"
+        "¹ The convention includes the output head and excludes the full input embedding matrix."
+    )
+    row = classify_one(monkeypatch, record, "params_active", "40B total, 2.5B active", card=card)
+    assert row["group"] == "definition" and row["recomputed"] == 2.5e9 and "output head" not in row["rule"]
+
+
+def test_card_stated_mtp_and_vision_inclusion(monkeypatch):
+    record = fake_record(total=685e9, active=37e9, auxiliary=14e9, embedding=1e9)
+    card = "The total size is 685B, which includes 671B of the Main Model weights and 14B of the MTP Module weights."
+    row = classify_one(monkeypatch, record, "params_total", "671B total", card=card)
+    assert row["group"] == "definition" and row["recomputed"] == 671e9
+    record = fake_record(total=29.7e9, vision=0.5e9)
+    row = classify_one(
+        monkeypatch, record, "params_total", "29.6B", card="| Parameters | 29.6B (including vision encoder) |"
+    )
+    assert row["group"] == "definition" and row["recomputed"] == 29.7e9
+    row = classify_one(monkeypatch, record, "params_total", "29.6B", card="It has 29.6B parameters.")
+    assert row["recomputed"] == 29.2e9  # default: text-only figure, vision removed
+
+
+def test_name_and_approximate_figures_are_name_rounding(monkeypatch):
+    record = fake_record(repo="org/Model-12B-A2.5B", total=12.9e9, active=2.43e9)
+    row = classify_one(monkeypatch, record, "params_active", "12B total, 2.5B active")
+    assert row["group"] == "name_rounding" and "model name" in row["evidence"]
+    record = fake_record(total=430e9, active=26e9)
+    card = "It has ~428B parameters and ~23B activated parameters."
+    row = classify_one(monkeypatch, record, "params_active", "428B total, 23B active", card=card)
+    assert row["group"] == "name_rounding" and row["card_quote"] == [card]
+    row = classify_one(monkeypatch, record, "params_active", "428B total, 23B active", card="It has 23B active.")
+    assert row["group"] == "ours_wrong"
+
+
+def test_every_non_default_row_names_its_rule_and_source():
+    audit = load_tool("reference_audit")
+    for r in saved()["rows"]:
+        if r["agree"] or r["group"] not in ("definition", "name_rounding") or audit._is_default(r):
+            continue
+        assert r["rule"]
+        if r["field"] in ("params_total", "params_active", "context_length") and r["group"] == "definition":
+            assert r.get("card_quote"), r  # exclusions and advertised contexts come only from the card
+
+
+def test_deepseek_v32_context_is_his_wrong_from_its_config():
+    row = next(
+        r for r in saved()["rows"] if r["model"] == "deepseek-ai/DeepSeek-V3.2" and r["field"] == "context_length"
+    )
+    assert row["group"] == "his_wrong" and "max_position_embeddings = 163840" in row["evidence"]

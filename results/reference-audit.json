@@ -1085,8 +1085,8 @@
   },
   {
    "repo": "meta-models/Muse-Spark-Open-816B-A42B",
-   "status": "access_needed",
-   "error": "HTTPError: HTTP Error 403: Forbidden"
+   "status": "analyzed",
+   "commit": "4c0e167c8b7a18e1dd5ca76763ecb5d53c6a9601"
   },
   {
    "repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
@@ -1338,10 +1338,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.094057387283237,
-   "recomputed": 3457758560,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 3,457,758,560. His: 3.46B (accepted 3,390,800,000-3,529,200,000); gap after the rule 0.06%."
+   "recomputed": 3785438560,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 3,785,438,560; his accepted range 3,390,800,000-3,529,200,000."
   },
   {
    "model": "Aleph-Alpha/Kolibri-1",
@@ -1443,9 +1443,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.003442929100917431,
    "recomputed": 218255218784,
-   "rule": "all stored tensors excluding vision tower and projector",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector. Ours recomputed: 218,255,218,784. His: 218B total (accepted 213,640,000,000-222,360,000,000); gap after the rule 0.12%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 218,255,218,784. His: 218B total (accepted 213,640,000,000-222,360,000,000); gap after the rule 0.12%."
   },
   {
    "model": "CohereLabs/command-a-plus-05-2026-w4a4",
@@ -1520,9 +1521,10 @@
    "our_evidence": "2 x 4 KV heads x 128 head_dim x 2 B x 9 layers",
    "gap": 0.75,
    "recomputed": 73728,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 73,728. His: 72 KiB (accepted 72,253-75,203); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 73,728. His: 72 KiB (accepted 72,253-75,203); gap after the rule 0.00%."
   },
   {
    "model": "CohereLabs/tiny-aya-base",
@@ -1554,6 +1556,9 @@
    "recomputed": 131072.0,
    "rule": "advertised context the model card states (\"128k\"): \"xture and training configs - **Long context:** Trained on 64k context and suppots up to **128k tokens** using YARN extrapolation - **Multilingual**: 6 natively supported (English, Fren\"",
    "group": "definition",
+   "card_quote": [
+    "xture and training configs - **Long context:** Trained on 64k context and suppots up to **128k tokens** using YARN extrapolation - **Multilingual**: 6 natively supported (English, Fren"
+   ],
    "evidence": "Rule: advertised context the model card states (\"128k\"): \"xture and training configs - **Long context:** Trained on 64k context and suppots up to **128k tokens** using YARN extrapolation - **Multilingual**: 6 natively supported (English, Fren\". Ours recomputed: 131,072. His: 131,072 (accepted 128,451-133,693); gap after the rule 0.00%."
   },
   {
@@ -1602,9 +1607,10 @@
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.0243757056,
    "recomputed": 2439060736,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded)",
-   "group": "ours_wrong",
-   "evidence": "Closest recomputation: per-token weights (unselected experts, MTP heads and lookup tables excluded) = 2,439,060,736; his accepted range 2,450,000,000-2,550,000,000."
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 2.5B is the size in the model name (Mellum2-12B-A2.5B-Thinking). Ours is the exact count from the weights (default: per-token count (unselected experts, MTP heads and lookup tables not active) = 2,439,060,736)."
   },
   {
    "model": "JetBrains/Mellum2-12B-A2.5B-Thinking",
@@ -1643,9 +1649,10 @@
    "our_evidence": "2 x 4 KV heads x 128 head_dim x 2 B x 7 layers",
    "gap": 0.75,
    "recomputed": 57344,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 57,344. His: 56 KiB (accepted 56,197-58,491); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 57,344. His: 56 KiB (accepted 56,197-58,491); gap after the rule 0.00%."
   },
   {
    "model": "JetBrains/Mellum2-12B-A2.5B-Thinking",
@@ -1702,9 +1709,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.012811337142857144,
    "recomputed": 354483968,
-   "rule": "all stored tensors",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 354,483,968. His: 350M parameters (accepted 343,000,000-357,000,000); gap after the rule 1.28%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 354,483,968. His: 350M parameters (accepted 343,000,000-357,000,000); gap after the rule 1.28%."
   },
   {
    "model": "LiquidAI/LFM2.5-350M",
@@ -1815,9 +1823,10 @@
    "our_evidence": "2 x 4 KV heads x 128 head_dim x 2 B x 6 layers",
    "gap": 0.45454545454545453,
    "recomputed": 22528,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 22,528. His: 22 KiB (accepted 22,016-23,040); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 22,528. His: 22 KiB (accepted 22,016-23,040); gap after the rule 0.00%."
   },
   {
    "model": "LiquidAI/LFM3-1.7B",
@@ -1838,9 +1847,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0056363264,
    "recomputed": 228703644928,
-   "rule": "all stored tensors",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 228,703,644,928. His: 230B total (accepted 225,400,000,000-234,600,000,000); gap after the rule 0.56%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 228,703,644,928. His: 230B total (accepted 225,400,000,000-234,600,000,000); gap after the rule 0.56%."
   },
   {
    "model": "MiniMaxAI/MiniMax-M2",
@@ -1851,10 +1861,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.1031148288,
-   "recomputed": 9801955072,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 9,801,955,072. His: 10B (accepted 9,500,000,000-10,500,000,000); gap after the rule 1.98%."
+   "recomputed": 11031148288,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 11,031,148,288; his accepted range 9,500,000,000-10,500,000,000."
   },
   {
    "model": "MiniMaxAI/MiniMax-M2",
@@ -1902,9 +1912,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0056363264,
    "recomputed": 228703644928,
-   "rule": "all stored tensors",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 228,703,644,928. His: 230B total (accepted 225,400,000,000-234,600,000,000); gap after the rule 0.56%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 228,703,644,928. His: 230B total (accepted 225,400,000,000-234,600,000,000); gap after the rule 0.56%."
   },
   {
    "model": "MiniMaxAI/MiniMax-M2.5",
@@ -1915,10 +1926,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.1031148288,
-   "recomputed": 9801955072,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 9,801,955,072. His: 10B (accepted 9,500,000,000-10,500,000,000); gap after the rule 1.98%."
+   "recomputed": 11031148288,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 11,031,148,288; his accepted range 9,500,000,000-10,500,000,000."
   },
   {
    "model": "MiniMaxAI/MiniMax-M2.5",
@@ -1966,9 +1977,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0056363264,
    "recomputed": 228703644928,
-   "rule": "all stored tensors",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 228,703,644,928. His: 230B total (accepted 225,400,000,000-234,600,000,000); gap after the rule 0.56%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 228,703,644,928. His: 230B total (accepted 225,400,000,000-234,600,000,000); gap after the rule 0.56%."
   },
   {
    "model": "MiniMaxAI/MiniMax-M2.7",
@@ -1979,10 +1991,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.1031148288,
-   "recomputed": 9801955072,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 9,801,955,072. His: 10B (accepted 9,500,000,000-10,500,000,000); gap after the rule 1.98%."
+   "recomputed": 11031148288,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 11,031,148,288; his accepted range 9,500,000,000-10,500,000,000."
   },
   {
    "model": "MiniMaxAI/MiniMax-M2.7",
@@ -2034,10 +2046,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0022426631775700934,
-   "recomputed": 427040140160,
-   "rule": "all stored tensors",
+   "recomputed": 426174572928,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 427,040,140,160. His: 428B total (accepted 419,440,000,000-436,560,000,000); gap after the rule 0.22%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 426,174,572,928. His: 428B total (accepted 419,440,000,000-436,560,000,000); gap after the rule 0.43%."
   },
   {
    "model": "MiniMaxAI/MiniMax-M3",
@@ -2048,10 +2061,13 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.12880321113043477,
-   "recomputed": 23504087424,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "ours_wrong",
-   "evidence": "Closest recomputation: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head = 23,504,087,424; his accepted range 22,500,000,000-23,500,000,000."
+   "recomputed": 25962473856,
+   "rule": "nominal size: card '~' figure",
+   "group": "name_rounding",
+   "card_quote": [
+    "It has ~428B parameters and ~23B activated parameters."
+   ],
+   "evidence": "Nominal figure: the card gives it as approximate: \"It has ~428B parameters and ~23B activated parameters.\". Ours is the exact count from the weights (default: per-token count (unselected experts, MTP heads and lookup tables not active) = 25,962,473,856)."
   },
   {
    "model": "MiniMaxAI/MiniMax-M3",
@@ -2098,10 +2114,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0014440050841121495,
-   "recomputed": 427381965824,
-   "rule": "all stored tensors",
+   "recomputed": 426516398592,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 427,381,965,824. His: 428B total (accepted 419,440,000,000-436,560,000,000); gap after the rule 0.14%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 426,516,398,592. His: 428B total (accepted 419,440,000,000-436,560,000,000); gap after the rule 0.35%."
   },
   {
    "model": "MiniMaxAI/MiniMax-M3.1-Flash",
@@ -2112,10 +2129,13 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.14366427460869566,
-   "recomputed": 23845891884,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "ours_wrong",
-   "evidence": "Closest recomputation: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head = 23,845,891,884; his accepted range 22,500,000,000-23,500,000,000."
+   "recomputed": 26304278316,
+   "rule": "nominal size: card '~' figure",
+   "group": "name_rounding",
+   "card_quote": [
+    "- **Parameters:** Approximately 428B total; 23B activated per token"
+   ],
+   "evidence": "Nominal figure: the card gives it as approximate: \"- **Parameters:** Approximately 428B total; 23B activated per token\". Ours is the exact count from the weights (default: per-token count (unselected experts, MTP heads and lookup tables not active) = 26,304,278,316)."
   },
   {
    "model": "MiniMaxAI/MiniMax-M3.1-Flash",
@@ -2216,10 +2236,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.31121237333333335,
-   "recomputed": 3082979840,
-   "rule": "all stored tensors excluding input embedding, output head",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 3,082,979,840. His: 3B parameters (accepted 2,500,000,000-3,500,000,000); gap after the rule 2.77%."
+   "recomputed": 3933637120,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 3B is the size in the model name (Nanbeige4.1-3B). Ours is the exact count from the weights (default: all stored tensors minus vision tower and projector (text-only figure) = 3,933,637,120)."
   },
   {
    "model": "Nanbeige/Nanbeige4.1-3B",
@@ -2325,10 +2346,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.008040106264150944,
-   "recomputed": 106231494272,
-   "rule": "all stored tensors excluding input embedding",
+   "recomputed": 106852251264,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding. Ours recomputed: 106,231,494,272. His: 106B total (accepted 103,880,000,000-108,120,000,000); gap after the rule 0.22%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 106,852,251,264. His: 106B total (accepted 103,880,000,000-108,120,000,000); gap after the rule 0.80%."
   },
   {
    "model": "PrimeIntellect/INTELLECT-3",
@@ -2339,10 +2361,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.118677472,
-   "recomputed": 12182615680,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 12,182,615,680. His: 12B (accepted 11,500,000,000-12,500,000,000); gap after the rule 1.52%."
+   "recomputed": 13424129664,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 13,424,129,664; his accepted range 11,500,000,000-12,500,000,000."
   },
   {
    "model": "PrimeIntellect/INTELLECT-3",
@@ -2470,10 +2492,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0177374208,
-   "recomputed": 29909792768,
-   "rule": "all stored tensors excluding input embedding, output head",
+   "recomputed": 30532122624,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 29,909,792,768. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 0.30%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 30,532,122,624. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 1.77%."
   },
   {
    "model": "Qwen/Qwen3-30B-A3B",
@@ -2511,10 +2534,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.023816352,
-   "recomputed": 31984210944,
-   "rule": "all stored tensors excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding. Ours recomputed: 31,984,210,944. His: 32B parameters (accepted 31,360,000,000-32,640,000,000); gap after the rule 0.05%."
+   "recomputed": 32762123264,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 32B is the size in the model name (Qwen3-32B). Ours is the exact count from the weights (default: all stored tensors minus vision tower and projector (text-only figure) = 32,762,123,264)."
   },
   {
    "model": "Qwen/Qwen3-32B",
@@ -2597,10 +2621,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0177374208,
-   "recomputed": 29909792768,
-   "rule": "all stored tensors excluding input embedding, output head",
+   "recomputed": 30532122624,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 29,909,792,768. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 0.30%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 30,532,122,624. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 1.77%."
   },
   {
    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
@@ -2612,9 +2637,10 @@
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.016070516363636364,
    "recomputed": 3353032704,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded)",
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded). Ours recomputed: 3,353,032,704. His: 3.3B (accepted 3,234,000,000-3,366,000,000); gap after the rule 1.61%."
+   "card_quote": null,
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active). Ours recomputed: 3,353,032,704. His: 3.3B (accepted 3,234,000,000-3,366,000,000); gap after the rule 1.61%."
   },
   {
    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
@@ -2661,10 +2687,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.016560784,
-   "recomputed": 79674391296,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
+   "recomputed": 81324862720,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 79,674,391,296. His: 80B total (accepted 78,400,000,000-81,600,000,000); gap after the rule 0.41%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 81,324,862,720. His: 80B total (accepted 78,400,000,000-81,600,000,000); gap after the rule 1.66%."
   },
   {
    "model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
@@ -2675,10 +2702,11 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.291643136,
-   "recomputed": 3252599552,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 3,252,599,552. His: 3B (accepted 2,500,000,000-3,500,000,000); gap after the rule 8.42%."
+   "recomputed": 3874929408,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 3B is the size in the model name (Qwen3-Next-80B-A3B-Instruct). Ours is the exact count from the weights (default: per-token count (unselected experts, MTP heads and lookup tables not active) = 3,874,929,408)."
   },
   {
    "model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
@@ -2716,10 +2744,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.016115690035264484,
-   "recomputed": 396802360816,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
+   "recomputed": 402941918464,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 396,802,360,816. His: 397B total (accepted 389,060,000,000-404,940,000,000); gap after the rule 0.05%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 402,941,918,464. His: 397B total (accepted 389,060,000,000-404,940,000,000); gap after the rule 1.50%."
   },
   {
    "model": "Qwen/Qwen3.5-397B-A17B",
@@ -2766,10 +2795,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.028941776,
-   "recomputed": 26895998464,
-   "rule": "all stored tensors excluding vision tower and projector, MTP / auxiliary heads",
+   "recomputed": 27320697856,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector, MTP / auxiliary heads. Ours recomputed: 26,895,998,464. His: 27B parameters (accepted 26,460,000,000-27,540,000,000); gap after the rule 0.39%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 27,320,697,856. His: 27B parameters (accepted 26,460,000,000-27,540,000,000); gap after the rule 1.19%."
   },
   {
    "model": "Qwen/Qwen3.6-27B",
@@ -2807,10 +2837,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0271949344,
-   "recomputed": 34996692096,
-   "rule": "all stored tensors excluding vision tower and projector, input embedding",
+   "recomputed": 35505251456,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector, input embedding. Ours recomputed: 34,996,692,096. His: 35B total (accepted 34,300,000,000-35,700,000,000); gap after the rule 0.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 35,505,251,456. His: 35B total (accepted 34,300,000,000-35,700,000,000); gap after the rule 1.44%."
   },
   {
    "model": "Qwen/Qwen3.6-35B-A3B",
@@ -2857,10 +2888,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.028941776,
-   "recomputed": 26895998464,
-   "rule": "all stored tensors excluding vision tower and projector, MTP / auxiliary heads",
+   "recomputed": 27320697856,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector, MTP / auxiliary heads. Ours recomputed: 26,895,998,464. His: 27B parameters (accepted 26,460,000,000-27,540,000,000); gap after the rule 0.39%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 27,320,697,856. His: 27B parameters (accepted 26,460,000,000-27,540,000,000); gap after the rule 1.19%."
   },
   {
    "model": "Qwen/Qwen3.8-27B",
@@ -2916,10 +2948,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.21783242666666666,
-   "recomputed": 6035596160,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 6,035,596,160. His: 6B (accepted 5,500,000,000-6,500,000,000); gap after the rule 0.59%."
+   "recomputed": 7306994560,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 7,306,994,560; his accepted range 5,500,000,000-6,500,000,000."
   },
   {
    "model": "Qwen/Qwen3.8-Flash-Next",
@@ -2976,9 +3008,12 @@
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.1291933824,
    "recomputed": 2515488544,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active); card states: excluding input embedding",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 2,515,488,544. His: 2.5B (accepted 2,450,000,000-2,550,000,000); gap after the rule 0.62%."
+   "card_quote": [
+    "/ Active parameters per token / Approximately 2.5B, including the output head\u00b9 / [footnote] \u00b9 The active-parameter convention includes the output head and excludes the full input embedding matrix. The active body alone is approximately 2.2B parameters. \u201c40B-A2.5B\u201d is the rounded model-size designation."
+   ],
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active); card states: excluding input embedding. Ours recomputed: 2,515,488,544. His: 2.5B (accepted 2,450,000,000-2,550,000,000); gap after the rule 0.62%. Card: \"/ Active parameters per token / Approximately 2.5B, including the output head\u00b9 / [footnote] \u00b9 The active-parameter convention includes the output head and excludes the full input embedding matrix. The active body alone is approximately 2.2B parameters. \u201c40B-A2.5B\u201d is the rounded model-size designation.\"."
   },
   {
    "model": "RecursiveSI/flint",
@@ -3017,9 +3052,10 @@
    "our_evidence": "2 x 4 KV heads x 128 head_dim x 2 B x 14 layers",
    "gap": 0.7142857142857143,
    "recomputed": 100352,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 100,352. His: 98 KiB (accepted 98,345-102,359); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 100,352. His: 98 KiB (accepted 98,345-102,359); gap after the rule 0.00%."
   },
   {
    "model": "RecursiveSI/flint",
@@ -3129,10 +3165,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.002541483495145631,
-   "recomputed": 309160367104,
-   "rule": "all stored tensors excluding input embedding",
+   "recomputed": 309785318400,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding. Ours recomputed: 309,160,367,104. His: 309B total (accepted 302,820,000,000-315,180,000,000); gap after the rule 0.05%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 309,785,318,400. His: 309B total (accepted 302,820,000,000-315,180,000,000); gap after the rule 0.25%."
   },
   {
    "model": "XiaomiMiMo/MiMo-V2-Flash",
@@ -3180,9 +3217,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0025001290322580645,
    "recomputed": 310046445568,
-   "rule": "all stored tensors excluding vision tower and projector",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector. Ours recomputed: 310,046,445,568. His: 310B total (accepted 303,800,000,000-316,200,000,000); gap after the rule 0.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 310,046,445,568. His: 310B total (accepted 303,800,000,000-316,200,000,000); gap after the rule 0.01%."
   },
   {
    "model": "XiaomiMiMo/MiMo-V2.5",
@@ -3193,10 +3231,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.047188612266666666,
-   "recomputed": 15082877888,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 15,082,877,888. His: 15B (accepted 14,500,000,000-15,500,000,000); gap after the rule 0.55%."
+   "recomputed": 15707829184,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 15,707,829,184; his accepted range 14,500,000,000-15,500,000,000."
   },
   {
    "model": "XiaomiMiMo/MiMo-V2.5",
@@ -3288,10 +3326,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.047150109866666665,
-   "recomputed": 15082300352,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 15,082,300,352. His: 15B (accepted 14,500,000,000-15,500,000,000); gap after the rule 0.55%."
+   "recomputed": 15707251648,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 15,707,251,648; his accepted range 14,500,000,000-15,500,000,000."
   },
   {
    "model": "XiaomiMiMo/MiMo-V2.6-Flash-RL",
@@ -3383,10 +3421,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.052439221904761905,
-   "recomputed": 8303356408,
-   "rule": "all stored tensors excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding. Ours recomputed: 8,303,356,408. His: 8.4B total (accepted 8,232,000,000-8,568,000,000); gap after the rule 1.15%."
+   "recomputed": 8840489464,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 8,840,489,464; his accepted range 8,232,000,000-8,568,000,000."
   },
   {
    "model": "Zyphra/ZAYA1-8B",
@@ -3397,10 +3435,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.6983450842105263,
-   "recomputed": 753609208,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 753,609,208. His: 760M (accepted 744,800,000-775,200,000); gap after the rule 0.84%."
+   "recomputed": 1290742264,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 1,290,742,264; his accepted range 744,800,000-775,200,000."
   },
   {
    "model": "Zyphra/ZAYA1-8B",
@@ -3525,9 +3563,10 @@
    "our_evidence": "2 x 32 KV heads x 128 head_dim x 2 B x 8 layers",
    "gap": 0.75,
    "recomputed": 524288,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 524,288. His: 512 KiB (accepted 513,802-534,774); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 524,288. His: 512 KiB (accepted 513,802-534,774); gap after the rule 0.00%."
   },
   {
    "model": "allenai/Olmo-3-1025-7B",
@@ -3575,9 +3614,10 @@
    "our_evidence": "2 x 8 KV heads x 128 head_dim x 2 B x 16 layers",
    "gap": 0.75,
    "recomputed": 262144,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 262,144. His: 256 KiB (accepted 256,901-267,387); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 262,144. His: 256 KiB (accepted 256,901-267,387); gap after the rule 0.00%."
   },
   {
    "model": "allenai/Olmo-3-32B-Think",
@@ -3609,6 +3649,9 @@
    "recomputed": 512000.0,
    "rule": "advertised context the model card states (\"512k\"): \"se layers / 6 / / Pretraining context length / 8,192 / / Context length after extention / 512k / / Architecture / Sparse MoE / ## Benchmark Results / Benchmark / N-sh\"",
    "group": "definition",
+   "card_quote": [
+    "se layers / 6 / / Pretraining context length / 8,192 / / Context length after extention / 512k / / Architecture / Sparse MoE / ## Benchmark Results / Benchmark / N-sh"
+   ],
    "evidence": "Rule: advertised context the model card states (\"512k\"): \"se layers / 6 / / Pretraining context length / 8,192 / / Context length after extention / 512k / / Architecture / Sparse MoE / ## Benchmark Results / Benchmark / N-sh\". Ours recomputed: 512,000. His: 512,000 (accepted 501,760-522,240); gap after the rule 0.00%."
   },
   {
@@ -3638,10 +3681,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.02236774832142857,
-   "recomputed": 279608469535,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 279,608,469,535. His: 280B total (accepted 274,400,000,000-285,600,000,000); gap after the rule 0.14%."
+   "recomputed": 286262969530,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 286,262,969,530; his accepted range 274,400,000,000-285,600,000,000."
   },
   {
    "model": "baidu/ERNIE-5.5-Flash-Base",
@@ -3688,10 +3731,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.020166,
-   "recomputed": 671067257432,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 671,067,257,432. His: 671B total (accepted 657,580,000,000-684,420,000,000); gap after the rule 0.01%."
+   "recomputed": 684531386000,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 684,531,386,000; his accepted range 657,580,000,000-684,420,000,000."
   },
   {
    "model": "deepseek-ai/DeepSeek-R1",
@@ -3702,10 +3745,11 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.01498571654054054,
-   "recomputed": 36627792472,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
+   "recomputed": 37554471512,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 36,627,792,472. His: 37B (accepted 36,260,000,000-37,740,000,000); gap after the rule 1.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active). Ours recomputed: 37,554,471,512. His: 37B (accepted 36,260,000,000-37,740,000,000); gap after the rule 1.50%."
   },
   {
    "model": "deepseek-ai/DeepSeek-R1",
@@ -3719,6 +3763,9 @@
    "recomputed": 128000.0,
    "rule": "advertised context the model card states (\"128K\"): \"-: / :------------: / :------------: / :------------: / / DeepSeek-R1-Zero / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / / DeepSeek-R1 / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / <\"",
    "group": "definition",
+   "card_quote": [
+    "-: / :------------: / :------------: / :------------: / / DeepSeek-R1-Zero / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / / DeepSeek-R1 / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / <"
+   ],
    "evidence": "Rule: advertised context the model card states (\"128K\"): \"-: / :------------: / :------------: / :------------: / / DeepSeek-R1-Zero / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / / DeepSeek-R1 / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / <\". Ours recomputed: 128,000. His: 128,000 (accepted 125,440-130,560); gap after the rule 0.00%."
   },
   {
@@ -3758,9 +3805,12 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.020166,
    "recomputed": 671067257432,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure); card states: excluding MTP / auxiliary heads",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 671,067,257,432. His: 671B total (accepted 657,580,000,000-684,420,000,000); gap after the rule 0.01%."
+   "card_quote": [
+    "**NOTE: The total size of DeepSeek-V3 models on HuggingFace is 685B, which includes 671B of the Main Model weights and 14B of the Multi-Token Prediction (MTP) Module weights.**"
+   ],
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure); card states: excluding MTP / auxiliary heads. Ours recomputed: 671,067,257,432. His: 671B total (accepted 657,580,000,000-684,420,000,000); gap after the rule 0.01%. Card: \"**NOTE: The total size of DeepSeek-V3 models on HuggingFace is 685B, which includes 671B of the Main Model weights and 14B of the Multi-Token Prediction (MTP) Module weights.**\"."
   },
   {
    "model": "deepseek-ai/DeepSeek-V3",
@@ -3771,10 +3821,11 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.01498571654054054,
-   "recomputed": 36627792472,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
+   "recomputed": 37554471512,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 36,627,792,472. His: 37B (accepted 36,260,000,000-37,740,000,000); gap after the rule 1.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active). Ours recomputed: 37,554,471,512. His: 37B (accepted 36,260,000,000-37,740,000,000); gap after the rule 1.50%."
   },
   {
    "model": "deepseek-ai/DeepSeek-V3",
@@ -3788,6 +3839,9 @@
    "recomputed": 128000.0,
    "rule": "advertised context the model card states (\"128K\"): \"-: / :------------: / :------------: / :------------: / / DeepSeek-V3-Base / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / / DeepSeek-V3 / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / <\"",
    "group": "definition",
+   "card_quote": [
+    "-: / :------------: / :------------: / :------------: / / DeepSeek-V3-Base / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / / DeepSeek-V3 / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / <"
+   ],
    "evidence": "Rule: advertised context the model card states (\"128K\"): \"-: / :------------: / :------------: / :------------: / / DeepSeek-V3-Base / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / / DeepSeek-V3 / 671B / 37B / 128K / [\ud83e\udd17 HuggingFace] / <\". Ours recomputed: 128,000. His: 128,000 (accepted 125,440-130,560); gap after the rule 0.00%."
   },
   {
@@ -3826,10 +3880,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.02145591859314456,
-   "recomputed": 670992153520,
-   "rule": "all stored tensors excluding MTP / auxiliary heads, input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads, input embedding. Ours recomputed: 670,992,153,520. His: 671B total (accepted 657,580,000,000-684,420,000,000); gap after the rule 0.00%."
+   "recomputed": 685396921376,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 685,396,921,376; his accepted range 657,580,000,000-684,420,000,000."
   },
   {
    "model": "deepseek-ai/DeepSeek-V3.2",
@@ -3840,10 +3894,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.03800126054054054,
-   "recomputed": 36552688560,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 36,552,688,560. His: 37B (accepted 36,260,000,000-37,740,000,000); gap after the rule 1.21%."
+   "recomputed": 38406046640,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 38,406,046,640; his accepted range 36,260,000,000-37,740,000,000."
   },
   {
    "model": "deepseek-ai/DeepSeek-V3.2",
@@ -3854,10 +3908,10 @@
    "agree": false,
    "our_evidence": "single source: config:max_position_embeddings",
    "gap": 0.28,
-   "recomputed": 163840,
-   "rule": "config.json max_position_embeddings",
-   "group": "ours_wrong",
-   "evidence": "Closest recomputation: config.json max_position_embeddings = 163,840; his accepted range 125,440-130,560."
+   "recomputed": null,
+   "rule": "primary source contradicts",
+   "group": "his_wrong",
+   "evidence": "deepseek-ai/DeepSeek-V3.2 config.json at a7e62ac04e: max_position_embeddings = 163840 (rope_scaling yarn, factor 40 over original_max_position_embeddings 4096); the README states no context length. 128,000 / 128K appears in neither file."
   },
   {
    "model": "deepseek-ai/DeepSeek-V3.2",
@@ -3886,10 +3940,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.024444680852112675,
-   "recomputed": 283802709591,
-   "rule": "all stored tensors excluding MTP / auxiliary heads, input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads, input embedding. Ours recomputed: 283,802,709,591. His: 284B total (accepted 278,320,000,000-289,680,000,000); gap after the rule 0.07%."
+   "recomputed": 290942289362,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 290,942,289,362; his accepted range 278,320,000,000-289,680,000,000."
   },
   {
    "model": "deepseek-ai/DeepSeek-V4-Flash",
@@ -3900,10 +3954,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.06151019007692308,
-   "recomputed": 12740570711,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 12,740,570,711. His: 13B (accepted 12,500,000,000-13,500,000,000); gap after the rule 2.00%."
+   "recomputed": 13799632471,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 13,799,632,471; his accepted range 12,500,000,000-13,500,000,000."
   },
   {
    "model": "deepseek-ai/DeepSeek-V4-Flash",
@@ -3950,10 +4004,11 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.015899613448979593,
-   "recomputed": 48852402019,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
+   "recomputed": 49779081059,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 48,852,402,019. His: 49B (accepted 48,020,000,000-49,980,000,000); gap after the rule 0.30%."
+   "card_quote": null,
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active). Ours recomputed: 49,779,081,059. His: 49B (accepted 48,020,000,000-49,980,000,000); gap after the rule 1.59%."
   },
   {
    "model": "deepseek-ai/DeepSeek-V4-Pro",
@@ -3991,10 +4046,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.02032796229144385,
-   "recomputed": 747906197104,
-   "rule": "all stored tensors excluding vision tower and projector, MTP / auxiliary heads, input embedding",
+   "recomputed": 762793473234,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector, MTP / auxiliary heads, input embedding. Ours recomputed: 747,906,197,104. His: 552B backbone + 196B Engram (accepted 733,040,000,000-762,960,000,000); gap after the rule 0.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 762,793,473,234. His: 552B backbone + 196B Engram (accepted 733,040,000,000-762,960,000,000); gap after the rule 1.98%."
   },
   {
    "model": "deepseek-ai/DeepSeek-V4.1-Flash",
@@ -4005,10 +4061,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 1.108241038,
-   "recomputed": 15542101104,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 15,542,101,104. His: 8B (prefill) to 16B (decode) (accepted 7,840,000,000-16,320,000,000); gap after the rule 0.00%."
+   "recomputed": 16865928304,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 16,865,928,304; his accepted range 7,840,000,000-16,320,000,000."
   },
   {
    "model": "deepseek-ai/DeepSeek-V4.1-Flash",
@@ -4056,9 +4112,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.007043792592592592,
    "recomputed": 268098176,
-   "rule": "all stored tensors",
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 268,098,176. His: 270M parameters (accepted 264,600,000-275,400,000); gap after the rule 0.70%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 268,098,176. His: 270M parameters (accepted 264,600,000-275,400,000); gap after the rule 0.70%."
   },
   {
    "model": "google/gemma-3-270m",
@@ -4102,9 +4159,10 @@
    "our_evidence": "2 x 1 KV heads x 256 head_dim x 2 B x 3 layers",
    "gap": 0.8333333333333334,
    "recomputed": 18432,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 18,432. His: 18 KiB (accepted 17,920-18,944); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 18,432. His: 18 KiB (accepted 17,920-18,944); gap after the rule 0.00%."
   },
   {
    "model": "google/gemma-3-270m",
@@ -4306,9 +4364,10 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0378090496,
    "recomputed": 28865728512,
-   "rule": "all stored tensors",
-   "group": "ours_wrong",
-   "evidence": "Closest recomputation: all stored tensors = 28,865,728,512; his accepted range 29,400,000,000-30,600,000,000."
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 30B is the size in the model name (granite-4.1-30b). Ours is the exact count from the weights (default: all stored tensors minus vision tower and projector (text-only figure) = 28,865,728,512)."
   },
   {
    "model": "ibm-granite/granite-4.1-30b",
@@ -4374,9 +4433,10 @@
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.009210457396825397,
    "recomputed": 63580258816,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded)",
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded). Ours recomputed: 63,580,258,816. His: 63B (accepted 61,740,000,000-64,260,000,000); gap after the rule 0.92%."
+   "card_quote": null,
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active). Ours recomputed: 63,580,258,816. His: 63B (accepted 61,740,000,000-64,260,000,000); gap after the rule 0.92%."
   },
   {
    "model": "inclusionAI/Ling-2.5-1T",
@@ -4390,6 +4450,9 @@
    "recomputed": 256000.0,
    "rule": "advertised context the model card states (\"256K\"): \"----------------------------------------------------------------------: / / Ling-2.5-1T / 256K -> 1M / [\ud83e\udd17 HuggingFace] &nbsp;&nbsp; [\ud83e\udd16 ModelScope] / </center> Note: If you are int\"",
    "group": "definition",
+   "card_quote": [
+    "----------------------------------------------------------------------: / / Ling-2.5-1T / 256K -> 1M / [\ud83e\udd17 HuggingFace] &nbsp;&nbsp; [\ud83e\udd16 ModelScope] / </center> Note: If you are int"
+   ],
    "evidence": "Rule: advertised context the model card states (\"256K\"): \"----------------------------------------------------------------------: / / Ling-2.5-1T / 256K -> 1M / [\ud83e\udd17 HuggingFace] &nbsp;&nbsp; [\ud83e\udd16 ModelScope] / </center> Note: If you are int\". Ours recomputed: 256,000. His: 256,000 (accepted 250,880-261,120); gap after the rule 0.00%."
   },
   {
@@ -4429,9 +4492,10 @@
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.009210457396825397,
    "recomputed": 63580258816,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded)",
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded). Ours recomputed: 63,580,258,816. His: 63B (accepted 61,740,000,000-64,260,000,000); gap after the rule 0.92%."
+   "card_quote": null,
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active). Ours recomputed: 63,580,258,816. His: 63B (accepted 61,740,000,000-64,260,000,000); gap after the rule 0.92%."
   },
   {
    "model": "inclusionAI/Ling-2.6-1T",
@@ -4469,10 +4533,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.028116174193548386,
-   "recomputed": 124011820512,
-   "rule": "all stored tensors excluding MTP / auxiliary heads, input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads, input embedding. Ours recomputed: 124,011,820,512. His: 124B total (accepted 121,520,000,000-126,480,000,000); gap after the rule 0.01%."
+   "recomputed": 127486405600,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 127,486,405,600; his accepted range 121,520,000,000-126,480,000,000."
   },
   {
    "model": "inclusionAI/Ling-3.0-flash",
@@ -4483,10 +4547,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.0795476768627451,
-   "recomputed": 5103302112,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 5,103,302,112. His: 5.1B (accepted 4,998,000,000-5,202,000,000); gap after the rule 0.06%."
+   "recomputed": 5505693152,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 5,505,693,152; his accepted range 4,998,000,000-5,202,000,000."
   },
   {
    "model": "inclusionAI/Ling-3.0-flash",
@@ -4533,10 +4597,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.021706266685714286,
-   "recomputed": 562693164000,
-   "rule": "all stored tensors excluding MTP / auxiliary heads, input embedding, output head",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads, input embedding, output head. Ours recomputed: 562,693,164,000. His: 560B total (accepted 548,800,000,000-571,200,000,000); gap after the rule 0.48%."
+   "recomputed": 572155509344,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 572,155,509,344; his accepted range 548,800,000,000-571,200,000,000."
   },
   {
    "model": "inclusionAI/Ling-3.1-flash",
@@ -4559,6 +4623,9 @@
    "recomputed": 1000000.0,
    "rule": "advertised context the model card states (\"1M\"): \"world tasks. With **560B** total parameters, **25B** active parameters per token, and a **1M-token context window**, Ling-3.1-flash builds upon Ling-3.0-flash with improvements in ar\"",
    "group": "definition",
+   "card_quote": [
+    "world tasks. With **560B** total parameters, **25B** active parameters per token, and a **1M-token context window**, Ling-3.1-flash builds upon Ling-3.0-flash with improvements in ar"
+   ],
    "evidence": "Rule: advertised context the model card states (\"1M\"): \"world tasks. With **560B** total parameters, **25B** active parameters per token, and a **1M-token context window**, Ling-3.1-flash builds upon Ling-3.0-flash with improvements in ar\". Ours recomputed: 1,000,000. His: 1M reported; 262,144 in config (accepted 500,000-1,500,000); gap after the rule 0.00%."
   },
   {
@@ -4597,10 +4664,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.00395945344,
-   "recomputed": 399677363200,
-   "rule": "all stored tensors excluding vision tower and projector, input embedding",
+   "recomputed": 400711848960,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector, input embedding. Ours recomputed: 399,677,363,200. His: 400B total (accepted 392,000,000,000-408,000,000,000); gap after the rule 0.08%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 400,711,848,960. His: 400B total (accepted 392,000,000,000-408,000,000,000); gap after the rule 0.18%."
   },
   {
    "model": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
@@ -4693,9 +4761,12 @@
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.005967117837837838,
    "recomputed": 29776626688,
-   "rule": "all stored tensors",
+   "rule": "card: all stored tensors including the vision encoder",
    "group": "definition",
-   "evidence": "Rule: all stored tensors. Ours recomputed: 29,776,626,688. His: 29.6B parameters (including perception encoder) (accepted 29,008,000,000-30,192,000,000); gap after the rule 0.60%."
+   "card_quote": [
+    "/ **Number of Parameters** / 29.6B (including vision encoder) /"
+   ],
+   "evidence": "Rule: card: all stored tensors including the vision encoder. Ours recomputed: 29,776,626,688. His: 29.6B parameters (including perception encoder) (accepted 29,008,000,000-30,192,000,000); gap after the rule 0.60%. Card: \"/ **Number of Parameters** / 29.6B (including vision encoder) /\"."
   },
   {
    "model": "meta-models/Muse-Glimmer-30B",
@@ -4734,9 +4805,10 @@
    "our_evidence": "2 x 2 KV heads x 128 head_dim x 2 B x 13 layers",
    "gap": 0.75,
    "recomputed": 53248,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 53,248. His: 52 KiB (accepted 52,183-54,313); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 53,248. His: 52 KiB (accepted 52,183-54,313); gap after the rule 0.00%."
   },
   {
    "model": "meta-models/Muse-Glimmer-30B",
@@ -4744,6 +4816,57 @@
    "field": "decoder_type",
    "ours": "dense",
    "theirs": "Dense",
+   "agree": true,
+   "our_evidence": null
+  },
+  {
+   "model": "meta-models/Muse-Spark-Open-816B-A42B",
+   "gallery_name": "Muse Spark Open 816B-A42B",
+   "field": "params_active",
+   "ours": 46208726784,
+   "theirs": "816B total, 42B active (5.1% active)",
+   "agree": false,
+   "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
+   "gap": 0.10020778057142857,
+   "recomputed": 46208726784,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 42B is the size in the model name (Muse-Spark-Open-816B-A42B). Ours is the exact count from the weights (default: per-token count (unselected experts, MTP heads and lookup tables not active) = 46,208,726,784)."
+  },
+  {
+   "model": "meta-models/Muse-Spark-Open-816B-A42B",
+   "gallery_name": "Muse Spark Open 816B-A42B",
+   "field": "context_length",
+   "ours": 1048576,
+   "theirs": "1,048,576",
+   "agree": true,
+   "our_evidence": null
+  },
+  {
+   "model": "meta-models/Muse-Spark-Open-816B-A42B",
+   "gallery_name": "Muse Spark Open 816B-A42B",
+   "field": "vocab_size",
+   "ours": 202048,
+   "theirs": "202,048 (~202k)",
+   "agree": true,
+   "our_evidence": null
+  },
+  {
+   "model": "meta-models/Muse-Spark-Open-816B-A42B",
+   "gallery_name": "Muse Spark Open 816B-A42B",
+   "field": "num_layers",
+   "ours": 62,
+   "theirs": "46 sliding-window + 16 global gated GQA",
+   "agree": true,
+   "our_evidence": null
+  },
+  {
+   "model": "meta-models/Muse-Spark-Open-816B-A42B",
+   "gallery_name": "Muse Spark Open 816B-A42B",
+   "field": "decoder_type",
+   "ours": "sparse",
+   "theirs": "Sparse MoE",
    "agree": true,
    "our_evidence": null
   },
@@ -4756,10 +4879,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.04710765714285714,
-   "recomputed": 14145704960,
-   "rule": "all stored tensors excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding. Ours recomputed: 14,145,704,960. His: 14B parameters (accepted 13,500,000,000-14,500,000,000); gap after the rule 1.04%."
+   "recomputed": 14659507200,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 14,659,507,200; his accepted range 13,500,000,000-14,500,000,000."
   },
   {
    "model": "microsoft/phi-4",
@@ -4917,6 +5040,9 @@
    "recomputed": 256000.0,
    "rule": "advertised context the model card states (\"256k\"): \"E**: 128 experts, 4 active. - **119B parameters**, with **6.5B activated per token**. - **256k context length**. - **Multimodal input**: Accepts both text and image input, with text ou\"",
    "group": "definition",
+   "card_quote": [
+    "E**: 128 experts, 4 active. - **119B parameters**, with **6.5B activated per token**. - **256k context length**. - **Multimodal input**: Accepts both text and image input, with text ou"
+   ],
    "evidence": "Rule: advertised context the model card states (\"256k\"): \"E**: 128 experts, 4 active. - **119B parameters**, with **6.5B activated per token**. - **256k context length**. - **Multimodal input**: Accepts both text and image input, with text ou\". Ours recomputed: 256,000. His: 256,000 (accepted 250,880-261,120); gap after the rule 0.00%."
   },
   {
@@ -5207,10 +5333,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.023389202666666668,
-   "recomputed": 48367707008,
-   "rule": "all stored tensors excluding input embedding, output head",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 48,367,707,008. His: 48B total (accepted 47,040,000,000-48,960,000,000); gap after the rule 0.77%."
+   "recomputed": 49122681728,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 48B is the size in the model name (Kimi-Linear-48B-A3B-Base). Ours is the exact count from the weights (default: all stored tensors minus vision tower and projector (text-only figure) = 49,122,681,728)."
   },
   {
    "model": "moonshotai/Kimi-Linear-48B-A3B-Base",
@@ -5293,10 +5420,11 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.193358788,
-   "recomputed": 2875433292,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 2,875,433,292. His: 3B (accepted 2,500,000,000-3,500,000,000); gap after the rule 4.15%."
+   "recomputed": 3580076364,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 3B is the size in the model name (NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4). Ours is the exact count from the weights (default: per-token count (unselected experts, MTP heads and lookup tables not active) = 3,580,076,364)."
   },
   {
    "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
@@ -5402,10 +5530,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.1199966494117647,
-   "recomputed": 5132849472,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 5,132,849,472. His: 5.1B (accepted 4,998,000,000-5,202,000,000); gap after the rule 0.64%."
+   "recomputed": 5711982912,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 5,711,982,912; his accepted range 4,998,000,000-5,202,000,000."
   },
   {
    "model": "openai/gpt-oss-120b",
@@ -5452,10 +5580,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.16317797333333334,
-   "recomputed": 3608307264,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 3,608,307,264. His: 3.6B (accepted 3,528,000,000-3,672,000,000); gap after the rule 0.23%."
+   "recomputed": 4187440704,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 4,187,440,704; his accepted range 3,528,000,000-3,672,000,000."
   },
   {
    "model": "openai/gpt-oss-20b",
@@ -5493,10 +5621,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.0271949344,
-   "recomputed": 34996692096,
-   "rule": "all stored tensors excluding vision tower and projector, input embedding",
+   "recomputed": 35505251456,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding vision tower and projector, input embedding. Ours recomputed: 34,996,692,096. His: 35B total (accepted 34,300,000,000-35,700,000,000); gap after the rule 0.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 35,505,251,456. His: 35B total (accepted 34,300,000,000-35,700,000,000); gap after the rule 1.44%."
   },
   {
    "model": "ornith-ai/Ornith-1.5-35B-A3B",
@@ -5598,9 +5727,10 @@
    "our_evidence": "2 x 8 KV heads x 128 head_dim x 2 B x 12 layers",
    "gap": 0.75,
    "recomputed": 196608,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 196,608. His: 192 KiB (accepted 192,676-200,540); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 196,608. His: 192 KiB (accepted 192,676-200,540); gap after the rule 0.00%."
   },
   {
    "model": "poolside/Laguna-S-2.1",
@@ -5666,9 +5796,10 @@
    "our_evidence": "2 x 8 KV heads x 128 head_dim x 2 B x 10 layers",
    "gap": 0.75,
    "recomputed": 163840,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 163,840. His: 160 KiB (accepted 160,563-167,117); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 163,840. His: 160 KiB (accepted 160,563-167,117); gap after the rule 0.00%."
   },
   {
    "model": "poolside/Laguna-XS-2.1",
@@ -5730,9 +5861,10 @@
    "our_evidence": "2 x 8 KV heads x 128 head_dim x 2 B x 10 layers",
    "gap": 0.75,
    "recomputed": 163840,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 163,840. His: 160 KiB (accepted 160,563-167,117); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 163,840. His: 160 KiB (accepted 160,563-167,117); gap after the rule 0.00%."
   },
   {
    "model": "poolside/Laguna-XS.2",
@@ -5798,9 +5930,10 @@
    "our_evidence": "2 x 8 KV heads x 128 head_dim x 2 B x 9 layers",
    "gap": 0.8269230769230769,
    "recomputed": 212992,
-   "rule": "full retention: every attention layer appends its KV per token (sliding layers not capped)",
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
    "group": "definition",
-   "evidence": "Rule: full retention: every attention layer appends its KV per token (sliding layers not capped). Ours recomputed: 212,992. His: 208 KiB (accepted 208,732-217,252); gap after the rule 0.00%."
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 212,992. His: 208 KiB (accepted 208,732-217,252); gap after the rule 0.00%."
   },
   {
    "model": "reflection/Beam-1.0-501B-A23B",
@@ -5820,10 +5953,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.00982635641904762,
-   "recomputed": 104958025600,
-   "rule": "all stored tensors excluding input embedding",
+   "recomputed": 106031767424,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding. Ours recomputed: 104,958,025,600. His: 105B total (accepted 102,900,000,000-107,100,000,000); gap after the rule 0.04%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 106,031,767,424. His: 105B total (accepted 102,900,000,000-107,100,000,000); gap after the rule 0.98%."
   },
   {
    "model": "sarvamai/sarvam-105b",
@@ -5834,10 +5968,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.20533030524271845,
-   "recomputed": 10267418496,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 10,267,418,496. His: 10.3B (accepted 10,094,000,000-10,506,000,000); gap after the rule 0.32%."
+   "recomputed": 12414902144,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 12,414,902,144; his accepted range 10,094,000,000-10,506,000,000."
   },
   {
    "model": "sarvamai/sarvam-105b",
@@ -5884,10 +6018,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.07175501226666667,
-   "recomputed": 30005166720,
-   "rule": "all stored tensors excluding input embedding, output head",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 30,005,166,720. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 0.02%."
+   "recomputed": 32152650368,
+   "rule": "nominal size: model name",
+   "group": "name_rounding",
+   "card_quote": null,
+   "evidence": "Nominal figure: his 30B is the size in the model name (sarvam-30b). Ours is the exact count from the weights (default: all stored tensors minus vision tower and projector (text-only figure) = 32,152,650,368)."
   },
   {
    "model": "sarvamai/sarvam-30b",
@@ -5899,9 +6034,12 @@
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.8835731733333333,
    "recomputed": 2373091968,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active); card states: excluding input embedding, output head",
    "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 2,373,091,968. His: 2.4B (accepted 2,350,000,000-2,450,000,000); gap after the rule 1.12%."
+   "card_quote": [
+    "**Sarvam-30B** is an advanced Mixture-of-Experts (MoE) model with 2.4B non-embedding active parameters, designed primarily for practical deployment."
+   ],
+   "evidence": "Rule: default: per-token count (unselected experts, MTP heads and lookup tables not active); card states: excluding input embedding, output head. Ours recomputed: 2,373,091,968. His: 2.4B (accepted 2,350,000,000-2,450,000,000); gap after the rule 1.12%. Card: \"**Sarvam-30B** is an advanced Mixture-of-Experts (MoE) model with 2.4B non-embedding active parameters, designed primarily for practical deployment.\"."
   },
   {
    "model": "sarvamai/sarvam-30b",
@@ -6052,10 +6190,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.023202437306666667,
-   "recomputed": 952377623626,
-   "rule": "all stored tensors",
+   "recomputed": 952293880394,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "ours_wrong",
-   "evidence": "Closest recomputation: all stored tensors = 952,377,623,626; his accepted range 955,500,000,000-994,500,000,000."
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 952,293,880,394; his accepted range 955,500,000,000-994,500,000,000."
   },
   {
    "model": "thinkingmachines/Inkling",
@@ -6197,10 +6335,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.009402229002816901,
-   "recomputed": 356785898816,
-   "rule": "all stored tensors excluding input embedding, output head",
+   "recomputed": 358337791296,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 356,785,898,816. His: 355B total (accepted 347,900,000,000-362,100,000,000); gap after the rule 0.50%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 358,337,791,296. His: 355B total (accepted 347,900,000,000-362,100,000,000); gap after the rule 0.94%."
   },
   {
    "model": "zai-org/GLM-4.5",
@@ -6211,10 +6350,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.051008317,
-   "recomputed": 32080373664,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 32,080,373,664. His: 32B (accepted 31,360,000,000-32,640,000,000); gap after the rule 0.25%."
+   "recomputed": 33632266144,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 33,632,266,144; his accepted range 31,360,000,000-32,640,000,000."
   },
   {
    "model": "zai-org/GLM-4.5",
@@ -6261,10 +6400,10 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.042158724830188676,
-   "recomputed": 106231494272,
-   "rule": "all stored tensors excluding MTP / auxiliary heads, input embedding",
-   "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads, input embedding. Ours recomputed: 106,231,494,272. His: 106B total (accepted 103,880,000,000-108,120,000,000); gap after the rule 0.22%."
+   "recomputed": 110468824832,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: all stored tensors minus vision tower and projector (text-only figure) = 110,468,824,832; his accepted range 103,880,000,000-108,120,000,000."
   },
   {
    "model": "zai-org/GLM-4.5-Air",
@@ -6275,10 +6414,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.118677472,
-   "recomputed": 12182615680,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 12,182,615,680. His: 12B (accepted 11,500,000,000-12,500,000,000); gap after the rule 1.52%."
+   "recomputed": 13424129664,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 13,424,129,664; his accepted range 11,500,000,000-12,500,000,000."
   },
   {
    "model": "zai-org/GLM-4.5-Air",
@@ -6325,10 +6464,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.009402229002816901,
-   "recomputed": 356785898816,
-   "rule": "all stored tensors excluding input embedding, output head",
+   "recomputed": 358337791296,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 356,785,898,816. His: 355B total (accepted 347,900,000,000-362,100,000,000); gap after the rule 0.50%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 358,337,791,296. His: 355B total (accepted 347,900,000,000-362,100,000,000); gap after the rule 0.94%."
   },
   {
    "model": "zai-org/GLM-4.7",
@@ -6339,10 +6479,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.051008317,
-   "recomputed": 32080373664,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 32,080,373,664. His: 32B (accepted 31,360,000,000-32,640,000,000); gap after the rule 0.25%."
+   "recomputed": 33632266144,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 33,632,266,144; his accepted range 31,360,000,000-32,640,000,000."
   },
   {
    "model": "zai-org/GLM-4.7",
@@ -6389,10 +6529,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.01325825135483871,
-   "recomputed": 743911218432,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
+   "recomputed": 753864139008,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 743,911,218,432. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 0.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 753,864,139,008. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 1.33%."
   },
   {
    "model": "zai-org/GLM-5",
@@ -6403,10 +6544,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.0446182208,
-   "recomputed": 39881563392,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 39,881,563,392. His: 40B (accepted 39,200,000,000-40,800,000,000); gap after the rule 0.30%."
+   "recomputed": 41784728832,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 41,784,728,832; his accepted range 39,200,000,000-40,800,000,000."
   },
   {
    "model": "zai-org/GLM-5",
@@ -6444,10 +6585,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.01325825135483871,
-   "recomputed": 743911218432,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
+   "recomputed": 753864139008,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 743,911,218,432. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 0.01%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 753,864,139,008. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 1.33%."
   },
   {
    "model": "zai-org/GLM-5.1",
@@ -6458,10 +6600,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.0446182208,
-   "recomputed": 39881563392,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding, excluding output head. Ours recomputed: 39,881,563,392. His: 40B (accepted 39,200,000,000-40,800,000,000); gap after the rule 0.30%."
+   "recomputed": 41784728832,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 41,784,728,832; his accepted range 39,200,000,000-40,800,000,000."
   },
   {
    "model": "zai-org/GLM-5.1",
@@ -6499,10 +6641,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.01254024258064516,
-   "recomputed": 743377019904,
-   "rule": "all stored tensors excluding MTP / auxiliary heads",
+   "recomputed": 753329940480,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding MTP / auxiliary heads. Ours recomputed: 743,377,019,904. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 0.08%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 753,329,940,480. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 1.25%."
   },
   {
    "model": "zai-org/GLM-5.2",
@@ -6513,10 +6656,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.0312632576,
-   "recomputed": 40298947584,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), excluding input embedding. Ours recomputed: 40,298,947,584. His: 40B (accepted 39,200,000,000-40,800,000,000); gap after the rule 0.75%."
+   "recomputed": 41250530304,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 41,250,530,304; his accepted range 39,200,000,000-40,800,000,000."
   },
   {
    "model": "zai-org/GLM-5.2",
@@ -6554,10 +6697,11 @@
    "agree": false,
    "our_evidence": "single source: weights:sum of tensor shapes",
    "gap": 0.00419443949375,
-   "recomputed": 320073443678,
-   "rule": "all stored tensors excluding input embedding, output head",
+   "recomputed": 320778593630,
+   "rule": "default: all stored tensors minus vision tower and projector (text-only figure)",
    "group": "definition",
-   "evidence": "Rule: all stored tensors excluding input embedding, output head. Ours recomputed: 320,073,443,678. His: 320B total (accepted 313,600,000,000-326,400,000,000); gap after the rule 0.02%."
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus vision tower and projector (text-only figure). Ours recomputed: 320,778,593,630. His: 320B total (accepted 313,600,000,000-326,400,000,000); gap after the rule 0.24%."
   },
   {
    "model": "zai-org/GLM-5.3-Flash",
@@ -6568,10 +6712,10 @@
    "agree": false,
    "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
    "gap": 0.03458902411111111,
-   "recomputed": 17941024574,
-   "rule": "per-token weights (unselected experts, MTP heads and lookup tables excluded), including vision tower",
-   "group": "definition",
-   "evidence": "Rule: per-token weights (unselected experts, MTP heads and lookup tables excluded), including vision tower. Ours recomputed: 17,941,024,574. His: 18B (accepted 17,500,000,000-18,500,000,000); gap after the rule 0.33%."
+   "recomputed": 17377397566,
+   "rule": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+   "group": "ours_wrong",
+   "evidence": "Closest recomputation: default: per-token count (unselected experts, MTP heads and lookup tables not active) = 17,377,397,566; his accepted range 17,500,000,000-18,500,000,000."
   },
   {
    "model": "zai-org/GLM-5.3-Flash",

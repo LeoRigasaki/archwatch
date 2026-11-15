@@ -71,6 +71,8 @@ def main_language_tensor(name, num_layers=None):
 
 
 LOOKUP_TABLE = re.compile(r"engram\.embed|ngram_embed|ple_embedding|embed_tokens_per_layer|per_layer_embed")
+INPUT_EMBED = re.compile(r"(?:^|\.)llm\.embed\.weight$")  # Inkling native names: model.llm.embed / unembed
+OUTPUT_UNEMBED = re.compile(r"(?:^|\.)unembed\.weight$")
 
 
 def _component(name: str) -> str:
@@ -87,9 +89,10 @@ def _component(name: str) -> str:
         "embed_tokens" in n
         or "word_embeddings" in n
         or n in ("backbone.embeddings.weight", "embed.weight", "tok_embeddings.weight")
+        or INPUT_EMBED.search(n)
     ):
         return "embedding"
-    if "lm_head" in n or n in ("head.weight", "output.weight", "model.output.weight"):
+    if "lm_head" in n or n in ("head.weight", "output.weight", "model.output.weight") or OUTPUT_UNEMBED.search(n):
         return "lm_head"
     if ".experts." in n or ".experts.gate_up_proj" in n or ".experts.down_proj" in n:
         return "moe_routed_experts"
@@ -284,7 +287,11 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
             out["qk_norm"] = True
         if name.endswith("self_attn.gate_proj.weight") or name.endswith("self_attn.g_proj.weight"):
             out["attention_output_gate_tensor"] = True
-        if name.endswith("lm_head.weight") or name in ("head.weight", "output.weight", "model.output.weight"):
+        if (
+            name.endswith("lm_head.weight")
+            or name in ("head.weight", "output.weight", "model.output.weight")
+            or OUTPUT_UNEMBED.search(name)
+        ):
             out["has_lm_head"] = True  # separate output head (HF lm_head, DeepSeek-native head, Mistral-native output)
         if name.endswith("kv_a_proj_with_mqa.weight") and "mla_cached_width" not in out:
             out["mla_cached_width"] = t["shape"][0]  # kv_lora_rank + qk_rope_head_dim
