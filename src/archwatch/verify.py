@@ -158,10 +158,17 @@ def verify(
             )
         )
         out.append(check("moe_active_experts", [c("moe_active_experts"), k("moe_active_experts")]))
+        no_shared_key = V.get("_config_names_shared_experts", (True,))[0] is False and not c("moe_shared_experts")
+        no_shared_tensors = not (wcount.get("by_component") or {}).get("moe_shared_experts") and not wshape.get(
+            "shared_experts"
+        )
+        zero = no_shared_key and no_shared_tensors and bool(wcount)
         out.append(
             check(
                 "moe_shared_experts",
                 [
+                    {"value": 0, "evidence": "config:no shared-expert key"} if zero else {},
+                    {"value": 0, "evidence": "weights:no shared-expert tensors"} if zero else {},
                     c("moe_shared_experts"),
                     k("moe_shared_experts"),
                     w(
