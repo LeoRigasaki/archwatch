@@ -213,7 +213,8 @@ def _extract(config: dict) -> dict[str, Fact]:
     if ctx:
         f["context_length"] = ctx
     tie = config.get("tie_word_embeddings") if "tie_word_embeddings" in config else text.get("tie_word_embeddings")
-    f["tied_embeddings"] = (bool(tie), "config:tie_word_embeddings")
+    if tie is not None:  # an absent key is not evidence either way; the weights decide (see verify)
+        f["tied_embeddings"] = (bool(tie), "config:tie_word_embeddings")
 
     types, ev, base = _layer_types(text, prefix, n_layers)
     f["layer_types"] = (types, ev)
