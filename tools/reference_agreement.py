@@ -169,7 +169,8 @@ LABEL = {
 }
 CAUSES = {
     "definition": "definition difference (recomputed)",
-    "ours_wrong": "real error or unreconciled (ArchWatch)",
+    "ours_wrong": "confirmed bug (ArchWatch)",
+    "card_unreproducible": "card figure not reproducible from the weights",
     "his_wrong": "real error (reference)",
     "name_rounding": "nominal size (model name or '~' figure; ours exact)",
     "unresolved": "unresolved",

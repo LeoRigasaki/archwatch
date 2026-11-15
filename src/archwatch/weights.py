@@ -49,8 +49,12 @@ def logical_elements(name, tensor, quant_bits=None, native_expert_bits=None):
         return n * 2
     if name.endswith("_blocks") and tensor["dtype"] == "U8":
         return n * 2  # MXFP4: two 4-bit values per stored byte
+    if name.endswith("weight_shape") and tensor["dtype"] in ("I32", "I64"):
+        return None  # compressed-tensors: the unpacked shape, stored as metadata
     if name.endswith("weight_packed") and tensor["dtype"] in ("U8", "I8"):
         return n * (8 // (quant_bits or 4))
+    if name.endswith("weight_packed") and tensor["dtype"] == "I32":
+        return n * (32 // (quant_bits or 4))  # compressed-tensors pack-quantized: 8 int4 values per int32
     if native_expert_bits == 4 and ".experts." in name and name.endswith(".weight") and tensor["dtype"] in ("U8", "I8"):
         return n * 2
     return n
@@ -73,6 +77,7 @@ def main_language_tensor(name, num_layers=None):
 LOOKUP_TABLE = re.compile(r"engram\.embed|ngram_embed|ple_embedding|embed_tokens_per_layer|per_layer_embed")
 INPUT_EMBED = re.compile(r"(?:^|\.)llm\.embed\.weight$")  # Inkling native names: model.llm.embed / unembed
 OUTPUT_UNEMBED = re.compile(r"(?:^|\.)unembed\.weight$")
+STEP_EXPERTS = re.compile(r"\.moe\.(gate|up|down)_proj\.weight$")  # Step: experts stacked in one 3-D tensor
 
 
 def _component(name: str) -> str:
@@ -94,9 +99,9 @@ def _component(name: str) -> str:
         return "embedding"
     if "lm_head" in n or n in ("head.weight", "output.weight", "model.output.weight") or OUTPUT_UNEMBED.search(n):
         return "lm_head"
-    if ".experts." in n or ".experts.gate_up_proj" in n or ".experts.down_proj" in n:
+    if ".experts." in n or ".experts.gate_up_proj" in n or ".experts.down_proj" in n or STEP_EXPERTS.search(n):
         return "moe_routed_experts"
-    if "shared_expert" in n:
+    if "shared_expert" in n or ".share_expert." in n:
         return "moe_shared_experts"
     if "routed_expert_" in n:
         return "moe_latent_projection"
@@ -133,6 +138,7 @@ def count(tensors: dict[str, dict], quant_bits: int | None, *, native_expert_bit
     experts_per_layer: dict[int, set] = {}
     skipped_scales = 0
     skipped_buffers = 0
+    mtp = 0
     for name, t in sorted(tensors.items()):
         n = logical_elements(name, t, quant_bits, native_expert_bits)
         if n is None:
@@ -146,6 +152,8 @@ def count(tensors: dict[str, dict], quant_bits: int | None, *, native_expert_bit
         if li is not None and num_layers is not None and li >= num_layers and c not in ("vision", "vision_projector"):
             c = "auxiliary"  # MTP / next-token predictor layers stored after the decoder stack
         by_comp[c] = by_comp.get(c, 0) + n
+        if c == "auxiliary" and "cls_net." not in name:
+            mtp += n  # multi-token-prediction modules (not other auxiliary heads)
         if c == "moe_routed_experts" and li is not None and main_language_tensor(name, num_layers):
             per_layer_routed[li] = per_layer_routed.get(li, 0) + n
             m = re.search(r"experts\.(\d+)\.", name)
@@ -160,6 +168,9 @@ def count(tensors: dict[str, dict], quant_bits: int | None, *, native_expert_bit
     return {
         "total": total,
         "text_total": total - by_comp.get("vision", 0) - by_comp.get("vision_projector", 0),
+        # MTP modules are reported separately (DeepSeek-V3's card: 685B stored = 671B main model + 14B MTP).
+        "mtp_params": mtp,
+        "headline_total": total - mtp,
         "by_component": dict(sorted(by_comp.items(), key=lambda kv: (-kv[1], kv[0]))),
         "routed_expert_params": by_comp.get("moe_routed_experts", 0),
         "moe_layers": len(per_layer_routed),
@@ -182,7 +193,11 @@ def active_params(counts: dict, num_experts: int | None, k: int | None) -> dict 
     # (Engram memory, n-gram / per-layer embeddings) are read a few rows per token, so they are not active compute.
     text_active = counts["text_total"] - inactive - comp.get("auxiliary", 0) - comp.get("lookup_embedding", 0)
     vision = comp.get("vision", 0) + comp.get("vision_projector", 0)
+    # The input embedding is a per-token row lookup like the lookup tables above, so it is not active compute.
+    # The output head is computed in full and stays. Tied embeddings: the shared matrix is counted once, as the head.
+    tied = not comp.get("lm_head", 0)
     return {
+        "active": round(text_active - (0 if tied else comp.get("embedding", 0))),
         "text_active": round(text_active),
         "text_active_without_embeddings": round(text_active - comp.get("embedding", 0)),
         # "Non-embedding" as model cards use it: input embedding and output head both excluded.

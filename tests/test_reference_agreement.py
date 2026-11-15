@@ -86,7 +86,8 @@ def test_every_disagreement_is_closed_by_recomputation_or_marked_ours():
     mistral = [
         r for r in saved["rows"] if r["model"] == "mistralai/Mistral-Large-4-1T-A52B" and r["field"] == "params_active"
     ]
-    assert mistral and mistral[0]["agree"]
+    # Card "52B active" counts the input embedding; the fixed default leaves it out (a row lookup).
+    assert mistral and (mistral[0]["agree"] or mistral[0]["cause"] == "definition")
 
 
 def test_site_labels_the_growing_cache_definition():

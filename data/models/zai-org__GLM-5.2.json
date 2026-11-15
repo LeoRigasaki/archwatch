@@ -22,7 +22,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-15T17:10:26+00:00",
+ "analyzed_at": "2026-11-15T18:08:23+00:00",
  "facts": {
   "architecture_class": {
    "value": "GlmMoeDsaForCausalLM",
@@ -582,6 +582,8 @@
   "counted_from_weights": {
    "total": 753329940480,
    "text_total": 753329940480,
+   "mtp_params": 9952920576,
+   "headline_total": 743377019904,
    "by_component": {
     "moe_routed_experts": 724775731200,
     "attention_or_linear_mixer": 13068542208,
@@ -607,8 +609,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 40298947584,
    "text_active": 41250530304,
    "text_active_without_embeddings": 40298947584,
+   "text_active_non_embedding": 39347364864,
    "with_vision": 41250530304
   }
  },
@@ -1193,27 +1197,53 @@
   },
   {
    "field": "params_total",
-   "value": 753329940480,
+   "value": 743377019904,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 753329940480,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 743377019904,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 9952920576,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 9952920576,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 41250530304,
+   "value": 40298947584,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 41250530304,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 40298947584,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 39347364864,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 39347364864,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1613,8 +1643,10 @@
    "full_attention_mla": 78
   },
   "mla_cached_width_per_token": 576,
-  "params_total": 753329940480,
-  "params_active": 41250530304,
+  "params_total": 743377019904,
+  "params_mtp": 9952920576,
+  "params_active": 40298947584,
+  "params_active_non_embedding": 39347364864,
   "model_type": "glm_moe_dsa",
   "num_mtp_layers": 1,
   "layer_types": [

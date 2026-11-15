@@ -18,7 +18,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-15T17:10:25+00:00",
+ "analyzed_at": "2026-11-15T18:08:06+00:00",
  "facts": {
   "architecture_class": {
    "value": "Qwen3_5MoeForCausalLM",
@@ -508,6 +508,8 @@
   "counted_from_weights": {
    "total": 2446182725504,
    "text_total": 2446182725504,
+   "mtp_params": 26378027520,
+   "headline_total": 2419804697984,
    "by_component": {
     "moe_routed_experts": 2370821947392,
     "other": 30248699136,
@@ -533,8 +535,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 93253629312,
    "text_active": 95287866752,
    "text_active_without_embeddings": 93253629312,
+   "text_active_non_embedding": 91219391872,
    "with_vision": 95287866752
   }
  },
@@ -1231,27 +1235,53 @@
   },
   {
    "field": "params_total",
-   "value": 2446182725504,
+   "value": 2419804697984,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 2446182725504,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 2419804697984,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 26378027520,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 26378027520,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 95287866752,
+   "value": 93253629312,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 95287866752,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 93253629312,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 91219391872,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 91219391872,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1948,8 +1978,10 @@
   },
   "layer_index_base_in_config": 0,
   "qk_norm": true,
-  "params_total": 2446182725504,
-  "params_active": 95287866752,
+  "params_total": 2419804697984,
+  "params_mtp": 26378027520,
+  "params_active": 93253629312,
+  "params_active_non_embedding": 91219391872,
   "model_type": "qwen3_5_moe_text",
   "linear_num_key_heads": 16,
   "linear_num_value_heads": 128,

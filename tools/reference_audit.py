@@ -65,11 +65,20 @@ FIXED = [
         "test_inkling_embed_and_unembed_are_embedding_and_head",
     ),
     (
+        "Step-3.5 / Step-5 routed experts stacked in 3-D moe.*_proj tensors (and share_expert) not recognized, "
+        "so every expert counted as active",
+        "test_step_stacked_experts_and_share_expert_are_recognized",
+    ),
+    (
+        "compressed-tensors int4 packed into int32 counted as one value per int32 (Kimi-K2.5/2.6/2.7)",
+        "test_int32_pack_quantized_experts_hold_eight_int4_values",
+    ),
+    (
         "Comparison parser: 'Mamba-2' read as 2 layers, MTP counted as a layer, 128,000 vs 128K not normalised",
         "test_layer_mix_counts_leading_terms_and_skips_mtp",
     ),
 ]
-GROUPS = ("ours_wrong", "his_wrong", "name_rounding", "definition", "unresolved")
+GROUPS = ("ours_wrong", "his_wrong", "card_unreproducible", "name_rounding", "definition", "unresolved")
 
 
 def latest_commit(config: dict) -> str:
@@ -200,8 +209,10 @@ def his_range(field: str, raw: str, parsed) -> tuple[float, float, str] | None:
 
 # One fixed rule per field. An exclusion is applied only when the model's own card states it for this figure.
 DEFAULT_RULE = {
-    "params_total": "default: all stored tensors minus vision tower and projector (text-only figure)",
-    "params_active": "default: per-token count (unselected experts, MTP heads and lookup tables not active)",
+    "params_total": "default: all stored tensors minus MTP modules (reported separately) and minus vision tower "
+    "and projector (text-only figure)",
+    "params_active": "default: per-token count; unselected experts, MTP, lookup tables and the input embedding "
+    "(row lookups) not active; output head counted (tied: shared matrix once, as the head)",
     "kv_cache_per_token_bf16": "default: full retention, every attention layer appends its KV per token "
     "(sliding-window layers not capped)",
 }
@@ -213,10 +224,6 @@ STATED = {
         "input embedding excluded; output head too unless the card says it is included",
     ),
     "head_included": (r"includ\w*[^.|]{0,20}(output|lm)[ _-]?head", "output head included"),
-    "mtp": (
-        r"\d[\d.]*\s*[BM]\b[^.|]{0,25}(MTP|multi-token prediction)|exclud\w*[^.|]{0,40}(MTP|multi-token)",
-        "MTP weights stated separately",
-    ),
     "lookup": (
         r"\d[\d.]*\s*[BM]\b[^.|]{0,25}(engram|n-gram|ngram)|exclud\w*[^.|]{0,40}(engram|n-gram|per-layer embed)",
         "lookup tables stated separately",
@@ -274,7 +281,9 @@ def name_sizes(repo: str, field: str) -> list[float]:
     return out
 
 
-def fixed_rule(record: dict, field: str, his_raw: str) -> tuple[str, float, list[str]] | None:
+def fixed_rule(
+    record: dict, field: str, his_raw: str, his_value: float | None = None
+) -> tuple[str, float, list[str]] | None:
     """Our number under the one fixed rule, adjusted only by exclusions the card states for his figure."""
     pub = record["published"]
     if field == "kv_cache_per_token_bf16":
@@ -290,7 +299,15 @@ def fixed_rule(record: dict, field: str, his_raw: str) -> tuple[str, float, list
         return None
     comp = record["params"]["counted_from_weights"]["by_component"]
     stated = {}
-    for st in card_statements(record, *_his_number(field, his_raw)):
+    number, unit = _his_number(field, his_raw)
+    statements = card_statements(record, number, unit)
+    if (
+        his_value is not None
+        and number
+        and abs(float(number.replace(",", "")) * UNIT[unit] - his_value) > 1e-6 * his_value
+    ):
+        statements = []  # his figure is a sum ('125B core ... plus 51B'): the card sentence states a part, not it
+    for st in statements:
         for key, (pattern, _) in STATED.items():
             if key not in stated and re.search(pattern, st["quote"], re.I):
                 stated[key] = st["quote"]
@@ -302,12 +319,15 @@ def fixed_rule(record: dict, field: str, his_raw: str) -> tuple[str, float, list
         else:
             value -= vision
     removals = []
-    if "embedding" in stated:
+    tied = not comp.get("lm_head", 0)
+    if "embedding" in stated and field == "params_total":
         removals.append(("input embedding", comp.get("embedding", 0), stated["embedding"]))
-        if "head_included" not in stated:
+        if "head_included" not in stated and not tied:
             removals.append(("output head", comp.get("lm_head", 0), stated["embedding"]))
-    if field == "params_total" and "mtp" in stated:
-        removals.append(("MTP / auxiliary heads", comp.get("auxiliary", 0), stated["mtp"]))
+    if "embedding" in stated and field == "params_active" and "head_included" not in stated:
+        # the default already leaves out the input embedding; "non-embedding" also drops the head
+        # (tied: the shared matrix, which the default counts once as the head)
+        removals.append(("output head", comp.get("embedding" if tied else "lm_head", 0), stated["embedding"]))
     if field == "params_total" and "lookup" in stated:
         removals.append(("lookup tables", comp.get("lookup_embedding", 0), stated["lookup"]))
     removals = [r for r in removals if r[1]]
@@ -405,6 +425,39 @@ def _gap_after(value: float, rng, his_raw: str) -> float:
     return abs(value - nominal) / nominal
 
 
+def _nominal(record: dict, field: str, his_raw: str, value: float) -> dict | None:
+    """name_rounding: his figure is the size in the model name or a card '~' figure, ours is outside 2% of it but
+    within half a unit of its last stated digit ('3B' = 2.5-3.5B, '2.5B' = 2.45-2.55B, '~23B' = 22.5-23.5B)."""
+    if field not in ("params_total", "params_active"):
+        return None
+    number, unit = _his_number(field, his_raw)
+    if not number:
+        return None
+    his_value = float(number.replace(",", "")) * UNIT[unit]
+    half = _half_unit(number, UNIT[unit])
+    if abs(value - his_value) <= 0.02 * his_value or abs(value - his_value) > half:
+        return None
+    in_name = any(abs(s - his_value) < 1e-6 * his_value for s in name_sizes(record["id"], field))
+    approx = None if in_name else approx_quote(record, field, his_raw)
+    if not (in_name or approx):
+        return None
+    where = (
+        f"his {number}{unit} is the size in the model name ({record['id'].split('/')[-1]})"
+        if in_name
+        else f'the card gives it as approximate: "{approx}"'
+    )
+    rule = DEFAULT_RULE[field]
+    return dict(
+        group="name_rounding",
+        recomputed=value,
+        rule="nominal size: " + ("model name" if in_name else "card '~' figure"),
+        card_quote=[approx] if approx else None,
+        evidence=f"Nominal figure: {where}. Ours is the exact count from the weights ({rule} = {value:,.0f}), "
+        f"{abs(value - his_value) / his_value:.2%} from it and within half a unit of its last digit "
+        f"({his_value - half:,.0f}-{his_value + half:,.0f}).",
+    )
+
+
 def close(record: dict, field: str, his_raw: str, parsed, manual: dict | None, ours=None) -> dict:
     """Classify one difference. Definition only if a recomputation of OUR number lands in his accepted range."""
     rng = his_range(field, his_raw, parsed)
@@ -426,9 +479,14 @@ def close(record: dict, field: str, his_raw: str, parsed, manual: dict | None, o
                 evidence=f"Rule: {manual['rule']}. Ours recomputed: {rec:,.0f}. His: {rng[2]} (accepted "
                 f"{rng[0]:,.0f}-{rng[1]:,.0f}). {' '.join(manual['evidence'].split())}",
             )
-    fixed = fixed_rule(record, field, his_raw) if rng else None
+    fixed = (
+        fixed_rule(record, field, his_raw, parsed[0] if field == "params_total" and parsed else None) if rng else None
+    )
     if fixed:
         rule, value, quotes = fixed
+        nominal = _nominal(record, field, his_raw, value) if not quotes else None
+        if nominal:
+            return dict(base, **nominal)
         if rng[0] <= value <= rng[1]:
             card = "".join(f' Card: "{q}".' for q in quotes)
             return dict(
@@ -453,32 +511,51 @@ def close(record: dict, field: str, his_raw: str, parsed, manual: dict | None, o
                 evidence=f"Rule: {rule}. Ours recomputed: {value:,.0f}. His: {rng[2]} (accepted "
                 f"{rng[0]:,.0f}-{rng[1]:,.0f}); gap after the rule {_gap_after(value, rng, his_raw):.2%}.",
             )
-    if field in ("params_total", "params_active") and rng:
-        number, unit = _his_number(field, his_raw)
-        his_value = float(number.replace(",", "")) * UNIT[unit] if number else None
-        in_name = his_value is not None and any(
-            abs(s - his_value) < 1e-6 * his_value for s in name_sizes(record["id"], field)
-        )
-        approx = approx_quote(record, field, his_raw)
-        if in_name or approx:
-            where = (
-                f"his {number}{unit} is the size in the model name ({record['id'].split('/')[-1]})"
-                if in_name
-                else f'the card gives it as approximate: "{approx}"'
-            )
-            return dict(
-                base,
-                group="name_rounding",
-                recomputed=fixed[1] if fixed else None,
-                rule="nominal size: " + ("model name" if in_name else "card '~' figure"),
-                card_quote=[approx] if approx and not in_name else None,
-                evidence=f"Nominal figure: {where}. Ours is the exact count from the weights"
-                + (f" ({fixed[0]} = {fixed[1]:,.0f})." if fixed else "."),
-            )
+    if manual and manual.get("group") == "ours_wrong":
+        return dict(base, group="ours_wrong", evidence="Bug: " + " ".join(manual["evidence"].split()))
+    read = tensors_read(record)
+    checked = (
+        read["text"]
+        if field in ("params_total", "params_active")
+        else "config.json and the model card at the pinned commit; neither states his figure."
+    )
     if fixed:
-        why = f"Closest recomputation: {fixed[0]} = {fixed[1]:,.0f}; his accepted range {rng[0]:,.0f}-{rng[1]:,.0f}."
-        return dict(base, group="ours_wrong", recomputed=fixed[1], rule=fixed[0], evidence=why)
-    return dict(base, group="ours_wrong", evidence="No recomputation available for this field.")
+        checked += f" Fixed rule: {fixed[0]} = {fixed[1]:,.0f}; his accepted range {rng[0]:,.0f}-{rng[1]:,.0f}."
+    if field in ("params_total", "params_active") and not read["complete"]:
+        return dict(base, group="ours_wrong", recomputed=fixed and fixed[1], rule=fixed and fixed[0], evidence=checked)
+    return dict(
+        base,
+        group="card_unreproducible",
+        recomputed=fixed[1] if fixed else None,
+        rule=fixed[0] if fixed else None,
+        evidence=("Checked: " + checked) if fixed else f"Checked: {checked} No rule reproduces his figure.",
+    )
+
+
+def tensors_read(record: dict) -> dict:
+    """Did we read every tensor the repo lists? Shard index (if any) against the headers actually read."""
+    counted = (record.get("params") or {}).get("counted_from_weights") or {}
+    n = counted.get("tensor_count")
+    folder = ROOT / "cache" / record["id"].replace("/", "__") / record["source_commit"]
+    index = folder / "model.safetensors.index.json"
+    skipped = counted.get("skipped_scale_tensors", 0) + counted.get("skipped_buffer_tensors", 0)
+    if index.exists():
+        listed = json.loads(index.read_text()).get("weight_map", {})
+        shards = len(set(listed.values()))
+        headers = folder / "_tensors.json"
+        read = set(json.loads(headers.read_text())) if headers.exists() else set()
+        missing = len(set(listed) - read) if read else None
+        complete = missing == 0
+        text = (
+            f"read {len(read) if read else n:,} tensor headers; the shard index lists {len(listed):,} in {shards} "
+            f"shards ({'none missing' if complete else f'{missing} missing' if missing is not None else 'headers not cached'}); "
+            f"{skipped} scale/buffer tensors counted as metadata."
+        )
+        return dict(complete=complete, text=text)
+    return dict(
+        complete=n is not None,
+        text=f"single safetensors file, all {n or 0:,} tensor headers read; {skipped} scale/buffer tensors counted as metadata.",
+    )
 
 
 def classify(rows: list[dict], causes: dict, records: dict, gallery_theirs: dict) -> list[dict]:
@@ -530,9 +607,11 @@ def report(meta: dict, mapping_rows: list, runs: list, rows: list, moved: list |
     lines += [f"| {g} | {counts[g]} |" for g in GROUPS]
     lines += [
         "",
-        "Groups: **ours_wrong** = our number under the fixed rule is outside his accepted range and nothing else "
-        "explains it (open); **his_wrong** = the model's own files contradict his value; **name_rounding** = his value "
-        "is the size in the model name or a figure the card gives as approximate ('~'), ours is the exact count; "
+        "Groups: **ours_wrong** = a confirmed bug in our code (or weights we did not read); **his_wrong** = the "
+        "model's own files contradict his value; **card_unreproducible** = we read every tensor and no fixed or "
+        "card-stated rule reproduces the card's figure (what we checked is listed); **name_rounding** = his value is "
+        "the size in the model name or a card '~' figure, and our exact count is within half a unit of its last "
+        "digit; "
         "**definition** = our number under the fixed rule (or a rule the card states) lands in his accepted range; "
         "**unresolved** = review queue.",
         "",
