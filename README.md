@@ -85,6 +85,15 @@ The existing `daily.yml` supports manual `fixed` (default), `discover` and `proc
 
 The watcher uses the ten preferred labs plus outside discovery. A live temporary-root run processed the four known models with both expected predecessors; a second pass changed no artifact bytes or mtimes. A separate 80-candidate discovery scan did not publish new models. The proposed cadence remains daily metadata discovery and a bounded weekly Gemini batch, with cron disabled pending approval. [Model selection](docs/MODEL_SELECTION.md), [provider constraints](docs/PROVIDER_LIMITS.md) and [next steps](docs/NEXT_STEPS.md) record the choices and remaining work. No Gemini integration or recurring task is enabled yet.
 
+## Outside comparison
+
+[results/reference-agreement.md](results/reference-agreement.md) compares published fields with the fact sheets in
+an external author's [reference gallery](https://github.com/owner/reference) (Apache-2.0),
+fetched at a pinned commit by `tools/reference_agreement.py` and not vendored. At that commit 44 of 52 compared
+values agree across 9 shared models; each disagreement is listed with ArchWatch's own evidence. The same file lists
+gallery models ArchWatch has not processed. It is a comparison only: never a source for published fields or gold
+labels, and its images are not downloaded or used. See [NOTICE](NOTICE) and [hard rules](docs/HARD_RULES.md).
+
 ## Limits of the evidence
 
 - Ten primary releases form the current development gold set. Human review, the independent held-out 30-model evaluation and the 95% target remain open.
