@@ -2,8 +2,8 @@
   "model": "meta-llama/Llama-3.1-8B",
   "source_commit": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b",
   "spec_sha256": "50130055f83b5ad4eaac6d4502373ef20170d7c18d2e46ffc429eb1e3a6515d4",
-  "svg_sha256": "0905492a97d99ed09f5328691d5ac5e83ed16c20b8377f15ed10d9b5998ebcca",
-  "source": "results/diagram-gen/meta-llama__Llama-3.1-8B/v2.svg",
+  "svg_sha256": "93d520fa392bcb0ae8cebd485e0900c4433671d171d16a93e4d40d1c79ee145a",
+  "source": "data/generated-diagrams/meta-llama__Llama-3.1-8B/50130055f83b/v1.svg",
   "checks_passed": [
     "callouts_beside_their_part",
     "callouts_present",

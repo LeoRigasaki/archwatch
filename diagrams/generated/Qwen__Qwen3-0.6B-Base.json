@@ -1,0 +1,33 @@
+{
+  "model": "Qwen/Qwen3-0.6B-Base",
+  "source_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+  "spec_sha256": "b1b000bbe1f673a78c74a310384197862b1cb5712afa5cc8ef8e0afc429e644f",
+  "svg_sha256": "42b3013924b0e58ae85b9d0c269defef1db9b6fde27e369207ce607e011b18f4",
+  "source": "data/generated-diagrams/Qwen__Qwen3-0.6B-Base/b1b000bbe1f6/v1.svg",
+  "checks_passed": [
+    "callouts_beside_their_part",
+    "callouts_present",
+    "canvas_size",
+    "columns_balanced",
+    "do_not_include",
+    "edges_connect_their_nodes",
+    "fixed_layout_positions",
+    "fixed_layout_sections",
+    "graph_edges_match_spec",
+    "graph_nodes_match_spec",
+    "inside_canvas_with_margin",
+    "labels_from_spec",
+    "layer_bars_match_spec",
+    "layer_sum",
+    "lines_avoid_other_boxes",
+    "no_covered_text",
+    "no_leader_lines",
+    "no_lines_through_text",
+    "no_text_overlap",
+    "numbers_from_spec",
+    "readable_font_sizes",
+    "repeat_counts_once",
+    "svg_valid_and_safe",
+    "zoom_panels_present"
+  ]
+}

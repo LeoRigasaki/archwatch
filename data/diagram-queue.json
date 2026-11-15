@@ -1,0 +1,85 @@
+{
+  "models": {
+    "LiquidAI/LFM3-1.7B-Base": {
+      "spec_sha256": "b2ba5cb331400c79614d1af3f297281b98370d32d68a071c4d6d33a2a3ce754e",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/LiquidAI__LFM3-1.7B-Base/b2ba5cb33140",
+      "calls": 1,
+      "updated": "2026-11-15"
+    },
+    "Qwen/Qwen3-0.6B-Base": {
+      "spec_sha256": "b1b000bbe1f673a78c74a310384197862b1cb5712afa5cc8ef8e0afc429e644f",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/Qwen__Qwen3-0.6B-Base/b1b000bbe1f6",
+      "calls": 1,
+      "updated": "2026-11-15"
+    },
+    "deepseek-ai/DeepSeek-V2-Lite": {
+      "spec_sha256": "a904877f45e72953d34360af74156be062fd84658aa115f68ebad94911abeb33",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/deepseek-ai__DeepSeek-V2-Lite/a904877f45e7",
+      "calls": 1,
+      "updated": "2026-11-15"
+    },
+    "google/gemma-3-1b-pt": {
+      "spec_sha256": "db76f8a7a3c26b6c729b40ba5870f5040fb68c7398b7093c0fbe61fcda3aae25",
+      "status": "error",
+      "version": null,
+      "folder": "data/generated-diagrams/google__gemma-3-1b-pt/db76f8a7a3c2",
+      "calls": 1,
+      "updated": "2026-11-15"
+    },
+    "meta-llama/Llama-3.1-8B": {
+      "spec_sha256": "50130055f83b5ad4eaac6d4502373ef20170d7c18d2e46ffc429eb1e3a6515d4",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/meta-llama__Llama-3.1-8B/50130055f83b",
+      "calls": 1,
+      "updated": "2026-11-15"
+    }
+  },
+  "runs": [
+    {
+      "date": "2026-11-15",
+      "processed": [
+        {
+          "model": "LiquidAI/LFM3-1.7B-Base",
+          "status": "passed",
+          "calls": 1
+        },
+        {
+          "model": "Qwen/Qwen3-0.6B-Base",
+          "status": "passed",
+          "calls": 1
+        },
+        {
+          "model": "deepseek-ai/DeepSeek-V2-Lite",
+          "status": "passed",
+          "calls": 1
+        },
+        {
+          "model": "google/gemma-3-1b-pt",
+          "status": "error",
+          "calls": 1
+        },
+        {
+          "model": "meta-llama/Llama-3.1-8B",
+          "status": "passed",
+          "calls": 1
+        }
+      ],
+      "skipped": [
+        {
+          "model": "LiquidAI/LFM2.5-24B-A2B-Base",
+          "reason": "Published tensor shapes lack self_attn.o_proj.weight / self_attn.dense.weight"
+        }
+      ],
+      "calls": 5,
+      "stopped": null,
+      "waiting": []
+    }
+  ]
+}

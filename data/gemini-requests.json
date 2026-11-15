@@ -304,5 +304,35 @@
     "day": "2026-11-15",
     "model": "gemini-3.5-flash-lite",
     "experiment": "explainer-v1"
+  },
+  {
+    "time": 1794736962.6495285,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794737120.6931067,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794737275.8527856,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794737423.4039907,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794737438.404238,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
   }
 ]
