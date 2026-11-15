@@ -76,5 +76,29 @@
     "day": "2026-11-14",
     "model": "gemini-4-hydrogen",
     "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729524.195953,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729667.8577652,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729761.4279912,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729836.271328,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
   }
 ]
