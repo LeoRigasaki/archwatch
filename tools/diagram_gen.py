@@ -34,12 +34,12 @@ def write(path, text):
     path.write_text(text)
 
 
-def run_model(repo, config, client, *, recheck=False):
+def run_model(repo, config, client, *, recheck=False, out=None, spec=None, record=None):
     settings = config["diagram_gen"]
-    record = json.loads((ROOT / "data/models" / (repo.replace("/", "__") + ".json")).read_text())
-    spec = build_spec(record)
+    record = record or json.loads((ROOT / "data/models" / (repo.replace("/", "__") + ".json")).read_text())
+    spec = spec or build_spec(record)
     spec_text = dump(spec, record)
-    folder = OUT / repo.replace("/", "__")
+    folder = out or OUT / repo.replace("/", "__")
     write(folder / "spec.yaml", spec_text)
     if client is None and not recheck:
         return dict(model=repo, spec_only=True)
@@ -47,6 +47,7 @@ def run_model(repo, config, client, *, recheck=False):
     ref_svg, ref_png = load(ROOT) if client is not None else ("", b"")
     attempts = []
     svg = None
+    calls = 0
     for n in range(1, settings["repairs"] + 2):
         svg_path = folder / f"v{n}.svg"
         if svg_path.exists():
@@ -70,6 +71,7 @@ def run_model(repo, config, client, *, recheck=False):
                 prompt = (PROMPTS / "repair_prompt.txt").read_text().format(failures=failures, spec=spec_text, svg=svg)
                 images = [(folder / f"v{n - 1}.png").read_bytes(), ref_png]
             write(folder / f"v{n}.prompt.txt", prompt)
+            calls += 1  # reserved before transport, so a failed request still counts
             try:
                 text, meta = client.generate(system, prompt, images)
             except Exception as error:  # provider errors are recorded, never retried silently
@@ -93,6 +95,7 @@ def run_model(repo, config, client, *, recheck=False):
     return dict(
         model=repo,
         attempts=len(attempts),
+        calls=calls,
         final_version=final and final["version"],
         passed=bool(final and final["passed"]),
         remaining_failures=final["failures"] if final else None,
