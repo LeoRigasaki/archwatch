@@ -1,0 +1,1138 @@
+{
+  "reference": {
+    "repo": "rasbt/llm-architecture-gallery",
+    "commit": "660cc1886a9d2a009c46ecc8e17e98b1075f58b2"
+  },
+  "rows": [
+    {
+      "model": "LiquidAI/LFM3-1.7B",
+      "gallery_name": "LFM3 1.7B",
+      "field": "params_total",
+      "ours": 1728801536,
+      "theirs": "1.73B parameters",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "LiquidAI/LFM3-1.7B",
+      "gallery_name": "LFM3 1.7B",
+      "field": "context_length",
+      "ours": 262144,
+      "theirs": "262,144",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "LiquidAI/LFM3-1.7B",
+      "gallery_name": "LFM3 1.7B",
+      "field": "vocab_size",
+      "ours": 128000,
+      "theirs": "128,000",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "LiquidAI/LFM3-1.7B",
+      "gallery_name": "LFM3 1.7B",
+      "field": "num_layers",
+      "ours": 24,
+      "theirs": "13 ShortConv + 5 sliding-window + 6 global GQA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "LiquidAI/LFM3-1.7B",
+      "gallery_name": "LFM3 1.7B",
+      "field": "kv_cache_per_token_bf16",
+      "ours": 12288,
+      "theirs": "22 KiB",
+      "agree": false,
+      "our_evidence": "2 x 4 KV heads x 128 head_dim x 2 B x 6 layers"
+    },
+    {
+      "model": "LiquidAI/LFM3-1.7B",
+      "gallery_name": "LFM3 1.7B",
+      "field": "decoder_type",
+      "ours": "dense",
+      "theirs": "Dense hybrid",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3-0.6B-Base",
+      "gallery_name": "Qwen3 0.6B",
+      "field": "params_total",
+      "ours": 596049920,
+      "theirs": "0.6B parameters",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3-0.6B-Base",
+      "gallery_name": "Qwen3 0.6B",
+      "field": "context_length",
+      "ours": 32768,
+      "theirs": "32,768",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3-0.6B-Base",
+      "gallery_name": "Qwen3 0.6B",
+      "field": "num_layers",
+      "ours": 28,
+      "theirs": "28 GQA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3-0.6B-Base",
+      "gallery_name": "Qwen3 0.6B",
+      "field": "kv_cache_per_token_bf16",
+      "ours": 114688,
+      "theirs": "112 KiB",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3-0.6B-Base",
+      "gallery_name": "Qwen3 0.6B",
+      "field": "decoder_type",
+      "ours": "dense",
+      "theirs": "Dense",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3.8-Flash-Next",
+      "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
+      "field": "params_total",
+      "ours": 179999981424,
+      "theirs": "125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3.8-Flash-Next",
+      "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
+      "field": "params_active",
+      "ours": 61114391168,
+      "theirs": "125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP",
+      "agree": false,
+      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)"
+    },
+    {
+      "model": "Qwen/Qwen3.8-Flash-Next",
+      "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
+      "field": "context_length",
+      "ours": 262144,
+      "theirs": "262,144",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3.8-Flash-Next",
+      "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
+      "field": "vocab_size",
+      "ours": 248320,
+      "theirs": "248,320 (~248k)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3.8-Flash-Next",
+      "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
+      "field": "num_layers",
+      "ours": 48,
+      "theirs": "12 QSA + 36 DeltaNet",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "Qwen/Qwen3.8-Flash-Next",
+      "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
+      "field": "decoder_type",
+      "ours": "sparse",
+      "theirs": "Sparse hybrid",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "gallery_name": "DeepSeek V4.1-Flash",
+      "field": "params_total",
+      "ours": 763205315794,
+      "theirs": "552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone)",
+      "agree": false,
+      "our_evidence": "single source: weights:sum of tensor shapes"
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "gallery_name": "DeepSeek V4.1-Flash",
+      "field": "params_active",
+      "ours": 227705140434,
+      "theirs": "552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone)",
+      "agree": false,
+      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)"
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "gallery_name": "DeepSeek V4.1-Flash",
+      "field": "context_length",
+      "ours": 1048576,
+      "theirs": "1,048,576",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "gallery_name": "DeepSeek V4.1-Flash",
+      "field": "vocab_size",
+      "ours": 129280,
+      "theirs": "129,280",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "gallery_name": "DeepSeek V4.1-Flash",
+      "field": "num_layers",
+      "ours": 40,
+      "theirs": "20 encoder + 20 decoder layers; 2 SWA-only + 38 CSA2/SWA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "gallery_name": "DeepSeek V4.1-Flash",
+      "field": "decoder_type",
+      "ours": "sparse",
+      "theirs": "Sparse MoE (causal encoder-decoder)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "mistralai/Mistral-Large-4-1T-A52B",
+      "gallery_name": "Mistral Large 4",
+      "field": "params_total",
+      "ours": 1053161553184,
+      "theirs": "1T total, 52B active (5.2% active)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "mistralai/Mistral-Large-4-1T-A52B",
+      "gallery_name": "Mistral Large 4",
+      "field": "params_active",
+      "ours": 54454496544,
+      "theirs": "1T total, 52B active (5.2% active)",
+      "agree": false,
+      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)"
+    },
+    {
+      "model": "mistralai/Mistral-Large-4-1T-A52B",
+      "gallery_name": "Mistral Large 4",
+      "field": "context_length",
+      "ours": 1048576,
+      "theirs": "1,048,576",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "mistralai/Mistral-Large-4-1T-A52B",
+      "gallery_name": "Mistral Large 4",
+      "field": "vocab_size",
+      "ours": 204800,
+      "theirs": "204,800",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "mistralai/Mistral-Large-4-1T-A52B",
+      "gallery_name": "Mistral Large 4",
+      "field": "num_layers",
+      "ours": 72,
+      "theirs": "72 MLA/DSA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "mistralai/Mistral-Large-4-1T-A52B",
+      "gallery_name": "Mistral Large 4",
+      "field": "decoder_type",
+      "ours": "sparse",
+      "theirs": "Sparse MoE",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3",
+      "gallery_name": "Kimi K3",
+      "field": "params_total",
+      "ours": 2779931837184,
+      "theirs": "2.8T total, 104B active (3.7% active)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3",
+      "gallery_name": "Kimi K3",
+      "field": "params_active",
+      "ours": 104189614848,
+      "theirs": "2.8T total, 104B active (3.7% active)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3",
+      "gallery_name": "Kimi K3",
+      "field": "context_length",
+      "ours": 1048576,
+      "theirs": "1,048,576",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3",
+      "gallery_name": "Kimi K3",
+      "field": "num_layers",
+      "ours": 93,
+      "theirs": "69 KDA + 24 Gated MLA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3",
+      "gallery_name": "Kimi K3",
+      "field": "kv_cache_per_token_bf16",
+      "ours": 27648,
+      "theirs": "27 KiB",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3",
+      "gallery_name": "Kimi K3",
+      "field": "decoder_type",
+      "ours": "sparse",
+      "theirs": "Sparse hybrid",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "params_total",
+      "ours": 2780110363392,
+      "theirs": "2.8T total, 104B active (3.7% active)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "params_active",
+      "ours": 104368141056,
+      "theirs": "2.8T total, 104B active (3.7% active)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "context_length",
+      "ours": 1048576,
+      "theirs": "1,048,576",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "vocab_size",
+      "ours": 163840,
+      "theirs": "163,840 (~160k)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "num_layers",
+      "ours": 93,
+      "theirs": "69 KDA + 24 Gated DSA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "kv_cache_per_token_bf16",
+      "ours": 33792,
+      "theirs": "33 KiB",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "moonshotai/Kimi-K3.1-Pro",
+      "gallery_name": "Kimi K3.1 Pro",
+      "field": "decoder_type",
+      "ours": "sparse",
+      "theirs": "Sparse hybrid",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "gallery_name": "Dory1.0 4B",
+      "field": "params_total",
+      "ours": 3975229440,
+      "theirs": "4B parameters",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "gallery_name": "Dory1.0 4B",
+      "field": "context_length",
+      "ours": 262144,
+      "theirs": "262,144",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "gallery_name": "Dory1.0 4B",
+      "field": "vocab_size",
+      "ours": 131072,
+      "theirs": "131,072 (~131k)",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "gallery_name": "Dory1.0 4B",
+      "field": "num_layers",
+      "ours": 72,
+      "theirs": "8 input + 20 shared \u00d7 2 passes + 8 output (56 applications)",
+      "agree": false,
+      "our_evidence": "verified: config:num_hidden_layers; weights:highest layer index + 1"
+    },
+    {
+      "model": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+      "gallery_name": "Dory1.0 4B",
+      "field": "decoder_type",
+      "ours": "dense",
+      "theirs": "Dense",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "zai-org/GLM-5.2",
+      "gallery_name": "GLM-5.2",
+      "field": "params_total",
+      "ours": 753329940480,
+      "theirs": "744B total, 40B active (5.4% active)",
+      "agree": false,
+      "our_evidence": "single source: weights:sum of tensor shapes"
+    },
+    {
+      "model": "zai-org/GLM-5.2",
+      "gallery_name": "GLM-5.2",
+      "field": "params_active",
+      "ours": 41841764352,
+      "theirs": "744B total, 40B active (5.4% active)",
+      "agree": false,
+      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)"
+    },
+    {
+      "model": "zai-org/GLM-5.2",
+      "gallery_name": "GLM-5.2",
+      "field": "context_length",
+      "ours": 1048576,
+      "theirs": "1,048,576",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "zai-org/GLM-5.2",
+      "gallery_name": "GLM-5.2",
+      "field": "num_layers",
+      "ours": 78,
+      "theirs": "78 MLA/DSA",
+      "agree": true,
+      "our_evidence": null
+    },
+    {
+      "model": "zai-org/GLM-5.2",
+      "gallery_name": "GLM-5.2",
+      "field": "decoder_type",
+      "ours": "sparse",
+      "theirs": "Sparse MoE",
+      "agree": true,
+      "our_evidence": null
+    }
+  ],
+  "not_processed": [
+    {
+      "gallery_name": "ERNIE 5.5 Flash Base",
+      "repo": "baidu/ERNIE-5.5-Flash-Base",
+      "company": "Baidu",
+      "date": "2026-11-05"
+    },
+    {
+      "gallery_name": "MiniMax M3.1-Flash 428B",
+      "repo": "MiniMaxAI/MiniMax-M3.1-Flash",
+      "company": "MiniMax",
+      "date": "2026-10-19"
+    },
+    {
+      "gallery_name": "Recursive Flint 40B-A2.5B",
+      "repo": "RecursiveSI/flint",
+      "company": "Recursive",
+      "date": "2026-10-18"
+    },
+    {
+      "gallery_name": "Reflection Beam 501B",
+      "repo": "reflection/Beam-1.0-501B-A23B",
+      "company": "Reflection",
+      "date": "2026-10-16"
+    },
+    {
+      "gallery_name": "Muse Spark Open 816B-A42B",
+      "repo": "meta-models/Muse-Spark-Open-816B-A42B",
+      "company": "Meta",
+      "date": "2026-10-15"
+    },
+    {
+      "gallery_name": "Nemotron 3.5 Super VL 120B-A12B",
+      "repo": "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4",
+      "company": "NVIDIA",
+      "date": "2026-10-15"
+    },
+    {
+      "gallery_name": "Ling 3.1 Flash",
+      "repo": "inclusionAI/Ling-3.1-flash",
+      "company": "InclusionAI",
+      "date": "2026-10-13"
+    },
+    {
+      "gallery_name": "Kolibri-1 78B",
+      "repo": "Aleph-Alpha/Kolibri-1",
+      "company": "Aleph Alpha",
+      "date": "2026-10-03"
+    },
+    {
+      "gallery_name": "Naive-N0.5-Flash 309B",
+      "repo": "NaiveAI/Naive-N0.5-Flash",
+      "company": "NaiveAI",
+      "date": "2026-09-27"
+    },
+    {
+      "gallery_name": "Xiaomi MiMo-V2.6-Flash-RL 309B",
+      "repo": "XiaomiMiMo/MiMo-V2.6-Flash-RL",
+      "company": "Xiaomi",
+      "date": "2026-09-21"
+    },
+    {
+      "gallery_name": "Xiaomi MiMo-V2.6-Pro-RL 1.02T",
+      "repo": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "company": "Xiaomi",
+      "date": "2026-09-21"
+    },
+    {
+      "gallery_name": "Step-5 Preview 600B",
+      "repo": "SHSLab/Step-5-Preview-BF16",
+      "company": "StepFun",
+      "date": "2026-09-20"
+    },
+    {
+      "gallery_name": "Tencent Hy4-preview 770B-A49B",
+      "repo": "tencent/Hy4-preview",
+      "company": "Tencent",
+      "date": "2026-08-28"
+    },
+    {
+      "gallery_name": "GLM-5.3-Flash",
+      "repo": "zai-org/GLM-5.3-Flash",
+      "company": "Z.ai",
+      "date": "2026-08-26"
+    },
+    {
+      "gallery_name": "Ornith 1.5 35B-A3B",
+      "repo": "ornith-ai/Ornith-1.5-35B-A3B",
+      "company": "Ornith",
+      "date": "2026-08-23"
+    },
+    {
+      "gallery_name": "Qwen3.8 27B",
+      "repo": "Qwen/Qwen3.8-27B",
+      "company": "Alibaba Cloud",
+      "date": "2026-08-14"
+    },
+    {
+      "gallery_name": "Nemotron 3.5 Lightning 30B-A3B",
+      "repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+      "company": "NVIDIA",
+      "date": "2026-08-11"
+    },
+    {
+      "gallery_name": "Muse Glimmer 30B",
+      "repo": "meta-models/Muse-Glimmer-30B",
+      "company": "Meta",
+      "date": "2026-08-10"
+    },
+    {
+      "gallery_name": "Ling 3.0 Flash",
+      "repo": "inclusionAI/Ling-3.0-flash",
+      "company": "InclusionAI",
+      "date": "2026-08-04"
+    },
+    {
+      "gallery_name": "Solar Open 2",
+      "repo": "upstage/Solar-Open2-250B",
+      "company": "Upstage",
+      "date": "2026-07-22"
+    },
+    {
+      "gallery_name": "Antares 1B",
+      "repo": "fdtn-ai/antares-1b",
+      "company": "Cisco",
+      "date": "2026-07-21"
+    },
+    {
+      "gallery_name": "Laguna S 2.1",
+      "repo": "poolside/Laguna-S-2.1",
+      "company": "Poolside",
+      "date": "2026-07-21"
+    },
+    {
+      "gallery_name": "Nanbeige 4.2 3B",
+      "repo": "Nanbeige/Nanbeige4.2-3B",
+      "company": "BOSS Zhipin",
+      "date": "2026-07-21"
+    },
+    {
+      "gallery_name": "Motif 3 Beta",
+      "repo": "Motif-Technologies/Motif-3-Beta",
+      "company": "Motif Technologies",
+      "date": "2026-07-21"
+    },
+    {
+      "gallery_name": "BTL-3 27B",
+      "repo": "badtheorylabs/BTL-3",
+      "company": "Bad Theory Labs",
+      "date": "2026-07-20"
+    },
+    {
+      "gallery_name": "Inkling",
+      "repo": "thinkingmachines/Inkling",
+      "company": "Thinking Machines Lab",
+      "date": "2026-07-15"
+    },
+    {
+      "gallery_name": "Soofi S 30B-A3B",
+      "repo": "Soofi-Project/Soofi-S-Base",
+      "company": "SOOFI Consortium",
+      "date": "2026-07-10"
+    },
+    {
+      "gallery_name": "Laguna XS 2.1",
+      "repo": "poolside/Laguna-XS-2.1",
+      "company": "Poolside",
+      "date": "2026-07-02"
+    },
+    {
+      "gallery_name": "VibeThinker-3B",
+      "repo": "WeiboAI/VibeThinker-3B",
+      "company": "Weibo",
+      "date": "2026-06-15"
+    },
+    {
+      "gallery_name": "MiniMax M3 428B",
+      "repo": "MiniMaxAI/MiniMax-M3",
+      "company": "MiniMax",
+      "date": "2026-06-13"
+    },
+    {
+      "gallery_name": "Kimi K2.7 Code",
+      "repo": "moonshotai/Kimi-K2.7-Code",
+      "company": "Moonshot AI",
+      "date": "2026-06-12"
+    },
+    {
+      "gallery_name": "North Mini Code 30B-A3B",
+      "repo": "CohereLabs/North-Mini-Code-1.0",
+      "company": "Cohere",
+      "date": "2026-06-05"
+    },
+    {
+      "gallery_name": "Nemotron 3 Ultra 550B-A55B",
+      "repo": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4",
+      "company": "NVIDIA",
+      "date": "2026-06-04"
+    },
+    {
+      "gallery_name": "Gemma 4 12B",
+      "repo": "google/gemma-4-12B-it",
+      "company": "Google",
+      "date": "2026-06-03"
+    },
+    {
+      "gallery_name": "JetBrains Mellum2 Thinking 12B-A2.5B",
+      "repo": "JetBrains/Mellum2-12B-A2.5B-Thinking",
+      "company": "JetBrains",
+      "date": "2026-06-01"
+    },
+    {
+      "gallery_name": "LFM2.5 350M",
+      "repo": "LiquidAI/LFM2.5-350M",
+      "company": "Liquid AI",
+      "date": "2026-05-28"
+    },
+    {
+      "gallery_name": "LFM2.5 1.2B",
+      "repo": "LiquidAI/LFM2.5-1.2B-Thinking",
+      "company": "Liquid AI",
+      "date": "2026-05-28"
+    },
+    {
+      "gallery_name": "LFM2.5 8B-A1B",
+      "repo": "LiquidAI/LFM2.5-8B-A1B",
+      "company": "Liquid AI",
+      "date": "2026-05-28"
+    },
+    {
+      "gallery_name": "Command A+ 218B-A25B",
+      "repo": "CohereLabs/command-a-plus-05-2026-w4a4",
+      "company": "Cohere",
+      "date": "2026-05-20"
+    },
+    {
+      "gallery_name": "ZAYA1-8B",
+      "repo": "Zyphra/ZAYA1-8B",
+      "company": "Zyphra",
+      "date": "2026-05-06"
+    },
+    {
+      "gallery_name": "Granite 4.1 30B",
+      "repo": "ibm-granite/granite-4.1-30b",
+      "company": "IBM",
+      "date": "2026-04-29"
+    },
+    {
+      "gallery_name": "Laguna XS.2",
+      "repo": "poolside/Laguna-XS.2",
+      "company": "Poolside",
+      "date": "2026-04-28"
+    },
+    {
+      "gallery_name": "DeepSeek V4-Pro",
+      "repo": "deepseek-ai/DeepSeek-V4-Pro",
+      "company": "DeepSeek",
+      "date": "2026-04-24"
+    },
+    {
+      "gallery_name": "DeepSeek V4-Flash",
+      "repo": "deepseek-ai/DeepSeek-V4-Flash",
+      "company": "DeepSeek",
+      "date": "2026-04-24"
+    },
+    {
+      "gallery_name": "Tencent Hy3-preview 295B-A21B",
+      "repo": "tencent/Hy3-preview",
+      "company": "Tencent",
+      "date": "2026-04-23"
+    },
+    {
+      "gallery_name": "Ling 2.6 1T",
+      "repo": "inclusionAI/Ling-2.6-1T",
+      "company": "InclusionAI",
+      "date": "2026-04-23"
+    },
+    {
+      "gallery_name": "Qwen3.6 27B",
+      "repo": "Qwen/Qwen3.6-27B",
+      "company": "Alibaba Cloud",
+      "date": "2026-04-22"
+    },
+    {
+      "gallery_name": "Xiaomi MiMo-V2.5 310B",
+      "repo": "XiaomiMiMo/MiMo-V2.5",
+      "company": "Xiaomi",
+      "date": "2026-04-22"
+    },
+    {
+      "gallery_name": "Xiaomi MiMo-V2.5-Pro 1.02T",
+      "repo": "XiaomiMiMo/MiMo-V2.5-Pro",
+      "company": "Xiaomi",
+      "date": "2026-04-22"
+    },
+    {
+      "gallery_name": "Kimi K2.6",
+      "repo": "moonshotai/Kimi-K2.6",
+      "company": "Moonshot AI",
+      "date": "2026-04-20"
+    },
+    {
+      "gallery_name": "Qwen3.6 35B-A3B",
+      "repo": "Qwen/Qwen3.6-35B-A3B",
+      "company": "Alibaba Cloud",
+      "date": "2026-04-15"
+    },
+    {
+      "gallery_name": "GLM-5.1",
+      "repo": "zai-org/GLM-5.1",
+      "company": "Z.ai",
+      "date": "2026-04-07"
+    },
+    {
+      "gallery_name": "Gemma 4 26B-A4B",
+      "repo": "google/gemma-4-26B-A4B-it",
+      "company": "Google",
+      "date": "2026-04-02"
+    },
+    {
+      "gallery_name": "Gemma 4 31B",
+      "repo": "google/gemma-4-31B-it",
+      "company": "Google",
+      "date": "2026-04-02"
+    },
+    {
+      "gallery_name": "Gemma 4 E2B",
+      "repo": "google/gemma-4-E2B-it",
+      "company": "Google",
+      "date": "2026-04-02"
+    },
+    {
+      "gallery_name": "Gemma 4 E4B",
+      "repo": "google/gemma-4-E4B-it",
+      "company": "Google",
+      "date": "2026-04-02"
+    },
+    {
+      "gallery_name": "MiniMax M2.7 230B",
+      "repo": "MiniMaxAI/MiniMax-M2.7",
+      "company": "MiniMax",
+      "date": "2026-03-18"
+    },
+    {
+      "gallery_name": "Mistral Small 4",
+      "repo": "mistralai/Mistral-Small-4-119B-2603",
+      "company": "Mistral AI",
+      "date": "2026-03-16"
+    },
+    {
+      "gallery_name": "Nemotron 3 Nano 4B",
+      "repo": "nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16",
+      "company": "NVIDIA",
+      "date": "2026-03-16"
+    },
+    {
+      "gallery_name": "Nemotron 3 Super 120B-A12B",
+      "repo": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "company": "NVIDIA",
+      "date": "2026-03-11"
+    },
+    {
+      "gallery_name": "Sarvam 105B",
+      "repo": "sarvamai/sarvam-105b",
+      "company": "Sarvam AI",
+      "date": "2026-03-03"
+    },
+    {
+      "gallery_name": "Sarvam 30B",
+      "repo": "sarvamai/sarvam-30b",
+      "company": "Sarvam AI",
+      "date": "2026-03-03"
+    },
+    {
+      "gallery_name": "Qwen3.5 397B",
+      "repo": "Qwen/Qwen3.5-397B-A17B",
+      "company": "Alibaba Cloud",
+      "date": "2026-02-16"
+    },
+    {
+      "gallery_name": "Ling 2.5 1T",
+      "repo": "inclusionAI/Ling-2.5-1T",
+      "company": "InclusionAI",
+      "date": "2026-02-15"
+    },
+    {
+      "gallery_name": "Tiny Aya 3.35B",
+      "repo": "CohereLabs/tiny-aya-base",
+      "company": "Cohere",
+      "date": "2026-02-13"
+    },
+    {
+      "gallery_name": "MiniMax M2.5 230B",
+      "repo": "MiniMaxAI/MiniMax-M2.5",
+      "company": "MiniMax",
+      "date": "2026-02-12"
+    },
+    {
+      "gallery_name": "GLM-5 744B",
+      "repo": "zai-org/GLM-5",
+      "company": "Z.ai",
+      "date": "2026-02-11"
+    },
+    {
+      "gallery_name": "Nanbeige 4.1 3B",
+      "repo": "Nanbeige/Nanbeige4.1-3B",
+      "company": "BOSS Zhipin",
+      "date": "2026-02-10"
+    },
+    {
+      "gallery_name": "Step 3.5 Flash 196B",
+      "repo": "stepfun-ai/Step-3.5-Flash",
+      "company": "StepFun",
+      "date": "2026-02-01"
+    },
+    {
+      "gallery_name": "LongCat-Flash-Lite 68.5B-A3B",
+      "repo": "meituan-longcat/LongCat-Flash-Lite",
+      "company": "Meituan",
+      "date": "2026-01-28"
+    },
+    {
+      "gallery_name": "Arcee AI Trinity Large 400B",
+      "repo": "arcee-ai/Trinity-Large-Base",
+      "company": "Arcee AI",
+      "date": "2026-01-27"
+    },
+    {
+      "gallery_name": "Kimi K2.5",
+      "repo": "moonshotai/Kimi-K2.5",
+      "company": "Moonshot AI",
+      "date": "2026-01-27"
+    },
+    {
+      "gallery_name": "GLM-4.7 355B",
+      "repo": "zai-org/GLM-4.7",
+      "company": "Z.ai",
+      "date": "2025-12-22"
+    },
+    {
+      "gallery_name": "Xiaomi MiMo-V2-Flash 309B",
+      "repo": "XiaomiMiMo/MiMo-V2-Flash",
+      "company": "Xiaomi",
+      "date": "2025-12-16"
+    },
+    {
+      "gallery_name": "Nemotron 3 Nano 30B-A3B",
+      "repo": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+      "company": "NVIDIA",
+      "date": "2025-12-04"
+    },
+    {
+      "gallery_name": "Mistral Large 3",
+      "repo": "mistralai/Mistral-Large-3-675B-Instruct-2512",
+      "company": "Mistral AI",
+      "date": "2025-12-02"
+    },
+    {
+      "gallery_name": "DeepSeek V3.2",
+      "repo": "deepseek-ai/DeepSeek-V3.2",
+      "company": "DeepSeek",
+      "date": "2025-12-01"
+    },
+    {
+      "gallery_name": "INTELLECT-3",
+      "repo": "PrimeIntellect/INTELLECT-3",
+      "company": "Prime Intellect",
+      "date": "2025-11-26"
+    },
+    {
+      "gallery_name": "OLMo 3 32B",
+      "repo": "allenai/Olmo-3-32B-Think",
+      "company": "Ai2",
+      "date": "2025-11-20"
+    },
+    {
+      "gallery_name": "OLMo 3 7B",
+      "repo": "allenai/Olmo-3-1025-7B",
+      "company": "Ai2",
+      "date": "2025-11-20"
+    },
+    {
+      "gallery_name": "Kimi Linear 48B-A3B",
+      "repo": "moonshotai/Kimi-Linear-48B-A3B-Base",
+      "company": "Moonshot AI",
+      "date": "2025-10-30"
+    },
+    {
+      "gallery_name": "Ouro-Thinking 2.6B",
+      "repo": "ByteDance/Ouro-2.6B-Thinking",
+      "company": "ByteDance",
+      "date": "2025-10-29"
+    },
+    {
+      "gallery_name": "MiniMax M2 230B",
+      "repo": "MiniMaxAI/MiniMax-M2",
+      "company": "MiniMax",
+      "date": "2025-10-23"
+    },
+    {
+      "gallery_name": "Qwen3 Next 80B-A3B",
+      "repo": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "company": "Alibaba Cloud",
+      "date": "2025-09-09"
+    },
+    {
+      "gallery_name": "Grok 2.5 270B",
+      "repo": "xai-org/grok-2",
+      "company": "xAI",
+      "date": "2025-08-22"
+    },
+    {
+      "gallery_name": "Gemma 3 270M",
+      "repo": "google/gemma-3-270m",
+      "company": "Google",
+      "date": "2025-08-14"
+    },
+    {
+      "gallery_name": "GPT-OSS 120B",
+      "repo": "openai/gpt-oss-120b",
+      "company": "OpenAI",
+      "date": "2025-08-04"
+    },
+    {
+      "gallery_name": "GPT-OSS 20B",
+      "repo": "openai/gpt-oss-20b",
+      "company": "OpenAI",
+      "date": "2025-08-04"
+    },
+    {
+      "gallery_name": "Qwen3 Coder Flash 30B-A3B",
+      "repo": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "company": "Alibaba Cloud",
+      "date": "2025-07-31"
+    },
+    {
+      "gallery_name": "GLM-4.5 355B",
+      "repo": "zai-org/GLM-4.5",
+      "company": "Z.ai",
+      "date": "2025-07-28"
+    },
+    {
+      "gallery_name": "GLM-4.5-Air",
+      "repo": "zai-org/GLM-4.5-Air",
+      "company": "Z.ai",
+      "date": "2025-07-28"
+    },
+    {
+      "gallery_name": "Kimi K2",
+      "repo": "moonshotai/Kimi-K2-Base",
+      "company": "Moonshot AI",
+      "date": "2025-07-10"
+    },
+    {
+      "gallery_name": "SmolLM3 3B",
+      "repo": "HuggingFaceTB/SmolLM3-3B-Base",
+      "company": "Hugging Face",
+      "date": "2025-06-19"
+    },
+    {
+      "gallery_name": "Qwen3 235B-A22B",
+      "repo": "Qwen/Qwen3-235B-A22B",
+      "company": "Alibaba Cloud",
+      "date": "2025-04-28"
+    },
+    {
+      "gallery_name": "Qwen3 30B-A3B",
+      "repo": "Qwen/Qwen3-30B-A3B",
+      "company": "Alibaba Cloud",
+      "date": "2025-04-28"
+    },
+    {
+      "gallery_name": "Qwen3 32B",
+      "repo": "Qwen/Qwen3-32B",
+      "company": "Alibaba Cloud",
+      "date": "2025-04-28"
+    },
+    {
+      "gallery_name": "Qwen3 4B",
+      "repo": "Qwen/Qwen3-4B",
+      "company": "Alibaba Cloud",
+      "date": "2025-04-28"
+    },
+    {
+      "gallery_name": "Qwen3 8B",
+      "repo": "Qwen/Qwen3-8B",
+      "company": "Alibaba Cloud",
+      "date": "2025-04-28"
+    },
+    {
+      "gallery_name": "Llama 4 Maverick",
+      "repo": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+      "company": "Meta",
+      "date": "2025-04-05"
+    },
+    {
+      "gallery_name": "Mistral Small 3.1 24B",
+      "repo": "mistralai/Mistral-Small-3.1-24B-Base-2503",
+      "company": "Mistral AI",
+      "date": "2025-03-18"
+    },
+    {
+      "gallery_name": "xLSTM 7B",
+      "repo": "NX-AI/xLSTM-7b",
+      "company": "NXAI",
+      "date": "2025-03-17"
+    },
+    {
+      "gallery_name": "Gemma 3 27B",
+      "repo": "google/gemma-3-27b-it",
+      "company": "Google",
+      "date": "2025-03-11"
+    },
+    {
+      "gallery_name": "DeepSeek R1",
+      "repo": "deepseek-ai/DeepSeek-R1",
+      "company": "DeepSeek",
+      "date": "2025-01-20"
+    },
+    {
+      "gallery_name": "DeepSeek V3",
+      "repo": "deepseek-ai/DeepSeek-V3",
+      "company": "DeepSeek",
+      "date": "2024-12-26"
+    },
+    {
+      "gallery_name": "Phi-4",
+      "repo": "microsoft/phi-4",
+      "company": "Microsoft",
+      "date": "2024-12-12"
+    },
+    {
+      "gallery_name": "OLMo 2 7B",
+      "repo": "allenai/OLMo-2-1124-7B-Instruct",
+      "company": "Ai2",
+      "date": "2024-11-25"
+    },
+    {
+      "gallery_name": "Llama 3.2 1B",
+      "repo": null,
+      "company": "Meta",
+      "date": "2024-09-25"
+    },
+    {
+      "gallery_name": "Llama 3.2 3B",
+      "repo": null,
+      "company": "Meta",
+      "date": "2024-09-25"
+    },
+    {
+      "gallery_name": "Llama 3 8B",
+      "repo": "meta-llama/Meta-Llama-3-8B",
+      "company": "Meta",
+      "date": "2024-04-18"
+    },
+    {
+      "gallery_name": "GPT-2 XL 1.5B",
+      "repo": "openai-community/gpt2-xl",
+      "company": "OpenAI",
+      "date": "2019-11-05"
+    }
+  ]
+}

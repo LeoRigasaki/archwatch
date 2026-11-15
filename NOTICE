@@ -1,0 +1,13 @@
+ArchWatch
+Copyright 2026 LeoRigasaki
+
+This project compares its own published records against a third-party reference at run time:
+
+  LLM Architecture Gallery (models.yml)
+  https://github.com/rasbt/llm-architecture-gallery
+  Copyright Sebastian Raschka
+  Licensed under the Apache License, Version 2.0.
+
+The file is fetched at the commit pinned in config/reference-gallery.yaml and is not redistributed in this
+repository. It is used for comparison only (results/reference-agreement.md): never as a source for published
+fields, gold labels or diagrams. Its images are not downloaded or used.
