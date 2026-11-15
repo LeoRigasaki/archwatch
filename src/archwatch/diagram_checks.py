@@ -48,7 +48,8 @@ def _tokens(text: str) -> list[str]:
     return [_word(t) if t[0].isalpha() else t for t in re.findall(r"[A-Za-z][A-Za-z0-9]*|\d+(?:\.\d+)?", text)]
 
 
-def _strings(value, skip=("id", "beside", "edges")):
+def _strings(value, skip=("id", "beside", "edges", "layout")):
+    # Layout geometry and wiring ids are drawing instructions, never visible facts.
     if isinstance(value, dict):
         for k, v in value.items():
             if k not in skip:
@@ -167,9 +168,9 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
 
     view = [float(x) for x in (root.get("viewBox") or "").replace(",", " ").split()] or [0, 0, 0, 0]
     low, high = settings["canvas_height_range"]
-    ok = len(view) == 4 and view[:3] == [0, 0, settings["canvas_width"]] and low <= view[3] <= high
+    ok = len(view) == 4 and view[:3] == [0, 0, spec["layout"]["canvas_width"]] and low <= view[3] <= high
     out["canvas_size"] = result(
-        [] if ok else [f"viewBox must be 0 0 {settings['canvas_width']} H, {low} <= H <= {high}"]
+        [] if ok else [f"viewBox must be 0 0 {spec['layout']['canvas_width']} H, {low} <= H <= {high}"]
     )
 
     numbers, words = vocabulary(spec)
@@ -243,6 +244,11 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
                 problems.append(f'io box "{item["id"]}" ({item["label"]}) missing from the stack section')
             elif _tokens(_group_text(boxes[0])) != _tokens(item["label"]):
                 problems.append(f'io box "{item["id"]}" must read "{item["label"]}"')
+        problems += [
+            f"callout {c.get('data-callout')} must sit inside the left panel (stack section)"
+            for c in _find_all(root, "data-callout")
+            if id(c) not in inside
+        ]
     zooms = _find_all(root, "data-section", "zooms")
     if zooms:
         inside = {id(e) for e in zooms[0].iter()}
@@ -347,45 +353,89 @@ GEOMETRY_JS = r"""(settings) => {
    const s=p[0],t=p[p.length-1];const fwd=near(s,A,14)&&near(t,B,14),rev=near(s,B,14)&&near(t,A,14);
    edges.push({edge:e.dataset.edge,where:holder.dataset.zoom||holder.dataset.section,ok:fwd,why:fwd?'':(rev?'arrow points the wrong way':'arrow does not connect its two boxes')});}
  const sec=n=>{const e=svg.querySelector(`[data-section="${n}"]`);return e?box(e):null};
- const target=k=>{if(k==='stack')return sec('stack');if(k==='embedding'){const e=svg.querySelector('[data-io="embedding"]');return e?box(e):null}
-   const z=svg.querySelector(`[data-zoom="${CSS.escape(k)}"]`);return z?box(z):null};
- const callouts=settings.callouts.map((c,i)=>{const e=svg.querySelector(`[data-callout="${i+1}"]`);const T=target(c.beside);if(!e||!T)return {i:i+1,ok:false,why:'callout or its target missing'};
-   const b=box(e);const gap=b.x-(T.x+T.w);const level=b.y+b.h>T.y-10&&b.y<T.y+T.h+10;
-   return {i:i+1,ok:gap>=-4&&gap<=settings.callout_gap_px&&level,why:`gap ${Math.round(gap)} px, ${level?'level':'not level'} with ${c.beside}`}});
- return {canvas:{width:v.width,height:v.height},bars,edges,callouts,sections:{title:sec('title'),stack:sec('stack'),each:sec('each-layer'),zooms:sec('zooms')},
+ const union=bs=>{bs=bs.filter(Boolean);if(!bs.length)return null;const x=Math.min(...bs.map(b=>b.x)),y=Math.min(...bs.map(b=>b.y));return {x,y,w:Math.max(...bs.map(b=>b.x+b.w))-x,h:Math.max(...bs.map(b=>b.y+b.h))-y}};
+ const targets=k=>{if(k==='stack'){const u=union([...svg.querySelectorAll('[data-group]')].map(box));return u?[u]:[]}
+   if(k.startsWith('bar:'))return [...svg.querySelectorAll('[data-layer]')].filter(b=>b.dataset.layer===k.slice(4)).map(box);
+   return [...svg.querySelectorAll(`[data-io="${CSS.escape(k)}"]`)].map(box)};
+ const callouts=settings.callouts.map((c,i)=>{const e=svg.querySelector(`[data-callout="${i+1}"]`);const T=targets(c.beside);
+   if(!e||!T.length)return {i:i+1,ok:false,why:'callout or its target missing'};
+   const b=box(e),cy=b.y+b.h/2;let best=null;
+   for(const t of T){const gap=b.x-(t.x+t.w);const dy=cy<t.y?t.y-cy:(cy>t.y+t.h?cy-(t.y+t.h):0);const ok=gap>=-4&&gap<=settings.callout_gap_px&&dy<=settings.callout_level_px;
+     if(!best||ok||(!best.ok&&gap+dy<best.d))best={ok,d:gap+dy,why:`${Math.round(gap)} px right of and ${Math.round(dy)} px off level with ${c.beside}`};if(ok)break;}
+   return {i:i+1,ok:best.ok,why:best.why}});
+ // lines may touch only the boxes they connect: no crossing, and no running within line_clearance_px of another box for 12 px or more
+ const boxes=[...svg.querySelectorAll('[data-node],[data-io],[data-layer]')].filter(e=>!hidden(e)).map(e=>{const r=e.tagName==='rect'?e:e.querySelector('rect');return r?{e,b:box(r),t:label(e)||e.dataset.layer||''}:null}).filter(Boolean);
+ const crossings=[];
+ for(const s of strokes){if(s.tagName==='path'&&/z\s*$/i.test(s.getAttribute('d')||''))continue;const p=pts(s);if(p.length<2)continue;
+   let allowed;if(s.dataset.edge){const holder=s.closest('[data-zoom],[data-section]');const ids=s.dataset.edge.split('->').map(x=>x.trim());
+     allowed=new Set(ids.map(id=>holder&&holder.querySelector(`[data-node="${CSS.escape(id)}"]`)).filter(Boolean));}
+   else{allowed=new Set(boxes.filter(o=>near(p[0],o.b,14)||near(p[p.length-1],o.b,14)).map(o=>o.e));}
+   for(const o of boxes){if(allowed.has(o.e)||[...allowed].some(a=>a.contains(o.e)||o.e.contains(a)))continue;
+     const n=p.filter(q=>near(q,o.b,settings.line_clearance_px)).length;if(n>=6)crossings.push(`${s.dataset.edge?'edge '+s.dataset.edge:'a line'} crosses or runs along the box "${o.t}"`);}}
+ const zoomBox=k=>{const z=svg.querySelector(`[data-zoom="${CSS.escape(k)}"]`);return z?box(z):null};
+ const columns=settings.zoom_columns.map(c=>({x:c.x,panels:c.panels.map(k=>({k,b:zoomBox(k)}))}));
+ return {canvas:{width:v.width,height:v.height},bars,edges,callouts,crossings:[...new Set(crossings)],columns,sections:{title:sec('title'),stack:sec('stack'),each:sec('each-layer'),zooms:sec('zooms')},
    overlaps,covered:[...new Set(covered)],through:[...new Set(through)],leaders,outside:[...new Set(outside)],small:[...new Set(small)]};
 }"""
 
 
-def _layout_problems(s, width):
-    """Same sections in the same places for every model."""
-    problems = []
+def _layout_problems(s, columns, layout):
+    """Same sections in the same places for every model; geometry comes from the spec's layout."""
     if not all(s.values()):
         return ["layout sections missing; see fixed_layout_sections"]
+    problems, width = [], layout["canvas_width"]
     title, stack, each, zooms = s["title"], s["stack"], s["each"], s["zooms"]
+    lx0, lx1 = layout["left_panel"]["x"]
     if abs(title["x"] + title["w"] / 2 - width / 2) > width * 0.05:
         problems.append("title section is not centered")
     if title["y"] + title["h"] > min(stack["y"], zooms["y"]) + 1:
-        problems.append("title section must sit above the stack and the zoom panels")
-    if stack["x"] + stack["w"] > width * 0.36:
-        problems.append(f"stack section must stay in the left column (right edge {round(stack['x'] + stack['w'])} px)")
+        problems.append("title section must sit above the left panel and the zoom panels")
+    for name, b in (("left panel", stack), ("Each layer box", each)):
+        if b["x"] < lx0 - 20 or b["x"] + b["w"] > lx1 + 20:
+            problems.append(f"{name} must stay within x {lx0}-{lx1} (found {round(b['x'])}-{round(b['x'] + b['w'])})")
     if each["y"] < stack["y"] + stack["h"] - 1:
-        problems.append("the Each layer box must sit under the stack")
-    if each["x"] + each["w"] > width * 0.49:
-        problems.append("the Each layer box must stay in the left half")
-    if zooms["x"] < width * 0.49:
-        problems.append(f"zoom panels must sit in the right column (left edge {round(zooms['x'])} px)")
+        problems.append("the Each layer box must sit under the left panel")
+    for col in columns:
+        x0, x1 = col["x"]
+        for p in col["panels"]:
+            b = p["b"]
+            if b and (b["x"] < x0 - 20 or b["x"] + b["w"] > x1 + 20):
+                problems.append(f'zoom panel "{p["k"]}" must sit in its column x {x0}-{x1}')
     return problems
+
+
+def _balance_problems(s, columns):
+    if not (s["stack"] and s["each"]):
+        return ["layout sections missing; see fixed_layout_sections"]
+    left = max(s["stack"]["y"] + s["stack"]["h"], s["each"]["y"] + s["each"]["h"]) - min(
+        s["stack"]["y"], s["each"]["y"]
+    )
+    heights = []
+    for col in columns:
+        bs = [p["b"] for p in col["panels"] if p["b"]]
+        if bs:
+            heights.append(max(b["y"] + b["h"] for b in bs) - min(b["y"] for b in bs))
+    if not heights:
+        return ["zoom panels missing"]
+    right = max(heights)
+    diff = abs(left - right) / max(left, right)
+    if diff >= 0.25:
+        return [
+            f"left column is {round(left)} px tall and the tallest zoom column {round(right)} px "
+            f"({diff:.0%} apart; must be under 25%). Scale the layer stack or the Each layer box"
+        ]
+    return []
 
 
 def browser_checks(svg: str, settings: dict, *, spec=None, screenshot=None) -> dict:
     parse(svg)  # reject active content before a browser ever loads model output
     from playwright.sync_api import sync_playwright
 
-    js_settings = dict(settings, callouts=(spec or {}).get("callouts", []), callout_gap_px=settings["callout_gap_px"])
+    layout = (spec or {}).get("layout", {})
+    js_settings = dict(settings, callouts=(spec or {}).get("callouts", []), zoom_columns=layout.get("zoom_columns", []))
     with sync_playwright() as p:
         browser = p.chromium.launch(channel=settings["browser_channel"], headless=True)
-        context = browser.new_context(viewport={"width": 1900, "height": 2500}, device_scale_factor=1)
+        context = browser.new_context(viewport={"width": 2300, "height": 2500}, device_scale_factor=1)
         context.route("**/*", lambda route: route.abort())
         page = context.new_page()
         page.set_content("<!doctype html><style>body{margin:0;background:white}</style>" + svg)
@@ -417,10 +467,12 @@ def browser_checks(svg: str, settings: dict, *, spec=None, screenshot=None) -> d
         checks["edges_connect_their_nodes"] = result(
             [f"{e['where']}: edge {e['edge']}: {e['why']}" for e in geo["edges"] if not e["ok"]]
         )
-        checks["fixed_layout_positions"] = result(_layout_problems(geo["sections"], settings["canvas_width"]))
+        checks["fixed_layout_positions"] = result(_layout_problems(geo["sections"], geo["columns"], spec["layout"]))
+        checks["columns_balanced"] = result(_balance_problems(geo["sections"], geo["columns"]))
+        checks["lines_avoid_other_boxes"] = result(geo["crossings"])
         checks["callouts_beside_their_part"] = result(
             [
-                f'callout {c["i"]} "{spec["callouts"][c["i"] - 1]["text"]}" is not beside its part ({c["why"]})'
+                f'callout {c["i"]} "{spec["callouts"][c["i"] - 1]["text"]}" is not beside its part inside the left panel ({c["why"]})'
                 for c in geo["callouts"]
                 if not c["ok"]
             ]

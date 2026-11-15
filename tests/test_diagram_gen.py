@@ -53,7 +53,9 @@ def edges(panel):
 )
 def test_generated_spec_matches_hand_written_kit_numbers(stem, kit, deviations):
     rec = record(stem)
-    body = dump(build_spec(rec), rec).split("\n\n", 1)[1]
+    spec = build_spec(rec)
+    spec.pop("layout")  # page geometry, not architecture facts
+    body = dump(spec, rec).split("\n\n", 1)[1]
     expected = numbers((ROOT / "docs/diagram-kit/specs" / f"{kit}.yaml").read_text())
     got = numbers(body)
     assert expected - got == deviations[0]
@@ -108,8 +110,10 @@ def test_every_spec_is_well_formed(stem):
     view = spec["layer_pattern"]["compressed_view"]
     assert sum(g["repeat"] * len(g["layers"]) for g in view) == spec["model"]["layers"]
     assert 1 <= len(spec["callouts"]) <= 5
-    targets = {"stack", "embedding"} | set(spec["zoom_panels"])
-    assert all(c["beside"] in targets for c in spec["callouts"])
+    bars = {"bar:" + label for g in view for label in g["layers"]}
+    assert all(c["beside"] in {"stack", "embedding"} | bars for c in spec["callouts"])
+    assert set(spec["zoom_panels"]) == {k for col in spec["layout"]["zoom_columns"] for k in col["panels"]}
+    assert len(spec["layout"]["zoom_columns"]) == (2 if len(spec["zoom_panels"]) > 3 else 1)
     for panel in list(spec["zoom_panels"].values()) + [spec["each_layer"]]:
         ids = {n["id"] for n in panel["nodes"]}
         assert all(_words(n["label"]) <= MAX_WORDS for n in panel["nodes"])
@@ -200,43 +204,13 @@ def test_block_shapes_withholds_inconsistent_layers_of_one_type():
 
 def good_svg(spec, *, extra="", drop_edge=None, add_edge=None):
     """A plain SVG that follows the fixed layout and draws every node and edge of `spec`."""
-    W, out, y = 1800, [], 130
+    layout = spec["layout"]
+    W = layout["canvas_width"]
     t = lambda x, yy, s, a="start", size=14: (  # noqa: E731
         f'<text x="{x}" y="{yy}" font-size="{size}" font-family="Arial" text-anchor="{a}">{escape(str(s))}</text>'
     )
-    out.append('<g data-section="title">' + t(900, 50, spec["model"]["title_label"], "middle", 32))
-    out.append(t(900, 80, spec["model"]["summary_line"], "middle", 16) + "</g>")
-    marks = {}
 
-    def io(item):
-        nonlocal y
-        marks[item["id"]] = y
-        out.append(
-            f'<g data-io="{item["id"]}"><rect x="40" y="{y}" width="400" height="24" fill="#fff" stroke="#333"/>'
-        )
-        out.append(t(48, y + 17, item["label"]) + "</g>")
-        y += 34
-
-    out.append('<g data-section="stack">')
-    stack_top = y
-    for item in reversed(spec["io"]["top"]):
-        io(item)
-    for i in range(len(spec["layer_pattern"]["compressed_view"]), 0, -1):
-        g = spec["layer_pattern"]["compressed_view"][i - 1]
-        out.append(f'<g data-group="{i}" data-repeat="{g["repeat"]}">')
-        top = y
-        for k, label in enumerate(reversed(g["layers"])):
-            out.append(f'<rect data-layer="{escape(label)}" x="40" y="{y}" width="260" height="8" fill="#ccc"/>')
-            y += 10
-        out.append(t(320, max(y - 2, top + 14), f"{g['repeat']} x") + "</g>")
-        y = max(y, top + 18) + 8
-    out.append(t(420, (stack_top + y) // 2, f"{spec['model']['layers']} layers"))
-    for item in reversed(spec["io"]["bottom"]):
-        io(item)
-    out.append("</g>")
-    stack_bottom = y
-
-    def graph(attr, key, title, panel, x0, y0):
+    def graph(attr, key, title, panel, x0, y0, out):
         out.append(f'<g {attr}="{key}">' + t(x0, y0 + 16, title))
         rows = {n["id"]: y0 + 30 + 30 * i for i, n in enumerate(panel["nodes"])}
         for n in panel["nodes"]:
@@ -257,37 +231,90 @@ def good_svg(spec, *, extra="", drop_edge=None, add_edge=None):
             )
             lane += 6
         yy = y0 + 30 + 30 * len(panel["nodes"]) + 10
-        for c in panel["caption"]:
-            out.append(t(x0, yy + 14, c))
+        for line in [w for c in panel["caption"] for w in textwrap.wrap(c, 64)]:
+            out.append(t(x0, yy + 14, line))
             yy += 20
         out.append("</g>")
         return yy + 20
 
-    out.append('<g data-section="each-layer">')
-    each_bottom = graph("data-each", "x", "Each layer", spec["each_layer"], 40, stack_bottom + 20)
-    out.append("</g>")
-    out.append('<g data-section="zooms">')
-    zy, tops, callout_bottom = 130, {}, 0
-    for key, panel in spec["zoom_panels"].items():
-        tops[key] = zy
-        zy = graph("data-zoom", key, panel["title"], panel, 920, zy)
-    out.append("</g>")
-    next_y = {"stack": stack_top, "embedding": marks["embedding"] + 14, **{k: v + 30 for k, v in tops.items()}}
+    # zoom columns first: the left column is then scaled to match their height
+    zooms, bottom = ['<g data-section="zooms">'], 130
+    for col in layout["zoom_columns"]:
+        zy = 130
+        for key in col["panels"]:
+            zy = graph(
+                "data-zoom", key, spec["zoom_panels"][key]["title"], spec["zoom_panels"][key], col["x"][0], zy, zooms
+            )
+        bottom = max(bottom, zy)
+    zooms.append("</g>")
+    each = []
+    each_height = graph("data-each", "x", "Each layer", spec["each_layer"], 40, 0, each)
+    n_bars = sum(len(g["layers"]) for g in spec["layer_pattern"]["compressed_view"])
+    n_groups = len(spec["layer_pattern"]["compressed_view"])
+    n_io = len(spec["io"]["top"]) + len(spec["io"]["bottom"])
+    budget = (bottom - 130) - each_height - 40 - 34 * n_io - 26 * n_groups
+    bar = max(8, min(34, budget // max(n_bars, 1) - 4))
+    group_gap = 8 + max(0, (budget - n_bars * (bar + 4)) // max(n_groups, 1))
+
+    out, y, marks, bars = [], 130, {}, {}
+    out.append('<g data-section="title">' + t(W // 2, 50, spec["model"]["title_label"], "middle", 32))
+    out.append(t(W // 2, 80, spec["model"]["summary_line"], "middle", 16) + "</g>")
+
+    def io(item):
+        nonlocal y
+        marks[item["id"]] = y
+        out.append(
+            f'<g data-io="{item["id"]}"><rect x="40" y="{y}" width="400" height="24" fill="#fff" stroke="#333"/>'
+        )
+        out.append(t(48, y + 17, item["label"]) + "</g>")
+        y += 34
+
+    out.append('<g data-section="stack">')
+    stack_top = y
+    for item in reversed(spec["io"]["top"]):
+        io(item)
+    for i in range(n_groups, 0, -1):
+        g = spec["layer_pattern"]["compressed_view"][i - 1]
+        out.append(f'<g data-group="{i}" data-repeat="{g["repeat"]}">')
+        top = y
+        for label in reversed(g["layers"]):
+            bars.setdefault(label, y + bar // 2)
+            out.append(f'<rect data-layer="{escape(label)}" x="40" y="{y}" width="260" height="{bar}" fill="#ccc"/>')
+            y += bar + 4
+        out.append(t(320, max(y - 2, top + 14), f"{g['repeat']} x") + "</g>")
+        y = max(y, top + 18) + group_gap
+    groups_bottom = y
+    out.append(t(420, (stack_top + y) // 2, f"{spec['model']['layers']} layers"))
+    for item in reversed(spec["io"]["bottom"]):
+        io(item)
+    wanted = []
     for i, c in enumerate(spec["callouts"], 1):
-        x = 640 if c["beside"] in ("stack", "embedding") else 1580
-        cy = next_y[c["beside"]]
-        lines = textwrap.wrap(c["text"], 24)
+        if c["beside"] == "stack":
+            cy = (stack_top + groups_bottom) // 2
+        elif c["beside"] == "embedding":
+            cy = marks["embedding"] + 12
+        else:
+            cy = bars[c["beside"][4:]]
+        wanted.append((cy, i, textwrap.wrap(c["text"], 24)))
+    floor = 0
+    for cy, i, lines in sorted(wanted):
+        h = 18 * len(lines)
+        top = max(cy - h // 2, floor)
+        floor = top + h + 6
+        x = layout["callout_margin_x"][0]
         spans = "".join(
             f'<tspan x="{x}" dy="{0 if k == 0 else 18}">{escape(line)}</tspan>' for k, line in enumerate(lines)
         )
         out.append(
-            f'<g data-callout="{i}"><text x="{x}" y="{cy}" font-size="14" font-family="Arial">{spans}</text></g>'
+            f'<g data-callout="{i}"><text x="{x}" y="{top + 13}" font-size="14" font-family="Arial">{spans}</text></g>'
         )
-        next_y[c["beside"]] = cy + 18 * len(lines) + 12
-        callout_bottom = max(callout_bottom, next_y[c["beside"]])
-    height = max(each_bottom, zy, callout_bottom, 1000) + 40
+    out.append("</g>")
+    each_y = y + 20
+    shifted = "".join(each).replace('<g data-each="x">', f'<g data-each="x" transform="translate(0 {each_y})">')
+    out.append('<g data-section="each-layer">' + shifted + "</g>")
+    height = max(each_y + each_height, bottom, 1000) + 40
     head = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {height}"><rect width="{W}" height="{height}" fill="#fff"/>'
-    return head + "".join(out) + extra + "</svg>"
+    return head + "".join(out) + "".join(zooms) + extra + "</svg>"
 
 
 @pytest.fixture
@@ -308,7 +335,7 @@ def test_static_checks_pass_on_a_contract_compliant_svg(lfm_spec):
         (lambda s: s.replace('data-repeat="5"', 'data-repeat="6"'), "layer_sum"),
         (lambda s: s.replace('data-zoom="gqa"', 'data-zoom="attention"'), "zoom_panels_present"),
         (lambda s: s.replace('data-callout="2"', 'data-callout="9"'), "callouts_present"),
-        (lambda s: re.sub(r'viewBox="0 0 1800 (\d+)"', r'viewBox="0 0 1200 \1"', s), "canvas_size"),
+        (lambda s: re.sub(r'viewBox="0 0 (\d+) (\d+)"', r'viewBox="0 0 1200 \2"', s), "canvas_size"),
         (lambda s: s.replace(">24 layers<", ">24 x<"), "repeat_counts_once"),
         (lambda s: s.replace('data-section="each-layer"', 'data-section="layer"'), "fixed_layout_sections"),
         (lambda s: s.replace(">multiply with C<", ">multiply C<"), "graph_nodes_match_spec"),
@@ -370,14 +397,18 @@ def test_browser_checks_find_layout_problems(lfm_spec):
     bad = good_svg(
         lfm_spec,
         extra=(
-            '<text x="900" y="50" font-size="28" text-anchor="middle">LFM3-1.7B</text>'
+            '<text x="{X}" y="50" font-size="28" text-anchor="middle">LFM3-1.7B</text>'
             '<text x="40" y="{H}" font-size="14">2048</text>'
             '<text x="1000" y="2000" font-size="14">7680</text><rect x="990" y="1985" width="80" height="20" fill="#000"/>'
             '<line x1="960" y1="1995" x2="1200" y2="1995" stroke="#000" stroke-dasharray="4 4"/>'
         ),
     )
-    height = int(re.search(r'viewBox="0 0 1800 (\d+)"', bad).group(1))
-    bad = bad.replace("{H}", str(height - 4)).replace(f'0 0 1800 {height}"', '0 0 1800 2100"')
+    width, height = map(int, re.search(r'viewBox="0 0 (\d+) (\d+)"', bad).groups())
+    bad = (
+        bad.replace("{X}", str(width // 2))
+        .replace("{H}", str(height - 4))
+        .replace(f'0 0 {width} {height}"', f'0 0 {width} 2100"')
+    )
     checks = review(bad, lfm_spec, SETTINGS)["checks"]
     for name in (
         "no_text_overlap",
@@ -409,7 +440,8 @@ def test_mislabelled_arrow_and_misplaced_parts_are_caught(lfm_spec):
     wrong = wrong.replace('data-edge="TMP"', 'data-edge="in->v"')
     checks = review(wrong, lfm_spec, SETTINGS)["checks"]
     assert not checks["edges_connect_their_nodes"]["passed"]
-    moved = re.sub(r'(<g data-callout="3">.*?</g>)', lambda m: m.group(1).replace('x="1580"', 'x="640"'), svg)
+    x = lfm_spec["layout"]["callout_margin_x"][0]
+    moved = re.sub(r'(<g data-callout="3">.*?</g>)', lambda m: m.group(1).replace(f'x="{x}"', 'x="1300"'), svg)
     assert not review(moved, lfm_spec, SETTINGS)["checks"]["callouts_beside_their_part"]["passed"]
     swapped = svg.replace('<g data-section="zooms">', '<g data-section="zooms" transform="translate(-880 0)">')
     assert not review(swapped, lfm_spec, SETTINGS)["checks"]["fixed_layout_positions"]["passed"]
@@ -507,3 +539,27 @@ def test_repair_loop_sends_failures_and_stops_on_pass(tmp_path, monkeypatch):
     gen.run_model("LiquidAI/LFM3-1.7B", CONFIG, client)  # resume: saved SVGs are reused, no new calls
     assert len(client.prompts) == 2
     shutil.rmtree(folder)
+
+
+@CHROME
+def test_line_through_an_unconnected_box_is_caught():
+    spec = build_spec(record("moonshotai__Kimi-K3.1-Pro"))
+    svg = good_svg(spec)
+    assert review(svg, spec, SETTINGS)["checks"]["lines_avoid_other_boxes"]["passed"]
+    x0 = spec["layout"]["zoom_columns"][0]["x"][0]
+    # A straight line across a row of the first zoom panel, like the Kimi DSA lines that hugged boxes.
+    crossing = svg.replace("</svg>", f'<line x1="{x0 - 60}" y1="171" x2="{x0 + 520}" y2="171" stroke="#333"/></svg>')
+    check = review(crossing, spec, SETTINGS)["checks"]["lines_avoid_other_boxes"]
+    assert not check["passed"] and "crosses or runs along" in check["problems"][0]
+
+
+@CHROME
+def test_unbalanced_columns_are_caught(lfm_spec):
+    svg = re.sub(
+        r'transform="translate\(0 (\d+)\)"',
+        lambda m: f'transform="translate(0 {int(m.group(1)) + 900})"',
+        good_svg(lfm_spec),
+    )
+    svg = re.sub(r'viewBox="0 0 (\d+) (\d+)"', lambda m: f'viewBox="0 0 {m.group(1)} 2400"', svg)
+    check = review(svg, lfm_spec, SETTINGS)["checks"]["columns_balanced"]
+    assert not check["passed"] and "under 25%" in check["problems"][0]

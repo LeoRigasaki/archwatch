@@ -8,37 +8,49 @@ ACCURACY RULES (most important)
 5. Use only words that appear in the spec. Never show YAML keys or node ids as visible text.
 6. Each box shows its node "label" exactly as written (every label has at most 6 words).
 
-FIXED LAYOUT (identical for every model; positions are on a 1800 px wide canvas)
-- Canvas: viewBox="0 0 1800 H". Choose H between 1000 and 2400 so that everything fits.
+FIXED LAYOUT (identical for every model; exact x ranges are in the spec's "layout" section)
+- Canvas: viewBox="0 0 W H" with W = layout.canvas_width. Choose H between 1000 and 2400 so that everything fits.
   Keep every text, box and line at least 24 px inside the canvas edge. Nothing may be cut off.
-- Title band (top, y 24 to 110), centered at x 900: "model.title_label" (font 32-36) and, under it,
+- Title band (top, y 24 to 110), centered horizontally: "model.title_label" (font 32-36) and, under it,
   "model.summary_line" exactly (font 16). Nothing else in this band.
-- Left column (x 24 to 600): the main stack, data flowing bottom to top.
+- Left panel (x range layout.left_panel.x): one light grey rounded panel, data-section="stack", holding
+  the main stack and its callouts. Data flows bottom to top.
   Bottom: the "io.bottom" boxes. Then one rounded group per "layer_pattern.compressed_view" entry, its layers drawn
   as stacked colored bars, first listed layer lowest, with one "N x" label (N = repeat) beside the group.
   Then the "io.top" boxes, with an arrow out of the top. Arrows connect the stack from bottom to top.
   Beside the whole stack draw a brace labelled "<layers> layers" (for example "93 layers").
   Each repeat count appears exactly once: only the group's own "N x" label. Never write "<layers> x".
   "io.note" and "io.vision", if present, are small grey notes next to their box, without connector lines.
-- Under the main stack (x 24 to 860): one box titled "Each layer" that draws "each_layer" as a small graph.
-- Right column (x 900 to 1520): one dotted-outline zoom panel per "zoom_panels" entry, stacked vertically in the
-  order given, each with its title on top. The zoom panel outline and title use the same color as the matching
-  bars in the stack. No lines between the stack and the zoom panels.
-- Callouts: short bold labels (font 15-16), each placed directly beside the part named in its "beside" field,
-  vertically level with that part:
-    beside "stack" or "embedding": in the column x 620 to 880, level with the stack or the token embedding box;
-    beside a zoom panel key: in the column x 1540 to 1776, level with that zoom panel.
-  Wrap callout text onto several lines with <tspan> if needed. No leader lines or connector lines for callouts.
+- Callouts sit INSIDE the left panel, in its right margin (x range layout.callout_margin_x), each directly beside
+  the part named in its "beside" field and vertically level with it:
+    "stack" = anywhere level with the layer groups; "embedding" = level with the token embedding box;
+    "bar:LABEL" = level with a layer bar whose data-layer is LABEL.
+  Callouts never float between columns and never sit outside the left panel. Wrap long callouts onto several
+  lines with <tspan>. No leader lines or connector lines for callouts.
+- Under the left panel, in the same x range: one box titled "Each layer" that draws "each_layer" as a graph.
+- Zoom panels: one dotted-outline panel per "zoom_panels" entry, placed in the zoom columns of
+  "layout.zoom_columns" (each column has its x range and its panels, top to bottom, in that order).
+  Each panel has its title on top. Its outline and title use the same color as the matching bars in the stack.
+  No lines between the stack and the zoom panels.
+- Balance: the left column (left panel + Each layer box) and the tallest zoom column must be similar in height
+  (within 25%). Scale the layer stack to achieve this: make the layer bars taller (up to 34 px) and spaced further
+  apart, and give the Each layer graph more vertical room, until both sides are about equally tall.
 
 GRAPHS (zoom panels and "Each layer")
 - Draw every node as a box with its label, and every edge "A -> B" as one arrow from node A to node B.
   Draw exactly the listed edges: no more, no fewer. Data flows bottom to top: put "in" / "layer input" at the
   bottom and "out" / "layer output" at the top. Parallel branches sit side by side.
+- Lay nodes out in rows with clear gaps (at least 28 px between rows and 24 px between boxes in a row).
+  Route every arrow through these gaps with right angles. An arrow may touch only its own two boxes: it must
+  never pass through, or run along the edge of, any other box. Leave at least 8 px between a line and any box
+  it does not connect to. Arrows never pass through a text label.
 - An arrow starts on the edge of box A and ends on the edge of box B (the arrowhead touching box B).
-  Arrows never pass through another box or a text label; route them around with right angles if needed.
 - Put each "caption" line as small grey text (font 14) at the bottom of its panel, inside the panel.
 
 STYLE
+- The HOUSE STYLE REFERENCE in the message shows the target look: copy its colors, fonts, font sizes, box and
+  arrow style, panel outlines and spacing. Do not copy its content, numbers or positions; the layout rules above
+  and the spec decide those.
 - Flat, clean vector look on a pure white background, like a figure in a technical book. No 3D, no shadows,
   no gradients, no decorative icons.
 - Boxes: white fill, thin dark-grey outline, rounded corners (rx="8"). Main stack: light grey rounded rectangle.
@@ -51,17 +63,19 @@ STYLE
 - Nothing overlaps: no text over text, and no shape drawn on top of text.
 
 REQUIRED SVG STRUCTURE (checked by code)
-- Root: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 H">, with a white background <rect> first.
+- Root: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 W H">, with a white background <rect> first.
 - <g data-section="title"> holds the title and the summary line.
-- <g data-section="stack"> holds the whole main stack, including:
+- <g data-section="stack"> holds the left panel: the whole main stack and all callouts, including:
     each io item: <g data-io="ID"> (ID = its "id") with its box and label;
     each compressed_view entry i (1 = first entry, lowest): <g data-group="i" data-repeat="N"> containing exactly
     one <rect data-layer="LABEL"> per layer bar (LABEL = that layer's exact text, first listed lowest) and its "N x" label.
 - <g data-section="each-layer"> holds the "Each layer" graph.
-- <g data-section="zooms"> holds all zoom panels; each panel is <g data-zoom="KEY"> with its title, graph and caption.
+- <g data-section="zooms"> holds all zoom panels (all columns); each panel is <g data-zoom="KEY"> with its title,
+  graph and caption.
 - Inside a graph, each node is <g data-node="ID"> with one <rect> and its label <text>; each edge is one
   <path>, <line> or <polyline> with data-edge="A->B" (node ids) and the arrowhead marker.
-- Each callout i (1 = first in the list): <g data-callout="i"> containing that callout's "text", worded exactly.
+- Each callout i (1 = first in the list): <g data-callout="i"> inside the stack section, containing that
+  callout's "text", worded exactly.
 - Allowed elements only: svg, g, rect, text, tspan, path, line, polyline, polygon, defs, marker, style, title.
   No images, scripts, foreignObject, external fonts or links.
 

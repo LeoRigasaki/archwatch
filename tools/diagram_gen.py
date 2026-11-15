@@ -52,7 +52,11 @@ def run_model(repo, config, client, *, recheck=False):
                 prompt = (
                     (PROMPTS / "generate_prompt.txt")
                     .read_text()
-                    .format(spec=spec_text, num_layers=spec["model"]["layers"])
+                    .format(
+                        spec=spec_text,
+                        num_layers=spec["model"]["layers"],
+                        house_style=(PROMPTS / "house-style/nemotron-h-8b.svg").read_text(),
+                    )
                 )
             else:
                 failures = "\n".join(f"- {f}" for f in attempts[-1]["failures"])
