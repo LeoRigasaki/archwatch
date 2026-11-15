@@ -1,32 +1,8 @@
 [
   {
-    "model": "moonshotai/Kimi-K3.1-Pro",
-    "attempts": 1,
-    "final_version": 1,
-    "passed": true,
-    "remaining_failures": [],
-    "errors": []
-  },
-  {
-    "model": "LiquidAI/LFM3-1.7B",
-    "attempts": 1,
-    "final_version": 1,
-    "passed": true,
-    "remaining_failures": [],
-    "errors": []
-  },
-  {
-    "model": "nvidia/Nemotron-H-8B-Base-8K",
-    "attempts": 1,
-    "final_version": 1,
-    "passed": true,
-    "remaining_failures": [],
-    "errors": []
-  },
-  {
     "model": "meta-llama/Llama-3.1-8B",
-    "attempts": 1,
-    "final_version": 1,
+    "attempts": 2,
+    "final_version": 2,
     "passed": true,
     "remaining_failures": [],
     "errors": []

@@ -12,7 +12,7 @@ repairs.
 | Kimi-K3.1-Pro | v1 pass (two zoom columns) | 12,175 |
 | LFM3-1.7B | v1 pass | 9,099 |
 | Nemotron-H-8B-Base-8K | v1 pass | 7,872 |
-| Llama-3.1-8B | v1 pass | 5,911 |
+| Llama-3.1-8B | v1 pass, v2 after the single-group rule (brace dropped, one visual repair call) | 5,911 |
 
 New in this round:
 - no line crosses, or runs within 7.5 px of, a box it does not connect to
@@ -22,6 +22,8 @@ New in this round:
 On the earlier Kimi v2 SVG, the line check flags the two DSA lines that hugged the "output gate"
 and "Linear 512" boxes; on the Nemotron reference it flags nothing.
 
-Requests: 4 (one per model, no repairs), all on the 2026-11-15 ledger day with the new key.
+Requests: 4 (one per model) plus 1 Llama repair after the single-group rule,, all on the 2026-11-15 ledger day with the new key.
 Previews: `results/diagram-gen/<model>/v1.png`. Earlier runs are in `results/diagram-gen-v1/` and
 `results/diagram-gen-v2/`.
+
+Approved by the owner on 2026-11-15. House-style reference: LFM3-1.7B v1 (`docs/diagram-kit/reference.*`).

@@ -224,6 +224,12 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
             problems.append(f'group {i} must show its repeat label "{entry["repeat"]} x" exactly once, found {inside}')
     stray = [_text_of(t) for t, m in labels if m and id(t) not in group_ids]
     problems += [f'repeat-style label "{s}" outside a layer group; label the total as "{layers} layers"' for s in stray]
+    if len(expected) == 1:
+        totals = [_text_of(t) for t in _visible_texts(root) if re.fullmatch(rf"\s*{layers}\s+layers?\s*", _text_of(t))]
+        problems += [
+            f'single layer group: drop the brace and its "{t}" label; "{layers} x" already gives the count'
+            for t in totals
+        ]
     out["repeat_counts_once"] = result(problems)
 
     # ---- fixed layout sections and title

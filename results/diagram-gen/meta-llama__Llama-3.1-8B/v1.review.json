@@ -1,5 +1,5 @@
 {
-  "passed": true,
+  "passed": false,
   "checks": {
     "svg_valid_and_safe": {
       "passed": true,
@@ -28,8 +28,10 @@
       "expected": 32
     },
     "repeat_counts_once": {
-      "passed": true,
-      "problems": []
+      "passed": false,
+      "problems": [
+        "single layer group: drop the brace and its \"32 layers\" label; \"32 x\" already gives the count"
+      ]
     },
     "fixed_layout_sections": {
       "passed": true,
@@ -100,5 +102,7 @@
       "problems": []
     }
   },
-  "failures": []
+  "failures": [
+    "single layer group: drop the brace and its \"32 layers\" label; \"32 x\" already gives the count"
+  ]
 }
