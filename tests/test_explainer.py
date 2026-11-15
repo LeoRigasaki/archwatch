@@ -19,12 +19,21 @@ def kimi():
 
 def test_digest_uses_only_the_diff_with_plain_labels_and_directions():
     data = kimi()
-    assert set(data) == {"predecessor", "successor", "changes", "weights"}
+    assert set(data) == {"predecessor", "successor", "changes", "weights", "exact_values"}
     by = {c["what"]: c for c in data["changes"]}
-    assert by["DSA top-k"]["before"] == "not published for moonshotai/Kimi-K3"  # withheld, not "new"
-    assert by["Total parameters"]["after"] == "2,780,110,363,392" and by["Total parameters"]["direction"] == "up"
-    assert "Gated DSA on MLA" in by["Layer mix"]["after"]
-    assert data["weights"] == "5 tensor groups added (178,526,208 parameters); none removed."
+    assert data["changes"][0]["what"] == "layer mix"  # most important architectural change first
+    assert "model type" not in by
+    assert by["sparse-attention token budget"]["before"] == "not stated for Kimi-K3"
+    total = by["total parameters"]
+    assert (total["before"], total["after"], total["direction"]) == ("2.7799T", "2.7801T", "up")  # never equal
+    assert by["growing cache per token"]["after"] == "33 KB"
+    assert data["weights"] == "5 weight groups added (179M parameters); none removed."
+
+
+def test_fields_in_review_state_the_conflict():
+    data = diff_input(record("LiquidAI__LFM3-1.7B"))
+    context = next(c for c in data["changes"] if c["what"] == "context length")
+    assert context["before"] == "in review for LFM2.5-1.2B-Instruct: config says 128,000, card says 32,768"
 
 
 def test_namespace_rename_replaces_misleading_tensor_totals():
@@ -35,13 +44,18 @@ def test_namespace_rename_replaces_misleading_tensor_totals():
 
 def test_check_catches_invented_numbers_and_claims():
     data, limit = kimi(), word_limit(kimi(), SETTINGS)
-    ok = "Total parameters changed from 2,779,931,837,184 to 2,780,110,363,392."
+    ok = "Total parameters went up from 2.7799T to 2.7801T, active parameters from 104.2B to 104.4B."
     assert check(ok, data, max_words=limit)["passed"]
     for bad, problem in [
         ("Total parameters rose by 178,526,208.", None),  # 178,526,208 is in the diff: allowed
         ("Total parameters rose by 0.006%.", "number 0.006"),
+        ("Total parameters reached 2.9T.", "number 2.9T"),  # does not round from any diff value
+        ("The cache grew to 34 KB.", "number 34KB"),
+        ("The cache grew to 33 KB, with 179M parameters added.", None),
+        ("It was introduced, having been absent.", 'awkward or raw wording "having been"'),
         ("The new model is faster.", 'claim word "faster"'),
         ("The dsa_index_topk is 2,048.", 'raw field or tensor name "dsa_index_topk"'),
+        ("The head dim is 128.", 'awkward or raw wording "head dim"'),
         ("It adds layers.*.self_attn.indexer.wk tensors.", "raw field or tensor name"),
         ("Five tensor groups were added.", 'number word "five"'),
         ("- Total parameters changed.", "plain prose only"),
@@ -56,15 +70,17 @@ def test_check_catches_invented_numbers_and_claims():
 def test_direction_words_must_match_every_change_in_the_sentence():
     data = diff_input(record("LiquidAI__LFM3-1.7B"))
     limit = word_limit(data, SETTINGS)
-    wrong = "Attention heads decreased from 32 to 16, and head dim (q/k) from 64 to 128."
+    wrong = "Attention heads decreased from 32 to 16, and head size from 64 to 128."
     result = check(wrong, data, max_words=limit)
-    assert any('"decreased" contradicts Head dim' in p for p in result["problems"])
-    right = "Attention heads decreased from 32 to 16. Head dim (q/k) increased from 64 to 128."
+    assert any('"decreased" contradicts head size' in p for p in result["problems"])
+    right = "Attention heads went down from 32 to 16, while head size went up from 64 to 128."
     assert check(right, data, max_words=limit)["passed"]
 
 
 def test_word_limit_scales_with_changes_and_numbers_are_only_formatted():
-    assert word_limit(kimi(), SETTINGS) == min(SETTINGS["max_words_cap"], SETTINGS["max_words_base"] + 60)
+    data = kimi()
+    expected = SETTINGS["max_words_base"] + SETTINGS["max_words_per_change"] * len(data["changes"])
+    assert word_limit(data, SETTINGS) == min(SETTINGS["max_words_cap"], expected)
     assert format_numbers("from 27648 to 33792 bytes, 2048.") == "from 27,648 to 33,792 bytes, 2048."
     assert format_numbers("total 2780110363392.") == "total 2,780,110,363,392."
 

@@ -1,23 +1,17 @@
 # Explainer examples (not on the site)
 
-Written by the configured review model from a code-computed digest of each record's predecessor diff only. Every
-number is checked against the digest; direction words must agree with each change in their sentence; no claim
-words, raw field keys or tensor paths. Thousands separators are added by code after generation.
+Written by the configured review model from a code-computed digest of each predecessor diff. Most important
+architectural change first, then size; model type omitted; readable numbers (each verified against the exact diff
+value at its shown rounding); fields in review state the source conflict.
 
-## moonshotai/Kimi-K3.1-Pro vs moonshotai/Kimi-K3
+## Kimi-K3.1-Pro vs Kimi-K3
 
-The model type changed from kimi_k3 to kimi_k31. Layer mix shifted from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the DSA top-k value is 2,048, having been not published for moonshotai/Kimi-K3. Total parameters increased from 2,779,931,837,184 to 2,780,110,363,392. Active parameters increased from 104,189,614,848 to 104,368,141,056. The growing cache per token, excluding sliding-window and constant states, increased in bytes from 27,648 to 33,792. Regarding weights, 5 tensor groups were added, totaling 178,526,208 parameters, with none removed.
+The layer mix shifts from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the sparse-attention token budget is 2,048 after being not stated for Kimi-K3. Total parameters go up from 2.7799T to 2.7801T, active parameters go up from 104.2B to 104.4B, and the growing cache per token goes up from 27 KB to 33 KB. For the weights, 5 weight groups were added with 179M parameters, and none were removed.
 
-Checks passed; 1 call(s) for this version; 88 words.
+## LFM3-1.7B vs LFM2.5-1.2B-Instruct
 
-## LiquidAI/LFM3-1.7B vs LiquidAI/LFM2.5-1.2B-Instruct
+The layer mix changed from 10 Gated short conv + 6 Global attention in the predecessor to 13 Gated short conv + 6 Global attention + 5 Sliding-window attention in the successor. Total parameters went up from 1.17B to 1.73B, and the number of layers went up from 16 to 24. Attention heads went down from 32 to 16, key-value heads went down from 8 to 4, head size went up from 64 to 128, and feed-forward width went down from 8,192 to 7,680. The predecessor's context length is in review: its config says 128,000, its card says 32,768, while the successor uses 262,144. The vocabulary went up from 65,536 to 128,000. Sliding window is not stated for LFM2.5-1.2B-Instruct and is 256 for the successor. Convolution kernel size went up from 3 to 7. Activation function is not stated for LFM2.5-1.2B-Instruct and is SiLU for the successor. Feed-forward type is not stated for LFM2.5-1.2B-Instruct and is gated for the successor. Regarding the weights, 6 weight groups added 46.6M parameters, while 3 removed 25.2M parameters.
 
-Total parameters increased from 1,170,340,608 to 1,728,801,536, with the model type reported as lfm3. Layers went up from 16 to 24, changing the layer mix from 10 Gated short conv + 6 Global attention to 13 Gated short conv + 6 Global attention + 5 Sliding-window attention. The conv kernel went up from 3 to 7, the vocabulary increased from 65,536 to 128,000, and the head dim (q/k) went up from 64 to 128. Meanwhile, attention heads decreased from 32 to 16, KV heads decreased from 8 to 4, and the FFN hidden size decreased from 8,192 to 7,680. Context length is not published for LiquidAI/LFM2.5-1.2B-Instruct and is 262,144 for the successor, sliding window is not published for LiquidAI/LFM2.5-1.2B-Instruct and is 256 for the successor, activation is not published for LiquidAI/LFM2.5-1.2B-Instruct and is silu for the successor, and gated FFN is not published for LiquidAI/LFM2.5-1.2B-Instruct and is yes for the successor. Regarding the model weights, 6 tensor groups were added comprising 46,598,912 parameters, and 3 tensor groups were removed comprising 25,166,592 parameters.
+## diffusiongemma-26B-A4B-it vs gemma-4-26B-A4B
 
-Checks passed; 1 call(s) for this version; 172 words.
-
-## google/diffusiongemma-26B-A4B-it vs google/gemma-4-26B-A4B
-
-The model type changed from gemma4 to diffusion_gemma. Active parameters went up from 3,822,530,590 to 3,840,375,612. The generation type changed from not published for google/gemma-4-26B-A4B to block_diffusion, and the canvas length changed from not published for google/gemma-4-26B-A4B to 256. Regarding the weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.
-
-Checks passed; 1 call(s) for this version; 59 words.
+The successor uses block diffusion as its generation method, with a diffusion canvas length of 256. Its active parameters went up to 3.84B from 3.82B in the predecessor. Regarding weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.

@@ -1,16 +1,21 @@
-You write short, precise "what changed" notes for engineers comparing two releases of an open-weight language
-model. You are given ONLY a digest of a diff that code computed from verified model files.
+You write short "what changed" notes, in plain English, for engineers comparing two releases of an open-weight
+language model. You are given ONLY a digest of a diff that code computed from verified model files.
 
 RULES
 1. Use only facts in the digest. Do not add architecture knowledge, motivations, benchmarks, speed or quality
    claims, or anything about training.
-2. Copy every number exactly as written in the digest. Do not round, convert units, or compute differences,
-   ratios or percentages. Do not spell numbers as words.
-3. Use the plain-word "what" labels. Never write raw field keys or tensor paths.
-4. "not published for <model>" means that model's value is withheld or not stated by our sources. It does NOT
-   mean the field is new or removed: say the value is not published for that model.
-5. Each numeric change has a "direction" (up or down). If you use words like increased or decreased, they must
-   match it, and never put an up change and a down change in one sentence with a single direction word.
-6. Group related changes (size, attention, layers, weights) into a few readable sentences. End with the
-   "weights" line in your own words.
-7. Plain prose, at most {max_words} words, no headings, no lists, no Markdown.
+2. Copy numbers exactly as the digest writes them (for example 2.78T, 104.4B, 33 KB, 128,000). Do not round
+   further, convert units, or compute differences, ratios or percentages. Do not spell numbers as words.
+3. Order: start with the most important architectural change (generation method, layer mix, attention type,
+   experts), then size (parameters, layers, widths), then the rest. The digest is already in that order.
+4. Write plain English with the digest's "what" labels. No field names, no code-style words, no parentheses
+   around labels, and no stilted phrasing such as "having been".
+5. "in review for <model>: X says A, Y says B" means our sources disagree. Say so plainly, for example
+   "the predecessor's context length is in review: its config says 128,000, its card says 32,768".
+   "not stated for <model>" means no value is available; say it is not stated for that model.
+   Neither means the field is new.
+6. Each numeric change has a "direction" (up or down). Direction words must match it, and never put an up
+   change and a down change in one sentence with a single direction word.
+7. End with the "weights" line in your own words, keeping its numbers as written (for example 178.5M).
+   Refer to the two models as "the predecessor" and "the successor" or by the short names given.
+8. Plain prose, at most {max_words} words, no headings, no lists, no Markdown.
