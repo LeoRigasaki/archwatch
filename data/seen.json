@@ -140,7 +140,7 @@
       "status": "review"
     },
     "meta-llama/Llama-3.1-8B": {
-      "architecture_hash": "5755b913fd48f8cba6ad2c228e07379790799a0144fa974acd963e482f3beae3",
+      "architecture_hash": "da528826106a5a4d0084bcb168a92cad90e59106481298fd8380f00ed5683c19",
       "attempts": 1,
       "created_at": "2024-07-14T22:20:15+00:00",
       "family": "llama",
@@ -251,7 +251,7 @@
       "status": "review"
     },
     "nvidia/Nemotron-H-8B-Base-8K": {
-      "architecture_hash": "5f029337097c35808cb5ae65d099d9f50c12b23236144c5e5e967f13f87244da",
+      "architecture_hash": "2342ea621a12e46d78981dc4a547b7b081674495a24976ab96f8f32ad92144bc",
       "attempts": 1,
       "created_at": "2025-03-19T23:37:16+00:00",
       "family": "nemotron",

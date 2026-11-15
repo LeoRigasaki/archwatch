@@ -1,0 +1,18 @@
+Draw the architecture diagram for the model in this YAML spec as a single standalone SVG file,
+following the system instructions and the fixed layout exactly.
+
+Before writing, check:
+- the canvas width is layout.canvas_width and the zoom panels sit in the columns given by layout.zoom_columns
+- the layer counts in compressed_view add up to {num_layers}, and each repeat count appears exactly once
+- every zoom panel and the "Each layer" box draw exactly their listed nodes and edges, with arrows in the gaps
+- every callout is inside the left panel, level with the part named in "beside"
+- the left column and the tallest zoom column are similar in height (within 25%)
+- every element is at least 24 px inside the canvas, and nothing overlaps
+
+SPEC:
+{spec}
+
+HOUSE STYLE: match this layout and styling, not its content. It is an approved ArchWatch diagram of a
+different model; the attached image is its render and the SVG source follows. Where it differs from the
+fixed layout rules in the system instructions, the system instructions win.
+{house_style}

@@ -264,3 +264,69 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
     if any("post_feedforward_layernorm" in n or "post_ffn_norm" in n or "post_mlp_layernorm" in n for n in language):
         out["sandwich_norm"] = True
     return out
+
+
+LAYER_TENSOR = re.compile(r"^(?:.*\.)?layers\.(\d+)\.(.+)$")
+FFN_PREFIXES = ("mlp.", "feed_forward.", "block_sparse_moe.")
+GLOBAL_PREFIXES = ("language_model.", "model.", "backbone.")
+
+
+def _ranges(indices):
+    out = []
+    for i in sorted(indices):
+        if out and out[-1][1] == i - 1:
+            out[-1][1] = i
+        else:
+            out.append([i, i])
+    return out
+
+
+def block_shapes(tensors: dict[str, dict], layer_types: list[str] | None, *, num_layers=None, quant_bits=None):
+    """Representative logical tensor shapes per config layer type, read from weight headers.
+
+    Mixer/norm/residual tensors are grouped by the config layer type and must be identical across
+    every layer of that type; FFN tensors are grouped by their own shape signature. Routed-expert
+    tensors are excluded (their widths are published separately). Returns None when the headers and
+    the config pattern cannot be aligned, so the field stays unpublished rather than guessed.
+    """
+    if not layer_types:
+        return None
+    per_layer: dict[int, dict] = {}
+    global_shapes = {}
+    for name, t in tensors.items():
+        if not main_language_tensor(name, num_layers) or ".experts." in name or "mm_projector" in name:
+            continue
+        if logical_elements(name, t, quant_bits) is None:
+            continue
+        shape = list(t["shape"])
+        if name.endswith("weight_packed") and t["dtype"] in ("U8", "I8"):
+            shape[-1] *= 8 // (quant_bits or 4)
+            name = name.removesuffix("_packed")
+        match = LAYER_TENSOR.match(name)
+        if match:
+            per_layer.setdefault(int(match.group(1)), {})[match.group(2)] = shape
+        else:
+            short = name
+            while short.startswith(GLOBAL_PREFIXES):
+                short = short.split(".", 1)[1]
+            global_shapes[short] = shape
+    if sorted(per_layer) != list(range(len(layer_types))):
+        return None
+    mixers: dict[str, dict] = {}
+    ffn_groups: dict[str, dict] = {}
+    for index, kind in enumerate(layer_types):
+        layer = per_layer[index]
+        mixer = {k: v for k, v in sorted(layer.items()) if not k.startswith(FFN_PREFIXES)}
+        ffn = {k: v for k, v in sorted(layer.items()) if k.startswith(FFN_PREFIXES)}
+        if kind in mixers:
+            if mixers[kind]["tensors"] != mixer:
+                return None  # same config type, different weights: needs review, not a representative shape
+            mixers[kind]["layers"] += 1
+        else:
+            mixers[kind] = {"layers": 1, "tensors": mixer}
+        if ffn:
+            key = repr(sorted(ffn.items()))
+            ffn_groups.setdefault(key, {"layer_ranges": [], "tensors": ffn})["layer_ranges"].append(index)
+    ffns = [dict(group, layer_ranges=_ranges(group["layer_ranges"])) for group in ffn_groups.values()]
+    ffns.sort(key=lambda g: g["layer_ranges"][0][0])
+    return {"mixers": mixers, "ffns": ffns, "globals": dict(sorted(global_shapes.items()))}

@@ -2,7 +2,7 @@ id: meta-llama/Llama-3.1-8B
 source_commit: d04e592bb4f6aa9cfee91e2e20afa771667e1d4b
 hub_created: '2024-07-14T22:20:15+00:00'
 license: llama3.1
-analyzed_at: '2026-11-13T20:59:26+00:00'
+analyzed_at: '2026-11-14T09:57:48+00:00'
 published:
   num_layers: 32
   hidden_size: 4096
@@ -50,6 +50,7 @@ published:
   - attention
   - attention
   params_total: 8030261248
+  model_type: llama
   layer_types:
   - full_attention
   - full_attention
@@ -104,6 +105,51 @@ published:
   weight_header_summary:
     tensor_count: 291
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      full_attention:
+        layers: 32
+        tensors:
+          input_layernorm.weight:
+          - 4096
+          post_attention_layernorm.weight:
+          - 4096
+          self_attn.k_proj.weight:
+          - 1024
+          - 4096
+          self_attn.o_proj.weight:
+          - 4096
+          - 4096
+          self_attn.q_proj.weight:
+          - 4096
+          - 4096
+          self_attn.v_proj.weight:
+          - 1024
+          - 4096
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 31
+      tensors:
+        mlp.down_proj.weight:
+        - 4096
+        - 14336
+        mlp.gate_proj.weight:
+        - 14336
+        - 4096
+        mlp.up_proj.weight:
+        - 14336
+        - 4096
+    globals:
+      embed_tokens.weight:
+      - 128256
+      - 4096
+      lm_head.weight:
+      - 128256
+      - 4096
+      norm.weight:
+      - 4096
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,

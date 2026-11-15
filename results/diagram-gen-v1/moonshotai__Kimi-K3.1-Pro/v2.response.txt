@@ -1,0 +1,293 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1480" width="1600" height="1480">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#1F2937"/>
+    </marker>
+    <style>
+      .title { font-family: Helvetica, Arial, sans-serif; font-size: 32px; font-weight: 700; fill: #111827; }
+      .panel-title { font-family: Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; }
+      .box-text { font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 500; fill: #111827; }
+      .bar-text { font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; fill: #111827; }
+      .repeat-label { font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; fill: #1F2937; }
+      .brace-label { font-family: Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #111827; }
+      .note-text { font-family: Helvetica, Arial, sans-serif; font-size: 14px; fill: #4B5563; }
+      .callout-text { font-family: Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #111827; }
+      .box { fill: #FFFFFF; stroke: #4B5563; stroke-width: 1.5; }
+      .arrow-line { stroke: #1F2937; stroke-width: 1.5; fill: none; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1480" fill="#FFFFFF"/>
+
+  <text x="800" y="56" text-anchor="middle" class="title">Kimi-K3.1-Pro (2.8T)</text>
+
+  <!-- Main panel on the left -->
+  <rect x="36" y="88" width="760" height="1356" rx="16" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+
+  <!-- Top output arrow -->
+  <line x1="300" y1="130" x2="300" y2="98" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- io.top -->
+  <rect x="160" y="130" width="280" height="42" rx="10" class="box"/>
+  <text x="300" y="156" text-anchor="middle" class="box-text">LM head 7168 -&gt; 163,840</text>
+  <text x="454" y="156" text-anchor="start" class="note-text">(not tied to the embedding)</text>
+
+  <line x1="300" y1="194" x2="300" y2="172" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="210" y="194" width="180" height="38" rx="10" class="box"/>
+  <text x="300" y="218" text-anchor="middle" class="box-text">Final norm</text>
+
+  <line x1="300" y1="254" x2="300" y2="232" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="190" y="254" width="220" height="38" rx="10" class="box"/>
+  <text x="300" y="278" text-anchor="middle" class="box-text">Final AttnRes mix</text>
+
+  <line x1="300" y1="322" x2="300" y2="292" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- Brace beside whole 93-layer stack -->
+  <path d="M 142 322 C 128 322, 128 334, 128 346 L 128 594 C 128 606, 122 610, 114 610 C 122 610, 128 614, 128 626 L 128 874 C 128 886, 128 898, 142 898" fill="none" stroke="#1F2937" stroke-width="2"/>
+  <text x="106" y="618" text-anchor="end" class="brace-label">93 x</text>
+
+  <!-- compressed_view entry 3 (top, layer 93) -->
+  <g data-group="3" data-repeat="1">
+    <rect x="155" y="322" width="290" height="64" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <rect data-layer="Gated DSA + LatentMoE" x="175" y="334" width="250" height="40" rx="6" fill="#FADBD8" stroke="#C0392B" stroke-width="1.5"/>
+    <text x="300" y="359" text-anchor="middle" class="bar-text">Gated DSA + LatentMoE</text>
+    <text x="458" y="356" text-anchor="start" class="repeat-label">1 x</text>
+    <text x="458" y="376" text-anchor="start" class="note-text">layer 93</text>
+  </g>
+
+  <line x1="300" y1="420" x2="300" y2="386" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- compressed_view entry 2 (middle, layers 5-92) -->
+  <g data-group="2" data-repeat="22">
+    <rect x="155" y="420" width="290" height="222" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <rect data-layer="Gated DSA + LatentMoE" x="175" y="434" width="250" height="42" rx="6" fill="#FADBD8" stroke="#C0392B" stroke-width="1.5"/>
+    <text x="300" y="460" text-anchor="middle" class="bar-text">Gated DSA + LatentMoE</text>
+    <rect data-layer="KDA + LatentMoE" x="175" y="486" width="250" height="42" rx="6" fill="#D0EFEA" stroke="#0F766E" stroke-width="1.5"/>
+    <text x="300" y="512" text-anchor="middle" class="bar-text">KDA + LatentMoE</text>
+    <rect data-layer="KDA + LatentMoE" x="175" y="538" width="250" height="42" rx="6" fill="#D0EFEA" stroke="#0F766E" stroke-width="1.5"/>
+    <text x="300" y="564" text-anchor="middle" class="bar-text">KDA + LatentMoE</text>
+    <rect data-layer="KDA + LatentMoE" x="175" y="590" width="250" height="42" rx="6" fill="#D0EFEA" stroke="#0F766E" stroke-width="1.5"/>
+    <text x="300" y="616" text-anchor="middle" class="bar-text">KDA + LatentMoE</text>
+    <text x="458" y="532" text-anchor="start" class="repeat-label">22 x</text>
+    <text x="458" y="554" text-anchor="start" class="note-text">layers 5-92</text>
+  </g>
+
+  <line x1="300" y1="676" x2="300" y2="642" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- compressed_view entry 1 (bottom, layers 1-4) -->
+  <g data-group="1" data-repeat="1">
+    <rect x="155" y="676" width="290" height="222" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <rect data-layer="Gated DSA + LatentMoE" x="175" y="690" width="250" height="42" rx="6" fill="#FADBD8" stroke="#C0392B" stroke-width="1.5"/>
+    <text x="300" y="716" text-anchor="middle" class="bar-text">Gated DSA + LatentMoE</text>
+    <rect data-layer="KDA + LatentMoE" x="175" y="742" width="250" height="42" rx="6" fill="#D0EFEA" stroke="#0F766E" stroke-width="1.5"/>
+    <text x="300" y="768" text-anchor="middle" class="bar-text">KDA + LatentMoE</text>
+    <rect data-layer="KDA + LatentMoE" x="175" y="794" width="250" height="42" rx="6" fill="#D0EFEA" stroke="#0F766E" stroke-width="1.5"/>
+    <text x="300" y="820" text-anchor="middle" class="bar-text">KDA + LatentMoE</text>
+    <rect data-layer="KDA + dense FFN" x="175" y="846" width="250" height="42" rx="6" fill="#D0EFEA" stroke="#0F766E" stroke-width="1.5"/>
+    <text x="300" y="872" text-anchor="middle" class="bar-text">KDA + dense FFN</text>
+    <text x="458" y="788" text-anchor="start" class="repeat-label">1 x</text>
+    <text x="458" y="810" text-anchor="start" class="note-text">layers 1-4</text>
+  </g>
+
+  <line x1="300" y1="936" x2="300" y2="898" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- io.bottom -->
+  <rect x="140" y="936" width="320" height="44" rx="10" class="box"/>
+  <text x="300" y="963" text-anchor="middle" class="box-text">Token embedding 163,840 x 7168</text>
+
+  <line x1="300" y1="1004" x2="300" y2="980" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="200" y="1004" width="200" height="40" rx="10" class="box"/>
+  <text x="300" y="1029" text-anchor="middle" class="box-text">Tokenized text</text>
+
+  <!-- io.vision side note (no connector lines) -->
+  <text x="478" y="942" text-anchor="start" class="note-text">
+    <tspan x="478" dy="0">27-layer vision encoder (401M) +</tspan>
+    <tspan x="478" dy="18">projector (46M) feeds image tokens</tspan>
+    <tspan x="478" dy="18">into the embedding sequence</tspan>
+  </text>
+
+  <!-- Layer schematic inside main panel -->
+  <rect x="64" y="1084" width="704" height="340" rx="12" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+  <text x="84" y="1112" text-anchor="start" class="panel-title" fill="#1F2937">Each layer</text>
+
+  <!-- Main layer flow (bottom to top, cx=250) -->
+  <line x1="250" y1="1416" x2="250" y2="1400" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="150" y="1366" width="200" height="34" rx="10" class="box"/>
+  <text x="250" y="1388" text-anchor="middle" class="box-text">norm (pre-mixer)</text>
+
+  <line x1="250" y1="1366" x2="250" y2="1348" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="105" y="1312" width="290" height="36" rx="10" class="box"/>
+  <text x="250" y="1335" text-anchor="middle" class="box-text">Token mixer: KDA or Gated DSA</text>
+
+  <!-- Residual path 1 (AttnRes mix) -->
+  <polyline points="250,1408 475,1408 475,1356" class="arrow-line" marker-end="url(#arrow)"/>
+  <rect x="420" y="1322" width="110" height="34" rx="10" class="box"/>
+  <text x="475" y="1344" text-anchor="middle" class="box-text">AttnRes mix</text>
+  <polyline points="475,1322 475,1294 252,1294" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <line x1="250" y1="1312" x2="250" y2="1264" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="150" y="1230" width="200" height="34" rx="10" class="box"/>
+  <text x="250" y="1252" text-anchor="middle" class="box-text">norm (pre-FFN)</text>
+
+  <line x1="250" y1="1230" x2="250" y2="1212" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <rect x="105" y="1176" width="290" height="36" rx="10" class="box"/>
+  <text x="250" y="1199" text-anchor="middle" class="box-text">FFN: dense FFN / LatentMoE</text>
+
+  <!-- Residual path 2 (AttnRes mix) -->
+  <polyline points="250,1278 475,1278 475,1220" class="arrow-line" marker-end="url(#arrow)"/>
+  <rect x="420" y="1186" width="110" height="34" rx="10" class="box"/>
+  <text x="475" y="1208" text-anchor="middle" class="box-text">AttnRes mix</text>
+  <polyline points="475,1186 475,1158 252,1158" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <line x1="250" y1="1176" x2="250" y2="1136" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <text x="554" y="1236" text-anchor="start" class="note-text">
+    <tspan x="554" dy="0">learned residual-mixing weights</tspan>
+    <tspan x="554" dy="22">attn_res_block_size = 12</tspan>
+  </text>
+
+  <!-- Callouts in free margin inside main panel (no connector lines) -->
+  <g data-callout="1">
+    <text x="540" y="252" text-anchor="start" class="callout-text">Context length: 1M tokens</text>
+  </g>
+  <g data-callout="2">
+    <text x="540" y="360" text-anchor="start" class="callout-text">69 KDA + 24 Gated DSA</text>
+  </g>
+  <g data-callout="4">
+    <text x="540" y="505" text-anchor="start" class="callout-text">
+      <tspan x="540" dy="0">896 experts, 16 active</tspan>
+      <tspan x="540" dy="18">+ 2 shared</tspan>
+    </text>
+  </g>
+  <g data-callout="3">
+    <text x="540" y="690" text-anchor="start" class="callout-text">
+      <tspan x="540" dy="0">Layer 1 dense FFN;</tspan>
+      <tspan x="540" dy="18">layers 2-93 LatentMoE</tspan>
+    </text>
+  </g>
+  <g data-callout="5">
+    <text x="540" y="790" text-anchor="start" class="callout-text">
+      <tspan x="540" dy="0">KV cache: about 33 KB</tspan>
+      <tspan x="540" dy="18">per token (vs 5.4 MB</tspan>
+      <tspan x="540" dy="18">for plain multi-head</tspan>
+      <tspan x="540" dy="18">attention)</tspan>
+    </text>
+  </g>
+
+  <!-- Right side: Zoom panels (stacked vertically) -->
+
+  <!-- Zoom panel: kda (teal) -->
+  <g data-zoom="kda">
+    <rect x="828" y="88" width="740" height="460" rx="14" fill="#FFFFFF" stroke="#0F766E" stroke-width="2" stroke-dasharray="6,5"/>
+    <text x="852" y="116" text-anchor="start" class="panel-title" fill="#0F766E">Kimi Delta Attention (KDA), 69 layers</text>
+    <text x="852" y="136" text-anchor="start" class="note-text">96 heads x 128 dims</text>
+
+    <!-- Parts bottom to top, centered at x=1198 -->
+    <rect x="988" y="498" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="520" text-anchor="middle" class="box-text">q, k, v: Linear 7168 -&gt; 12288</text>
+    <line x1="1198" y1="498" x2="1198" y2="482" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="448" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="470" text-anchor="middle" class="box-text">short depthwise Conv1d (kernel 4)</text>
+    <line x1="1198" y1="448" x2="1198" y2="432" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="398" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="420" text-anchor="middle" class="box-text">beta: Linear 7168 -&gt; 96</text>
+    <line x1="1198" y1="398" x2="1198" y2="382" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="348" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="370" text-anchor="middle" class="box-text">decay gate: 7168 -&gt; 128 -&gt; 12288</text>
+    <line x1="1198" y1="348" x2="1198" y2="332" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="298" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="320" text-anchor="middle" class="box-text">gated delta rule (128 x 128)</text>
+    <line x1="1198" y1="298" x2="1198" y2="282" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="248" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="270" text-anchor="middle" class="box-text">output norm (per head, 128)</text>
+    <line x1="1198" y1="248" x2="1198" y2="232" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="198" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="220" text-anchor="middle" class="box-text">output gate: Linear 7168 -&gt; 12288</text>
+    <line x1="1198" y1="198" x2="1198" y2="182" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="148" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="170" text-anchor="middle" class="box-text">output projection: Linear 12288 -&gt; 7168</text>
+  </g>
+
+  <!-- Zoom panel: gated_dsa (salmon red) -->
+  <g data-zoom="gated_dsa">
+    <rect x="828" y="568" width="740" height="414" rx="14" fill="#FFFFFF" stroke="#C0392B" stroke-width="2" stroke-dasharray="6,5"/>
+    <text x="852" y="596" text-anchor="start" class="panel-title" fill="#C0392B">Gated DeepSeek Sparse Attention (DSA), 24 layers</text>
+
+    <rect x="988" y="912" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="934" text-anchor="middle" class="box-text">query: 7168 -&gt; 1536, norm -&gt; 96 x 192</text>
+    <line x1="1198" y1="912" x2="1198" y2="896" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="862" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="884" text-anchor="middle" class="box-text">KV: 7168 -&gt; 576 -&gt; 96x(128+128)</text>
+    <line x1="1198" y1="862" x2="1198" y2="846" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="812" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="834" text-anchor="middle" class="box-text">position encoding: NoPE</text>
+    <line x1="1198" y1="812" x2="1198" y2="796" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="762" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="784" text-anchor="middle" class="box-text">indexer: 32 heads, 128 dims</text>
+    <line x1="1198" y1="762" x2="1198" y2="746" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="712" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="734" text-anchor="middle" class="box-text">indexer picks top 2048 tokens</text>
+    <line x1="1198" y1="712" x2="1198" y2="696" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="662" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="684" text-anchor="middle" class="box-text">output gate: Linear 7168 -&gt; 12288</text>
+    <line x1="1198" y1="662" x2="1198" y2="646" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="612" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="634" text-anchor="middle" class="box-text">output projection: Linear 12288 -&gt; 7168</text>
+
+    <text x="1198" y="968" text-anchor="middle" class="note-text">576 MLA values + 128 indexer key values per layer</text>
+  </g>
+
+  <!-- Zoom panel: dense_ffn (grey) -->
+  <g data-zoom="dense_ffn">
+    <rect x="828" y="1002" width="740" height="144" rx="14" fill="#FFFFFF" stroke="#4B5563" stroke-width="2" stroke-dasharray="6,5"/>
+    <text x="852" y="1030" text-anchor="start" class="panel-title" fill="#4B5563">Dense FFN (layer 1 only)</text>
+
+    <rect x="988" y="1096" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="1118" text-anchor="middle" class="box-text">gate, up: 7168 -&gt; 33792, SiTU-GLU</text>
+    <line x1="1198" y1="1096" x2="1198" y2="1080" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="1046" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="1068" text-anchor="middle" class="box-text">down: Linear 33792 -&gt; 7168</text>
+  </g>
+
+  <!-- Zoom panel: latent_moe (grey) -->
+  <g data-zoom="latent_moe">
+    <rect x="828" y="1166" width="740" height="244" rx="14" fill="#FFFFFF" stroke="#4B5563" stroke-width="2" stroke-dasharray="6,5"/>
+    <text x="852" y="1194" text-anchor="start" class="panel-title" fill="#4B5563">LatentMoE FFN (layers 2-93)</text>
+
+    <rect x="988" y="1360" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="1382" text-anchor="middle" class="box-text">router: 896 experts, sigmoid, top 16</text>
+    <line x1="1198" y1="1360" x2="1198" y2="1344" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="1310" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="1332" text-anchor="middle" class="box-text">7168 -&gt; 3584 -&gt; 3072 -&gt; 3584 -&gt; 7168</text>
+    <line x1="1198" y1="1310" x2="1198" y2="1294" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="1260" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="1282" text-anchor="middle" class="box-text">2 shared experts (width 6144)</text>
+    <line x1="1198" y1="1260" x2="1198" y2="1244" class="arrow-line" marker-end="url(#arrow)"/>
+
+    <rect x="988" y="1210" width="420" height="34" rx="10" class="box"/>
+    <text x="1198" y="1232" text-anchor="middle" class="box-text">activation: SiTU-GLU (gated)</text>
+  </g>
+</svg>
