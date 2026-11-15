@@ -1,0 +1,50 @@
+# Publication holds: architectures whose facts are published but whose diagram/cache rendering is withheld
+# until rendering and cache rules are qualified for them. Correct scalar extraction alone does not qualify a
+# diagram. Source facts stay in the record for review. See docs/NEWEST_BACKFILL.md.
+holds:
+  generation_types:
+    block_diffusion:
+      reason: >-
+        Block-diffusion generation (a fixed canvas decoded in parallel) is not an autoregressive decoder stack;
+        neither the layer diagram nor the per-token cache rule applies.
+      records: [google/diffusiongemma-26B-A4B-it]
+    latent_recurrent:
+      reason: >-
+        Recurrent passes reuse shared layers (input, recurrent x loops, output) with a per-loop KV cache; a flat
+        layer stack would misdraw the depth and the cache. The first Dory run passed the generic gate wrongly.
+      records: [nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16]
+  model_types:
+    deepseek_v41:
+      reason: >-
+        Compressed attention with an encoder/decoder split, hyper-connection residual streams (x4) and n-gram
+        memory layers; layout and cache rules for these are not qualified.
+      records: [deepseek-ai/DeepSeek-V4.1-Flash, deepseek-ai/DeepSeek-V4.1-Flash-1017]
+    deepseek_v4:
+      reason: >-
+        Same compressed-attention and hyper-connection family as deepseek_v41 (its predecessor generation).
+      records: []
+    qwen4_exp:
+      reason: >-
+        Qwen sparse attention (QSA) mixed with Gated DeltaNet under hyper-connection residual streams (x4);
+        QSA and hyper-connection cache/layout rules are not qualified.
+      records: [Qwen/Qwen3.8-Flash-Next]
+    mistral_large4:
+      reason: >-
+        Indexed MLA with KV shared across layers (shared_kv_layers = 9); the per-layer cache rule would
+        over-count and the diagram would hide the sharing.
+      records: [mistralai/Mistral-Large-4-1T-A52B]
+    llama4:
+      reason: >-
+        Alternating dense/MoE layers with chunked attention; the alternating schedule and chunked cache rule
+        are not qualified for drawing.
+      records: [meta-llama/Llama-4-Maverick-17B-128E]
+    glm5_next:
+      reason: >-
+        KDA linear attention mixed with indexed MLA under hyper-connection residual streams (x4); the
+        hyper-connection layout is not qualified.
+      records: [zai-org/GLM-5.3-Flash-BF16]
+    gemma4:
+      reason: >-
+        Global layers use their own head size and KV-head count (global_head_dim 512, 2 global KV heads)
+        alongside sliding layers; the shared-attention cache rule is not qualified.
+      records: [google/gemma-4-26B-A4B]
