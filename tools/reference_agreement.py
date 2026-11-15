@@ -169,8 +169,10 @@ LABEL = {
 }
 CAUSES = {
     "definition": "definition difference (recomputed)",
-    "ours_wrong": "real error or unreconciled (ArchWatch)",
+    "ours_wrong": "confirmed bug (ArchWatch)",
+    "card_unreproducible": "card figure not reproducible from the weights",
     "his_wrong": "real error (reference)",
+    "name_rounding": "nominal size (model name or '~' figure; ours exact)",
     "unresolved": "unresolved",
 }
 
@@ -217,8 +219,8 @@ def compare(records: dict, gallery: dict) -> dict:
 
 
 def attach_causes(result: dict, records: dict, gallery: dict, causes: dict) -> dict:
-    """Same rule as the audit: a definition difference only if OUR number, recomputed under the reference's
-    definition, lands in its accepted range (2% or its own rounding); anything else is ours to fix."""
+    """Same rule as the audit: a definition difference only if OUR number, under the fixed rule or an exclusion
+    the card states, lands in its accepted range (2% or its own rounding); anything else is ours to fix."""
     import importlib.util
 
     spec = importlib.util.spec_from_file_location("reference_audit", ROOT / "tools/reference_audit.py")
@@ -275,8 +277,8 @@ def report(result: dict, config: dict) -> str:
             counts[r.get("cause", "unclassified")] = counts.get(r.get("cause", "unclassified"), 0) + 1
         lines.append(
             "Causes: " + ", ".join(f"{CAUSES.get(k, k)} {v}" for k, v in sorted(counts.items())) + ". "
-            "A definition difference is accepted only when ArchWatch's own number, recomputed under the "
-            "reference's definition, lands within 2% or the reference's own rounding (rule in each row)."
+            "A definition difference is accepted only when ArchWatch's own number, under one fixed rule or an "
+            "exclusion the model card states, lands within 2% or the reference's own rounding (rule in each row)."
         )
         lines += ["", "| Model | Field | Ours | Theirs | Cause | Why | Our evidence |", "|---|---|---|---|---|---|---|"]
         for r in bad:

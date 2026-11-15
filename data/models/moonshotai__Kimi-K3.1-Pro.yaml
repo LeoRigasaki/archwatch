@@ -2,7 +2,7 @@ id: moonshotai/Kimi-K3.1-Pro
 source_commit: d9e99b0792a5e93b78ea9bea62a68167e36ddd9e
 hub_created: '2026-11-02T04:13:51+00:00'
 license: kimi-k3.1-pro
-analyzed_at: '2026-11-14T09:57:41+00:00'
+analyzed_at: '2026-11-15T18:08:15+00:00'
 published:
   num_layers: 93
   hidden_size: 7168
@@ -13,6 +13,7 @@ published:
   head_dim: 192
   attention_type: MLA
   ffn_gated: true
+  tied_embeddings: false
   moe_num_experts: 896
   moe_active_experts: 16
   moe_shared_experts: 2
@@ -128,6 +129,7 @@ published:
   attention_output_gate: true
   params_total: 2780110363392
   params_active: 104368141056
+  params_active_non_embedding: 103193735936
   vision_params: 401214464
   model_type: kimi_k31
   num_mtp_layers: 0
@@ -226,7 +228,6 @@ published:
   - gated_dsa_mla
   - gated_dsa_mla
   decoder_type: MoE
-  tied_embeddings: false
   linear_attn_num_heads: 96
   linear_attn_head_dim: 128
   linear_attn_conv_kernel: 4

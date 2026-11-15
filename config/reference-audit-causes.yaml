@@ -19,6 +19,12 @@ Zyphra/ZAYA1-8B:
     group: definition
     recomputed: 80
     rule: 'attention and FFN entries counted separately: 2 x config num_hidden_layers (40)'
+deepseek-ai/DeepSeek-V3.2:
+  context_length:
+    evidence: 'deepseek-ai/DeepSeek-V3.2 config.json at a7e62ac04e: max_position_embeddings = 163840 (rope_scaling yarn,
+      factor 40 over original_max_position_embeddings 4096); the README states no context length. 128,000 / 128K
+      appears in neither file.'
+    group: his_wrong
 google/gemma-3-270m:
   context_length:
     evidence: 'google/gemma-3-270m README.md at 9b0cfec892: "Total input context of 128K tokens for the 4B, 12B, and 27B

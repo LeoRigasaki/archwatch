@@ -39,6 +39,7 @@ FIELD_NAMES = {
     "params_total": "Total parameters",
     "params_active": "Active parameters",
     "params_active_non_embedding": "Active parameters, excluding embeddings",
+    "params_mtp": "MTP module parameters (not in the total)",
     "vision_params": "Vision encoder parameters",
     "ffn_intermediate": "FFN hidden size",
     "short_conv_kernel": "Conv kernel",
