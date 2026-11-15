@@ -36,7 +36,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:03+00:00",
+ "analyzed_at": "2026-11-15T09:55:25+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm3ForCausalLM",
@@ -1018,6 +1018,323 @@
      "evidence": "weights:tensor header inventory"
     }
    ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "short_conv": {
+      "layers": 13,
+      "tensors": {
+       "conv.conv.weight": [
+        2048,
+        1,
+        7
+       ],
+       "conv.in_proj.weight": [
+        6144,
+        2048
+       ],
+       "conv.out_proj.weight": [
+        2048,
+        2048
+       ],
+       "ffn_norm.weight": [
+        2048
+       ],
+       "operator_norm.weight": [
+        2048
+       ],
+       "post_ffn_norm.weight": [
+        2048
+       ],
+       "post_operator_norm.weight": [
+        2048
+       ]
+      }
+     },
+     "full_attention": {
+      "layers": 6,
+      "tensors": {
+       "ffn_norm.weight": [
+        2048
+       ],
+       "operator_norm.weight": [
+        2048
+       ],
+       "post_ffn_norm.weight": [
+        2048
+       ],
+       "post_operator_norm.weight": [
+        2048
+       ],
+       "self_attn.gate_proj.weight": [
+        16,
+        2048
+       ],
+       "self_attn.k_norm.weight": [
+        128
+       ],
+       "self_attn.k_proj.weight": [
+        512,
+        2048
+       ],
+       "self_attn.o_proj.weight": [
+        2048,
+        2048
+       ],
+       "self_attn.q_norm.weight": [
+        128
+       ],
+       "self_attn.q_proj.weight": [
+        2048,
+        2048
+       ],
+       "self_attn.v_proj.weight": [
+        512,
+        2048
+       ]
+      }
+     },
+     "sliding_attention": {
+      "layers": 5,
+      "tensors": {
+       "ffn_norm.weight": [
+        2048
+       ],
+       "operator_norm.weight": [
+        2048
+       ],
+       "post_ffn_norm.weight": [
+        2048
+       ],
+       "post_operator_norm.weight": [
+        2048
+       ],
+       "self_attn.gate_proj.weight": [
+        16,
+        2048
+       ],
+       "self_attn.k_norm.weight": [
+        128
+       ],
+       "self_attn.k_proj.weight": [
+        512,
+        2048
+       ],
+       "self_attn.o_proj.weight": [
+        2048,
+        2048
+       ],
+       "self_attn.q_norm.weight": [
+        128
+       ],
+       "self_attn.q_proj.weight": [
+        2048,
+        2048
+       ],
+       "self_attn.v_proj.weight": [
+        512,
+        2048
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        23
+       ]
+      ],
+      "tensors": {
+       "feed_forward.w1.weight": [
+        7680,
+        2048
+       ],
+       "feed_forward.w2.weight": [
+        2048,
+        7680
+       ],
+       "feed_forward.w3.weight": [
+        7680,
+        2048
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      128000,
+      2048
+     ],
+     "embedding_norm.weight": [
+      2048
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "short_conv": {
+        "layers": 13,
+        "tensors": {
+         "conv.conv.weight": [
+          2048,
+          1,
+          7
+         ],
+         "conv.in_proj.weight": [
+          6144,
+          2048
+         ],
+         "conv.out_proj.weight": [
+          2048,
+          2048
+         ],
+         "ffn_norm.weight": [
+          2048
+         ],
+         "operator_norm.weight": [
+          2048
+         ],
+         "post_ffn_norm.weight": [
+          2048
+         ],
+         "post_operator_norm.weight": [
+          2048
+         ]
+        }
+       },
+       "full_attention": {
+        "layers": 6,
+        "tensors": {
+         "ffn_norm.weight": [
+          2048
+         ],
+         "operator_norm.weight": [
+          2048
+         ],
+         "post_ffn_norm.weight": [
+          2048
+         ],
+         "post_operator_norm.weight": [
+          2048
+         ],
+         "self_attn.gate_proj.weight": [
+          16,
+          2048
+         ],
+         "self_attn.k_norm.weight": [
+          128
+         ],
+         "self_attn.k_proj.weight": [
+          512,
+          2048
+         ],
+         "self_attn.o_proj.weight": [
+          2048,
+          2048
+         ],
+         "self_attn.q_norm.weight": [
+          128
+         ],
+         "self_attn.q_proj.weight": [
+          2048,
+          2048
+         ],
+         "self_attn.v_proj.weight": [
+          512,
+          2048
+         ]
+        }
+       },
+       "sliding_attention": {
+        "layers": 5,
+        "tensors": {
+         "ffn_norm.weight": [
+          2048
+         ],
+         "operator_norm.weight": [
+          2048
+         ],
+         "post_ffn_norm.weight": [
+          2048
+         ],
+         "post_operator_norm.weight": [
+          2048
+         ],
+         "self_attn.gate_proj.weight": [
+          16,
+          2048
+         ],
+         "self_attn.k_norm.weight": [
+          128
+         ],
+         "self_attn.k_proj.weight": [
+          512,
+          2048
+         ],
+         "self_attn.o_proj.weight": [
+          2048,
+          2048
+         ],
+         "self_attn.q_norm.weight": [
+          128
+         ],
+         "self_attn.q_proj.weight": [
+          2048,
+          2048
+         ],
+         "self_attn.v_proj.weight": [
+          512,
+          2048
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          23
+         ]
+        ],
+        "tensors": {
+         "feed_forward.w1.weight": [
+          7680,
+          2048
+         ],
+         "feed_forward.w2.weight": [
+          2048,
+          7680
+         ],
+         "feed_forward.w3.weight": [
+          7680,
+          2048
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        128000,
+        2048
+       ],
+       "embedding_norm.weight": [
+        2048
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
+    }
+   ]
   }
  ],
  "published": {
@@ -1122,6 +1439,159 @@
    "tensor_count": 286,
    "skipped_scale_tensors": 0,
    "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "short_conv": {
+     "layers": 13,
+     "tensors": {
+      "conv.conv.weight": [
+       2048,
+       1,
+       7
+      ],
+      "conv.in_proj.weight": [
+       6144,
+       2048
+      ],
+      "conv.out_proj.weight": [
+       2048,
+       2048
+      ],
+      "ffn_norm.weight": [
+       2048
+      ],
+      "operator_norm.weight": [
+       2048
+      ],
+      "post_ffn_norm.weight": [
+       2048
+      ],
+      "post_operator_norm.weight": [
+       2048
+      ]
+     }
+    },
+    "full_attention": {
+     "layers": 6,
+     "tensors": {
+      "ffn_norm.weight": [
+       2048
+      ],
+      "operator_norm.weight": [
+       2048
+      ],
+      "post_ffn_norm.weight": [
+       2048
+      ],
+      "post_operator_norm.weight": [
+       2048
+      ],
+      "self_attn.gate_proj.weight": [
+       16,
+       2048
+      ],
+      "self_attn.k_norm.weight": [
+       128
+      ],
+      "self_attn.k_proj.weight": [
+       512,
+       2048
+      ],
+      "self_attn.o_proj.weight": [
+       2048,
+       2048
+      ],
+      "self_attn.q_norm.weight": [
+       128
+      ],
+      "self_attn.q_proj.weight": [
+       2048,
+       2048
+      ],
+      "self_attn.v_proj.weight": [
+       512,
+       2048
+      ]
+     }
+    },
+    "sliding_attention": {
+     "layers": 5,
+     "tensors": {
+      "ffn_norm.weight": [
+       2048
+      ],
+      "operator_norm.weight": [
+       2048
+      ],
+      "post_ffn_norm.weight": [
+       2048
+      ],
+      "post_operator_norm.weight": [
+       2048
+      ],
+      "self_attn.gate_proj.weight": [
+       16,
+       2048
+      ],
+      "self_attn.k_norm.weight": [
+       128
+      ],
+      "self_attn.k_proj.weight": [
+       512,
+       2048
+      ],
+      "self_attn.o_proj.weight": [
+       2048,
+       2048
+      ],
+      "self_attn.q_norm.weight": [
+       128
+      ],
+      "self_attn.q_proj.weight": [
+       2048,
+       2048
+      ],
+      "self_attn.v_proj.weight": [
+       512,
+       2048
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       23
+      ]
+     ],
+     "tensors": {
+      "feed_forward.w1.weight": [
+       7680,
+       2048
+      ],
+      "feed_forward.w2.weight": [
+       2048,
+       7680
+      ],
+      "feed_forward.w3.weight": [
+       7680,
+       2048
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     128000,
+     2048
+    ],
+    "embedding_norm.weight": [
+     2048
+    ]
+   }
   }
  },
  "review_queue": [],
@@ -1157,7 +1627,7 @@
  "predecessor": {
   "id": "LiquidAI/LFM2.5-24B-A2B-Base",
   "source_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
-  "selection": "Newest eligible primary by Hub creation. Already in the development set; regression only, excluded from held-out accuracy."
+  "selection": "Latest earlier Hub creation date in the inspected same-org family catalog"
  },
  "diff_vs_predecessor": [
   {
@@ -1205,6 +1675,11 @@
   {
    "field": "moe_active_experts",
    "before": 4,
+   "after": null
+  },
+  {
+   "field": "moe_shared_experts",
+   "before": 0,
    "after": null
   },
   {
