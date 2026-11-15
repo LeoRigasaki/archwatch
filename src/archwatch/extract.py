@@ -273,11 +273,11 @@ def _extract(config: dict) -> dict[str, Fact]:
         f["short_conv_kernel"] = (text["conv_L_cache"], f"config:{prefix}conv_L_cache")
 
     # feed-forward / MoE
-    n_exp = _first(text, ["num_experts", "n_routed_experts", "num_local_experts"], prefix)
+    n_exp = _first(text, ["num_experts", "n_routed_experts", "num_local_experts", "moe_num_experts"], prefix)
     if n_exp:
         f["decoder_type"] = ("MoE", n_exp[1])
         f["moe_num_experts"] = n_exp
-        k = _first(text, ["num_experts_per_token", "num_experts_per_tok", "moe_top_k"], prefix)
+        k = _first(text, ["num_experts_per_token", "num_experts_per_tok", "moe_top_k", "experts_per_token"], prefix)
         if k:
             f["moe_active_experts"] = k
         sh = _first(text, ["num_shared_experts", "n_shared_experts"], prefix)

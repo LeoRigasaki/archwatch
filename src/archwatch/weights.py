@@ -25,7 +25,11 @@ def logical_elements(name, tensor, quant_bits=None, native_expert_bits=None):
         return None
     if tensor["dtype"] == "I64" and not name.endswith(".weight"):
         return None  # e.g. n-gram hash multipliers, offsets and vocabulary sizes
-    n = prod(tensor["shape"])
+    if name.endswith("_scales") and tensor["dtype"] == "U8":
+        return None  # MXFP4 block scales are metadata
+    n = prod(tensor["shape"]) * tensor.get("tp_parts", 1)
+    if name.endswith("_blocks") and tensor["dtype"] == "U8":
+        return n * 2  # MXFP4: two 4-bit values per stored byte
     if name.endswith("weight_packed") and tensor["dtype"] in ("U8", "I8"):
         return n * (8 // (quant_bits or 4))
     if native_expert_bits == 4 and ".experts." in name and name.endswith(".weight") and tensor["dtype"] in ("U8", "I8"):
@@ -51,13 +55,13 @@ def _component(name: str) -> str:
     n = name
     if "cls_net." in n or _is_mtp(n):
         return "auxiliary"
-    if "mm_projector" in n:
-        return "vision_projector"
+    if any(x in n for x in ("mm_projector", "multi_modal_projector", "patch_merger", "pre_mm_projector_norm")):
+        return "vision_projector"  # image-to-text projectors are not text weights
     if "vision" in n or "visual." in n:
         return "vision"
     if "embed_tokens" in n or n in ("backbone.embeddings.weight", "embed.weight", "tok_embeddings.weight"):
         return "embedding"
-    if "lm_head" in n:
+    if "lm_head" in n or n in ("head.weight", "output.weight", "model.output.weight"):
         return "lm_head"
     if ".experts." in n or ".experts.gate_up_proj" in n or ".experts.down_proj" in n:
         return "moe_routed_experts"
@@ -106,8 +110,10 @@ def count(tensors: dict[str, dict], quant_bits: int | None, *, native_expert_bit
                 skipped_scales += 1
             continue
         c = _component(name)
-        by_comp[c] = by_comp.get(c, 0) + n
         li = _layer_idx(name)
+        if li is not None and num_layers is not None and li >= num_layers and c not in ("vision", "vision_projector"):
+            c = "auxiliary"  # MTP / next-token predictor layers stored after the decoder stack
+        by_comp[c] = by_comp.get(c, 0) + n
         if c == "moe_routed_experts" and li is not None and main_language_tensor(name, num_layers):
             per_layer_routed[li] = per_layer_routed.get(li, 0) + n
             m = re.search(r"experts\.(\d+)\.", name)
@@ -141,10 +147,11 @@ def active_params(counts: dict, num_experts: int | None, k: int | None) -> dict 
     inactive = routed * (1 - k / num_experts)
     # Auxiliary heads (MTP, speculative decoding) are not part of the standard forward pass.
     text_active = counts["text_total"] - inactive - counts["by_component"].get("auxiliary", 0)
+    vision = counts["by_component"].get("vision", 0) + counts["by_component"].get("vision_projector", 0)
     return {
         "text_active": round(text_active),
         "text_active_without_embeddings": round(text_active - counts["by_component"].get("embedding", 0)),
-        "with_vision": round(counts["total"] - inactive),
+        "with_vision": round(text_active + vision),  # auxiliary heads stay excluded
     }
 
 
@@ -243,8 +250,8 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
             out["qk_norm"] = True
         if name.endswith("self_attn.gate_proj.weight") or name.endswith("self_attn.g_proj.weight"):
             out["attention_output_gate_tensor"] = True
-        if name.endswith("lm_head.weight"):
-            out["has_lm_head"] = True
+        if name.endswith("lm_head.weight") or name in ("head.weight", "output.weight", "model.output.weight"):
+            out["has_lm_head"] = True  # separate output head (HF lm_head, DeepSeek-native head, Mistral-native output)
         if name.endswith("kv_a_proj_with_mqa.weight") and "mla_cached_width" not in out:
             out["mla_cached_width"] = t["shape"][0]  # kv_lora_rank + qk_rope_head_dim
         if name.endswith("indexer.wk.weight") and "dsa_index_key_width" not in out:
@@ -297,12 +304,16 @@ def block_shapes(tensors: dict[str, dict], layer_types: list[str] | None, *, num
     tensors are excluded (their widths are published separately). Returns None when the headers and
     the config pattern cannot be aligned, so the field stays unpublished rather than guessed.
     """
-    if not layer_types:
-        return None
+    if not layer_types or any(t.get("tp_parts") for t in tensors.values()):
+        return None  # tensor-parallel slices are per-rank shapes, not logical ones
     per_layer: dict[int, dict] = {}
     global_shapes = {}
     for name, t in tensors.items():
-        if not main_language_tensor(name, num_layers) or ".experts." in name or "mm_projector" in name:
+        if (
+            not main_language_tensor(name, num_layers)
+            or ".experts." in name
+            or _component(name) in ("vision", "vision_projector")
+        ):
             continue
         if logical_elements(name, t, quant_bits) is None:
             continue

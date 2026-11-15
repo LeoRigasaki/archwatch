@@ -1,0 +1,84 @@
+# Hand-checked causes for reference-audit differences. Each cites the model's own file, key or tensor at a
+# pinned commit. These take precedence over the automated definition proofs in tools/reference_audit.py.
+# The reference's values are never a source for ArchWatch records.
+MiniMaxAI/MiniMax-M2.7:
+  context_length:
+    evidence: 'MiniMaxAI/MiniMax-M2.7 config.json at 0a6536713b: max_position_embeddings = 204800; the README states no
+      context length. 196,608 appears in neither file.'
+    group: his_wrong
+Nanbeige/Nanbeige4.2-3B:
+  kv_cache_per_token_bf16:
+    evidence: 'Nanbeige/Nanbeige4.2-3B config.json at b82e54bd60: num_hidden_layers = 22, num_key_value_heads = 8, head_dim
+      = 128, no sliding_window. His own formula (layers x KV heads x head_dim x 4) gives 22 x 8 x 128 x 4 = 90,112 B = 88
+      KiB; his 176 KiB is twice that.'
+    group: his_wrong
+Zyphra/ZAYA1-8B:
+  num_layers:
+    evidence: 'Ours: config.json num_hidden_layers = 40, layer_types = 40 x ''hybrid'' (attention and MoE in each layer)
+      at 67d34da515. His: attention entries and FFN entries counted separately (40 + 40).'
+    group: definition
+deepseek-ai/DeepSeek-V3.2:
+  context_length:
+    evidence: 'Ours: config.json max_position_embeddings = 163840 (deepseek-ai/DeepSeek-V3.2 at a7e62ac04e). His: 128K,
+      the advertised context of the family; DeepSeek-V3.2''s own README states none, and DeepSeek-V3''s README release table
+      states 128K (at e815299b0b).'
+    group: definition
+google/gemma-3-270m:
+  context_length:
+    evidence: 'google/gemma-3-270m README.md at 9b0cfec892: "Total input context of 128K tokens for the 4B, 12B, and 27B
+      sizes, and 32K tokens for the 1B and 270M sizes"; config.json max_position_embeddings = 32768. 128K is the family
+      figure for the larger sizes.'
+    group: his_wrong
+google/gemma-3-27b-it:
+  vocab_size:
+    evidence: 'Ours: 262,208 embedding rows (config/weights at 005ad3404e). His: 262,144, the tokenizer.json base vocabulary
+      at the same commit (6,415 added tokens reuse ids inside it).'
+    group: definition
+google/gemma-4-12B-it:
+  context_length:
+    evidence: 'google/gemma-4-12B-it README.md at 43c9d014b2: "Context windows of up to 128K tokens (E2B/E4B) and 256K tokens
+      (12B, 26B A4B/31B)" and its table lists Context Length 256K tokens for 12B; config.json text_config.max_position_embeddings
+      = 262144.'
+    group: his_wrong
+inclusionAI/Ling-2.6-1T:
+  params_active:
+    evidence: 'Ours: 63,580,258,816 per token from tensor headers (at 653026b0ba), identical to Ling-2.5-1T. His 63B is
+      Ling-2.5-1T''s card figure ("1T total parameters (with 63B active parameters)", README at 9c9d569b91); Ling-2.6''s
+      README states no active count.'
+    group: definition
+inclusionAI/Ling-3.1-flash:
+  context_length:
+    evidence: 'Ours: config.json max_position_embeddings = 262144 (at dde57b1c6a). His: the README''s "1M-token context
+      window" (he also notes 262,144 in config). Positions the released config supports vs advertised extended context.'
+    group: definition
+nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16:
+  num_layers:
+    evidence: 'Ours: config.json num_hidden_layers = 72, layer_types alternate attention and MLP (n_input_layers 16 + n_recurrent_layers
+      40 + n_output_layers 16), weights hold layers 0-71 (at ee517dd388); one entry per operator. His: attention+MLP blocks,
+      8 + 20 + 8 = 36, the same 72 operators.'
+    group: definition
+poolside/Laguna-XS.2:
+  context_length:
+    evidence: 'poolside/Laguna-XS.2 README.md at a397bde045: "Context window: 262,144 tokens"; config.json max_position_embeddings
+      = 262144. 131,072 appears in neither.'
+    group: his_wrong
+stepfun-ai/Step-3.5-Flash:
+  num_layers:
+    evidence: 'Ours: config.json num_hidden_layers = 45 decoder layers (at ab446a3de5). His: 36 + 12 = 48 entries of layer_types,
+      which also covers the num_nextn_predict_layers = 3 MTP layers.'
+    group: definition
+thinkingmachines/Inkling:
+  vocab_size:
+    evidence: 'Ours: 201,024 embedding rows, padded (at 828496eeae). His: 200,058, the tokenizer.json size at the same commit
+      (highest token id + 1).'
+    group: definition
+zai-org/GLM-4.7:
+  params_total:
+    evidence: 'Ours: 358,337,791,296, every stored tensor (at 602d01efcd), identical to GLM-4.5. His 355B is GLM-4.5''s
+      card figure ("355B-A32B", README at cbb2c7cfb5); GLM-4.7''s README states no total.'
+    group: definition
+zai-org/GLM-5.2:
+  params_total:
+    evidence: 'Ours: 753,329,940,480, every stored tensor (at cf457fa734). His 744B is GLM-5''s card figure ("744B parameters
+      (40B active)", README at c183ef8c61); GLM-5.2''s README states no total.'
+    group: definition

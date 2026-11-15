@@ -8,6 +8,7 @@ requests per shard are enough to know the exact shape of every weight in the mod
 from __future__ import annotations
 
 import json
+import re
 import struct
 import urllib.error
 import urllib.request
@@ -117,20 +118,55 @@ def _header(repo: str, fname: str, revision: str | None = None) -> dict:
     return h
 
 
+TP_SHARD = re.compile(r"-TP-\d+\.safetensors$")
+
+
+def weight_shards(repo: str, info: dict) -> list[str]:
+    """Root safetensors files that hold the weights.
+
+    A Mistral-native consolidated*.safetensors export duplicates the HF-format shards (under native tensor names)
+    when an index lists those shards; it is not counted twice. Every other root file is kept, including extra
+    components the index does not list (e.g. a separate gate network).
+    """
+    shards = sorted(x for x in info["files"] if x.endswith(".safetensors") and "/" not in x)
+    if "model.safetensors.index.json" in info["files"]:
+        index = get_json(repo, "model.safetensors.index.json", revision=info["sha"]) or {}
+        listed = set((index.get("weight_map") or {}).values())
+        if listed and listed <= set(shards):
+            shards = [x for x in shards if x in listed or not x.startswith("consolidated")]
+    return shards
+
+
 def safetensors_headers(repo: str, *, info: dict | None = None) -> dict[str, dict]:
-    """Merged {tensor_name: {dtype, shape}} across every safetensors shard (cached)."""
+    """Merged {tensor_name: {dtype, shape}} across the weight shards (cached).
+
+    Tensor-parallel exports (-TP-NNN files) store slices of the same tensor name; the merged entry keeps the
+    per-rank shape and records `tp_parts` so element counts cover every rank.
+    """
     info = info or repo_info(repo)
     directory = _cache_dir(repo) / info["sha"]
     directory.mkdir(parents=True, exist_ok=True)
-    f = directory / "_tensors.json"
+    f, used = directory / "_tensors.json", directory / "_shards.json"
+    shards = weight_shards(repo, info)
+    all_root = sorted(x for x in info["files"] if x.endswith(".safetensors") and "/" not in x)
     if f.exists():
-        return json.loads(f.read_text())
-    shards = sorted(x for x in info["files"] if x.endswith(".safetensors") and "/" not in x)
+        if used.exists():
+            reusable = json.loads(used.read_text()) == shards
+        else:  # caches written before shard selection read every root file and merged TP slices by name
+            reusable = all_root == shards and not any(TP_SHARD.search(x) for x in shards)
+            if reusable:
+                used.write_text(json.dumps(shards))
+        if reusable:
+            return json.loads(f.read_text())
     with ThreadPoolExecutor(max_workers=16) as pool:
-        parts = list(pool.map(lambda s: _header(repo, s, info["sha"]), shards))
+        parts = list(pool.map(lambda s: (s, _header(repo, s, info["sha"])), shards))
     merged: dict[str, dict] = {}
-    for p in parts:
+    for shard, p in parts:
         for k, v in p.items():
-            merged[k] = {"dtype": v["dtype"], "shape": v["shape"]}
+            if k in merged and TP_SHARD.search(shard):
+                merged[k]["tp_parts"] = merged[k].get("tp_parts", 1) + 1
+            else:
+                merged[k] = {"dtype": v["dtype"], "shape": v["shape"]}
     f.write_text(json.dumps(merged))
+    used.write_text(json.dumps(shards))
     return merged

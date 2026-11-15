@@ -60,7 +60,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-15T09:52:48+00:00",
+ "analyzed_at": "2026-11-15T17:10:25+00:00",
  "facts": {
   "architecture_class": {
    "value": "MistralLarge4ForConditionalGeneration",
@@ -421,17 +421,18 @@
  "params": {
   "counted_from_weights": {
    "total": 1053161553184,
-   "text_total": 1051474111776,
+   "text_total": 1051457334560,
    "by_component": {
     "moe_routed_experts": 1029181538304,
-    "other": 10439372576,
+    "other": 9164304160,
     "moe_shared_experts": 8040480768,
     "auxiliary": 2099969024,
     "vision": 1687439360,
     "embedding": 1258291200,
+    "lm_head": 1258291200,
     "dense_ffn": 452984832,
-    "norms": 1475072,
-    "vision_projector": 2048
+    "vision_projector": 16779264,
+    "norms": 1475072
    },
    "routed_expert_params": 1029181538304,
    "moe_layers": 71,
@@ -447,9 +448,9 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
-   "text_active": 52354527520,
-   "text_active_without_embeddings": 51096236320,
-   "with_vision": 56141937952
+   "text_active": 52337750304,
+   "text_active_without_embeddings": 51079459104,
+   "with_vision": 54041968928
   }
  },
  "cache": {
@@ -633,6 +634,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -994,13 +1012,13 @@
   },
   {
    "field": "params_active",
-   "value": 52354527520,
+   "value": 52337750304,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 52354527520,
+     "value": 52337750304,
      "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
     }
    ]
@@ -1204,19 +1222,6 @@
    ]
   },
   {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
-    }
-   ]
-  },
-  {
    "field": "rope",
    "value": {
     "attention_factor": 1.0,
@@ -1353,14 +1358,15 @@
    "field": "parameter_components",
    "value": {
     "moe_routed_experts": 1029181538304,
-    "other": 10439372576,
+    "other": 9164304160,
     "moe_shared_experts": 8040480768,
     "auxiliary": 2099969024,
     "vision": 1687439360,
     "embedding": 1258291200,
+    "lm_head": 1258291200,
     "dense_ffn": 452984832,
-    "norms": 1475072,
-    "vision_projector": 2048
+    "vision_projector": 16779264,
+    "norms": 1475072
    },
    "status": "single source",
    "confidence": 0.7,
@@ -1369,14 +1375,15 @@
     {
      "value": {
       "moe_routed_experts": 1029181538304,
-      "other": 10439372576,
+      "other": 9164304160,
       "moe_shared_experts": 8040480768,
       "auxiliary": 2099969024,
       "vision": 1687439360,
       "embedding": 1258291200,
+      "lm_head": 1258291200,
       "dense_ffn": 452984832,
-      "norms": 1475072,
-      "vision_projector": 2048
+      "vision_projector": 16779264,
+      "norms": 1475072
      },
      "evidence": "weights:parameter totals by tensor group"
     }
@@ -1414,6 +1421,7 @@
   "head_dim": 128,
   "attention_type": "MLA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "moe_num_experts": 128,
   "moe_active_experts": 4,
   "moe_shared_experts": 1,
@@ -1424,7 +1432,7 @@
   },
   "layer_index_base_in_config": 0,
   "params_total": 1053161553184,
-  "params_active": 52354527520,
+  "params_active": 52337750304,
   "model_type": "mistral_large4",
   "shared_kv_layers": 9,
   "layer_types": [
@@ -1502,7 +1510,6 @@
    "indexed_mla"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": false,
   "rope": {
    "attention_factor": 1.0,
    "beta_fast": 32,
@@ -1522,14 +1529,15 @@
   "released_weights_format": "fp8",
   "parameter_components": {
    "moe_routed_experts": 1029181538304,
-   "other": 10439372576,
+   "other": 9164304160,
    "moe_shared_experts": 8040480768,
    "auxiliary": 2099969024,
    "vision": 1687439360,
    "embedding": 1258291200,
+   "lm_head": 1258291200,
    "dense_ffn": 452984832,
-   "norms": 1475072,
-   "vision_projector": 2048
+   "vision_projector": 16779264,
+   "norms": 1475072
   },
   "weight_header_summary": {
    "tensor_count": 56563,
