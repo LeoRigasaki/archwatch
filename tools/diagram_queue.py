@@ -3,7 +3,8 @@
     uv run --frozen python tools/diagram_queue.py --plan     # show what the next run would do, no calls
     uv run --frozen python tools/diagram_queue.py            # run (needs GEMINI_API_KEY)
 
-Candidates are records the watcher marked ready_for_diagram whose spec hash has no passing diagram yet.
+Candidates are records the watcher marked ready_for_diagram or recorded (both passed the publication gate)
+whose spec hash has no passing diagram yet.
 At most `schedule.max_models_per_run` models and `schedule.max_calls_per_run` calls per run; every call
 also counts against the configured daily limit. A model is started only if its full allowance
 (1 + repairs calls) still fits. Failed or unreached models stay queued for the next slot. A spec the
@@ -45,7 +46,7 @@ def plan(root: Path, state: dict, limits: dict) -> tuple[list, list]:
     seen = json.loads((root / "data/seen.json").read_text())["models"]
     queue, skipped = [], []
     for repo, entry in sorted(seen.items()):
-        if entry.get("status") != "ready_for_diagram":
+        if entry.get("status") not in ("ready_for_diagram", "recorded"):  # both passed the publication gate
             continue
         path = root / "data/models" / (repo.replace("/", "__") + ".json")
         if not path.exists():

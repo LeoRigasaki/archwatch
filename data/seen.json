@@ -12,13 +12,14 @@
     },
     "LiquidAI/LFM2.5-24B-A2B-Base": {
       "analyzed_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
+      "architecture_hash": "265fd7b2c7a73b7541267b87ea4ee5bd6943030a5712ae8fae9264f0d7d1273a",
       "created_at": "2026-10-09T21:13:55+00:00",
       "family": "lfm",
       "last_observed_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
-      "last_successful_commit": null,
+      "last_successful_commit": "9156f24f4a227a259b09011f4e0295aa8f57db01",
       "pool": "core",
-      "reason": "Required published inputs are unavailable: moe_shared_experts",
-      "status": "review"
+      "reason": "Predecessor refreshed with the current extraction rules",
+      "status": "recorded"
     },
     "LiquidAI/LFM3-1.7B": {
       "architecture_hash": "5f69b11287b44e4da7c2a7c9e2c1e870b8677ab5f5a88d0585a49a58bace99cd",
@@ -39,9 +40,9 @@
       "last_observed_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
       "last_successful_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
       "pool": "core",
-      "predecessor": null,
-      "reason": "Required published inputs are unavailable: moe_shared_experts",
-      "status": "review"
+      "predecessor": "LiquidAI/LFM2.5-24B-A2B-Base",
+      "reason": "Latest earlier Hub creation date in the inspected same-org family catalog",
+      "status": "recorded"
     },
     "Qwen/Qwen3-0.6B-Base": {
       "architecture_hash": "750af524820ffcd3a53264125605e49f8ef638764b1921c44799abc2cb3f7107",

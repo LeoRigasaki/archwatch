@@ -42,3 +42,35 @@ def test_held_records_raise_with_their_reason_and_others_do_not():
         if reason:
             with pytest.raises(PublicationError, match="not qualified"):
                 render_values(record)
+
+
+def test_zero_shared_experts_needs_both_config_and_weight_evidence():
+    import json
+
+    from archwatch.verify import verify
+
+    rec = json.loads((ROOT / "data/models/LiquidAI__LFM2.5-24B-A2B-Base.json").read_text())
+    facts = {k: (v["value"], v["evidence"]) for k, v in rec["facts"].items()}
+    facts.pop("moe_shared_experts", None)
+    wcount = rec["params"]["counted_from_weights"]
+
+    def shared(flag, wc, wshape):
+        out = verify(dict(facts, _config_names_shared_experts=(flag, "config:*")), wc, wshape, None, {"facts": {}}, {})
+        return next((c for c in out if c["field"] == "moe_shared_experts"), None)
+
+    zero = shared(False, wcount, {})
+    assert zero["value"] == 0 and zero["status"] == "verified"
+    assert shared(True, wcount, {}) is None  # the config names shared experts: no zero is inferred
+    with_tensors = dict(wcount, by_component=dict(wcount["by_component"], moe_shared_experts=5))
+    found = shared(False, with_tensors, {"shared_experts": 1})
+    assert found is None or found["value"] != 0
+
+
+def test_lfm3_base_is_released_with_its_moe_predecessor():
+    import json
+
+    pred = json.loads((ROOT / "data/models/LiquidAI__LFM2.5-24B-A2B-Base.json").read_text())
+    assert pred["published"]["moe_shared_experts"] == 0
+    base = json.loads((ROOT / "data/models/LiquidAI__LFM3-1.7B-Base.json").read_text())
+    render_values(base)  # passes the publication gate
+    assert "block_shapes" in base["published"]
