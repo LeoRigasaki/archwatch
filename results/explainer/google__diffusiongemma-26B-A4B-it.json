@@ -1,0 +1,73 @@
+{
+  "model": "google/diffusiongemma-26B-A4B-it",
+  "predecessor": "google/gemma-4-26B-A4B",
+  "input": {
+    "predecessor": "google/gemma-4-26B-A4B",
+    "successor": "google/diffusiongemma-26B-A4B-it",
+    "changes": [
+      {
+        "what": "Active parameters",
+        "before": "3,822,530,590",
+        "after": "3,840,375,612",
+        "direction": "up"
+      },
+      {
+        "what": "Model type",
+        "before": "gemma4",
+        "after": "diffusion_gemma",
+        "direction": null
+      },
+      {
+        "what": "Generation type",
+        "before": "not published for google/gemma-4-26B-A4B",
+        "after": "block_diffusion",
+        "direction": null
+      },
+      {
+        "what": "Canvas length",
+        "before": "not published for google/gemma-4-26B-A4B",
+        "after": "256",
+        "direction": null
+      }
+    ],
+    "weights": "The weight namespace changed (language_model to decoder), so added and removed tensor-group totals are not comparable."
+  },
+  "input_sha256": "685693abe576256175a29f210000bba0542901ef169f4d9c7688dc8d4afc66e6",
+  "text": "The model type changed from gemma4 to diffusion_gemma. Active parameters went up from 3,822,530,590 to 3,840,375,612. The generation type changed from not published for google/gemma-4-26B-A4B to block_diffusion, and the canvas length changed from not published for google/gemma-4-26B-A4B to 256. Regarding the weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.",
+  "passed": true,
+  "attempts": [
+    {
+      "text": "The model type changed from gemma4 to diffusion_gemma. Active parameters went up from 3,822,530,590 to 3,840,375,612. The generation type changed from not published for google/gemma-4-26B-A4B to block_diffusion, and the canvas length changed from not published for google/gemma-4-26B-A4B to 256. Regarding the weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.",
+      "check": {
+        "passed": true,
+        "problems": [],
+        "numbers": [
+          "4",
+          "3822530590",
+          "3840375612",
+          "4",
+          "26",
+          "4",
+          "4",
+          "26",
+          "4",
+          "256"
+        ],
+        "words": 59
+      },
+      "usage": {
+        "promptTokenCount": 603,
+        "candidatesTokenCount": 132,
+        "totalTokenCount": 735,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 603
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "model": "gemini-3.5-flash-lite"
+    }
+  ]
+}
