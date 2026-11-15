@@ -3599,6 +3599,21 @@
   {
    "model": "arcee-ai/Trinity-Large-Base",
    "gallery_name": "Arcee AI Trinity Large 400B",
+   "field": "params_total",
+   "ours": 398635286016,
+   "theirs": "400B total, 13B active (3.3% active)",
+   "agree": false,
+   "our_evidence": "verified: weights:sum of tensor shapes, MTP modules reported separately; card:params_total",
+   "gap": 0.00341178496,
+   "recomputed": 398635286016,
+   "rule": "default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure)",
+   "group": "definition",
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 398,635,286,016. His: 400B total (accepted 392,000,000,000-408,000,000,000); gap after the rule 0.34%."
+  },
+  {
+   "model": "arcee-ai/Trinity-Large-Base",
+   "gallery_name": "Arcee AI Trinity Large 400B",
    "field": "params_active",
    "ours": 12756696576,
    "theirs": "400B total, 13B active (3.3% active)",
@@ -3630,6 +3645,21 @@
    "theirs": "45 sliding-window + 15 global",
    "agree": true,
    "our_evidence": null
+  },
+  {
+   "model": "arcee-ai/Trinity-Large-Base",
+   "gallery_name": "Arcee AI Trinity Large 400B",
+   "field": "kv_cache_per_token_bf16",
+   "ours": 61440,
+   "theirs": "240 KiB",
+   "agree": false,
+   "our_evidence": "2 x 8 KV heads x 128 head_dim x 2 B x 15 layers",
+   "gap": 0.75,
+   "recomputed": 245760,
+   "rule": "default: full retention, every attention layer appends its KV per token (sliding-window layers not capped)",
+   "group": "definition",
+   "card_quote": null,
+   "evidence": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 245,760. His: 240 KiB (accepted 240,845-250,675); gap after the rule 0.00%."
   },
   {
    "model": "arcee-ai/Trinity-Large-Base",
@@ -6057,6 +6087,21 @@
    "theirs": "Sparse MoE",
    "agree": true,
    "our_evidence": null
+  },
+  {
+   "model": "stepfun-ai/Step-3.5-Flash",
+   "gallery_name": "Step 3.5 Flash 196B",
+   "field": "params_total",
+   "ours": 196956130368,
+   "theirs": "196B total, 11B active (5.6% active)",
+   "agree": false,
+   "our_evidence": "verified: weights:sum of tensor shapes, MTP modules reported separately; card:params_total",
+   "gap": 0.004878216163265306,
+   "recomputed": 196956130368,
+   "rule": "default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure)",
+   "group": "definition",
+   "card_quote": null,
+   "evidence": "Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 196,956,130,368. His: 196B total (accepted 192,080,000,000-199,920,000,000); gap after the rule 0.49%."
   },
   {
    "model": "stepfun-ai/Step-3.5-Flash",
