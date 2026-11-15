@@ -38,6 +38,7 @@ FIELD_NAMES = {
     "attention_output_gate": "Attention output gate",
     "params_total": "Total parameters",
     "params_active": "Active parameters",
+    "params_active_non_embedding": "Active parameters, excluding embeddings",
     "vision_params": "Vision encoder parameters",
     "ffn_intermediate": "FFN hidden size",
     "short_conv_kernel": "Conv kernel",

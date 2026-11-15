@@ -18,7 +18,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-15T09:52:58+00:00",
+ "analyzed_at": "2026-11-15T17:34:49+00:00",
  "facts": {
   "architecture_class": {
    "value": "Qwen4ExpForConditionalGeneration",
@@ -444,7 +444,8 @@
    "text_total": 179551050368,
    "by_component": {
     "moe_routed_experts": 120795955200,
-    "other": 53959191936,
+    "lookup_embedding": 51200245760,
+    "other": 2758946176,
     "auxiliary": 2607150848,
     "embedding": 635699200,
     "lm_head": 635699200,
@@ -468,9 +469,10 @@
    "skipped_buffer_tensors": 3
   },
   "active": {
-   "text_active": 58507240320,
-   "text_active_without_embeddings": 57871541120,
-   "with_vision": 61563322224
+   "text_active": 7306994560,
+   "text_active_without_embeddings": 6671295360,
+   "text_active_non_embedding": 6035596160,
+   "with_vision": 7755925616
   }
  },
  "cache": {
@@ -709,6 +711,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -1031,14 +1050,27 @@
   },
   {
    "field": "params_active",
-   "value": 58507240320,
+   "value": 7306994560,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 58507240320,
+     "value": 7306994560,
      "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 6035596160,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 6035596160,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1271,19 +1303,6 @@
    ]
   },
   {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
-    }
-   ]
-  },
-  {
    "field": "rope",
    "value": {
     "mrope_interleaved": true,
@@ -1359,7 +1378,8 @@
    "field": "parameter_components",
    "value": {
     "moe_routed_experts": 120795955200,
-    "other": 53959191936,
+    "lookup_embedding": 51200245760,
+    "other": 2758946176,
     "auxiliary": 2607150848,
     "embedding": 635699200,
     "lm_head": 635699200,
@@ -1376,7 +1396,8 @@
     {
      "value": {
       "moe_routed_experts": 120795955200,
-      "other": 53959191936,
+      "lookup_embedding": 51200245760,
+      "other": 2758946176,
       "auxiliary": 2607150848,
       "embedding": 635699200,
       "lm_head": 635699200,
@@ -1422,6 +1443,7 @@
   "head_dim": 256,
   "attention_type": "GQA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "moe_num_experts": 512,
   "moe_active_experts": 10,
   "moe_shared_experts": 1,
@@ -1485,7 +1507,8 @@
   "layer_index_base_in_config": 0,
   "qk_norm": true,
   "params_total": 179999981424,
-  "params_active": 58507240320,
+  "params_active": 7306994560,
+  "params_active_non_embedding": 6035596160,
   "model_type": "qwen4_exp",
   "linear_num_key_heads": 16,
   "linear_num_value_heads": 48,
@@ -1545,7 +1568,6 @@
    "qwen_sparse_attention"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": false,
   "rope": {
    "mrope_interleaved": true,
    "mrope_section": [
@@ -1562,7 +1584,8 @@
   "released_weights_format": "bfloat16",
   "parameter_components": {
    "moe_routed_experts": 120795955200,
-   "other": 53959191936,
+   "lookup_embedding": 51200245760,
+   "other": 2758946176,
    "auxiliary": 2607150848,
    "embedding": 635699200,
    "lm_head": 635699200,
@@ -1682,8 +1705,8 @@
   },
   {
    "field": "params_active",
-   "before": 121665894272,
-   "after": 58507240320
+   "before": 95287866752,
+   "after": 7306994560
   },
   {
    "field": "model_type",

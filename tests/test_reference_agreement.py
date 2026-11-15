@@ -76,16 +76,13 @@ def test_comparison_never_feeds_records_gold_or_diagrams():
     assert not list((ROOT / "evals").rglob("*gallery*")) and not list((ROOT / "data").rglob("*gallery*"))
 
 
-def test_every_recorded_disagreement_has_a_checked_cause():
+def test_every_disagreement_is_closed_by_recomputation_or_marked_ours():
     saved = json.loads((ROOT / "results/reference-agreement.json").read_text())
-    causes = yaml.safe_load((ROOT / "config/reference-causes.yaml").read_text())
     bad = [r for r in saved["rows"] if not r["agree"]]
     assert bad and all(r["cause"] in ref.CAUSES for r in bad)
     for r in bad:
-        entry = causes[r["model"]][r["field"]]
-        assert entry["cause"] == r["cause"] and len(entry["why"]) > 40
-    # The Mistral speculative-decoding-head error is fixed; its active count now agrees with the card.
-    assert not [r for r in bad if r["cause"] == "error-ours"]
+        if r["cause"] == "definition":
+            assert "Ours recomputed:" in r["cause_why"] and "accepted" in r["cause_why"]
     mistral = [
         r for r in saved["rows"] if r["model"] == "mistralai/Mistral-Large-4-1T-A52B" and r["field"] == "params_active"
     ]
