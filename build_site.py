@@ -9,19 +9,11 @@ from urllib.parse import quote
 
 from archwatch import diagram, generated, pipeline
 from archwatch.artifacts import write_if_changed
+from archwatch.labels import FIELD_NAMES, KIND_LABELS
 from archwatch.publication import PublicationError, render_cache, render_values
 
 ROOT = Path(__file__).parent
-LABEL = {
-    "kda_linear": "KDA linear attention",
-    "gated_dsa_mla": "Gated DSA on MLA",
-    "full_attention_mla": "MLA (full)",
-    "short_conv": "Gated short conv",
-    "sliding_attention": "Sliding-window attention",
-    "full_attention": "Global attention",
-    "mamba2": "Mamba-2",
-    "mlp": "MLP",
-}
+LABEL = KIND_LABELS
 COLOR = {
     "kda_linear": "#2a9d8f",
     "gated_dsa_mla": "#e76f51",
@@ -31,42 +23,6 @@ COLOR = {
     "full_attention": "#e76f51",
     "mamba2": "#a17bbb",
     "mlp": "#c69b50",
-}
-FIELD_NAMES = {
-    "num_layers": "Layers",
-    "hidden_size": "Hidden size",
-    "vocab_size": "Vocabulary",
-    "context_length": "Context length",
-    "num_attention_heads": "Attention heads",
-    "num_kv_heads": "KV heads",
-    "head_dim": "Head dim (q/k)",
-    "attention_type": "Attention type",
-    "moe_num_experts": "Routed experts",
-    "moe_active_experts": "Experts per token",
-    "moe_shared_experts": "Shared experts",
-    "moe_expert_intermediate": "Expert hidden size",
-    "moe_latent_dim": "Latent MoE dim",
-    "dense_layers": "Dense-FFN layers",
-    "dsa_index_topk": "DSA top-k",
-    "dsa_index_num_heads": "DSA indexer heads",
-    "dsa_index_head_dim": "DSA indexer head dim",
-    "layer_type_counts": "Layer mix",
-    "layer_pattern_per_layer": "Per-layer pattern",
-    "mla_cached_width_per_token": "MLA values cached per token",
-    "dsa_index_key_width": "DSA key width",
-    "activation": "Activation",
-    "layer_index_base_in_config": "Config layer lists are",
-    "attention_output_gate": "Attention output gate",
-    "params_total": "Total parameters",
-    "params_active": "Active parameters",
-    "vision_params": "Vision encoder parameters",
-    "ffn_intermediate": "FFN hidden size",
-    "short_conv_kernel": "Conv kernel",
-    "sliding_window": "Sliding window",
-    "qk_norm": "QK-norm",
-    "kv_cache_per_token_bytes": "Growing cache per token (bytes; sliding-window and constant states excluded)",
-    "norm": "Norm",
-    "released_weights_format": "Released weights",
 }
 
 
