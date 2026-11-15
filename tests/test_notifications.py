@@ -178,7 +178,7 @@ def test_watcher_cli_writes_ephemeral_change_report_then_no_change(tmp_path, mon
     assert len(capsys.readouterr().out) > 0
 
 
-def test_workflow_secret_is_scoped_to_notification_step_and_cron_stays_disabled():
+def test_workflow_secret_is_scoped_to_notification_step_and_cron_is_the_approved_one():
     workflow = yaml.safe_load((ROOT / ".github/workflows/daily.yml").read_text())
     assert "DISCORD_WEBHOOK_URL" not in workflow.get("env", {})
     steps = workflow["jobs"]["run"]["steps"]
@@ -187,4 +187,4 @@ def test_workflow_secret_is_scoped_to_notification_step_and_cron_stays_disabled(
     assert len(holders) == 1 and holders[0]["name"] == "Optional Discord watcher summary"
     assert holders[0]["continue-on-error"] is True
     assert steps.index(holders[0]) > next(i for i, s in enumerate(steps) if s.get("id") == "updates")
-    assert "schedule" not in workflow.get("on", workflow.get(True, {}))
+    assert workflow.get("on", workflow.get(True, {}))["schedule"] == [{"cron": "17 2 * * *"}]
