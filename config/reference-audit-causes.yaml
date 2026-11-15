@@ -1,0 +1,67 @@
+# Hand-checked entries for reference-audit differences. his_wrong cites the model's own file/key at a pinned commit.
+# A definition entry must give the rule and OUR number recomputed under it; the tool accepts it only if that number
+# lands in his accepted range (2% or his own rounding). The reference's values are never a source for records.
+MiniMaxAI/MiniMax-M2.7:
+  context_length:
+    evidence: 'MiniMaxAI/MiniMax-M2.7 config.json at 0a6536713b: max_position_embeddings = 204800; the README states no
+      context length. 196,608 appears in neither file.'
+    group: his_wrong
+Nanbeige/Nanbeige4.2-3B:
+  kv_cache_per_token_bf16:
+    evidence: 'Nanbeige/Nanbeige4.2-3B config.json at b82e54bd60: num_hidden_layers = 22, num_key_value_heads = 8, head_dim
+      = 128, no sliding_window. His own formula (layers x KV heads x head_dim x 4) gives 22 x 8 x 128 x 4 = 90,112 B = 88
+      KiB; his 176 KiB is twice that.'
+    group: his_wrong
+Zyphra/ZAYA1-8B:
+  num_layers:
+    evidence: 'Ours: config.json num_hidden_layers = 40, layer_types = 40 x ''hybrid'' (attention and MoE in each layer)
+      at 67d34da515. His: attention entries and FFN entries counted separately (40 + 40).'
+    group: definition
+    recomputed: 80
+    rule: 'attention and FFN entries counted separately: 2 x config num_hidden_layers (40)'
+google/gemma-3-270m:
+  context_length:
+    evidence: 'google/gemma-3-270m README.md at 9b0cfec892: "Total input context of 128K tokens for the 4B, 12B, and 27B
+      sizes, and 32K tokens for the 1B and 270M sizes"; config.json max_position_embeddings = 32768. 128K is the family
+      figure for the larger sizes.'
+    group: his_wrong
+google/gemma-3-27b-it:
+  vocab_size:
+    evidence: 'Ours: 262,208 embedding rows (config/weights at 005ad3404e). His: 262,144, the tokenizer.json base vocabulary
+      at the same commit (6,415 added tokens reuse ids inside it).'
+    group: definition
+    recomputed: 262144
+    rule: tokenizer.json base vocabulary instead of embedding rows
+google/gemma-4-12B-it:
+  context_length:
+    evidence: 'google/gemma-4-12B-it README.md at 43c9d014b2: "Context windows of up to 128K tokens (E2B/E4B) and 256K tokens
+      (12B, 26B A4B/31B)" and its table lists Context Length 256K tokens for 12B; config.json text_config.max_position_embeddings
+      = 262144.'
+    group: his_wrong
+nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16:
+  num_layers:
+    evidence: 'Ours: config.json num_hidden_layers = 72, layer_types alternate attention and MLP (n_input_layers 16 + n_recurrent_layers
+      40 + n_output_layers 16), weights hold layers 0-71 (at ee517dd388); one entry per operator. His: attention+MLP blocks,
+      8 + 20 + 8 = 36, the same 72 operators.'
+    group: definition
+    recomputed: 36
+    rule: 'attention+MLP blocks: config num_hidden_layers (72 operator entries) / 2'
+poolside/Laguna-XS.2:
+  context_length:
+    evidence: 'poolside/Laguna-XS.2 README.md at a397bde045: "Context window: 262,144 tokens"; config.json max_position_embeddings
+      = 262144. 131,072 appears in neither.'
+    group: his_wrong
+stepfun-ai/Step-3.5-Flash:
+  num_layers:
+    evidence: 'Ours: config.json num_hidden_layers = 45 decoder layers (at ab446a3de5). His: 36 + 12 = 48 entries of layer_types,
+      which also covers the num_nextn_predict_layers = 3 MTP layers.'
+    group: definition
+    recomputed: 48
+    rule: 'decoder layers plus MTP layers: num_hidden_layers (45) + num_nextn_predict_layers (3)'
+thinkingmachines/Inkling:
+  vocab_size:
+    evidence: 'Ours: 201,024 embedding rows, padded (at 828496eeae). His: 200,058, the tokenizer.json size at the same commit
+      (highest token id + 1).'
+    group: definition
+    recomputed: 200058
+    rule: tokenizer.json size (highest token id + 1) instead of padded embedding rows

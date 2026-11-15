@@ -151,5 +151,5 @@ def test_speculative_decoding_heads_are_auxiliary_and_not_active():
     rec = json.loads(
         (Path(__file__).resolve().parents[1] / "data/models/mistralai__Mistral-Large-4-1T-A52B.json").read_text()
     )
-    # Card: "52 billion including embeddings and output layers".
-    assert rec["published"]["params_active"] == 52_354_527_520
+    # Card: "52 billion including embeddings and output layers" (speculative head and image projector excluded).
+    assert rec["published"]["params_active"] == 52_337_750_304

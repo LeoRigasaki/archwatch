@@ -98,7 +98,11 @@ def model_section(name, anchor):
         (
             "Active per token",
             human(pub["params_active"]) if "params_active" in pub else ("all (dense)" if dense else "not reported"),
-            "published counting convention"
+            (
+                f"{human(pub['params_active_non_embedding'])} excluding embeddings"
+                if "params_active_non_embedding" in pub
+                else "published counting convention"
+            )
             if "params_active" in pub
             else (
                 "no routed experts: every parameter is used for each token"

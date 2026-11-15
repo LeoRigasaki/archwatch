@@ -37,6 +37,9 @@ def model(repo, date, context=128000, sha="a" * 40):
                 candidates=[{"value": context, "evidence": "config:max_position_embeddings"}],
             )
     record["review_queue"] = [c for c in record["review_queue"] if c["field"] != "context_length"]
+    # Tests flip ffn_gated themselves; the synthetic fixture starts without it, whatever the donor publishes.
+    record["published"].pop("ffn_gated", None)
+    record["checks"] = [c for c in record["checks"] if c["field"] != "ffn_gated"]
     return record
 
 

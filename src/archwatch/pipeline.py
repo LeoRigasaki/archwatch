@@ -56,6 +56,14 @@ DIFF_FIELDS = [
 ]
 
 
+def native_expert_bits_of(cfg: dict) -> int | None:
+    """Native FP4 expert storage, flagged in quantization_config or on the (text) model config itself."""
+    quantization = cfg.get("quantization_config") or {}
+    text = cfg.get("text_config") or {}
+    dtype = quantization.get("expert_dtype") or cfg.get("expert_dtype") or text.get("expert_dtype")
+    return 4 if dtype == "fp4" else None
+
+
 def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -> dict:
     # Refresh once per analysis; every subsequent file/header read uses this snapshot.
     info = info or hub.repo_info(repo, refresh=True)
@@ -64,8 +72,7 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
         raise ValueError("No readable root config.json; this source format requires a separate adapter")
     facts, config_coverage = extract.extract_with_usage(cfg)
     bits = facts.get("_quant_bits", (None, ""))[0]
-    quantization = cfg.get("quantization_config") or {}
-    native_expert_bits = 4 if quantization.get("expert_dtype") == "fp4" else None
+    native_expert_bits = native_expert_bits_of(cfg)
     num_layers = facts["num_layers"][0]
 
     py = {
@@ -158,13 +165,10 @@ def tensor_diff(new_repo: str, old_repo: str, top: int = 6, *, new_info=None, ol
 
     def groups(repo, info):
         g: dict[str, int] = {}
-        quantization = (
-            ((hub.get_json(repo, "config.json", revision=info["sha"]) or {}).get("quantization_config") or {})
-            if info
-            else {}
-        )
-        native_bits = 4 if quantization.get("expert_dtype") == "fp4" else None
+        cfg = (hub.get_json(repo, "config.json", revision=info["sha"]) or {}) if info else {}
+        native_bits = native_expert_bits_of(cfg)
         tensors = hub.safetensors_headers(repo, info=info) if info is not None else hub.safetensors_headers(repo)
+        weights.annotate_packed_fp4(tensors)
         for k, t in tensors.items():
             n = weights.logical_elements(k, t, native_expert_bits=native_bits)
             if n is None:
