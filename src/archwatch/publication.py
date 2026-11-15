@@ -1,6 +1,10 @@
 """Validated inputs for public architecture views. Raw facts stay diagnostic."""
 
 from collections import Counter
+from functools import lru_cache
+from pathlib import Path
+
+import yaml
 
 from . import calc
 from .verify import TO_WEIGHT_KIND
@@ -10,19 +14,37 @@ class PublicationError(ValueError):
     """A record lacks the approved inputs required by a public renderer."""
 
 
+HOLDS_FILE = Path(__file__).resolve().parents[2] / "config" / "publication.yaml"
+
+
+@lru_cache(maxsize=1)
+def holds() -> dict:
+    """Publication holds with a reason per entry (config/publication.yaml)."""
+    data = yaml.safe_load(HOLDS_FILE.read_text())["holds"]
+    for group in data.values():
+        for key, entry in group.items():
+            if not str(entry.get("reason", "")).strip():
+                raise ValueError(f"Publication hold {key!r} has no reason")
+    return data
+
+
+def held(values: dict) -> str | None:
+    """Return the hold reason that applies to these published values, if any."""
+    h = holds()
+    for field, group in (("generation_type", "generation_types"), ("model_type", "model_types")):
+        entry = h[group].get(values.get(field))
+        if entry:
+            return f"{field} {values.get(field)}: " + " ".join(entry["reason"].split())
+    return None
+
+
 def render_values(record: dict) -> dict:
     values = dict(record["published"])
-    if values.get("generation_type") in ("block_diffusion", "latent_recurrent") or values.get("model_type") in {
-        "deepseek_v41",
-        "deepseek_v4",
-        "qwen4_exp",
-        "mistral_large4",
-        "llama4",
-        "glm5_next",
-        "gemma4",
-    }:
+    hold = held(values)
+    if hold:
         raise PublicationError(
-            "Architecture layout/cache sharing is not qualified for this generation; source facts retained for review"
+            "Architecture layout/cache sharing is not qualified for this generation; source facts retained for "
+            f"review ({hold})"
         )
     checks = {check["field"]: check for check in record["checks"]}
     pattern = checks.get("layer_pattern_per_layer", {})
