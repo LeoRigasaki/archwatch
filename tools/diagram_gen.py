@@ -4,6 +4,7 @@
     uv run --frozen python tools/diagram_gen.py                  # full run (needs GEMINI_API_KEY)
     uv run --frozen python tools/diagram_gen.py --recheck        # re-run checks on saved SVGs, no model calls
     uv run --frozen python tools/diagram_gen.py --approve-reference results/diagram-gen/<model>/vN.svg
+    uv run --frozen python tools/diagram_gen.py --publish results/diagram-gen/<model>/vN.svg
 
 Every call carries the approved house-style reference (docs/diagram-kit/reference.*). Repairs also send
 the PNG render of the previous attempt. At most 1 + repairs calls per diagram.
@@ -109,7 +110,15 @@ def main():
     parser.add_argument("--recheck", action="store_true")
     parser.add_argument("--models", nargs="*")
     parser.add_argument("--approve-reference", metavar="SVG")
+    parser.add_argument("--publish", metavar="SVG", help="publish a passing diagram to the gallery")
     args = parser.parse_args()
+    if args.publish:
+        from archwatch.generated import publish
+
+        svg = (ROOT / args.publish).resolve()
+        record = json.loads((ROOT / "data/models" / (svg.parent.name + ".json")).read_text())
+        print(json.dumps(publish(ROOT, record, svg), indent=2))
+        return
     if args.approve_reference:
         print(json.dumps(approve(ROOT, args.approve_reference), indent=2))
         return

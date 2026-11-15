@@ -1,0 +1,33 @@
+{
+  "model": "LiquidAI/LFM3-1.7B",
+  "source_commit": "1da06bec6a819da10b54c67e5c90972b46d81871",
+  "spec_sha256": "7156be2d16f7bfb6f504e87dc01890b8dc06c5f8839334bfa7d273bc69af6ebe",
+  "svg_sha256": "7f8951a6bbf332d2efedf3ccc9dd27fbf5ca5ba83a79b383c6e64427358be5f5",
+  "source": "results/diagram-gen/LiquidAI__LFM3-1.7B/v1.svg",
+  "checks_passed": [
+    "callouts_beside_their_part",
+    "callouts_present",
+    "canvas_size",
+    "columns_balanced",
+    "do_not_include",
+    "edges_connect_their_nodes",
+    "fixed_layout_positions",
+    "fixed_layout_sections",
+    "graph_edges_match_spec",
+    "graph_nodes_match_spec",
+    "inside_canvas_with_margin",
+    "labels_from_spec",
+    "layer_bars_match_spec",
+    "layer_sum",
+    "lines_avoid_other_boxes",
+    "no_covered_text",
+    "no_leader_lines",
+    "no_lines_through_text",
+    "no_text_overlap",
+    "numbers_from_spec",
+    "readable_font_sizes",
+    "repeat_counts_once",
+    "svg_valid_and_safe",
+    "zoom_panels_present"
+  ]
+}
