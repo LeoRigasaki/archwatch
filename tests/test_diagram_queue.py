@@ -32,6 +32,7 @@ def root_with(tmp_path, repos, extra_status=None):
 @pytest.fixture(autouse=True)
 def no_publish(monkeypatch):
     monkeypatch.setattr(queue, "publish", lambda root, record, svg: None)
+    monkeypatch.setattr(queue, "published_for", lambda root, record: None)
 
 
 def fake_runner(results, log):
@@ -123,3 +124,14 @@ def test_crons_stay_disabled_and_daily_job_makes_no_llm_calls():
     assert "GEMINI" not in daily and "diagram_queue" not in daily
     assert CONFIG["schedule"]["diagrams"]["max_models_per_run"] == 5
     assert CONFIG["schedule"]["diagrams"]["max_calls_per_run"] == 15
+
+
+def test_published_diagrams_are_never_redrawn(monkeypatch):
+    # The real repository: Llama, Kimi and Nemotron have approved, published diagrams for their current specs.
+    monkeypatch.setattr(queue, "published_for", lambda root, record: queue.select(record, root))
+    planned, _ = queue.plan(
+        ROOT, {"models": {}, "runs": []}, dict(CONFIG["schedule"]["diagrams"], max_models_per_run=50)
+    )
+    names = [q["model"] for q in planned]
+    for repo in ("meta-llama/Llama-3.1-8B", "nvidia/Nemotron-H-8B-Base-8K"):
+        assert repo not in names
