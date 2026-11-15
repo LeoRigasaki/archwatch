@@ -118,7 +118,7 @@
       "model": "Qwen/Qwen3.8-Flash-Next",
       "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
       "field": "params_active",
-      "ours": 61114391168,
+      "ours": 58507240320,
       "theirs": "125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP",
       "agree": false,
       "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
@@ -176,7 +176,7 @@
       "model": "deepseek-ai/DeepSeek-V4.1-Flash",
       "gallery_name": "DeepSeek V4.1-Flash",
       "field": "params_active",
-      "ours": 227705140434,
+      "ours": 213479777904,
       "theirs": "552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone)",
       "agree": false,
       "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
@@ -232,12 +232,10 @@
       "model": "mistralai/Mistral-Large-4-1T-A52B",
       "gallery_name": "Mistral Large 4",
       "field": "params_active",
-      "ours": 54454496544,
+      "ours": 52354527520,
       "theirs": "1T total, 52B active (5.2% active)",
-      "agree": false,
-      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
-      "cause": "error-ours",
-      "cause_why": "The card states \"49 billion active parameters per token (52 billion including embeddings and output layers)\". Our 54.45B includes the 2.10B mtp_dspark speculative-decoding head, which our auxiliary-module rule misses (it matches \"mtp.\" only). Without it ours is 52.35B, matching the card. Fix: classify mtp_dspark tensors as auxiliary and reprocess the record."
+      "agree": true,
+      "our_evidence": null
     },
     {
       "model": "mistralai/Mistral-Large-4-1T-A52B",

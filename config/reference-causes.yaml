@@ -27,14 +27,6 @@ deepseek-ai/DeepSeek-V4.1-Flash:
     why: >-
       The card states 8B active in prefill and 16B in decode. Our active convention counts all non-expert
       weights, including the 196B Engram memory that the card describes as sparsely accessed by lookup.
-mistralai/Mistral-Large-4-1T-A52B:
-  params_active:
-    cause: error-ours
-    why: >-
-      The card states "49 billion active parameters per token (52 billion including embeddings and output
-      layers)". Our 54.45B includes the 2.10B mtp_dspark speculative-decoding head, which our auxiliary-module
-      rule misses (it matches "mtp." only). Without it ours is 52.35B, matching the card. Fix: classify
-      mtp_dspark tensors as auxiliary and reprocess the record.
 nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16:
   num_layers:
     cause: definition

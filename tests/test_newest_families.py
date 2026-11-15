@@ -137,3 +137,19 @@ def test_diff_exposes_generation_and_shared_cache_changes():
     new = copy.deepcopy(old)
     new["published"].update(generation_type="block_diffusion", shared_kv_layers=9)
     assert {r["field"] for r in pipeline.diff(new, old)} == {"generation_type", "shared_kv_layers"}
+
+
+def test_speculative_decoding_heads_are_auxiliary_and_not_active():
+    import json
+    from pathlib import Path
+
+    from archwatch import weights
+
+    assert weights._component("mtp_dspark.backbone.attention.wq.weight") == "auxiliary"
+    assert weights._component("model.mtp.layers.0.mlp.weight") == "auxiliary"
+    assert weights._component("model.layers.3.smtp_proj.weight") != "auxiliary"
+    rec = json.loads(
+        (Path(__file__).resolve().parents[1] / "data/models/mistralai__Mistral-Large-4-1T-A52B.json").read_text()
+    )
+    # Card: "52 billion including embeddings and output layers".
+    assert rec["published"]["params_active"] == 52_354_527_520

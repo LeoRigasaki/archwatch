@@ -60,7 +60,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:02+00:00",
+ "analyzed_at": "2026-11-15T09:52:48+00:00",
  "facts": {
   "architecture_class": {
    "value": "MistralLarge4ForConditionalGeneration",
@@ -424,12 +424,13 @@
    "text_total": 1051474111776,
    "by_component": {
     "moe_routed_experts": 1029181538304,
-    "other": 11180336416,
+    "other": 10439372576,
     "moe_shared_experts": 8040480768,
-    "dense_ffn": 1811939328,
+    "auxiliary": 2099969024,
     "vision": 1687439360,
     "embedding": 1258291200,
-    "norms": 1525760,
+    "dense_ffn": 452984832,
+    "norms": 1475072,
     "vision_projector": 2048
    },
    "routed_expert_params": 1029181538304,
@@ -446,8 +447,8 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
-   "text_active": 54454496544,
-   "text_active_without_embeddings": 53196205344,
+   "text_active": 52354527520,
+   "text_active_without_embeddings": 51096236320,
    "with_vision": 56141937952
   }
  },
@@ -993,13 +994,13 @@
   },
   {
    "field": "params_active",
-   "value": 54454496544,
+   "value": 52354527520,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 54454496544,
+     "value": 52354527520,
      "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
     }
    ]
@@ -1352,12 +1353,13 @@
    "field": "parameter_components",
    "value": {
     "moe_routed_experts": 1029181538304,
-    "other": 11180336416,
+    "other": 10439372576,
     "moe_shared_experts": 8040480768,
-    "dense_ffn": 1811939328,
+    "auxiliary": 2099969024,
     "vision": 1687439360,
     "embedding": 1258291200,
-    "norms": 1525760,
+    "dense_ffn": 452984832,
+    "norms": 1475072,
     "vision_projector": 2048
    },
    "status": "single source",
@@ -1367,12 +1369,13 @@
     {
      "value": {
       "moe_routed_experts": 1029181538304,
-      "other": 11180336416,
+      "other": 10439372576,
       "moe_shared_experts": 8040480768,
-      "dense_ffn": 1811939328,
+      "auxiliary": 2099969024,
       "vision": 1687439360,
       "embedding": 1258291200,
-      "norms": 1525760,
+      "dense_ffn": 452984832,
+      "norms": 1475072,
       "vision_projector": 2048
      },
      "evidence": "weights:parameter totals by tensor group"
@@ -1421,7 +1424,7 @@
   },
   "layer_index_base_in_config": 0,
   "params_total": 1053161553184,
-  "params_active": 54454496544,
+  "params_active": 52354527520,
   "model_type": "mistral_large4",
   "shared_kv_layers": 9,
   "layer_types": [
@@ -1519,12 +1522,13 @@
   "released_weights_format": "fp8",
   "parameter_components": {
    "moe_routed_experts": 1029181538304,
-   "other": 11180336416,
+   "other": 10439372576,
    "moe_shared_experts": 8040480768,
-   "dense_ffn": 1811939328,
+   "auxiliary": 2099969024,
    "vision": 1687439360,
    "embedding": 1258291200,
-   "norms": 1525760,
+   "dense_ffn": 452984832,
+   "norms": 1475072,
    "vision_projector": 2048
   },
   "weight_header_summary": {
@@ -1853,13 +1857,6 @@
   "id": "mistralai/Mistral-Large-3-675B-Base-2512",
   "source_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
   "selection": "Large product stream: use Large 3 Base as prior generation, not unrelated Medium/Small releases."
- },
- "predecessor_review": {
-  "status": "review",
-  "source_commit": "3123f82420d99a7fc9313b2d69f9a0ab6cb6ab4d",
-  "error": "ValueError",
-  "http_status": null,
-  "reason": "Missing root config.json or safetensors; source-format adapter/access required"
  },
  "tensor_diff_vs_predecessor": {
   "added": [
