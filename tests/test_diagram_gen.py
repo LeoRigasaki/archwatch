@@ -647,3 +647,21 @@ def test_single_group_shows_its_count_once():
     doubled = svg.replace("</svg>", '<text x="420" y="300" font-size="14">32 layers</text></svg>')
     check = static_checks(doubled, spec, SETTINGS)["repeat_counts_once"]
     assert not check["passed"] and "drop the brace" in check["problems"][0]
+
+
+def test_rules_for_direct_q_mla_parallel_blocks_and_fc_mlps():
+    ds = build_spec(record("deepseek-ai__DeepSeek-V2-Lite"))
+    mla = edges(ds["zoom_panels"]["mla"])
+    assert ("input (2048)", "q: Linear 2048 -> 16 x 192") in mla  # no query latent in this model
+    assert any("yarn scaling, factor 40" in c for c in ds["zoom_panels"]["mla"]["caption"])
+    assert {"mla", "dense_ffn", "moe"} == set(ds["zoom_panels"])
+    phi = build_spec(record("microsoft__phi-2"))
+    each = edges(phi["each_layer"])
+    assert ("norm (shared)", "FFN") in each and ("norm (shared)", "attention: MHA") in each  # parallel block
+    assert ("layer input", "add input and both branches") in each
+    assert ("output projection: 2560 -> 2560", "output (2560)") in edges(phi["zoom_panels"]["mha"])  # 'dense'
+    ffn = edges(phi["zoom_panels"]["ffn"])
+    assert ("fc1: Linear 2560 -> 10240", "GELU") in ffn and phi["zoom_panels"]["ffn"]["title"] == "FFN"
+    gemma = build_spec(record("google__gemma-3-1b-pt"))
+    assert gemma["io"]["top"][-1]["label"] == "LM head (tied to the token embedding)"
+    assert gemma["zoom_panels"]["ffn"]["title"] == "GeGLU FFN"
