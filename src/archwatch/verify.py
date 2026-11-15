@@ -85,6 +85,7 @@ def verify(
     code: dict,
     card: dict,
     wkinds: list[str] | None = None,
+    blocks: dict | None = None,
 ) -> list[dict]:
     V = {k: v for k, v in facts.items()}
     cf = code.get("facts", {})
@@ -376,6 +377,8 @@ def verify(
         "mamba_groups",
         "mamba_activation",
         "mla_use_nope",
+        "mla_q_lora_rank",
+        "attn_res_block_size",
     )
     checked = {r["field"] for r in out}
     for field in rendering_fields:
@@ -397,5 +400,9 @@ def verify(
                     )
                 ],
             )
+        )
+    if blocks:
+        out.append(
+            check("block_shapes", [w(blocks, "per-layer tensor shapes, identical within each config layer type")])
         )
     return [r for r in out if r["status"] != "missing"]
