@@ -13,7 +13,12 @@ dependencies = ["huggingface_hub>=0.26", "PyYAML>=6"]
 test = ["pytest>=8"]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.9", "pre-commit>=4"]
+dev = [
+    "pytest>=8",
+    "ruff>=0.9",
+    "pre-commit>=4",
+    "playwright>=1.65.2",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

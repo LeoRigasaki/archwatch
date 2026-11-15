@@ -1,0 +1,257 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1210" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#222222"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1210" fill="#FFFFFF"/>
+
+  <text x="800" y="58" text-anchor="middle" font-size="34" font-weight="bold" fill="#1A1A1A">LFM3-1.7B</text>
+
+  <!-- Main panel -->
+  <g id="main-panel">
+    <rect x="36" y="92" width="780" height="1078" rx="14" fill="#F5F6F8" stroke="#CFD4DC" stroke-width="1.5"/>
+
+    <!-- Top output arrow -->
+    <line x1="260" y1="152" x2="260" y2="108" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- io.top -->
+    <rect x="120" y="152" width="280" height="52" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="260" y="184" text-anchor="middle" font-size="16" fill="#1A1A1A">LM head (shares weights)</text>
+
+    <line x1="260" y1="244" x2="260" y2="204" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <rect x="170" y="244" width="180" height="48" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="260" y="274" text-anchor="middle" font-size="16" fill="#1A1A1A">Final norm</text>
+
+    <line x1="260" y1="340" x2="260" y2="292" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Layer stack: compressed_view (bottom to top) -->
+    <!-- Group 3: repeat 1 (layers 23-24) -->
+    <g data-group="3" data-repeat="1">
+      <rect x="84" y="340" width="352" height="154" rx="12" fill="#FFFFFF" stroke="#9EA6B2" stroke-width="1.5"/>
+      <rect data-layer="ShortConv + FFN" x="100" y="358" width="320" height="52" rx="8" fill="#D4EDDA" stroke="#2E7D32" stroke-width="1.5"/>
+      <text x="260" y="390" text-anchor="middle" font-size="16" font-weight="bold" fill="#1B5E20">ShortConv + FFN</text>
+      <rect data-layer="Global GQA + FFN" x="100" y="424" width="320" height="52" rx="8" fill="#FADBD8" stroke="#C0392B" stroke-width="1.5"/>
+      <text x="260" y="456" text-anchor="middle" font-size="16" font-weight="bold" fill="#922B21">Global GQA + FFN</text>
+      <text x="452" y="424" font-size="22" font-weight="bold" fill="#222222">1 x</text>
+    </g>
+
+    <line x1="260" y1="534" x2="260" y2="494" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Group 2: repeat 5 (layers 3-22) -->
+    <g data-group="2" data-repeat="5">
+      <rect x="84" y="534" width="352" height="286" rx="12" fill="#FFFFFF" stroke="#9EA6B2" stroke-width="1.5"/>
+      <rect data-layer="ShortConv + FFN" x="100" y="552" width="320" height="52" rx="8" fill="#D4EDDA" stroke="#2E7D32" stroke-width="1.5"/>
+      <text x="260" y="584" text-anchor="middle" font-size="16" font-weight="bold" fill="#1B5E20">ShortConv + FFN</text>
+      <rect data-layer="Sliding-window GQA + FFN" x="100" y="618" width="320" height="52" rx="8" fill="#D6EAF8" stroke="#1565C0" stroke-width="1.5"/>
+      <text x="260" y="650" text-anchor="middle" font-size="16" font-weight="bold" fill="#0D47A1">Sliding-window GQA + FFN</text>
+      <rect data-layer="ShortConv + FFN" x="100" y="684" width="320" height="52" rx="8" fill="#D4EDDA" stroke="#2E7D32" stroke-width="1.5"/>
+      <text x="260" y="716" text-anchor="middle" font-size="16" font-weight="bold" fill="#1B5E20">ShortConv + FFN</text>
+      <rect data-layer="Global GQA + FFN" x="100" y="750" width="320" height="52" rx="8" fill="#FADBD8" stroke="#C0392B" stroke-width="1.5"/>
+      <text x="260" y="782" text-anchor="middle" font-size="16" font-weight="bold" fill="#922B21">Global GQA + FFN</text>
+      <text x="452" y="684" font-size="22" font-weight="bold" fill="#222222">5 x</text>
+    </g>
+
+    <line x1="260" y1="860" x2="260" y2="820" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- Group 1: repeat 2 (layers 1-2) -->
+    <g data-group="1" data-repeat="2">
+      <rect x="84" y="860" width="352" height="88" rx="12" fill="#FFFFFF" stroke="#9EA6B2" stroke-width="1.5"/>
+      <rect data-layer="ShortConv + FFN" x="100" y="878" width="320" height="52" rx="8" fill="#D4EDDA" stroke="#2E7D32" stroke-width="1.5"/>
+      <text x="260" y="910" text-anchor="middle" font-size="16" font-weight="bold" fill="#1B5E20">ShortConv + FFN</text>
+      <text x="452" y="912" font-size="22" font-weight="bold" fill="#222222">2 x</text>
+    </g>
+
+    <!-- Total layers brace -->
+    <path d="M 502 340 Q 514 340 514 356 L 514 628 Q 514 644 524 644 Q 514 644 514 660 L 514 932 Q 514 948 502 948" fill="none" stroke="#333333" stroke-width="2"/>
+    <text x="532" y="652" font-size="22" font-weight="bold" fill="#1A1A1A">24 x</text>
+
+    <line x1="260" y1="992" x2="260" y2="948" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <!-- io.bottom -->
+    <rect x="90" y="992" width="340" height="52" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="260" y="1024" text-anchor="middle" font-size="16" fill="#1A1A1A">Token embedding 128,000 x 2048</text>
+
+    <line x1="260" y1="1084" x2="260" y2="1044" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+    <rect x="155" y="1084" width="210" height="48" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="260" y="1114" text-anchor="middle" font-size="16" fill="#1A1A1A">Tokenized text</text>
+
+    <!-- decoder_layer detail -->
+    <g id="decoder-layer">
+      <rect x="576" y="114" width="220" height="390" rx="10" fill="#FFFFFF" stroke="#9EA6B2" stroke-width="1.5" stroke-dasharray="5,5"/>
+      <text x="686" y="138" text-anchor="middle" font-size="15" font-weight="bold" fill="#333333">decoder_layer</text>
+
+      <rect x="590" y="152" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="172" text-anchor="middle" font-size="14" fill="#1A1A1A">residual add</text>
+
+      <line x1="686" y1="196" x2="686" y2="182" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="196" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="216" text-anchor="middle" font-size="14" fill="#1A1A1A">norm (post-FFN)</text>
+
+      <line x1="686" y1="240" x2="686" y2="226" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="240" width="192" height="30" rx="8" fill="#EAECEE" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="260" text-anchor="middle" font-size="14" fill="#1A1A1A">FFN</text>
+
+      <line x1="686" y1="284" x2="686" y2="270" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="284" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="304" text-anchor="middle" font-size="14" fill="#1A1A1A">norm (pre-FFN)</text>
+
+      <line x1="686" y1="328" x2="686" y2="314" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="328" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="348" text-anchor="middle" font-size="14" fill="#1A1A1A">residual add</text>
+
+      <line x1="686" y1="372" x2="686" y2="358" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="372" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="392" text-anchor="middle" font-size="14" fill="#1A1A1A">norm (post-mixer)</text>
+
+      <line x1="686" y1="416" x2="686" y2="402" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="416" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="436" text-anchor="middle" font-size="14" fill="#1A1A1A">Token mixer</text>
+
+      <line x1="686" y1="460" x2="686" y2="446" stroke="#222222" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+      <rect x="590" y="460" width="192" height="30" rx="8" fill="#FFFFFF" stroke="#555555" stroke-width="1.2"/>
+      <text x="686" y="480" text-anchor="middle" font-size="14" fill="#1A1A1A">norm (pre-mixer)</text>
+    </g>
+
+    <!-- Callouts inside/beside main panel -->
+    <g data-callout="1">
+      <text x="422" y="170" font-size="15" font-weight="bold" fill="#1A1A1A">
+        <tspan x="422" dy="0">Context length:</tspan>
+        <tspan x="422" dy="20">256K tokens</tspan>
+      </text>
+    </g>
+
+    <g data-callout="2">
+      <text x="594" y="572" font-size="15" font-weight="bold" fill="#1A1A1A">
+        <tspan x="594" dy="0">13 ShortConv +</tspan>
+        <tspan x="594" dy="20">6 Global GQA +</tspan>
+        <tspan x="594" dy="20">5 Sliding-window GQA</tspan>
+      </text>
+    </g>
+
+    <g data-callout="5">
+      <text x="594" y="690" font-size="15" font-weight="bold" fill="#1A1A1A">
+        <tspan x="594" dy="0">KV cache: 12 KB</tspan>
+        <tspan x="594" dy="20">per token (only the</tspan>
+        <tspan x="594" dy="20">6 global layers grow)</tspan>
+      </text>
+    </g>
+
+    <g data-callout="4">
+      <text x="460" y="1024" font-size="15" font-weight="bold" fill="#1A1A1A">Vocabulary: 128K</text>
+    </g>
+  </g>
+
+  <!-- Right side zoom panels -->
+  <!-- Zoom 1: short_conv -->
+  <g data-zoom="short_conv">
+    <rect x="850" y="92" width="714" height="324" rx="14" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2" stroke-dasharray="6,6"/>
+    <text x="874" y="124" font-size="18" font-weight="bold" fill="#2E7D32">Gated ShortConv (13 layers)</text>
+
+    <rect x="1017" y="148" width="380" height="44" rx="10" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.5"/>
+    <text x="1207" y="175" text-anchor="middle" font-size="15" fill="#1A1A1A">cache does not grow with context</text>
+
+    <line x1="1207" y1="218" x2="1207" y2="192" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <rect x="1037" y="218" width="340" height="44" rx="10" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.5"/>
+    <text x="1207" y="245" text-anchor="middle" font-size="15" fill="#1A1A1A">out_proj: Linear 2048 -&gt; 2048</text>
+
+    <line x1="1207" y1="288" x2="1207" y2="262" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <rect x="1047" y="288" width="320" height="44" rx="10" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.5"/>
+    <text x="1207" y="315" text-anchor="middle" font-size="15" fill="#1A1A1A">B, x, Conv1d (kernel 7), C</text>
+
+    <line x1="1207" y1="358" x2="1207" y2="332" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <rect x="1037" y="358" width="340" height="44" rx="10" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.5"/>
+    <text x="1207" y="385" text-anchor="middle" font-size="15" fill="#1A1A1A">in_proj: Linear 2048 -&gt; 6144</text>
+  </g>
+
+  <!-- Zoom 2: gqa -->
+  <g data-zoom="gqa">
+    <rect x="850" y="444" width="714" height="488" rx="14" fill="#FFFFFF" stroke="#C0392B" stroke-width="2" stroke-dasharray="6,6"/>
+    <text x="874" y="476" font-size="18" font-weight="bold" fill="#C0392B">GQA attention (6 global + 5 sliding-window layers)</text>
+
+    <!-- Level 6 (top) -->
+    <rect x="1007" y="500" width="400" height="46" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="1207" y="528" text-anchor="middle" font-size="15" fill="#1A1A1A">output projection: Linear 2048 -&gt; 2048</text>
+
+    <line x1="1207" y1="572" x2="1207" y2="546" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <!-- Level 5 -->
+    <rect x="1027" y="572" width="360" height="46" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="1207" y="600" text-anchor="middle" font-size="15" fill="#1A1A1A">head-wise output gate: 2048 -&gt; 16</text>
+
+    <line x1="1034" y1="640" x2="1150" y2="618" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <line x1="1380" y1="640" x2="1264" y2="618" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <!-- Level 4: global & sliding-window -->
+    <rect x="874" y="640" width="320" height="52" rx="10" fill="#FFF5F5" stroke="#C0392B" stroke-width="1.6"/>
+    <text x="1034" y="661" text-anchor="middle" font-size="14" fill="#1A1A1A">
+      <tspan x="1034" dy="0">global: partial rotary,</tspan>
+      <tspan x="1034" dy="19">theta 1,000,000</tspan>
+    </text>
+
+    <rect x="1220" y="640" width="320" height="52" rx="10" fill="#EFF6FF" stroke="#1565C0" stroke-width="1.6"/>
+    <text x="1380" y="661" text-anchor="middle" font-size="14" fill="#1A1A1A">
+      <tspan x="1380" dy="0">sliding-window: full rotary,</tspan>
+      <tspan x="1380" dy="19">theta 10,000, 256</tspan>
+    </text>
+
+    <line x1="1150" y1="718" x2="1034" y2="692" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <line x1="1264" y1="718" x2="1380" y2="692" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <!-- Level 3 -->
+    <rect x="1077" y="718" width="260" height="46" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="1207" y="746" text-anchor="middle" font-size="15" fill="#1A1A1A">QK-norm on q, k (128)</text>
+
+    <line x1="1034" y1="790" x2="1150" y2="764" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <line x1="1380" y1="790" x2="1264" y2="764" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <!-- Level 2 -->
+    <rect x="894" y="790" width="280" height="46" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="1034" y="818" text-anchor="middle" font-size="15" fill="#1A1A1A">q: Linear 2048 -&gt; 2048</text>
+
+    <rect x="1240" y="790" width="280" height="46" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="1380" y="818" text-anchor="middle" font-size="15" fill="#1A1A1A">k, v: Linear 2048 -&gt; 512</text>
+
+    <line x1="1140" y1="862" x2="1034" y2="836" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+    <line x1="1274" y1="862" x2="1380" y2="836" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <!-- Level 1 (bottom) -->
+    <rect x="1037" y="862" width="340" height="46" rx="10" fill="#FFFFFF" stroke="#444444" stroke-width="1.5"/>
+    <text x="1207" y="890" text-anchor="middle" font-size="15" fill="#1A1A1A">16 query, 4 key/value heads, 128</text>
+
+    <!-- Callout 3 -->
+    <g data-callout="3">
+      <text x="1405" y="878" font-size="15" font-weight="bold" fill="#1A1A1A">
+        <tspan x="1405" dy="0">16 Q /</tspan>
+        <tspan x="1405" dy="20">4 KV heads</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- Zoom 3: ffn -->
+  <g data-zoom="ffn">
+    <rect x="850" y="960" width="714" height="196" rx="14" fill="#FFFFFF" stroke="#616161" stroke-width="2" stroke-dasharray="6,6"/>
+    <text x="874" y="992" font-size="18" font-weight="bold" fill="#424242">SwiGLU FFN</text>
+
+    <rect x="1057" y="1018" width="300" height="46" rx="10" fill="#FFFFFF" stroke="#424242" stroke-width="1.5"/>
+    <text x="1207" y="1046" text-anchor="middle" font-size="15" fill="#1A1A1A">w2: Linear 7680 -&gt; 2048</text>
+
+    <line x1="1207" y1="1090" x2="1207" y2="1064" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+    <rect x="1047" y="1090" width="320" height="46" rx="10" fill="#FFFFFF" stroke="#424242" stroke-width="1.5"/>
+    <text x="1207" y="1118" text-anchor="middle" font-size="15" fill="#1A1A1A">w1, w3: 2048 -&gt; 7680 (SiLU)</text>
+  </g>
+</svg>

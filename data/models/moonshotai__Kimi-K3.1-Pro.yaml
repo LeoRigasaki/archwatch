@@ -2,7 +2,7 @@ id: moonshotai/Kimi-K3.1-Pro
 source_commit: d9e99b0792a5e93b78ea9bea62a68167e36ddd9e
 hub_created: '2026-11-02T04:13:51+00:00'
 license: kimi-k3.1-pro
-analyzed_at: '2026-11-14T15:34:51+00:00'
+analyzed_at: '2026-11-14T09:57:41+00:00'
 published:
   num_layers: 93
   hidden_size: 7168
@@ -239,6 +239,8 @@ published:
   vision_hidden_size: 1024
   released_weights_format: mxfp4-pack-quantized (4-bit)
   mla_use_nope: true
+  mla_q_lora_rank: 1536
+  attn_res_block_size: 12
   parameter_components:
     moe_routed_experts: 2722740830208
     attention_or_linear_mixer: 36369321216
@@ -256,6 +258,173 @@ published:
     tensor_count: 497340
     skipped_scale_tensors: 247296
     skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      kda_linear:
+        layers: 69
+        tensors:
+          input_layernorm.weight:
+          - 7168
+          mlp_res_norm.weight:
+          - 7168
+          mlp_res_proj.weight:
+          - 1
+          - 7168
+          post_attention_layernorm.weight:
+          - 7168
+          self_attention_res_norm.weight:
+          - 7168
+          self_attention_res_proj.weight:
+          - 1
+          - 7168
+          self_attn.A_log:
+          - 128
+          self_attn.b_proj.weight:
+          - 96
+          - 7168
+          self_attn.dt_bias:
+          - 12288
+          self_attn.f_a_proj.weight:
+          - 128
+          - 7168
+          self_attn.f_b_proj.weight:
+          - 12288
+          - 128
+          self_attn.g_proj.weight:
+          - 12288
+          - 7168
+          self_attn.k_conv1d.weight:
+          - 12288
+          - 1
+          - 4
+          self_attn.k_proj.weight:
+          - 12288
+          - 7168
+          self_attn.o_norm.weight:
+          - 128
+          self_attn.o_proj.weight:
+          - 7168
+          - 12288
+          self_attn.q_conv1d.weight:
+          - 12288
+          - 1
+          - 4
+          self_attn.q_proj.weight:
+          - 12288
+          - 7168
+          self_attn.v_conv1d.weight:
+          - 12288
+          - 1
+          - 4
+          self_attn.v_proj.weight:
+          - 12288
+          - 7168
+      gated_dsa_mla:
+        layers: 24
+        tensors:
+          input_layernorm.weight:
+          - 7168
+          mlp_res_norm.weight:
+          - 7168
+          mlp_res_proj.weight:
+          - 1
+          - 7168
+          post_attention_layernorm.weight:
+          - 7168
+          self_attention_res_norm.weight:
+          - 7168
+          self_attention_res_proj.weight:
+          - 1
+          - 7168
+          self_attn.g_proj.weight:
+          - 12288
+          - 7168
+          self_attn.indexer.k_norm.bias:
+          - 128
+          self_attn.indexer.k_norm.weight:
+          - 128
+          self_attn.indexer.weights_proj.weight:
+          - 32
+          - 7168
+          self_attn.indexer.wk.weight:
+          - 128
+          - 7168
+          self_attn.indexer.wq_b.weight:
+          - 4096
+          - 1536
+          self_attn.kv_a_layernorm.weight:
+          - 512
+          self_attn.kv_a_proj_with_mqa.weight:
+          - 576
+          - 7168
+          self_attn.kv_b_proj.weight:
+          - 24576
+          - 512
+          self_attn.o_proj.weight:
+          - 7168
+          - 12288
+          self_attn.q_a_layernorm.weight:
+          - 1536
+          self_attn.q_a_proj.weight:
+          - 1536
+          - 7168
+          self_attn.q_b_proj.weight:
+          - 18432
+          - 1536
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 0
+      tensors:
+        mlp.down_proj.weight:
+        - 7168
+        - 33792
+        mlp.gate_proj.weight:
+        - 33792
+        - 7168
+        mlp.up_proj.weight:
+        - 33792
+        - 7168
+    - layer_ranges:
+      - - 1
+        - 92
+      tensors:
+        block_sparse_moe.gate.e_score_correction_bias:
+        - 896
+        block_sparse_moe.gate.weight:
+        - 896
+        - 7168
+        block_sparse_moe.routed_expert_down_proj.weight:
+        - 3584
+        - 7168
+        block_sparse_moe.routed_expert_norm.weight:
+        - 3584
+        block_sparse_moe.routed_expert_up_proj.weight:
+        - 7168
+        - 3584
+        block_sparse_moe.shared_experts.down_proj.weight:
+        - 7168
+        - 6144
+        block_sparse_moe.shared_experts.gate_proj.weight:
+        - 6144
+        - 7168
+        block_sparse_moe.shared_experts.up_proj.weight:
+        - 6144
+        - 7168
+    globals:
+      embed_tokens.weight:
+      - 163840
+      - 7168
+      lm_head.weight:
+      - 163840
+      - 7168
+      norm.weight:
+      - 7168
+      output_attn_res_norm.weight:
+      - 7168
+      output_attn_res_proj.weight:
+      - 1
+      - 7168
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
@@ -263,23 +432,22 @@ unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig,
   bos_token_id, dtype, eos_token_id, ignore_index, image_placeholder, media_placeholder_token_id,
   pad_token_id, text_config._name_or_path, text_config.activation_situ_beta, text_config.activation_situ_linear_beta,
-  text_config.add_cross_attention, text_config.architectures, text_config.attn_res_block_size,
-  text_config.bad_words_ids, text_config.begin_suppress_tokens, text_config.bos_token_id,
-  text_config.chunk_size_feed_forward, text_config.cross_attention_hidden_size, text_config.decoder_start_token_id,
-  text_config.diversity_penalty, text_config.do_sample, text_config.dsa_config.index_k_norm_type,
-  text_config.dsa_config.index_rope_dim, text_config.dsa_config.index_skip_topk_offset,
-  text_config.dsa_config.index_topk_freq, text_config.dtype, text_config.early_stopping,
-  text_config.encoder_no_repeat_ngram_size, text_config.eos_token_id, text_config.exponential_decay_length_penalty,
-  text_config.finetuning_task, text_config.forced_bos_token_id, text_config.forced_eos_token_id,
-  text_config.id2label.0, text_config.id2label.1, text_config.initializer_range, text_config.is_decoder,
-  text_config.is_encoder_decoder, text_config.label2id.LABEL_0, text_config.label2id.LABEL_1,
-  text_config.latent_moe_use_norm, text_config.length_penalty, text_config.linear_attn_config.gate_lower_bound,
-  text_config.linear_attn_config.use_full_rank_gate, text_config.max_length, text_config.min_length,
-  text_config.moe_layer_freq, text_config.moe_renormalize, text_config.no_repeat_ngram_size,
-  text_config.num_beam_groups, text_config.num_beams, text_config.num_expert_group,
-  text_config.num_return_sequences, text_config.output_attentions, text_config.output_hidden_states,
-  text_config.output_scores, text_config.pad_token_id, text_config.prefix, text_config.problem_type,
-  text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format,
+  text_config.add_cross_attention, text_config.architectures, text_config.bad_words_ids,
+  text_config.begin_suppress_tokens, text_config.bos_token_id, text_config.chunk_size_feed_forward,
+  text_config.cross_attention_hidden_size, text_config.decoder_start_token_id, text_config.diversity_penalty,
+  text_config.do_sample, text_config.dsa_config.index_k_norm_type, text_config.dsa_config.index_rope_dim,
+  text_config.dsa_config.index_skip_topk_offset, text_config.dsa_config.index_topk_freq,
+  text_config.dtype, text_config.early_stopping, text_config.encoder_no_repeat_ngram_size,
+  text_config.eos_token_id, text_config.exponential_decay_length_penalty, text_config.finetuning_task,
+  text_config.forced_bos_token_id, text_config.forced_eos_token_id, text_config.id2label.0,
+  text_config.id2label.1, text_config.initializer_range, text_config.is_decoder, text_config.is_encoder_decoder,
+  text_config.label2id.LABEL_0, text_config.label2id.LABEL_1, text_config.latent_moe_use_norm,
+  text_config.length_penalty, text_config.linear_attn_config.gate_lower_bound, text_config.linear_attn_config.use_full_rank_gate,
+  text_config.max_length, text_config.min_length, text_config.moe_layer_freq, text_config.moe_renormalize,
+  text_config.no_repeat_ngram_size, text_config.num_beam_groups, text_config.num_beams,
+  text_config.num_expert_group, text_config.num_return_sequences, text_config.output_attentions,
+  text_config.output_hidden_states, text_config.output_scores, text_config.pad_token_id,
+  text_config.prefix, text_config.problem_type, text_config.pruned_heads, text_config.quantization_config.config_groups.group_0.format,
   text_config.quantization_config.config_groups.group_0.input_activations, text_config.quantization_config.config_groups.group_0.output_activations,
   text_config.quantization_config.config_groups.group_0.targets, text_config.quantization_config.config_groups.group_0.weights.actorder,
   text_config.quantization_config.config_groups.group_0.weights.block_structure, text_config.quantization_config.config_groups.group_0.weights.dynamic,

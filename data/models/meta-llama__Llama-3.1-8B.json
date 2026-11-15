@@ -32,7 +32,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-13T20:59:26+00:00",
+ "analyzed_at": "2026-11-14T09:57:48+00:00",
  "facts": {
   "architecture_class": {
    "value": "LlamaForCausalLM",
@@ -213,7 +213,8 @@
     31
    ],
    "tensor_count": 291,
-   "skipped_scale_tensors": 0
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
   },
   "active": null
  },
@@ -560,6 +561,19 @@
    ]
   },
   {
+   "field": "model_type",
+   "value": "llama",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "llama",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
    "field": "layer_types",
    "value": [
     "full_attention",
@@ -750,7 +764,8 @@
    "field": "weight_header_summary",
    "value": {
     "tensor_count": 291,
-    "skipped_scale_tensors": 0
+    "skipped_scale_tensors": 0,
+    "skipped_buffer_tensors": 0
    },
    "status": "single source",
    "confidence": 0.7,
@@ -759,9 +774,157 @@
     {
      "value": {
       "tensor_count": 291,
-      "skipped_scale_tensors": 0
+      "skipped_scale_tensors": 0,
+      "skipped_buffer_tensors": 0
      },
      "evidence": "weights:tensor header inventory"
+    }
+   ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "full_attention": {
+      "layers": 32,
+      "tensors": {
+       "input_layernorm.weight": [
+        4096
+       ],
+       "post_attention_layernorm.weight": [
+        4096
+       ],
+       "self_attn.k_proj.weight": [
+        1024,
+        4096
+       ],
+       "self_attn.o_proj.weight": [
+        4096,
+        4096
+       ],
+       "self_attn.q_proj.weight": [
+        4096,
+        4096
+       ],
+       "self_attn.v_proj.weight": [
+        1024,
+        4096
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        31
+       ]
+      ],
+      "tensors": {
+       "mlp.down_proj.weight": [
+        4096,
+        14336
+       ],
+       "mlp.gate_proj.weight": [
+        14336,
+        4096
+       ],
+       "mlp.up_proj.weight": [
+        14336,
+        4096
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      128256,
+      4096
+     ],
+     "lm_head.weight": [
+      128256,
+      4096
+     ],
+     "norm.weight": [
+      4096
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "full_attention": {
+        "layers": 32,
+        "tensors": {
+         "input_layernorm.weight": [
+          4096
+         ],
+         "post_attention_layernorm.weight": [
+          4096
+         ],
+         "self_attn.k_proj.weight": [
+          1024,
+          4096
+         ],
+         "self_attn.o_proj.weight": [
+          4096,
+          4096
+         ],
+         "self_attn.q_proj.weight": [
+          4096,
+          4096
+         ],
+         "self_attn.v_proj.weight": [
+          1024,
+          4096
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          31
+         ]
+        ],
+        "tensors": {
+         "mlp.down_proj.weight": [
+          4096,
+          14336
+         ],
+         "mlp.gate_proj.weight": [
+          14336,
+          4096
+         ],
+         "mlp.up_proj.weight": [
+          14336,
+          4096
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        128256,
+        4096
+       ],
+       "lm_head.weight": [
+        128256,
+        4096
+       ],
+       "norm.weight": [
+        4096
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
     }
    ]
   }
@@ -815,6 +978,7 @@
    "attention"
   ],
   "params_total": 8030261248,
+  "model_type": "llama",
   "layer_types": [
    "full_attention",
    "full_attention",
@@ -872,7 +1036,76 @@
   },
   "weight_header_summary": {
    "tensor_count": 291,
-   "skipped_scale_tensors": 0
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "full_attention": {
+     "layers": 32,
+     "tensors": {
+      "input_layernorm.weight": [
+       4096
+      ],
+      "post_attention_layernorm.weight": [
+       4096
+      ],
+      "self_attn.k_proj.weight": [
+       1024,
+       4096
+      ],
+      "self_attn.o_proj.weight": [
+       4096,
+       4096
+      ],
+      "self_attn.q_proj.weight": [
+       4096,
+       4096
+      ],
+      "self_attn.v_proj.weight": [
+       1024,
+       4096
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       31
+      ]
+     ],
+     "tensors": {
+      "mlp.down_proj.weight": [
+       4096,
+       14336
+      ],
+      "mlp.gate_proj.weight": [
+       14336,
+       4096
+      ],
+      "mlp.up_proj.weight": [
+       14336,
+       4096
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     128256,
+     4096
+    ],
+    "lm_head.weight": [
+     128256,
+     4096
+    ],
+    "norm.weight": [
+     4096
+    ]
+   }
   }
  },
  "review_queue": [],
