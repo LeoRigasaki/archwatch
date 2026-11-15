@@ -1,0 +1,543 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 2230">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#374151"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; fill: #111827; }
+      .title { font-size: 34px; font-weight: 700; text-anchor: middle; }
+      .summary { font-size: 16px; fill: #374151; text-anchor: middle; }
+      .panel-title { font-size: 17px; font-weight: 700; }
+      .node-box { fill: #ffffff; stroke: #4b5563; stroke-width: 1.5; }
+      .node-text { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+      .io-box { fill: #ffffff; stroke: #4b5563; stroke-width: 1.5; }
+      .io-text { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+      .bar-text { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .repeat-label { font-size: 15px; font-weight: 700; fill: #374151; dominant-baseline: central; }
+      .brace-label { font-size: 16px; font-weight: 700; fill: #374151; dominant-baseline: central; }
+      .note-text { font-size: 14px; fill: #6b7280; }
+      .caption { font-size: 14px; fill: #6b7280; }
+      .callout-text { font-size: 15px; font-weight: 700; fill: #111827; }
+      .edge { fill: none; stroke: #374151; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1800" height="2230" fill="#ffffff"/>
+
+  <!-- Title band -->
+  <g data-section="title">
+    <text x="900" y="60" class="title">Kimi-K3.1-Pro (2.8T)</text>
+    <text x="900" y="92" class="summary">2.78T parameters, 104B active, 93 layers, 1M context</text>
+  </g>
+
+  <!-- Main stack (left column: x 24 to 600) -->
+  <g data-section="stack">
+    <!-- Top IO boxes (data flows bottom to top) -->
+    <line x1="200" y1="168" x2="200" y2="140" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="lm_head">
+      <rect x="40" y="168" width="320" height="40" rx="8" class="io-box"/>
+      <text x="200" y="188" class="io-text">LM head 7168 -&gt; 163,840</text>
+    </g>
+    <text x="374" y="183" class="note-text">
+      <tspan x="374" dy="0">LM head is not tied</tspan>
+      <tspan x="374" dy="18">to the embedding</tspan>
+    </text>
+
+    <line x1="200" y1="228" x2="200" y2="208" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="final_norm">
+      <rect x="40" y="228" width="320" height="40" rx="8" class="io-box"/>
+      <text x="200" y="248" class="io-text">Final norm</text>
+    </g>
+
+    <line x1="200" y1="288" x2="200" y2="268" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="final_res">
+      <rect x="40" y="288" width="320" height="40" rx="8" class="io-box"/>
+      <text x="200" y="308" class="io-text">Final AttnRes mix</text>
+    </g>
+
+    <line x1="200" y1="366" x2="200" y2="328" class="edge" marker-end="url(#arrow)"/>
+
+    <!-- Main stack background container -->
+    <rect x="40" y="354" width="320" height="432" rx="12" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+
+    <!-- Compressed view group 3 (highest) -->
+    <g data-group="3" data-repeat="1">
+      <rect x="52" y="366" width="296" height="48" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.2"/>
+      <rect data-layer="Gated DSA + LatentMoE" x="62" y="374" width="276" height="32" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+      <text x="200" y="390" class="bar-text">Gated DSA + LatentMoE</text>
+      <text x="374" y="390" class="repeat-label">1 x</text>
+    </g>
+
+    <line x1="200" y1="434" x2="200" y2="414" class="edge" marker-end="url(#arrow)"/>
+
+    <!-- Compressed view group 2 (middle) -->
+    <g data-group="2" data-repeat="22">
+      <rect x="52" y="434" width="296" height="160" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.2"/>
+      <rect data-layer="Gated DSA + LatentMoE" x="62" y="442" width="276" height="32" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+      <text x="200" y="458" class="bar-text">Gated DSA + LatentMoE</text>
+      <rect data-layer="KDA + LatentMoE" x="62" y="480" width="276" height="32" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="200" y="496" class="bar-text">KDA + LatentMoE</text>
+      <rect data-layer="KDA + LatentMoE" x="62" y="518" width="276" height="32" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="200" y="534" class="bar-text">KDA + LatentMoE</text>
+      <rect data-layer="KDA + LatentMoE" x="62" y="556" width="276" height="32" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="200" y="572" class="bar-text">KDA + LatentMoE</text>
+      <text x="374" y="514" class="repeat-label">22 x</text>
+    </g>
+
+    <line x1="200" y1="614" x2="200" y2="594" class="edge" marker-end="url(#arrow)"/>
+
+    <!-- Compressed view group 1 (lowest) -->
+    <g data-group="1" data-repeat="1">
+      <rect x="52" y="614" width="296" height="160" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.2"/>
+      <rect data-layer="Gated DSA + LatentMoE" x="62" y="622" width="276" height="32" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+      <text x="200" y="638" class="bar-text">Gated DSA + LatentMoE</text>
+      <rect data-layer="KDA + LatentMoE" x="62" y="660" width="276" height="32" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="200" y="676" class="bar-text">KDA + LatentMoE</text>
+      <rect data-layer="KDA + LatentMoE" x="62" y="698" width="276" height="32" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="200" y="714" class="bar-text">KDA + LatentMoE</text>
+      <rect data-layer="KDA + dense FFN" x="62" y="736" width="276" height="32" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+      <text x="200" y="752" class="bar-text">KDA + dense FFN</text>
+      <text x="374" y="694" class="repeat-label">1 x</text>
+    </g>
+
+    <!-- Brace beside the whole stack -->
+    <path d="M 426 366 L 438 366 L 438 564 L 448 570 L 438 576 L 438 774 L 426 774" fill="none" stroke="#4b5563" stroke-width="1.8"/>
+    <text x="458" y="570" class="brace-label">93 layers</text>
+
+    <line x1="200" y1="812" x2="200" y2="774" class="edge" marker-end="url(#arrow)"/>
+
+    <!-- Bottom IO boxes -->
+    <g data-io="embedding">
+      <rect x="40" y="812" width="320" height="40" rx="8" class="io-box"/>
+      <text x="200" y="832" class="io-text">Token embedding 163,840 x 7168</text>
+    </g>
+    <text x="374" y="810" class="note-text">
+      <tspan x="374" dy="0">27-layer vision encoder (401M)</tspan>
+      <tspan x="374" dy="18">+ projector (46M) feeds image</tspan>
+      <tspan x="374" dy="18">tokens into the embedding</tspan>
+      <tspan x="374" dy="18">sequence</tspan>
+    </text>
+
+    <line x1="200" y1="876" x2="200" y2="852" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="text">
+      <rect x="40" y="876" width="320" height="40" rx="8" class="io-box"/>
+      <text x="200" y="896" class="io-text">Tokenized text</text>
+    </g>
+  </g>
+
+  <!-- Callouts beside stack (x 620 to 880) -->
+  <g data-callout="1">
+    <text x="630" y="470" class="callout-text">Context length: 1M tokens</text>
+  </g>
+  <g data-callout="2">
+    <text x="630" y="535" class="callout-text">69 KDA + 24 Gated DSA</text>
+  </g>
+
+  <!-- Each layer graph (under main stack: x 24 to 860) -->
+  <g data-section="each-layer">
+    <rect x="24" y="960" width="836" height="584" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.5"/>
+    <text x="44" y="990" class="panel-title">Each layer</text>
+
+    <g data-node="out">
+      <rect x="377" y="1012" width="130" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1030" class="node-text">layer output</text>
+    </g>
+
+    <g data-node="res2">
+      <rect x="377" y="1070" width="130" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1088" class="node-text">AttnRes mix</text>
+    </g>
+
+    <g data-node="ffn">
+      <rect x="317" y="1128" width="250" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1146" class="node-text">FFN: dense FFN or LatentMoE</text>
+    </g>
+
+    <g data-node="pre_ffn_norm">
+      <rect x="367" y="1186" width="150" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1204" class="node-text">norm (pre-FFN)</text>
+    </g>
+
+    <g data-node="res1">
+      <rect x="377" y="1244" width="130" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1262" class="node-text">AttnRes mix</text>
+    </g>
+
+    <g data-node="mixer">
+      <rect x="312" y="1302" width="260" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1320" class="node-text">token mixer: KDA or Gated DSA</text>
+    </g>
+
+    <g data-node="pre_mixer_norm">
+      <rect x="362" y="1360" width="160" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1378" class="node-text">norm (pre-mixer)</text>
+    </g>
+
+    <g data-node="in">
+      <rect x="377" y="1418" width="130" height="36" rx="8" class="node-box"/>
+      <text x="442" y="1436" class="node-text">layer input</text>
+    </g>
+
+    <!-- Edges -->
+    <path data-edge="in->pre_mixer_norm" d="M 442 1418 L 442 1396" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="pre_mixer_norm->mixer" d="M 442 1360 L 442 1338" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="mixer->res1" d="M 442 1302 L 442 1280" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="in->res1" d="M 377 1436 L 230 1436 L 230 1262 L 377 1262" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="res1->pre_ffn_norm" d="M 442 1244 L 442 1222" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="pre_ffn_norm->ffn" d="M 442 1186 L 442 1164" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="ffn->res2" d="M 442 1128 L 442 1106" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="res1->res2" d="M 507 1262 L 654 1262 L 654 1088 L 507 1088" class="edge" marker-end="url(#arrow)"/>
+    <path data-edge="res2->out" d="M 442 1070 L 442 1048" class="edge" marker-end="url(#arrow)"/>
+
+    <!-- Captions -->
+    <text x="44" y="1484" class="caption">learned residual-mixing weights (self_attention_res_proj, mlp_res_proj);</text>
+    <text x="44" y="1504" class="caption">config attn_res_block_size = 12</text>
+    <text x="44" y="1526" class="caption">dense FFN: layer 1; LatentMoE: layers 2-93</text>
+  </g>
+
+  <!-- Zoom panels (right column: x 900 to 1520) -->
+  <g data-section="zooms">
+
+    <!-- Zoom 1: KDA -->
+    <g data-zoom="kda">
+      <rect x="900" y="130" width="620" height="558" rx="10" fill="#ffffff" stroke="#0d9488" stroke-width="2" stroke-dasharray="6,4"/>
+      <text x="920" y="156" class="panel-title" style="fill: #0d9488;">Kimi Delta Attention (KDA), 69 layers</text>
+
+      <g data-node="out">
+        <rect x="1142" y="172" width="136" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="189" class="node-text">output (7168)</text>
+      </g>
+
+      <g data-node="oproj">
+        <rect x="1062" y="222" width="296" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="239" class="node-text">output projection: 12288 -&gt; 7168</text>
+      </g>
+
+      <g data-node="mul">
+        <rect x="1160" y="272" width="100" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="289" class="node-text">multiply</text>
+      </g>
+
+      <g data-node="onorm">
+        <rect x="1036" y="322" width="168" height="34" rx="8" class="node-box"/>
+        <text x="1120" y="339" class="node-text">output norm (128)</text>
+      </g>
+
+      <g data-node="gate">
+        <rect x="1272" y="320" width="204" height="42" rx="8" class="node-box"/>
+        <text x="1374" y="332" class="node-text">output gate:</text>
+        <text x="1374" y="350" class="node-text">Linear 7168 -&gt; 12288</text>
+      </g>
+
+      <g data-node="delta">
+        <rect x="1042" y="378" width="156" height="34" rx="8" class="node-box"/>
+        <text x="1120" y="395" class="node-text">gated delta rule</text>
+      </g>
+
+      <g data-node="conv">
+        <rect x="930" y="428" width="156" height="34" rx="8" class="node-box"/>
+        <text x="1008" y="445" class="node-text">Conv1d, kernel 4</text>
+      </g>
+
+      <g data-node="qkv">
+        <rect x="916" y="478" width="178" height="42" rx="8" class="node-box"/>
+        <text x="1005" y="490" class="node-text">q, k, v:</text>
+        <text x="1005" y="508" class="node-text">Linear 7168 -&gt; 12288</text>
+      </g>
+
+      <g data-node="beta">
+        <rect x="1104" y="478" width="150" height="42" rx="8" class="node-box"/>
+        <text x="1179" y="490" class="node-text">beta:</text>
+        <text x="1179" y="508" class="node-text">Linear 7168 -&gt; 96</text>
+      </g>
+
+      <g data-node="decay">
+        <rect x="1264" y="478" width="176" height="42" rx="8" class="node-box"/>
+        <text x="1352" y="490" class="node-text">decay: Linear 7168</text>
+        <text x="1352" y="508" class="node-text">-&gt; 128 -&gt; 12288</text>
+      </g>
+
+      <g data-node="in">
+        <rect x="1114" y="540" width="130" height="34" rx="8" class="node-box"/>
+        <text x="1179" y="557" class="node-text">input (7168)</text>
+      </g>
+
+      <!-- Edges -->
+      <path data-edge="in->qkv" d="M 1140 540 L 1140 530 L 1005 530 L 1005 520" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="qkv->conv" d="M 1008 478 L 1008 462" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="conv->delta" d="M 1008 428 L 1008 420 L 1072 420 L 1072 412" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->beta" d="M 1179 540 L 1179 520" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="beta->delta" d="M 1179 478 L 1179 420 L 1120 420 L 1120 412" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->decay" d="M 1218 540 L 1218 530 L 1352 530 L 1352 520" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="decay->delta" d="M 1352 478 L 1352 444 L 1168 444 L 1168 412" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="delta->onorm" d="M 1120 378 L 1120 356" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="onorm->mul" d="M 1120 322 L 1120 314 L 1185 314 L 1185 306" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="mul->oproj" d="M 1210 272 L 1210 256" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="oproj->out" d="M 1210 222 L 1210 206" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->gate" d="M 1244 557 L 1492 557 L 1492 341 L 1476 341" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="gate->mul" d="M 1374 320 L 1374 314 L 1235 314 L 1235 306" class="edge" marker-end="url(#arrow)"/>
+
+      <!-- Captions -->
+      <text x="920" y="598" class="caption">96 heads x 128 dims</text>
+      <text x="920" y="616" class="caption">short depthwise Conv1d on q, k and v separately</text>
+      <text x="920" y="634" class="caption">beta: one per head</text>
+      <text x="920" y="652" class="caption">decay gate is low-rank</text>
+      <text x="920" y="670" class="caption">fixed 128 x 128 state per head; cache does not grow with context</text>
+    </g>
+
+    <!-- Zoom 2: Gated DSA -->
+    <g data-zoom="gated_dsa">
+      <rect x="900" y="708" width="620" height="636" rx="10" fill="#ffffff" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,4"/>
+      <text x="920" y="734" class="panel-title" style="fill: #dc2626;">Gated DeepSeek Sparse Attention (DSA), 24 layers</text>
+
+      <g data-node="out">
+        <rect x="1142" y="750" width="136" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="767" class="node-text">output (7168)</text>
+      </g>
+
+      <g data-node="oproj">
+        <rect x="1062" y="800" width="296" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="817" class="node-text">output projection: 12288 -&gt; 7168</text>
+      </g>
+
+      <g data-node="mul">
+        <rect x="1160" y="850" width="100" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="867" class="node-text">multiply</text>
+      </g>
+
+      <g data-node="attn">
+        <rect x="1047" y="900" width="206" height="34" rx="8" class="node-box"/>
+        <text x="1150" y="917" class="node-text">sparse attention, NoPE</text>
+      </g>
+
+      <g data-node="gate">
+        <rect x="1281" y="898" width="204" height="42" rx="8" class="node-box"/>
+        <text x="1383" y="910" class="node-text">output gate:</text>
+        <text x="1383" y="928" class="node-text">Linear 7168 -&gt; 12288</text>
+      </g>
+
+      <g data-node="topk">
+        <rect x="1080" y="958" width="140" height="42" rx="8" class="node-box"/>
+        <text x="1150" y="970" class="node-text">select top</text>
+        <text x="1150" y="988" class="node-text">2048 tokens</text>
+      </g>
+
+      <g data-node="kvb">
+        <rect x="1238" y="958" width="176" height="42" rx="8" class="node-box"/>
+        <text x="1326" y="970" class="node-text">Linear 512 -&gt;</text>
+        <text x="1326" y="988" class="node-text">96 x (128 + 128)</text>
+      </g>
+
+      <g data-node="qb">
+        <rect x="914" y="1018" width="144" height="42" rx="8" class="node-box"/>
+        <text x="986" y="1030" class="node-text">Linear 1536 -&gt;</text>
+        <text x="986" y="1048" class="node-text">96 x 192</text>
+      </g>
+
+      <g data-node="indexer">
+        <rect x="1075" y="1018" width="150" height="42" rx="8" class="node-box"/>
+        <text x="1150" y="1030" class="node-text">indexer:</text>
+        <text x="1150" y="1048" class="node-text">32 heads x 128</text>
+      </g>
+
+      <g data-node="kvnorm">
+        <rect x="1259" y="1018" width="134" height="42" rx="8" class="node-box"/>
+        <text x="1326" y="1030" class="node-text">norm on</text>
+        <text x="1326" y="1048" class="node-text">512 latent</text>
+      </g>
+
+      <g data-node="qa">
+        <rect x="916" y="1080" width="172" height="42" rx="8" class="node-box"/>
+        <text x="1002" y="1092" class="node-text">q: Linear 7168</text>
+        <text x="1002" y="1110" class="node-text">-&gt; 1536, norm</text>
+      </g>
+
+      <g data-node="kva">
+        <rect x="1244" y="1080" width="164" height="42" rx="8" class="node-box"/>
+        <text x="1326" y="1092" class="node-text">kv: Linear</text>
+        <text x="1326" y="1110" class="node-text">7168 -&gt; 576</text>
+      </g>
+
+      <g data-node="in">
+        <rect x="1105" y="1142" width="130" height="34" rx="8" class="node-box"/>
+        <text x="1170" y="1159" class="node-text">input (7168)</text>
+      </g>
+
+      <!-- Edges (17) -->
+      <path data-edge="in->qa" d="M 1135 1142 L 1135 1132 L 1002 1132 L 1002 1122" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="qa->qb" d="M 986 1080 L 986 1060" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="qb->attn" d="M 986 1018 L 986 946 L 1085 946 L 1085 934" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->kva" d="M 1205 1142 L 1205 1132 L 1326 1132 L 1326 1122" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="kva->kvnorm" d="M 1326 1080 L 1326 1060" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="kvnorm->kvb" d="M 1326 1018 L 1326 1000" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="kvb->attn" d="M 1300 958 L 1300 946 L 1200 946 L 1200 934" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="kva->attn" d="M 1408 1101 L 1442 1101 L 1442 952 L 1232 952 L 1232 934" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="qa->indexer" d="M 1068 1080 L 1068 1070 L 1120 1070 L 1120 1060" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->indexer" d="M 1170 1142 L 1170 1060" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="indexer->topk" d="M 1150 1018 L 1150 1000" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="topk->attn" d="M 1150 958 L 1150 934" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="attn->mul" d="M 1150 900 L 1150 892 L 1185 892 L 1185 884" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="mul->oproj" d="M 1210 850 L 1210 834" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="oproj->out" d="M 1210 800 L 1210 784" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->gate" d="M 1235 1159 L 1500 1159 L 1500 919 L 1485 919" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="gate->mul" d="M 1383 898 L 1383 892 L 1235 892 L 1235 884" class="edge" marker-end="url(#arrow)"/>
+
+      <!-- Captions -->
+      <text x="920" y="1200" class="caption">indexer: query from the 1536 latent, key Linear 7168 -&gt; 128 with norm,</text>
+      <text x="920" y="1218" class="caption">per-head weights Linear 7168 -&gt; 32</text>
+      <text x="920" y="1236" class="caption">indexer picks the top 2048 tokens; attention runs only on those</text>
+      <text x="920" y="1254" class="caption">96 heads; query/key 192 = 128 + 64, value 128</text>
+      <text x="920" y="1272" class="caption">kv: 576 = 512 latent + 64 key dims;</text>
+      <text x="920" y="1290" class="caption">the 64 key dims skip the latent norm</text>
+      <text x="920" y="1308" class="caption">position encoding: NoPE (config mla_use_nope = true)</text>
+      <text x="920" y="1326" class="caption">cache per token: 576 MLA values + 128 indexer key values per layer</text>
+    </g>
+
+    <!-- Zoom 3: Dense FFN -->
+    <g data-zoom="dense_ffn">
+      <rect x="900" y="1364" width="620" height="368" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="2" stroke-dasharray="6,4"/>
+      <text x="920" y="1390" class="panel-title" style="fill: #4b5563;">Dense FFN (layer 1 only)</text>
+
+      <g data-node="out">
+        <rect x="1142" y="1406" width="136" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="1423" class="node-text">output (7168)</text>
+      </g>
+
+      <g data-node="down">
+        <rect x="1083" y="1456" width="254" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="1473" class="node-text">down: Linear 33792 -&gt; 7168</text>
+      </g>
+
+      <g data-node="mul">
+        <rect x="1160" y="1506" width="100" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="1523" class="node-text">multiply</text>
+      </g>
+
+      <g data-node="act">
+        <rect x="1050" y="1556" width="80" height="34" rx="8" class="node-box"/>
+        <text x="1090" y="1573" class="node-text">SiTU</text>
+      </g>
+
+      <g data-node="gate">
+        <rect x="970" y="1606" width="240" height="34" rx="8" class="node-box"/>
+        <text x="1090" y="1623" class="node-text">gate: Linear 7168 -&gt; 33792</text>
+      </g>
+
+      <g data-node="up">
+        <rect x="1234" y="1606" width="226" height="34" rx="8" class="node-box"/>
+        <text x="1347" y="1623" class="node-text">up: Linear 7168 -&gt; 33792</text>
+      </g>
+
+      <g data-node="in">
+        <rect x="1145" y="1658" width="130" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="1675" class="node-text">input (7168)</text>
+      </g>
+
+      <!-- Edges (7) -->
+      <path data-edge="in->gate" d="M 1185 1658 L 1185 1649 L 1090 1649 L 1090 1640" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="gate->act" d="M 1090 1606 L 1090 1590" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="act->mul" d="M 1090 1556 L 1090 1548 L 1185 1548 L 1185 1540" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->up" d="M 1235 1658 L 1235 1649 L 1347 1649 L 1347 1640" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="up->mul" d="M 1347 1606 L 1347 1548 L 1235 1548 L 1235 1540" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="mul->down" d="M 1210 1506 L 1210 1490" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="down->out" d="M 1210 1456 L 1210 1440" class="edge" marker-end="url(#arrow)"/>
+
+      <!-- Caption -->
+      <text x="920" y="1716" class="caption">activation: SiTU-GLU (gated)</text>
+    </g>
+
+    <!-- Zoom 4: LatentMoE -->
+    <g data-zoom="latent_moe">
+      <rect x="900" y="1752" width="620" height="438" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="2" stroke-dasharray="6,4"/>
+      <text x="920" y="1778" class="panel-title" style="fill: #4b5563;">LatentMoE FFN (layers 2-93)</text>
+
+      <g data-node="out">
+        <rect x="1142" y="1794" width="136" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="1811" class="node-text">output (7168)</text>
+      </g>
+
+      <g data-node="sum">
+        <rect x="1170" y="1844" width="80" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="1861" class="node-text">sum</text>
+      </g>
+
+      <g data-node="latent_up">
+        <rect x="1017" y="1894" width="186" height="34" rx="8" class="node-box"/>
+        <text x="1110" y="1911" class="node-text">Linear 3584 -&gt; 7168</text>
+      </g>
+
+      <g data-node="experts">
+        <rect x="968" y="1944" width="284" height="34" rx="8" class="node-box"/>
+        <text x="1110" y="1961" class="node-text">16 experts: 3584 -&gt; 3072 -&gt; 3584</text>
+      </g>
+
+      <g data-node="shared">
+        <rect x="1302" y="1940" width="168" height="42" rx="8" class="node-box"/>
+        <text x="1386" y="1952" class="node-text">2 shared</text>
+        <text x="1386" y="1970" class="node-text">experts (6144)</text>
+      </g>
+
+      <g data-node="latent_down">
+        <rect x="920" y="1998" width="168" height="42" rx="8" class="node-box"/>
+        <text x="1004" y="2010" class="node-text">Linear 7168 -&gt;</text>
+        <text x="1004" y="2028" class="node-text">3584, norm</text>
+      </g>
+
+      <g data-node="router">
+        <rect x="1102" y="1998" width="168" height="42" rx="8" class="node-box"/>
+        <text x="1186" y="2010" class="node-text">router: 896</text>
+        <text x="1186" y="2028" class="node-text">experts, top 16</text>
+      </g>
+
+      <g data-node="in">
+        <rect x="1145" y="2060" width="130" height="34" rx="8" class="node-box"/>
+        <text x="1210" y="2077" class="node-text">input (7168)</text>
+      </g>
+
+      <!-- Edges (9) -->
+      <path data-edge="in->latent_down" d="M 1170 2060 L 1170 2050 L 1004 2050 L 1004 2040" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="latent_down->experts" d="M 1004 1998 L 1004 1978" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="experts->latent_up" d="M 1110 1944 L 1110 1928" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="latent_up->sum" d="M 1110 1894 L 1110 1886 L 1190 1886 L 1190 1878" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->router" d="M 1205 2060 L 1205 2050 L 1186 2050 L 1186 2040" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="router->experts" d="M 1186 1998 L 1186 1978" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="in->shared" d="M 1245 2060 L 1245 2050 L 1386 2050 L 1386 1982" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="shared->sum" d="M 1386 1940 L 1386 1886 L 1230 1886 L 1230 1878" class="edge" marker-end="url(#arrow)"/>
+      <path data-edge="sum->out" d="M 1210 1844 L 1210 1828" class="edge" marker-end="url(#arrow)"/>
+
+      <!-- Captions -->
+      <text x="920" y="2118" class="caption">routed experts work in a smaller latent: 7168 -&gt; 3584 -&gt; 7168</text>
+      <text x="920" y="2136" class="caption">shared experts: combined width 6144, every token, full 7168 space</text>
+      <text x="920" y="2154" class="caption">router uses sigmoid gating</text>
+      <text x="920" y="2172" class="caption">activation: SiTU-GLU (gated)</text>
+    </g>
+
+  </g>
+
+  <!-- Callouts beside zoom panels (x 1540 to 1776) -->
+  <g data-callout="3">
+    <text x="1544" y="1910" class="callout-text">
+      <tspan x="1544" dy="0">Layer 1 dense FFN;</tspan>
+      <tspan x="1544" dy="20">layers 2-93 LatentMoE</tspan>
+    </text>
+  </g>
+  <g data-callout="4">
+    <text x="1544" y="1990" class="callout-text">
+      <tspan x="1544" dy="0">896 experts,</tspan>
+      <tspan x="1544" dy="20">16 active + 2 shared</tspan>
+    </text>
+  </g>
+  <g data-callout="5">
+    <text x="1544" y="960" class="callout-text">
+      <tspan x="1544" dy="0">KV cache: about 33 KB</tspan>
+      <tspan x="1544" dy="20">per token (vs 5.4 MB</tspan>
+      <tspan x="1544" dy="20">for plain multi-head</tspan>
+      <tspan x="1544" dy="20">attention)</tspan>
+    </text>
+  </g>
+
+</svg>

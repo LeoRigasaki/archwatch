@@ -83,6 +83,9 @@ def human(n):
 def show(field, v):
     if isinstance(v, bool):
         return "yes" if v else "no"
+    if field == "block_shapes":
+        mixers = ", ".join(f"{k} ({len(b['tensors'])} tensors)" for k, b in v["mixers"].items())
+        return f"{mixers}; {len(v['ffns'])} FFN shape group(s)"
     if field == "layer_index_base_in_config":
         return "1-based" if v == 1 else "0-based"
     if isinstance(v, dict):

@@ -1,0 +1,110 @@
+[
+  {
+    "time": 1794650864.344037,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651042.5153332,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651181.454719,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651196.4599948,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651406.5753422,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651594.672866,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651805.9403782,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794651960.0164611,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794652065.1515431,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v1"
+  },
+  {
+    "time": 1794671164.813293,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794671313.537493,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794671328.542652,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794671465.965827,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729524.195953,
+    "day": "2026-11-14",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729667.8577652,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729761.4279912,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794729836.271328,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794731434.8951092,
+    "day": "2026-11-15",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  }
+]

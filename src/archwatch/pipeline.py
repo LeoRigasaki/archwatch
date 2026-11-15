@@ -78,19 +78,22 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
     readme = hub.get_text(repo, "README.md", revision=info["sha"]) or ""
     claims = card.parse_card(readme)
 
-    wcount = wshape = active = wkinds = None
+    wcount = wshape = active = wkinds = blocks = None
     if with_weights:
         tensors = hub.safetensors_headers(repo, info=info)
         wcount = weights.count(tensors, bits, native_expert_bits=native_expert_bits, num_layers=num_layers)
         wshape = weights.shape_facts(tensors, bits, native_expert_bits=native_expert_bits, num_layers=num_layers)
         wkinds = weights.layer_kinds(tensors, num_layers=num_layers)
+        blocks = weights.block_shapes(
+            tensors, facts.get("layer_types", (None,))[0], num_layers=num_layers, quant_bits=bits
+        )
         active = weights.active_params(
             wcount, facts.get("moe_num_experts", (None,))[0], facts.get("moe_active_experts", (None,))[0]
         )
 
     values = {k: v[0] for k, v in facts.items()}
     mem = calc.cache_model(values)
-    checks = verify.verify(facts, wcount or {}, wshape or {}, active, code, claims, wkinds)
+    checks = verify.verify(facts, wcount or {}, wshape or {}, active, code, claims, wkinds, blocks)
 
     published = {r["field"]: r["value"] for r in checks if r["published"]}
     review = [r for r in checks if not r["published"]]

@@ -1,0 +1,16 @@
+Your previous SVG for the model in this YAML spec failed these automated checks:
+
+{failures}
+
+The FIRST attached image is how your previous SVG renders. Look at it for spacing, placement and line-routing
+problems as well as the failures listed above, then fix them. Keep everything that already works as it is.
+Follow the system instructions and use only what the spec contains. Output only the full corrected SVG.
+
+HOUSE STYLE: match this layout and styling, not its content. The SECOND attached image is the approved
+ArchWatch house-style reference (a different model).
+
+SPEC:
+{spec}
+
+PREVIOUS SVG:
+{svg}

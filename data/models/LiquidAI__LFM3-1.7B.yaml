@@ -2,7 +2,7 @@ id: LiquidAI/LFM3-1.7B
 source_commit: 1da06bec6a819da10b54c67e5c90972b46d81871
 hub_created: '2026-10-23T21:35:42+00:00'
 license: lfm1.0
-analyzed_at: '2026-11-13T20:28:10+00:00'
+analyzed_at: '2026-11-14T09:58:07+00:00'
 published:
   num_layers: 24
   hidden_size: 2048
@@ -12,6 +12,8 @@ published:
   num_kv_heads: 4
   head_dim: 128
   attention_type: GQA
+  ffn_gated: true
+  sandwich_norm: true
   ffn_intermediate: 7680
   short_conv_kernel: 7
   sliding_window: 256
@@ -48,6 +50,7 @@ published:
   qk_norm: true
   attention_output_gate: true
   params_total: 1728801536
+  model_type: lfm3
   layer_types:
   - short_conv
   - short_conv
@@ -83,7 +86,7 @@ published:
     sliding_attention:
       rope_theta: 10000
       rope_type: default
-  sandwich_norm: true
+  activation: silu
   released_weights_format: bfloat16
   parameter_components:
     dense_ffn: 1132462080
@@ -94,6 +97,110 @@ published:
   weight_header_summary:
     tensor_count: 286
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      short_conv:
+        layers: 13
+        tensors:
+          conv.conv.weight:
+          - 2048
+          - 1
+          - 7
+          conv.in_proj.weight:
+          - 6144
+          - 2048
+          conv.out_proj.weight:
+          - 2048
+          - 2048
+          ffn_norm.weight:
+          - 2048
+          operator_norm.weight:
+          - 2048
+          post_ffn_norm.weight:
+          - 2048
+          post_operator_norm.weight:
+          - 2048
+      full_attention:
+        layers: 6
+        tensors:
+          ffn_norm.weight:
+          - 2048
+          operator_norm.weight:
+          - 2048
+          post_ffn_norm.weight:
+          - 2048
+          post_operator_norm.weight:
+          - 2048
+          self_attn.gate_proj.weight:
+          - 16
+          - 2048
+          self_attn.k_norm.weight:
+          - 128
+          self_attn.k_proj.weight:
+          - 512
+          - 2048
+          self_attn.o_proj.weight:
+          - 2048
+          - 2048
+          self_attn.q_norm.weight:
+          - 128
+          self_attn.q_proj.weight:
+          - 2048
+          - 2048
+          self_attn.v_proj.weight:
+          - 512
+          - 2048
+      sliding_attention:
+        layers: 5
+        tensors:
+          ffn_norm.weight:
+          - 2048
+          operator_norm.weight:
+          - 2048
+          post_ffn_norm.weight:
+          - 2048
+          post_operator_norm.weight:
+          - 2048
+          self_attn.gate_proj.weight:
+          - 16
+          - 2048
+          self_attn.k_norm.weight:
+          - 128
+          self_attn.k_proj.weight:
+          - 512
+          - 2048
+          self_attn.o_proj.weight:
+          - 2048
+          - 2048
+          self_attn.q_norm.weight:
+          - 128
+          self_attn.q_proj.weight:
+          - 2048
+          - 2048
+          self_attn.v_proj.weight:
+          - 512
+          - 2048
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 23
+      tensors:
+        feed_forward.w1.weight:
+        - 7680
+        - 2048
+        feed_forward.w2.weight:
+        - 2048
+        - 7680
+        feed_forward.w3.weight:
+        - 7680
+        - 2048
+    globals:
+      embed_tokens.weight:
+      - 128000
+      - 2048
+      embedding_norm.weight:
+      - 2048
 review_queue: []
 unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): auto_map.AutoConfig,
