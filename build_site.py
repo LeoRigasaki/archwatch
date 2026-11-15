@@ -63,7 +63,7 @@ FIELD_NAMES = {
     "short_conv_kernel": "Conv kernel",
     "sliding_window": "Sliding window",
     "qk_norm": "QK-norm",
-    "kv_cache_per_token_bytes": "Cache growth per token (bytes)",
+    "kv_cache_per_token_bytes": "Growing cache per token (bytes; sliding-window and constant states excluded)",
     "norm": "Norm",
     "released_weights_format": "Released weights",
 }
@@ -144,7 +144,11 @@ def model_section(name, anchor):
         ),
         ("Layers", f"{pub['num_layers']}", show("layer_type_counts", pub["layer_type_counts"])),
         ("Context", f"{int(ctx):,}", "tokens"),
-        ("Cache growth", f"{cache['grows_per_token_bytes']:,} B", "per token, bf16"),
+        (
+            "Growing cache per token",
+            f"{cache['grows_per_token_bytes']:,} B",
+            "sliding-window and constant states excluded; bf16",
+        ),
         ("Cache at full context", f"{full / 2**30:.1f} GiB", "cache-state estimate; see dtype assumptions"),
     ]
     t_html = "".join(
