@@ -14,6 +14,31 @@ model:
   vocabulary: 163,840 (160K)
   context_length: 1M tokens (1,048,576)
   modality: text + image (vision encoder not shown in the main diagram)
+layout:
+  canvas_width: 2150
+  left_panel:
+    x:
+    - 24
+    - 780
+    holds: title-free stack panel with its callout margin, then the Each layer box
+  callout_margin_x:
+  - 560
+  - 770
+  zoom_columns:
+  - x:
+    - 810
+    - 1450
+    panels:
+    - kda
+    - latent_moe
+  - x:
+    - 1480
+    - 2120
+    panels:
+    - gated_dsa
+    - dense_ffn
+  estimated_right_height: 1136
+  balance: left column (stack panel + Each layer box) and the tallest zoom column within 25% of each other
 layer_pattern:
   summary: 69 KDA + 24 Gated DSA layers
   rule: Every 4th layer is Gated DSA (layers 4, 8, 12 ... 92), and layer 93 is also Gated DSA. All other layers are KDA.
@@ -250,11 +275,11 @@ callouts:
 - text: 69 KDA + 24 Gated DSA
   beside: stack
 - text: Layer 1 dense FFN; layers 2-93 LatentMoE
-  beside: latent_moe
+  beside: bar:KDA + dense FFN
 - text: 896 experts, 16 active + 2 shared
-  beside: latent_moe
+  beside: bar:KDA + LatentMoE
 - text: 'KV cache: about 33 KB per token (vs 5.4 MB for plain multi-head attention)'
-  beside: gated_dsa
+  beside: bar:Gated DSA + LatentMoE
 do_not_include:
 - any benchmark scores
 - any number not in this file

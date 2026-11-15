@@ -2,10 +2,15 @@ Draw the architecture diagram for the model in this YAML spec as a single standa
 following the system instructions and the fixed layout exactly.
 
 Before writing, check:
+- the canvas width is layout.canvas_width and the zoom panels sit in the columns given by layout.zoom_columns
 - the layer counts in compressed_view add up to {num_layers}, and each repeat count appears exactly once
-- every zoom panel and the "Each layer" box draw exactly their listed nodes and edges
-- every callout is in its own data-callout group, beside the part named in "beside"
+- every zoom panel and the "Each layer" box draw exactly their listed nodes and edges, with arrows in the gaps
+- every callout is inside the left panel, level with the part named in "beside"
+- the left column and the tallest zoom column are similar in height (within 25%)
 - every element is at least 24 px inside the canvas, and nothing overlaps
 
 SPEC:
 {spec}
+
+HOUSE STYLE REFERENCE (a different model; match its look only):
+{house_style}

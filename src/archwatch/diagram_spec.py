@@ -557,6 +557,69 @@ def _each_layer(v, names, kinds, ffn_names, standalone, learned_res, ffn_where):
     return g.spec()
 
 
+# ---------------------------------------------------------------- layout
+
+
+def _bar(labels, name):
+    """Callout target: the first layer bar whose label starts with (or contains) `name`."""
+    found = next((x for x in labels if x.startswith(name)), None) or next((x for x in labels if name in x), None)
+    if found is None:
+        raise SpecError(f"No layer bar matches callout target {name!r}")
+    return "bar:" + found
+
+
+def _depth(panel):
+    """Rows needed for a graph: the longest path, since parallel branches share a row."""
+    ids = [n["id"] for n in panel["nodes"]]
+    incoming = {i: [] for i in ids}
+    for e in panel["edges"]:
+        a, b = e.split(" -> ")
+        incoming[b].append(a)
+    memo = {}
+
+    def level(i):
+        if i not in memo:
+            memo[i] = 1 + max((level(a) for a in incoming[i]), default=0)
+        return memo[i]
+
+    return max(level(i) for i in ids)
+
+
+def panel_height(panel):
+    return 60 + 58 * _depth(panel) + 20 * len(panel["caption"])
+
+
+def _layout(panels, each_layer):
+    """Fixed page geometry: left panel, then one or two zoom columns balanced by estimated height."""
+    keys = list(panels)
+    heights = {k: panel_height(panels[k]) for k in keys}
+    if len(keys) <= 3:
+        columns = [keys]
+    else:
+        best = None
+        for mask in range(1, 2 ** len(keys) - 1):
+            a = [k for i, k in enumerate(keys) if mask >> i & 1]
+            b = [k for k in keys if k not in a]
+            if keys[0] not in a:
+                continue
+            score = abs(sum(heights[k] for k in a) - sum(heights[k] for k in b))
+            if best is None or score < best[0]:
+                best = (score, [a, b])
+        columns = best[1]
+    left = dict(x=[24, 780])
+    xs = [[810, 1450], [1480, 2120]][: len(columns)]
+    width = xs[-1][1] + 30
+    right = max(sum(heights[k] for k in col) + 24 * (len(col) - 1) for col in columns)
+    return dict(
+        canvas_width=width,
+        left_panel=dict(x=left["x"], holds="title-free stack panel with its callout margin, then the Each layer box"),
+        callout_margin_x=[560, 770],
+        zoom_columns=[dict(x=x, panels=col) for x, col in zip(xs, columns)],
+        estimated_right_height=right,
+        balance="left column (stack panel + Each layer box) and the tallest zoom column within 25% of each other",
+    )
+
+
 # ---------------------------------------------------------------- the spec
 
 
@@ -722,7 +785,10 @@ def build_spec(record: dict) -> dict:
     if dense and sparse:
         d, s = _layers(dense[0]["layer_ranges"]), _layers(sparse[0]["layer_ranges"])
         callouts.append(
-            dict(text=f"{d[0].upper() + d[1:]} dense FFN; {s} {_ffn_name(sparse[0], v, True)}", beside=moe_key)
+            dict(
+                text=f"{d[0].upper() + d[1:]} dense FFN; {s} {_ffn_name(sparse[0], v, True)}",
+                beside=_bar(labels, "dense FFN"),
+            )
         )
     if sparse:
         shared = v.get("moe_shared_experts")
@@ -730,11 +796,16 @@ def build_spec(record: dict) -> dict:
             dict(
                 text=f"{v['moe_num_experts']} experts, {v['moe_active_experts']} active"
                 + (f" + {shared} shared" if shared else ""),
-                beside=moe_key,
+                beside=_bar(labels, _ffn_name(sparse[0], v, True)),
             )
         )
     if v.get("attention_type") in ("GQA", "MQA") and attention_key:
-        callouts.append(dict(text=f"{v['num_attention_heads']} Q / {v['num_kv_heads']} KV heads", beside=attention_key))
+        callouts.append(
+            dict(
+                text=f"{v['num_attention_heads']} Q / {v['num_kv_heads']} KV heads",
+                beside=_bar(labels, names.get("full_attention") or names["sliding_attention"]),
+            )
+        )
     callouts += [
         dict(text=f"Vocabulary: {_short_count(vocab)}", beside="embedding"),
         dict(text=f"Embedding dimension: {hidden}", beside="embedding"),
@@ -756,10 +827,7 @@ def build_spec(record: dict) -> dict:
                 for r in growing
             )
             text += f" (only the {n} {label} layers grow)"
-        target = {"gated_dsa_mla": "gated_dsa", "full_attention_mla": "mla"}.get(
-            growing[0]["layer_type"], attention_key
-        )
-        callouts = callouts[:4] + [dict(text=text, beside=target or "stack")]
+        callouts = callouts[:4] + [dict(text=text, beside=_bar(labels, names[growing[0]["layer_type"]]))]
     else:
         callouts = callouts[:5]
 
@@ -771,6 +839,7 @@ def build_spec(record: dict) -> dict:
 
     return dict(
         model=model,
+        layout=_layout(panels, each_layer),
         layer_pattern=pattern,
         io=io,
         each_layer=each_layer,

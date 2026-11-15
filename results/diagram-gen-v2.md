@@ -21,5 +21,5 @@ limit. The provider's 429 arrived at 13 recorded calls on 2026-11-14 (Pacific), 
 20. The closed route-test PR's calls predate the shared ledger and most likely fell on the same quota
 day. The remaining two models resume with `tools/diagram_gen.py --models ...` after the daily reset.
 
-Previews: `results/diagram-gen/<model>/vN.png`. The first run (flat panels) is archived in
+Previews: `results/diagram-gen-v2/<model>/vN.png`. The first run (flat panels) is archived in
 `results/diagram-gen-v1/`.

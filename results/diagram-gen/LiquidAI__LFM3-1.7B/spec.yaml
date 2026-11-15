@@ -13,6 +13,26 @@ model:
   vocabulary: 128,000 (128K)
   context_length: 256K tokens (262,144)
   embedding: tied to the LM head
+layout:
+  canvas_width: 1480
+  left_panel:
+    x:
+    - 24
+    - 780
+    holds: title-free stack panel with its callout margin, then the Each layer box
+  callout_margin_x:
+  - 560
+  - 770
+  zoom_columns:
+  - x:
+    - 810
+    - 1450
+    panels:
+    - short_conv
+    - gqa
+    - ffn
+  estimated_right_height: 1566
+  balance: left column (stack panel + Each layer box) and the tallest zoom column within 25% of each other
 layer_pattern:
   summary: 13 ShortConv + 6 Global GQA + 5 Sliding-window GQA layers
   compressed_view:
@@ -188,11 +208,11 @@ callouts:
 - text: 13 ShortConv + 6 Global GQA + 5 Sliding-window GQA
   beside: stack
 - text: 16 Q / 4 KV heads
-  beside: gqa
+  beside: bar:Global GQA + FFN
 - text: 'Vocabulary: 128K'
   beside: embedding
 - text: 'KV cache: 12 KB per token (only the 6 global layers grow)'
-  beside: gqa
+  beside: bar:Global GQA + FFN
 do_not_include:
 - any benchmark scores
 - any number not in this file

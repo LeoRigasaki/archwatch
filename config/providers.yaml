@@ -34,11 +34,12 @@ diagram_gen:
   repairs: 2
   fallback_enabled: false
   browser_channel: chrome
-  canvas_width: 1800
   canvas_height_range: [1000, 2400]
   margin_px: 16                 # checked; the prompt asks for 24
   min_font_px: 13.5             # checked; the prompt asks for 14
-  callout_gap_px: 360           # max horizontal gap between a callout and the part it sits beside
+  callout_gap_px: 340           # max gap from a callout's left edge to its target's right edge
+  line_clearance_px: 7.5        # a line may not run within this distance of a box it does not connect (prompt asks 8)
+  callout_level_px: 60          # max vertical distance from the callout's centre to its target
   models:
     - moonshotai/Kimi-K3.1-Pro
     - LiquidAI/LFM3-1.7B

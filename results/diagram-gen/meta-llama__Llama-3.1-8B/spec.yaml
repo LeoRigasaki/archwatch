@@ -12,6 +12,25 @@ model:
   hidden_size: 4096
   vocabulary: 128,256
   context_length: 128K tokens (131,072)
+layout:
+  canvas_width: 1480
+  left_panel:
+    x:
+    - 24
+    - 780
+    holds: title-free stack panel with its callout margin, then the Each layer box
+  callout_margin_x:
+  - 560
+  - 770
+  zoom_columns:
+  - x:
+    - 810
+    - 1450
+    panels:
+    - gqa
+    - ffn
+  estimated_right_height: 880
+  balance: left column (stack panel + Each layer box) and the tallest zoom column within 25% of each other
 layer_pattern:
   summary: 32 GQA layers
   compressed_view:
@@ -124,13 +143,13 @@ callouts:
 - text: 'Context length: 128K tokens'
   beside: stack
 - text: 32 Q / 8 KV heads
-  beside: gqa
+  beside: bar:GQA + FFN
 - text: 'Vocabulary: 128,256'
   beside: embedding
 - text: 'Embedding dimension: 4096'
   beside: embedding
 - text: 'KV cache: 128 KB per token'
-  beside: gqa
+  beside: bar:GQA + FFN
 do_not_include:
 - any benchmark scores
 - any number not in this file
