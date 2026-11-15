@@ -1,0 +1,8 @@
+# Outside comparison only. Never a source for published fields, gold labels or diagrams.
+# Its images are never downloaded or used; only models.yml is read, at this pinned commit.
+repo: rasbt/llm-architecture-gallery
+commit: 660cc1886a9d2a009c46ecc8e17e98b1075f58b2   # main on 2026-11-11
+path: models.yml
+license: Apache-2.0
+raw_url: https://raw.githubusercontent.com/{repo}/{commit}/{path}
+max_bytes: 2000000

@@ -100,6 +100,9 @@ Evidence: [results](results/README.md), [offline validation](results/prototype-v
 - [x] Legacy hosting policy checked owner-only; unauthenticated page, diagram and model JSON returned HTTP 401 in the recorded access review.
 - [x] Legacy hosted link omitted from README and absent from the portfolio projects checked during the import.
 - [x] Third-party diagrams/gallery remain ignored private research, outside production records and the gold set.
+- [x] rasbt/llm-architecture-gallery (Apache-2.0) is used as an outside comparison only, fetched at a pinned commit
+  ([agreement report](results/reference-agreement.md)); never a source for published fields or gold labels, and its
+  images are never downloaded or used.
 
 Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-audited in this foundations patch.
 
