@@ -22,7 +22,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-14T08:15:59+00:00",
+ "analyzed_at": "2026-11-15T09:52:59+00:00",
  "facts": {
   "architecture_class": {
    "value": "DeepseekV41ForCausalLM",
@@ -369,8 +369,8 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
-   "text_active": 227705140434,
-   "text_active_without_embeddings": 227043226834,
+   "text_active": 213479777904,
+   "text_active_without_embeddings": 212817864304,
    "with_vision": 228116982994
   }
  },
@@ -820,13 +820,13 @@
   },
   {
    "field": "params_active",
-   "value": 227705140434,
+   "value": 213479777904,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 227705140434,
+     "value": 213479777904,
      "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
     }
    ]
@@ -1206,7 +1206,7 @@
    "compressed_attention"
   ],
   "params_total": 763205315794,
-  "params_active": 227705140434,
+  "params_active": 213479777904,
   "model_type": "deepseek_v41",
   "ngram_layer_ids": [
    1,

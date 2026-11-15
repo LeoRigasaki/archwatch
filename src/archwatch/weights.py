@@ -33,8 +33,15 @@ def logical_elements(name, tensor, quant_bits=None, native_expert_bits=None):
     return n
 
 
+MTP = re.compile(r"(^|\.)mtp(\.|_)")  # multi-token-prediction / speculative-decoding heads, e.g. mtp.*, mtp_dspark.*
+
+
+def _is_mtp(name: str) -> bool:
+    return bool(MTP.search(name))
+
+
 def main_language_tensor(name, num_layers=None):
-    if any(s in name for s in ("vision", "visual.", "cls_net.", "mtp.", "nextn_predict")):
+    if any(s in name for s in ("vision", "visual.", "cls_net.", "nextn_predict")) or _is_mtp(name):
         return False
     index = _layer_idx(name)
     return num_layers is None or index is None or index < num_layers
@@ -42,7 +49,7 @@ def main_language_tensor(name, num_layers=None):
 
 def _component(name: str) -> str:
     n = name
-    if "cls_net." in n or "mtp." in n:
+    if "cls_net." in n or _is_mtp(n):
         return "auxiliary"
     if "mm_projector" in n:
         return "vision_projector"
@@ -127,12 +134,13 @@ def count(tensors: dict[str, dict], quant_bits: int | None, *, native_expert_bit
 
 
 def active_params(counts: dict, num_experts: int | None, k: int | None) -> dict | None:
-    """Parameters used per token: everything except the routed experts that are not selected."""
+    """Parameters used per token: everything except unselected routed experts and auxiliary heads."""
     if not num_experts or not k:
         return None
     routed = counts["routed_expert_params"]
     inactive = routed * (1 - k / num_experts)
-    text_active = counts["text_total"] - inactive
+    # Auxiliary heads (MTP, speculative decoding) are not part of the standard forward pass.
+    text_active = counts["text_total"] - inactive - counts["by_component"].get("auxiliary", 0)
     return {
         "text_active": round(text_active),
         "text_active_without_embeddings": round(text_active - counts["by_component"].get("embedding", 0)),
