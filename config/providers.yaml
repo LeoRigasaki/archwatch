@@ -45,6 +45,16 @@ diagram_gen:
     - LiquidAI/LFM3-1.7B
     - nvidia/Nemotron-H-8B-Base-8K
     - meta-llama/Llama-3.1-8B
+schedule:
+  # Both crons stay commented out in .github/workflows until the owner approves them.
+  daily:
+    llm_calls: 0                # watcher + deterministic records only
+  diagrams:
+    days: [monday, wednesday, friday]
+    max_models_per_run: 5
+    max_calls_per_run: 15       # also bounded by models.diagram.rpd per day
+    state: data/diagram-queue.json
+    output: data/generated-diagrams
 evidence:
   quotas: docs/PROVIDER_LIMITS.md
   model: https://aistudio.google.com/docs/models
