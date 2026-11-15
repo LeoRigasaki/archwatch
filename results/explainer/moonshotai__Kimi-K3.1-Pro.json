@@ -1,86 +1,105 @@
 {
   "model": "moonshotai/Kimi-K3.1-Pro",
-  "predecessor": "moonshotai/Kimi-K3",
+  "predecessor": "Kimi-K3",
   "input": {
-    "predecessor": "moonshotai/Kimi-K3",
-    "successor": "moonshotai/Kimi-K3.1-Pro",
+    "predecessor": "Kimi-K3",
+    "successor": "Kimi-K3.1-Pro",
     "changes": [
       {
-        "what": "Layer mix",
+        "what": "layer mix",
         "before": "69 KDA linear attention + 24 MLA (full)",
         "after": "69 KDA linear attention + 24 Gated DSA on MLA",
-        "direction": null
+        "direction": null,
+        "exact": []
       },
       {
-        "what": "DSA top-k",
-        "before": "not published for moonshotai/Kimi-K3",
+        "what": "sparse-attention token budget",
+        "before": "not stated for Kimi-K3",
         "after": "2,048",
-        "direction": null
+        "direction": null,
+        "exact": [
+          2048
+        ]
       },
       {
-        "what": "Total parameters",
-        "before": "2,779,931,837,184",
-        "after": "2,780,110,363,392",
-        "direction": "up"
+        "what": "total parameters",
+        "before": "2.7799T",
+        "after": "2.7801T",
+        "direction": "up",
+        "exact": [
+          2779931837184,
+          2780110363392
+        ]
       },
       {
-        "what": "Active parameters",
-        "before": "104,189,614,848",
-        "after": "104,368,141,056",
-        "direction": "up"
+        "what": "active parameters",
+        "before": "104.2B",
+        "after": "104.4B",
+        "direction": "up",
+        "exact": [
+          104189614848,
+          104368141056
+        ]
       },
       {
-        "what": "Growing cache per token (bytes; sliding-window and constant states excluded)",
-        "before": "27,648",
-        "after": "33,792",
-        "direction": "up"
-      },
-      {
-        "what": "Model type",
-        "before": "kimi_k3",
-        "after": "kimi_k31",
-        "direction": null
+        "what": "growing cache per token",
+        "before": "27 KB",
+        "after": "33 KB",
+        "direction": "up",
+        "exact": [
+          27648,
+          33792
+        ]
       }
     ],
-    "weights": "5 tensor groups added (178,526,208 parameters); none removed."
+    "weights": "5 weight groups added (179M parameters); none removed.",
+    "exact_values": [
+      5,
+      2048,
+      27648,
+      33792,
+      178526208,
+      104189614848,
+      104368141056,
+      2779931837184,
+      2780110363392
+    ]
   },
-  "input_sha256": "02f986d412417e2459e93a4d9bda33995e66321e0d604b8ab343d11272e093c0",
-  "text": "The model type changed from kimi_k3 to kimi_k31. Layer mix shifted from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the DSA top-k value is 2,048, having been not published for moonshotai/Kimi-K3. Total parameters increased from 2,779,931,837,184 to 2,780,110,363,392. Active parameters increased from 104,189,614,848 to 104,368,141,056. The growing cache per token, excluding sliding-window and constant states, increased in bytes from 27,648 to 33,792. Regarding weights, 5 tensor groups were added, totaling 178,526,208 parameters, with none removed.",
+  "input_sha256": "c24a85f97660f0f64819032c7560d8c7cb982789817fd4a50bfb6f8e4effde35",
+  "text": "The layer mix shifts from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the sparse-attention token budget is 2,048 after being not stated for Kimi-K3. Total parameters go up from 2.7799T to 2.7801T, active parameters go up from 104.2B to 104.4B, and the growing cache per token goes up from 27 KB to 33 KB. For the weights, 5 weight groups were added with 179M parameters, and none were removed.",
   "passed": true,
   "attempts": [
     {
-      "text": "The model type changed from kimi_k3 to kimi_k31. Layer mix shifted from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the DSA top-k value is 2,048, having been not published for moonshotai/Kimi-K3. Total parameters increased from 2,779,931,837,184 to 2,780,110,363,392. Active parameters increased from 104,189,614,848 to 104,368,141,056. The growing cache per token, excluding sliding-window and constant states, increased in bytes from 27,648 to 33,792. Regarding weights, 5 tensor groups were added, totaling 178,526,208 parameters, with none removed.",
+      "text": "The layer mix shifts from 69 KDA linear attention plus 24 MLA (full) to 69 KDA linear attention plus 24 Gated DSA on MLA, and the sparse-attention token budget is 2,048 after being not stated for Kimi-K3. Total parameters go up from 2.7799T to 2.7801T, active parameters go up from 104.2B to 104.4B, and the growing cache per token goes up from 27 KB to 33 KB. For the weights, 5 weight groups were added with 179M parameters, and none were removed.",
       "check": {
         "passed": true,
         "problems": [],
         "numbers": [
-          "3",
-          "31",
           "69",
           "24",
           "69",
           "24",
           "2048",
           "3",
-          "2779931837184",
-          "2780110363392",
-          "104189614848",
-          "104368141056",
-          "27648",
-          "33792",
+          "2.7799",
+          "2.7801",
+          "104.2",
+          "104.4",
+          "27",
+          "33",
           "5",
-          "178526208"
+          "179"
         ],
-        "words": 88
+        "words": 82
       },
       "usage": {
-        "promptTokenCount": 739,
-        "candidatesTokenCount": 226,
-        "totalTokenCount": 965,
+        "promptTokenCount": 787,
+        "candidatesTokenCount": 149,
+        "totalTokenCount": 936,
         "promptTokensDetails": [
           {
             "modality": "TEXT",
-            "tokenCount": 739
+            "tokenCount": 787
           }
         ],
         "serviceTier": "standard"

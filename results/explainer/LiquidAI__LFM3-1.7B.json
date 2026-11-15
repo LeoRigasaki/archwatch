@@ -1,154 +1,210 @@
 {
   "model": "LiquidAI/LFM3-1.7B",
-  "predecessor": "LiquidAI/LFM2.5-1.2B-Instruct",
+  "predecessor": "LFM2.5-1.2B-Instruct",
   "input": {
-    "predecessor": "LiquidAI/LFM2.5-1.2B-Instruct",
-    "successor": "LiquidAI/LFM3-1.7B",
+    "predecessor": "LFM2.5-1.2B-Instruct",
+    "successor": "LFM3-1.7B",
     "changes": [
       {
-        "what": "Layers",
-        "before": "16",
-        "after": "24",
-        "direction": "up"
-      },
-      {
-        "what": "Layer mix",
+        "what": "layer mix",
         "before": "10 Gated short conv + 6 Global attention",
         "after": "13 Gated short conv + 6 Global attention + 5 Sliding-window attention",
-        "direction": null
+        "direction": null,
+        "exact": []
       },
       {
-        "what": "Attention heads",
+        "what": "total parameters",
+        "before": "1.17B",
+        "after": "1.73B",
+        "direction": "up",
+        "exact": [
+          1170340608,
+          1728801536
+        ]
+      },
+      {
+        "what": "number of layers",
+        "before": "16",
+        "after": "24",
+        "direction": "up",
+        "exact": [
+          16,
+          24
+        ]
+      },
+      {
+        "what": "attention heads",
         "before": "32",
         "after": "16",
-        "direction": "down"
+        "direction": "down",
+        "exact": [
+          32,
+          16
+        ]
       },
       {
-        "what": "KV heads",
+        "what": "key-value heads",
         "before": "8",
         "after": "4",
-        "direction": "down"
+        "direction": "down",
+        "exact": [
+          8,
+          4
+        ]
       },
       {
-        "what": "Head dim (q/k)",
+        "what": "head size",
         "before": "64",
         "after": "128",
-        "direction": "up"
+        "direction": "up",
+        "exact": [
+          64,
+          128
+        ]
       },
       {
-        "what": "Context length",
-        "before": "not published for LiquidAI/LFM2.5-1.2B-Instruct",
-        "after": "262,144",
-        "direction": null
-      },
-      {
-        "what": "Vocabulary",
-        "before": "65,536",
-        "after": "128,000",
-        "direction": "up"
-      },
-      {
-        "what": "Sliding window",
-        "before": "not published for LiquidAI/LFM2.5-1.2B-Instruct",
-        "after": "256",
-        "direction": null
-      },
-      {
-        "what": "Conv kernel",
-        "before": "3",
-        "after": "7",
-        "direction": "up"
-      },
-      {
-        "what": "Activation",
-        "before": "not published for LiquidAI/LFM2.5-1.2B-Instruct",
-        "after": "silu",
-        "direction": null
-      },
-      {
-        "what": "FFN hidden size",
+        "what": "feed-forward width",
         "before": "8,192",
         "after": "7,680",
-        "direction": "down"
+        "direction": "down",
+        "exact": [
+          8192,
+          7680
+        ]
       },
       {
-        "what": "Total parameters",
-        "before": "1,170,340,608",
-        "after": "1,728,801,536",
-        "direction": "up"
+        "what": "context length",
+        "before": "in review for LFM2.5-1.2B-Instruct: config says 128,000, card says 32,768",
+        "after": "262,144",
+        "direction": null,
+        "exact": [
+          262144
+        ]
       },
       {
-        "what": "Model type",
-        "before": "not published for LiquidAI/LFM2.5-1.2B-Instruct",
-        "after": "lfm3",
-        "direction": null
+        "what": "vocabulary",
+        "before": "65,536",
+        "after": "128,000",
+        "direction": "up",
+        "exact": [
+          65536,
+          128000
+        ]
       },
       {
-        "what": "Gated FFN",
-        "before": "not published for LiquidAI/LFM2.5-1.2B-Instruct",
-        "after": "yes",
-        "direction": null
+        "what": "sliding window",
+        "before": "not stated for LFM2.5-1.2B-Instruct",
+        "after": "256",
+        "direction": null,
+        "exact": [
+          256
+        ]
+      },
+      {
+        "what": "convolution kernel size",
+        "before": "3",
+        "after": "7",
+        "direction": "up",
+        "exact": [
+          3,
+          7
+        ]
+      },
+      {
+        "what": "activation function",
+        "before": "not stated for LFM2.5-1.2B-Instruct",
+        "after": "SiLU",
+        "direction": null,
+        "exact": []
+      },
+      {
+        "what": "feed-forward type",
+        "before": "not stated for LFM2.5-1.2B-Instruct",
+        "after": "gated",
+        "direction": null,
+        "exact": []
       }
     ],
-    "weights": "6 tensor groups added (46,598,912 parameters); 3 removed (25,166,592 parameters)."
+    "weights": "6 weight groups added (46.6M parameters); 3 removed (25.2M parameters).",
+    "exact_values": [
+      3,
+      4,
+      6,
+      7,
+      8,
+      16,
+      24,
+      32,
+      64,
+      128,
+      256,
+      7680,
+      8192,
+      65536,
+      128000,
+      262144,
+      25166592,
+      46598912,
+      1170340608,
+      1728801536
+    ]
   },
-  "input_sha256": "1f14922f33ed8bed481472b97f4c90b677da22e45e9974320182a1a5e17a1fe1",
-  "text": "Total parameters increased from 1,170,340,608 to 1,728,801,536, with the model type reported as lfm3. Layers went up from 16 to 24, changing the layer mix from 10 Gated short conv + 6 Global attention to 13 Gated short conv + 6 Global attention + 5 Sliding-window attention. The conv kernel went up from 3 to 7, the vocabulary increased from 65,536 to 128,000, and the head dim (q/k) went up from 64 to 128. Meanwhile, attention heads decreased from 32 to 16, KV heads decreased from 8 to 4, and the FFN hidden size decreased from 8,192 to 7,680. Context length is not published for LiquidAI/LFM2.5-1.2B-Instruct and is 262,144 for the successor, sliding window is not published for LiquidAI/LFM2.5-1.2B-Instruct and is 256 for the successor, activation is not published for LiquidAI/LFM2.5-1.2B-Instruct and is silu for the successor, and gated FFN is not published for LiquidAI/LFM2.5-1.2B-Instruct and is yes for the successor. Regarding the model weights, 6 tensor groups were added comprising 46,598,912 parameters, and 3 tensor groups were removed comprising 25,166,592 parameters.",
+  "input_sha256": "db734c591c25514f9d2fcd4aaf346659092eba500d3f00f2dd401de86d9c0cbc",
+  "text": "The layer mix changed from 10 Gated short conv + 6 Global attention in the predecessor to 13 Gated short conv + 6 Global attention + 5 Sliding-window attention in the successor. Total parameters went up from 1.17B to 1.73B, and the number of layers went up from 16 to 24. Attention heads went down from 32 to 16, key-value heads went down from 8 to 4, head size went up from 64 to 128, and feed-forward width went down from 8,192 to 7,680. The predecessor's context length is in review: its config says 128,000, its card says 32,768, while the successor uses 262,144. The vocabulary went up from 65,536 to 128,000. Sliding window is not stated for LFM2.5-1.2B-Instruct and is 256 for the successor. Convolution kernel size went up from 3 to 7. Activation function is not stated for LFM2.5-1.2B-Instruct and is SiLU for the successor. Feed-forward type is not stated for LFM2.5-1.2B-Instruct and is gated for the successor. Regarding the weights, 6 weight groups added 46.6M parameters, while 3 removed 25.2M parameters.",
   "passed": true,
   "attempts": [
     {
-      "text": "Total parameters increased from 1,170,340,608 to 1,728,801,536, with the model type reported as lfm3. Layers went up from 16 to 24, changing the layer mix from 10 Gated short conv + 6 Global attention to 13 Gated short conv + 6 Global attention + 5 Sliding-window attention. The conv kernel went up from 3 to 7, the vocabulary increased from 65,536 to 128,000, and the head dim (q/k) went up from 64 to 128. Meanwhile, attention heads decreased from 32 to 16, KV heads decreased from 8 to 4, and the FFN hidden size decreased from 8,192 to 7,680. Context length is not published for LiquidAI/LFM2.5-1.2B-Instruct and is 262,144 for the successor, sliding window is not published for LiquidAI/LFM2.5-1.2B-Instruct and is 256 for the successor, activation is not published for LiquidAI/LFM2.5-1.2B-Instruct and is silu for the successor, and gated FFN is not published for LiquidAI/LFM2.5-1.2B-Instruct and is yes for the successor. Regarding the model weights, 6 tensor groups were added comprising 46,598,912 parameters, and 3 tensor groups were removed comprising 25,166,592 parameters.",
+      "text": "The layer mix changed from 10 Gated short conv + 6 Global attention in the predecessor to 13 Gated short conv + 6 Global attention + 5 Sliding-window attention in the successor. Total parameters went up from 1.17B to 1.73B, and the number of layers went up from 16 to 24. Attention heads went down from 32 to 16, key-value heads went down from 8 to 4, head size went up from 64 to 128, and feed-forward width went down from 8,192 to 7,680. The predecessor's context length is in review: its config says 128,000, its card says 32,768, while the successor uses 262,144. The vocabulary went up from 65,536 to 128,000. Sliding window is not stated for LFM2.5-1.2B-Instruct and is 256 for the successor. Convolution kernel size went up from 3 to 7. Activation function is not stated for LFM2.5-1.2B-Instruct and is SiLU for the successor. Feed-forward type is not stated for LFM2.5-1.2B-Instruct and is gated for the successor. Regarding the weights, 6 weight groups added 46.6M parameters, while 3 removed 25.2M parameters.",
       "check": {
         "passed": true,
         "problems": [],
         "numbers": [
-          "1170340608",
-          "1728801536",
-          "3",
-          "16",
-          "24",
           "10",
           "6",
           "13",
           "6",
           "5",
-          "3",
-          "7",
-          "65536",
-          "128000",
-          "64",
-          "128",
+          "1.17",
+          "1.73",
+          "16",
+          "24",
           "32",
           "16",
           "8",
           "4",
+          "64",
+          "128",
           "8192",
           "7680",
-          "2.5",
-          "1.2",
+          "128000",
+          "32768",
           "262144",
+          "65536",
+          "128000",
           "2.5",
           "1.2",
           "256",
+          "3",
+          "7",
           "2.5",
           "1.2",
           "2.5",
           "1.2",
           "6",
-          "46598912",
+          "46.6",
           "3",
-          "25166592"
+          "25.2"
         ],
-        "words": 172
+        "words": 174
       },
       "usage": {
-        "promptTokenCount": 1108,
-        "candidatesTokenCount": 364,
-        "totalTokenCount": 1472,
+        "promptTokenCount": 1195,
+        "candidatesTokenCount": 331,
+        "totalTokenCount": 1526,
         "promptTokensDetails": [
           {
             "modality": "TEXT",
-            "tokenCount": 1108
+            "tokenCount": 1195
           }
         ],
         "serviceTier": "standard"
