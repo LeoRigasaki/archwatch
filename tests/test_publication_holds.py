@@ -74,3 +74,13 @@ def test_lfm3_base_is_released_with_its_moe_predecessor():
     base = json.loads((ROOT / "data/models/LiquidAI__LFM3-1.7B-Base.json").read_text())
     render_values(base)  # passes the publication gate
     assert "block_shapes" in base["published"]
+
+
+def test_absent_tie_key_is_not_evidence_and_weights_decide():
+    from archwatch.extract import extract_with_usage
+
+    facts, _ = extract_with_usage({"hidden_size": 8, "num_hidden_layers": 1, "num_attention_heads": 1, "vocab_size": 4})
+    assert "tied_embeddings" not in facts
+    rec = json.loads((ROOT / "data/models/google__gemma-3-1b-pt.json").read_text())
+    check = next(c for c in rec["checks"] if c["field"] == "tied_embeddings")
+    assert check["value"] is True and check["candidates"][0]["evidence"].startswith("weights:")
