@@ -146,7 +146,16 @@ RAW = {
     "kv_cache_per_token_bf16": "kv_cache_per_token_bf16",
     "decoder_type": "decoder_type",
 }
-LABEL = {"decoder_type": "FFN sparsity (dense / MoE)"}
+LABEL = {
+    "decoder_type": "FFN sparsity (dense / MoE)",
+    "kv_cache_per_token_bf16": "growing cache per token (sliding-window and constant states excluded)",
+}
+CAUSES = {
+    "definition": "definition difference",
+    "error-ours": "real error (ArchWatch)",
+    "error-reference": "real error (reference)",
+    "unresolved": "unresolved",
+}
 
 
 def compare(records: dict, gallery: dict) -> dict:
@@ -188,6 +197,15 @@ def compare(records: dict, gallery: dict) -> dict:
     return dict(rows=rows, not_processed=missing)
 
 
+def attach_causes(result: dict, causes: dict) -> dict:
+    for r in result["rows"]:
+        if not r["agree"]:
+            c = (causes.get(r["model"]) or {}).get(r["field"])
+            r["cause"] = c["cause"] if c else "unclassified"
+            r["cause_why"] = " ".join(c["why"].split()) if c else ""
+    return result
+
+
 def report(result: dict, config: dict) -> str:
     rows = result["rows"]
     lines = [
@@ -222,10 +240,22 @@ def report(result: dict, config: dict) -> str:
     if not bad:
         lines.append("None.")
     else:
-        lines += ["| Model | Field | Ours | Theirs | Our evidence |", "|---|---|---|---|---|"]
+        counts = {}
+        for r in bad:
+            counts[r.get("cause", "unclassified")] = counts.get(r.get("cause", "unclassified"), 0) + 1
+        lines.append(
+            "Causes: " + ", ".join(f"{CAUSES.get(k, k)} {v}" for k, v in sorted(counts.items())) + ". "
+            "Each was checked against the model's own card, config and tensor headers "
+            "(config/reference-causes.yaml)."
+        )
+        lines += ["", "| Model | Field | Ours | Theirs | Cause | Why | Our evidence |", "|---|---|---|---|---|---|---|"]
         for r in bad:
             ours_v = f"{r['ours']:,}" if isinstance(r["ours"], int) else r["ours"]
-            lines.append(f"| {r['model']} | {r['field']} | {ours_v} | {r['theirs']} | {r['our_evidence']} |")
+            cause = CAUSES.get(r.get("cause"), r.get("cause", "unclassified"))
+            lines.append(
+                f"| {r['model']} | {LABEL.get(r['field'], r['field'])} | {ours_v} | {r['theirs']} | **{cause}** | "
+                f"{r.get('cause_why', '')} | {r['our_evidence']} |"
+            )
     lines += [
         "",
         "A disagreement is a prompt to re-check sources, not a correction: ArchWatch publishes what the model's own "
@@ -247,7 +277,8 @@ def main():
     records = {
         json.loads(p.read_text())["id"]: json.loads(p.read_text()) for p in (ROOT / "data/models").glob("*.json")
     }
-    result = compare(records, gallery)
+    causes = yaml.safe_load((ROOT / "config/reference-causes.yaml").read_text()) or {}
+    result = attach_causes(compare(records, gallery), causes)
     out = ROOT / "results"
     (out / "reference-agreement.json").write_text(
         json.dumps(dict(reference=dict(repo=config["repo"], commit=config["commit"]), **result), indent=2) + "\n"

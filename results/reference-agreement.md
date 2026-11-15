@@ -13,23 +13,25 @@ Ours: published, verifier-approved record fields (KV cache recomputed from publi
 | context_length | 9 | 9 |
 | vocab_size | 6 | 6 |
 | num_layers | 8 | 9 |
-| kv_cache_per_token_bf16 | 3 | 4 |
+| growing cache per token (sliding-window and constant states excluded) | 3 | 4 |
 | FFN sparsity (dense / MoE) | 9 | 9 |
 
 Overall: 44 of 52 compared values agree across 9 models.
 
 ## Disagreements
 
-| Model | Field | Ours | Theirs | Our evidence |
-|---|---|---|---|---|
-| LiquidAI/LFM3-1.7B | kv_cache_per_token_bf16 | 12,288 | 22 KiB | 2 x 4 KV heads x 128 head_dim x 2 B x 6 layers |
-| Qwen/Qwen3.8-Flash-Next | params_active | 61,114,391,168 | 125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
-| deepseek-ai/DeepSeek-V4.1-Flash | params_total | 763,205,315,794 | 552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone) | single source: weights:sum of tensor shapes |
-| deepseek-ai/DeepSeek-V4.1-Flash | params_active | 227,705,140,434 | 552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone) | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
-| mistralai/Mistral-Large-4-1T-A52B | params_active | 54,454,496,544 | 1T total, 52B active (5.2% active) | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
-| nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16 | num_layers | 72 | 8 input + 20 shared × 2 passes + 8 output (56 applications) | verified: config:num_hidden_layers; weights:highest layer index + 1 |
-| zai-org/GLM-5.2 | params_total | 753,329,940,480 | 744B total, 40B active (5.4% active) | single source: weights:sum of tensor shapes |
-| zai-org/GLM-5.2 | params_active | 41,841,764,352 | 744B total, 40B active (5.4% active) | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
+Causes: definition difference 6, real error (ArchWatch) 1, unresolved 1. Each was checked against the model's own card, config and tensor headers (config/reference-causes.yaml).
+
+| Model | Field | Ours | Theirs | Cause | Why | Our evidence |
+|---|---|---|---|---|---|---|
+| LiquidAI/LFM3-1.7B | growing cache per token (sliding-window and constant states excluded) | 12,288 | 22 KiB | **definition difference** | Ours is the growing cache per token (sliding-window and constant states excluded): 6 global layers x 4 KV heads x 128 x 2 (K, V) x 2 B = 12,288 B. The reference counts all 11 attention layers including the 5 sliding-window ones: 11 x 2,048 B = 22,528 B = 22 KiB. Both are arithmetic on the same config. | 2 x 4 KV heads x 128 head_dim x 2 B x 6 layers |
+| Qwen/Qwen3.8-Flash-Next | params_active | 61,114,391,168 | 125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP | **definition difference** | The card states "125B with 6B activated, plus 51B n-gram embedding and 4B MTP". Our active convention counts every non-expert weight, including the n-gram embedding tables and the MTP layer; the reference follows the card's 6B core figure. | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
+| deepseek-ai/DeepSeek-V4.1-Flash | params_total | 763,205,315,794 | 552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone) | **definition difference** | The card states 552B backbone plus 196B Engram memory (748B). Ours is every stored tensor: 763.2B including 14.2B of MTP modules and a 0.4B vision tower; without those it is 748.6B, which matches. | single source: weights:sum of tensor shapes |
+| deepseek-ai/DeepSeek-V4.1-Flash | params_active | 227,705,140,434 | 552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone) | **definition difference** | The card states 8B active in prefill and 16B in decode. Our active convention counts all non-expert weights, including the 196B Engram memory that the card describes as sparsely accessed by lookup. | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
+| mistralai/Mistral-Large-4-1T-A52B | params_active | 54,454,496,544 | 1T total, 52B active (5.2% active) | **real error (ArchWatch)** | The card states "49 billion active parameters per token (52 billion including embeddings and output layers)". Our 54.45B includes the 2.10B mtp_dspark speculative-decoding head, which our auxiliary-module rule misses (it matches "mtp." only). Without it ours is 52.35B, matching the card. Fix: classify mtp_dspark tensors as auxiliary and reprocess the record. | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
+| nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16 | num_layers | 72 | 8 input + 20 shared × 2 passes + 8 output (56 applications) | **definition difference** | config.json lists 72 layer entries that alternate attention and MLP (16 input + 40 recurrent + 16 output), and the weights hold layer indices 0-71; our count is per operator. The reference counts attention+MLP blocks: 8 input + 20 recurrent + 8 output = 36, i.e. the same 72 operators. | verified: config:num_hidden_layers; weights:highest layer index + 1 |
+| zai-org/GLM-5.2 | params_total | 753,329,940,480 | 744B total, 40B active (5.4% active) | **unresolved** | Ours is the exact tensor-header sum (753.3B over 78 stored layers, indices 0-77; no separate MTP tensors). The reference's 744B is not stated in this repository's card or config, so the 9.3B gap (about one MoE layer) cannot be attributed from primary sources yet. | single source: weights:sum of tensor shapes |
+| zai-org/GLM-5.2 | params_active | 41,841,764,352 | 744B total, 40B active (5.4% active) | **definition difference** | Ours (41.8B) includes the input embedding and output head (0.95B each); without them it is 39.9B, matching the reference's 40B within its rounding. | single source: weights:total - unselected routed experts (text model, all non-expert weights included) |
 
 A disagreement is a prompt to re-check sources, not a correction: ArchWatch publishes what the model's own files state.
 
