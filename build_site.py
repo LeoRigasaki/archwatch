@@ -82,6 +82,15 @@ def evidence(c):
     return "<br>".join(parts)
 
 
+def card_status(c):
+    """Shown status of a check. Our active count is published by one fixed rule; when the card's own figure is
+    outside its rounding of ours, the row says so and shows the card's figure. It is never shown as verified."""
+    ref = c.get("card_reference")
+    if ref and not ref["agrees"]:
+        return "differs from card", f'card says "{ref["raw"]}"'
+    return c["status"], None
+
+
 def model_section(name, anchor):
     rec = json.loads((ROOT / "data/models" / f"{name}.json").read_text())
     pub = render_values(rec)
@@ -92,6 +101,8 @@ def model_section(name, anchor):
     commit = rec["source_commit"]
     ctx = pub["context_length"]
     full = cache["grows_per_token_bytes"] * ctx + cache["constant_bytes"]
+    active_check = next((c for c in rec["checks"] if c["field"] == "params_active"), None)
+    active_note = card_status(active_check)[1] if active_check else None
     dense = "moe_num_experts" not in pub and "moe" not in str(pub.get("decoder_type", "")).lower()
     tiles = [
         (
@@ -104,9 +115,12 @@ def model_section(name, anchor):
             "Active per token",
             human(pub["params_active"]) if "params_active" in pub else ("all (dense)" if dense else "not reported"),
             (
-                f"{human(pub['params_active_non_embedding'])} excluding embeddings"
-                if "params_active_non_embedding" in pub
-                else "published counting convention"
+                (f"differs from card ({active_note}); " if active_note else "")
+                + (
+                    f"{human(pub['params_active_non_embedding'])} excluding embeddings"
+                    if "params_active_non_embedding" in pub
+                    else "published counting convention"
+                )
             )
             if "params_active" in pub
             else (
@@ -142,16 +156,24 @@ def model_section(name, anchor):
         diagram_label = "Code-drawn diagram: no generated diagram has passed every check for this record."
 
     # verification table
-    order = {"verified": 0, "single source": 1, "conflict": 2}
-    rows = sorted(rec["checks"], key=lambda c: (order.get(c["status"], 3), c["field"]))
-    v_rows = "".join(
-        f"<tr><td>{e(FIELD_NAMES.get(c['field'], c['field']))}</td><td>{e(show(c['field'], pub[c['field']]) if c['field'] in pub else 'Withheld for review')}</td>"
-        f'<td><span class="st st-{c["status"].replace(" ", "-")}">{e(c["status"])}</span></td><td class="ev">{evidence(c)}</td></tr>'
-        for c in rows
-    )
-    n_ver = sum(1 for c in rows if c["status"] == "verified")
-    n_single = sum(1 for c in rows if c["status"] == "single source")
+    order = {"verified": 0, "single source": 1, "differs from card": 2, "conflict": 3}
+    rows = sorted(rec["checks"], key=lambda c: (order.get(card_status(c)[0], 4), c["field"]))
+
+    def row(c):
+        status, note = card_status(c)
+        value = show(c["field"], pub[c["field"]]) if c["field"] in pub else "Withheld for review"
+        extra = f"<br>{e(note)} (recorded, not a gate)" if note else ""
+        return (
+            f"<tr><td>{e(FIELD_NAMES.get(c['field'], c['field']))}</td><td>{e(value)}</td>"
+            f'<td><span class="st st-{status.replace(" ", "-")}">{e(status)}</span></td>'
+            f'<td class="ev">{evidence(c)}{extra}</td></tr>'
+        )
+
+    v_rows = "".join(row(c) for c in rows)
+    n_ver = sum(1 for c in rows if card_status(c)[0] == "verified")
+    n_single = sum(1 for c in rows if card_status(c)[0] == "single source")
     n_conf = sum(1 for c in rows if c["status"] == "conflict")
+    n_diff = sum(1 for c in rows if card_status(c)[0] == "differs from card")
 
     # diff
     pred = rec.get("predecessor", {}).get("id")
@@ -244,7 +266,7 @@ def model_section(name, anchor):
   <table><thead><tr><th>Field</th><th>{e(pred.split("/")[-1]) if pred else "Before"}</th><th>{e(repo.split("/")[-1])}</th></tr></thead><tbody>{d_rows}</tbody></table>
   {tensor_html}
 
-  <h3>Verification: {n_ver} verified, {n_single} single source, {n_conf} conflicts</h3>
+  <h3>Verification: {n_ver} verified, {n_single} single source, {n_conf} conflicts{f", {n_diff} differ from card" if n_diff else ""}</h3>
   <p>Each field is read from every source that states it. A field is published when sources agree or only one source states it; a disagreement goes to a human instead.</p>
   <div class="tablewrap"><table class="vt"><thead><tr><th>Field</th><th>Value</th><th>Status</th><th>Sources</th></tr></thead><tbody>{v_rows}</tbody></table></div>
 
@@ -344,7 +366,8 @@ th{{font-weight:600;color:var(--mut);font-size:12.5px}}.num{{text-align:right;fo
 .tablewrap{{overflow-x:auto}}.vt td.ev{{font-size:12.5px;color:var(--mut);min-width:340px}}
 .st{{font-size:12px;padding:2px 8px;border-radius:99px;white-space:nowrap}}.st-verified{{background:#1a7f3722;color:#1a7f37}}
 .st-single-source{{background:#9a670022;color:#9a6700}}.st-conflict{{background:#cf222e22;color:#cf222e}}
-@media (prefers-color-scheme:dark){{.st-verified{{color:#3fb950}}.st-single-source{{color:#d29922}}.st-conflict{{color:#f85149}}}}
+.st-differs-from-card{{background:#8250df22;color:#8250df}}
+@media (prefers-color-scheme:dark){{.st-verified{{color:#3fb950}}.st-single-source{{color:#d29922}}.st-conflict{{color:#f85149}}.st-differs-from-card{{color:#a371f7}}}}
 .src{{font-size:11px;padding:0 5px;border-radius:4px;border:1px solid var(--line);color:var(--fg)}}
 .dot{{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}}
 .cols{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}@media(max-width:700px){{.cols{{grid-template-columns:1fr}}}}

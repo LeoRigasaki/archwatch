@@ -17,7 +17,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:04+00:00",
+ "analyzed_at": "2026-11-15T18:26:34+00:00",
  "facts": {
   "architecture_class": {
    "value": "Gemma4ForConditionalGeneration",
@@ -284,6 +284,8 @@
   "counted_from_weights": {
    "total": 25805936206,
    "text_total": 25233141790,
+   "mtp_params": 0,
+   "headline_total": 25805936206,
    "by_component": {
     "moe_routed_experts": 22837985280,
     "attention_or_linear_mixer": 1110197760,
@@ -308,8 +310,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 3822530590,
    "text_active": 3822530590,
    "text_active_without_embeddings": 3084333086,
+   "text_active_non_embedding": 3084333086,
    "with_vision": 4395325006
   }
  },
@@ -542,6 +546,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": true,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -825,7 +846,7 @@
    "candidates": [
     {
      "value": 25805936206,
-     "evidence": "weights:sum of tensor shapes"
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
     },
     {
      "value": 25200000000.0,
@@ -837,18 +858,31 @@
   {
    "field": "params_active",
    "value": 3822530590,
-   "status": "verified",
-   "confidence": 1.0,
+   "status": "single source",
+   "confidence": 0.7,
    "published": true,
    "candidates": [
     {
      "value": 3822530590,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
-    },
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ],
+   "card_reference": {
+    "value": 3800000000.0,
+    "raw": "3.8B",
+    "agrees": true
+   }
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 3084333086,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
     {
-     "value": 3800000000.0,
-     "evidence": "card:params_active",
-     "raw": "3.8B"
+     "value": 3084333086,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -976,19 +1010,6 @@
     {
      "value": "MoE",
      "evidence": "config:text_config.num_experts"
-    }
-   ]
-  },
-  {
-   "field": "tied_embeddings",
-   "value": true,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": true,
-     "evidence": "config:tie_word_embeddings"
     }
    ]
   },
@@ -1141,6 +1162,327 @@
      "evidence": "weights:tensor header inventory"
     }
    ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "sliding_attention": {
+      "layers": 25,
+      "tensors": {
+       "input_layernorm.weight": [
+        2816
+       ],
+       "layer_scalar": [
+        1
+       ],
+       "post_attention_layernorm.weight": [
+        2816
+       ],
+       "post_feedforward_layernorm.weight": [
+        2816
+       ],
+       "post_feedforward_layernorm_1.weight": [
+        2816
+       ],
+       "post_feedforward_layernorm_2.weight": [
+        2816
+       ],
+       "pre_feedforward_layernorm.weight": [
+        2816
+       ],
+       "pre_feedforward_layernorm_2.weight": [
+        2816
+       ],
+       "router.per_expert_scale": [
+        128
+       ],
+       "router.proj.weight": [
+        128,
+        2816
+       ],
+       "router.scale": [
+        2816
+       ],
+       "self_attn.k_norm.weight": [
+        256
+       ],
+       "self_attn.k_proj.weight": [
+        2048,
+        2816
+       ],
+       "self_attn.o_proj.weight": [
+        2816,
+        4096
+       ],
+       "self_attn.q_norm.weight": [
+        256
+       ],
+       "self_attn.q_proj.weight": [
+        4096,
+        2816
+       ],
+       "self_attn.v_proj.weight": [
+        2048,
+        2816
+       ]
+      }
+     },
+     "full_attention": {
+      "layers": 5,
+      "tensors": {
+       "input_layernorm.weight": [
+        2816
+       ],
+       "layer_scalar": [
+        1
+       ],
+       "post_attention_layernorm.weight": [
+        2816
+       ],
+       "post_feedforward_layernorm.weight": [
+        2816
+       ],
+       "post_feedforward_layernorm_1.weight": [
+        2816
+       ],
+       "post_feedforward_layernorm_2.weight": [
+        2816
+       ],
+       "pre_feedforward_layernorm.weight": [
+        2816
+       ],
+       "pre_feedforward_layernorm_2.weight": [
+        2816
+       ],
+       "router.per_expert_scale": [
+        128
+       ],
+       "router.proj.weight": [
+        128,
+        2816
+       ],
+       "router.scale": [
+        2816
+       ],
+       "self_attn.k_norm.weight": [
+        512
+       ],
+       "self_attn.k_proj.weight": [
+        1024,
+        2816
+       ],
+       "self_attn.o_proj.weight": [
+        2816,
+        8192
+       ],
+       "self_attn.q_norm.weight": [
+        512
+       ],
+       "self_attn.q_proj.weight": [
+        8192,
+        2816
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        29
+       ]
+      ],
+      "tensors": {
+       "mlp.down_proj.weight": [
+        2816,
+        2112
+       ],
+       "mlp.gate_proj.weight": [
+        2112,
+        2816
+       ],
+       "mlp.up_proj.weight": [
+        2112,
+        2816
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      262144,
+      2816
+     ],
+     "norm.weight": [
+      2816
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "sliding_attention": {
+        "layers": 25,
+        "tensors": {
+         "input_layernorm.weight": [
+          2816
+         ],
+         "layer_scalar": [
+          1
+         ],
+         "post_attention_layernorm.weight": [
+          2816
+         ],
+         "post_feedforward_layernorm.weight": [
+          2816
+         ],
+         "post_feedforward_layernorm_1.weight": [
+          2816
+         ],
+         "post_feedforward_layernorm_2.weight": [
+          2816
+         ],
+         "pre_feedforward_layernorm.weight": [
+          2816
+         ],
+         "pre_feedforward_layernorm_2.weight": [
+          2816
+         ],
+         "router.per_expert_scale": [
+          128
+         ],
+         "router.proj.weight": [
+          128,
+          2816
+         ],
+         "router.scale": [
+          2816
+         ],
+         "self_attn.k_norm.weight": [
+          256
+         ],
+         "self_attn.k_proj.weight": [
+          2048,
+          2816
+         ],
+         "self_attn.o_proj.weight": [
+          2816,
+          4096
+         ],
+         "self_attn.q_norm.weight": [
+          256
+         ],
+         "self_attn.q_proj.weight": [
+          4096,
+          2816
+         ],
+         "self_attn.v_proj.weight": [
+          2048,
+          2816
+         ]
+        }
+       },
+       "full_attention": {
+        "layers": 5,
+        "tensors": {
+         "input_layernorm.weight": [
+          2816
+         ],
+         "layer_scalar": [
+          1
+         ],
+         "post_attention_layernorm.weight": [
+          2816
+         ],
+         "post_feedforward_layernorm.weight": [
+          2816
+         ],
+         "post_feedforward_layernorm_1.weight": [
+          2816
+         ],
+         "post_feedforward_layernorm_2.weight": [
+          2816
+         ],
+         "pre_feedforward_layernorm.weight": [
+          2816
+         ],
+         "pre_feedforward_layernorm_2.weight": [
+          2816
+         ],
+         "router.per_expert_scale": [
+          128
+         ],
+         "router.proj.weight": [
+          128,
+          2816
+         ],
+         "router.scale": [
+          2816
+         ],
+         "self_attn.k_norm.weight": [
+          512
+         ],
+         "self_attn.k_proj.weight": [
+          1024,
+          2816
+         ],
+         "self_attn.o_proj.weight": [
+          2816,
+          8192
+         ],
+         "self_attn.q_norm.weight": [
+          512
+         ],
+         "self_attn.q_proj.weight": [
+          8192,
+          2816
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          29
+         ]
+        ],
+        "tensors": {
+         "mlp.down_proj.weight": [
+          2816,
+          2112
+         ],
+         "mlp.gate_proj.weight": [
+          2112,
+          2816
+         ],
+         "mlp.up_proj.weight": [
+          2112,
+          2816
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        262144,
+        2816
+       ],
+       "norm.weight": [
+        2816
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
+    }
+   ]
   }
  ],
  "published": {
@@ -1153,6 +1495,7 @@
   "head_dim": 256,
   "attention_type": "GQA",
   "ffn_gated": true,
+  "tied_embeddings": true,
   "sandwich_norm": true,
   "moe_num_experts": 128,
   "moe_active_experts": 8,
@@ -1200,6 +1543,7 @@
   "layer_index_base_in_config": 0,
   "qk_norm": true,
   "params_active": 3822530590,
+  "params_active_non_embedding": 3084333086,
   "model_type": "gemma4",
   "global_head_dim": 512,
   "num_global_kv_heads": 2,
@@ -1236,7 +1580,6 @@
    "full_attention"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": true,
   "rope": {
    "full_attention": {
     "partial_rotary_factor": 0.25,
@@ -1267,6 +1610,161 @@
    "tensor_count": 1013,
    "skipped_scale_tensors": 0,
    "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "sliding_attention": {
+     "layers": 25,
+     "tensors": {
+      "input_layernorm.weight": [
+       2816
+      ],
+      "layer_scalar": [
+       1
+      ],
+      "post_attention_layernorm.weight": [
+       2816
+      ],
+      "post_feedforward_layernorm.weight": [
+       2816
+      ],
+      "post_feedforward_layernorm_1.weight": [
+       2816
+      ],
+      "post_feedforward_layernorm_2.weight": [
+       2816
+      ],
+      "pre_feedforward_layernorm.weight": [
+       2816
+      ],
+      "pre_feedforward_layernorm_2.weight": [
+       2816
+      ],
+      "router.per_expert_scale": [
+       128
+      ],
+      "router.proj.weight": [
+       128,
+       2816
+      ],
+      "router.scale": [
+       2816
+      ],
+      "self_attn.k_norm.weight": [
+       256
+      ],
+      "self_attn.k_proj.weight": [
+       2048,
+       2816
+      ],
+      "self_attn.o_proj.weight": [
+       2816,
+       4096
+      ],
+      "self_attn.q_norm.weight": [
+       256
+      ],
+      "self_attn.q_proj.weight": [
+       4096,
+       2816
+      ],
+      "self_attn.v_proj.weight": [
+       2048,
+       2816
+      ]
+     }
+    },
+    "full_attention": {
+     "layers": 5,
+     "tensors": {
+      "input_layernorm.weight": [
+       2816
+      ],
+      "layer_scalar": [
+       1
+      ],
+      "post_attention_layernorm.weight": [
+       2816
+      ],
+      "post_feedforward_layernorm.weight": [
+       2816
+      ],
+      "post_feedforward_layernorm_1.weight": [
+       2816
+      ],
+      "post_feedforward_layernorm_2.weight": [
+       2816
+      ],
+      "pre_feedforward_layernorm.weight": [
+       2816
+      ],
+      "pre_feedforward_layernorm_2.weight": [
+       2816
+      ],
+      "router.per_expert_scale": [
+       128
+      ],
+      "router.proj.weight": [
+       128,
+       2816
+      ],
+      "router.scale": [
+       2816
+      ],
+      "self_attn.k_norm.weight": [
+       512
+      ],
+      "self_attn.k_proj.weight": [
+       1024,
+       2816
+      ],
+      "self_attn.o_proj.weight": [
+       2816,
+       8192
+      ],
+      "self_attn.q_norm.weight": [
+       512
+      ],
+      "self_attn.q_proj.weight": [
+       8192,
+       2816
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       29
+      ]
+     ],
+     "tensors": {
+      "mlp.down_proj.weight": [
+       2816,
+       2112
+      ],
+      "mlp.gate_proj.weight": [
+       2112,
+       2816
+      ],
+      "mlp.up_proj.weight": [
+       2112,
+       2816
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     262144,
+     2816
+    ],
+    "norm.weight": [
+     2816
+    ]
+   }
   }
  },
  "review_queue": [
@@ -1279,7 +1777,7 @@
    "candidates": [
     {
      "value": 25805936206,
-     "evidence": "weights:sum of tensor shapes"
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
     },
     {
      "value": 25200000000.0,

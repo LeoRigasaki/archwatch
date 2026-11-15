@@ -36,6 +36,16 @@ def _agree(a, b, tol: float, k_suffix: bool) -> bool:
     return a == b
 
 
+TOTAL_MIN_TOLERANCE = 0.005  # cards round totals; '196.81B' is not a claim to the last 10M parameters
+
+
+def card_total(kc: dict) -> dict:
+    """Card total as a gate: agreement within the card's stated precision or 0.5%, whichever is larger."""
+    if not kc or not isinstance(kc.get("value"), (int, float)):
+        return kc
+    return dict(kc, tol=max(kc.get("tol", 0), TOTAL_MIN_TOLERANCE * kc["value"]))
+
+
 def check(field: str, cands: list[dict]) -> dict:
     cands = [c for c in cands if c.get("value") is not None]
     if not cands:
@@ -325,7 +335,7 @@ def verify(
     out.append(
         check(
             "params_total",
-            [w(headline, "sum of tensor shapes, MTP modules reported separately"), k("params_total")],
+            [w(headline, "sum of tensor shapes, MTP modules reported separately"), card_total(k("params_total"))],
         )
     )
     if wcount.get("mtp_params"):

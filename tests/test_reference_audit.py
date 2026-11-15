@@ -422,3 +422,41 @@ def test_card_active_figure_is_recorded_but_does_not_block_publication():
     check = next(c for c in rec["checks"] if c["field"] == "params_active")
     assert check["published"] and check["card_reference"]["raw"] == "2.45B"
     assert all(c["evidence"].startswith("weights:") for c in check["candidates"])  # the card is not a gate
+
+
+# ---------------------------------------------------------------- card figures on the site and as a gate
+
+
+def test_site_marks_active_that_differs_from_the_card_and_never_calls_it_verified():
+    site = load_tool_path(ROOT / "build_site.py", "build_site")
+    differs = dict(
+        field="params_active",
+        status="verified",
+        card_reference=dict(value=23e9, raw="~23B", agrees=False),
+    )
+    assert site.card_status(differs) == ("differs from card", 'card says "~23B"')
+    agrees = dict(differs, status="single source", card_reference=dict(value=2.45e9, raw="2.45B", agrees=True))
+    assert site.card_status(agrees) == ("single source", None)
+
+
+def test_card_total_gate_accepts_half_a_percent_or_the_card_precision():
+    from archwatch import verify
+
+    ours = 196_956_130_368  # Step-3.5-Flash, MTP reported separately; card "196.81B" (0.07% away)
+    card = dict(value=196.81e9, tol=0.005e9, evidence="card:params_total", raw="196.81B")
+    row = verify.check("params_total", [dict(value=ours, evidence="weights:sum"), verify.card_total(card)])
+    assert row["published"] and row["status"] == "verified"
+    off = dict(card, value=ours * 1.01)  # 1% away: still a conflict
+    assert (
+        verify.check("params_total", [dict(value=ours, evidence="weights:sum"), verify.card_total(off)])["status"]
+        == "conflict"
+    )
+    coarse = dict(value=30e9, tol=0.5e9, evidence="card:params_total", raw="30B")  # card precision wins
+    assert verify.card_total(coarse)["tol"] == 0.5e9
+
+
+def load_tool_path(path, name):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module

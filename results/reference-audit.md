@@ -2,7 +2,7 @@
 
 Answer sheet: `rasbt/llm-architecture-gallery` `models.yml`, last changed at commit `c5624cfa9285550769e30cac118ebfc12ecfe5f0` (repository head `660cc1886a9d2a009c46ecc8e17e98b1075f58b2`). Its values are never a source for ArchWatch records.
 
-Entries: 120; mapped to a Hub repo: 118; analyzed by our deterministic pipeline: 106; compared values: 547; agreeing: 451; differences: 96.
+Entries: 120; mapped to a Hub repo: 118; analyzed by our deterministic pipeline: 106; compared values: 550; agreeing: 451; differences: 99.
 
 | Group | Differences |
 |---|---:|
@@ -10,7 +10,7 @@ Entries: 120; mapped to a Hub repo: 118; analyzed by our deterministic pipeline:
 | his_wrong | 6 |
 | card_unreproducible | 37 |
 | name_rounding | 0 |
-| definition | 53 |
+| definition | 56 |
 | unresolved | 0 |
 
 Groups: **ours_wrong** = a confirmed bug in our code (or weights we did not read); **his_wrong** = the model's own files contradict his value; **card_unreproducible** = we read every tensor and no fixed or card-stated rule reproduces the card's figure (what we checked is listed); **name_rounding** = his value is the size in the model name or a card '~' figure, and our exact count is within half a unit of its last digit; **definition** = our number under the fixed rule (or a rule the card states) lands in his accepted range; **unresolved** = review queue.
@@ -94,6 +94,7 @@ Fixed rules (the same for every model without a card statement): `params_total` 
 | RecursiveSI/flint | kv_cache_per_token_bf16 | 28,672 | 98 KiB | 71.4% | 100,352 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 100,352. His: 98 KiB (accepted 98,345-102,359); gap after the rule 0.00%. |
 | allenai/Olmo-3-1025-7B | kv_cache_per_token_bf16 | 131,072 | 512 KiB | 75.0% | 524,288 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 524,288. His: 512 KiB (accepted 513,802-534,774); gap after the rule 0.00%. |
 | allenai/Olmo-3-32B-Think | kv_cache_per_token_bf16 | 65,536 | 256 KiB | 75.0% | 262,144 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 262,144. His: 256 KiB (accepted 256,901-267,387); gap after the rule 0.00%. |
+| arcee-ai/Trinity-Large-Base | kv_cache_per_token_bf16 | 61,440 | 240 KiB | 75.0% | 245,760 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 245,760. His: 240 KiB (accepted 240,845-250,675); gap after the rule 0.00%. |
 | google/gemma-3-270m | kv_cache_per_token_bf16 | 3,072 | 18 KiB | 83.3% | 18,432 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 18,432. His: 18 KiB (accepted 17,920-18,944); gap after the rule 0.00%. |
 | meta-models/Muse-Glimmer-30B | kv_cache_per_token_bf16 | 13,312 | 52 KiB | 75.0% | 53,248 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 53,248. His: 52 KiB (accepted 52,183-54,313); gap after the rule 0.00%. |
 | poolside/Laguna-S-2.1 | kv_cache_per_token_bf16 | 49,152 | 192 KiB | 75.0% | 196,608 | default: full retention, every attention layer appends its KV per token (sliding-window layers not capped) | definition | Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 196,608. His: 192 KiB (accepted 192,676-200,540); gap after the rule 0.00%. |
@@ -121,12 +122,14 @@ Fixed rules (the same for every model without a card statement): `params_total` 
 | Qwen/Qwen3-30B-A3B | params_total | 30,532,122,624 | 30B total, 3B active (10% active) | 1.8% | 30,532,122,624 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 30,532,122,624. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 1.77%. |
 | Qwen/Qwen3-Coder-30B-A3B-Instruct | params_total | 30,532,122,624 | 30B total, 3.3B active (11% active) | 1.8% | 30,532,122,624 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 30,532,122,624. His: 30B total (accepted 29,400,000,000-30,600,000,000); gap after the rule 1.77%. |
 | Qwen/Qwen3.8-Flash-Next | params_total | 177,392,830,576 | 125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP | 1.4% | 176,943,899,520 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 176,943,899,520. His: 125B core (accepted 176,400,000,000-183,600,000,000); gap after the rule 1.70%. |
+| arcee-ai/Trinity-Large-Base | params_total | 398,635,286,016 | 400B total, 13B active (3.3% active) | 0.3% | 398,635,286,016 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 398,635,286,016. His: 400B total (accepted 392,000,000,000-408,000,000,000); gap after the rule 0.34%. |
 | deepseek-ai/DeepSeek-V3.2 | params_total | 671,918,832,560 | 671B total, 37B active (5.5% active) | 0.1% | 671,918,832,560 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 671,918,832,560. His: 671B total (accepted 657,580,000,000-684,420,000,000); gap after the rule 0.14%. |
 | google/gemma-3-270m | params_total | 268,098,176 | 270M parameters | 0.7% | 268,098,176 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 268,098,176. His: 270M parameters (accepted 264,600,000-275,400,000); gap after the rule 0.70%. |
 | inclusionAI/Ling-3.1-flash | params_total | 563,980,815,328 | 560B total, 25B active (4.5% active) | 0.7% | 563,980,815,328 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 563,980,815,328. His: 560B total (accepted 548,800,000,000-571,200,000,000); gap after the rule 0.71%. |
 | meta-llama/Llama-4-Maverick-17B-128E-Instruct | params_total | 401,583,781,376 | 400B total, 17B active (4.3% active) | 0.4% | 400,711,848,960 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 400,711,848,960. His: 400B total (accepted 392,000,000,000-408,000,000,000); gap after the rule 0.18%. |
 | meta-models/Muse-Glimmer-30B | params_total | 29,776,626,688 | 29.6B parameters (including perception encoder) | 0.6% | 29,776,626,688 | card: all stored tensors including the vision encoder | definition | Rule: card: all stored tensors including the vision encoder. Ours recomputed: 29,776,626,688. His: 29.6B parameters (including perception encoder) (accepted 29,008,000,000-30,192,000,000); gap after the rule 0.60%. Card: "/ **Number of Parameters** / 29.6B (including vision encoder) /". |
 | sarvamai/sarvam-105b | params_total | 106,031,767,424 | 105B total, 10.3B active (9.8% active) | 1.0% | 106,031,767,424 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 106,031,767,424. His: 105B total (accepted 102,900,000,000-107,100,000,000); gap after the rule 0.98%. |
+| stepfun-ai/Step-3.5-Flash | params_total | 196,956,130,368 | 196B total, 11B active (5.6% active) | 0.5% | 196,956,130,368 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 196,956,130,368. His: 196B total (accepted 192,080,000,000-199,920,000,000); gap after the rule 0.49%. |
 | tencent/Hy4-preview | params_total | 769,907,408,797 | 770B backbone, 49B active (6.4% active); plus 10B MTP | 1.3% | 769,907,408,797 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 769,907,408,797. His: 770B backbone (accepted 764,400,000,000-795,600,000,000); gap after the rule 1.29%. |
 | zai-org/GLM-4.5 | params_total | 352,797,829,024 | 355B total, 32B active (9% active) | 0.6% | 352,797,829,024 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 352,797,829,024. His: 355B total (accepted 347,900,000,000-362,100,000,000); gap after the rule 0.62%. |
 | zai-org/GLM-4.5-Air | params_total | 106,852,251,264 | 106B total, 12B active (11.3% active) | 0.8% | 106,852,251,264 | default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure) | definition | Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 106,852,251,264. His: 106B total (accepted 103,880,000,000-108,120,000,000); gap after the rule 0.80%. |
@@ -158,99 +161,9 @@ Fixed rules (the same for every model without a card statement): `params_total` 
 
 | Model | Field | Before | Now |
 |---|---|---|---|
-| Aleph-Alpha/Kolibri-1 | params_active | ours_wrong | agree |
-| JetBrains/Mellum2-12B-A2.5B-Thinking | params_active | name_rounding | card_unreproducible |
-| LiquidAI/LFM2.5-8B-A1B | params_active | not compared | card_unreproducible |
-| MiniMaxAI/MiniMax-M2 | params_active | ours_wrong | agree |
-| MiniMaxAI/MiniMax-M2.5 | params_active | ours_wrong | agree |
-| MiniMaxAI/MiniMax-M2.7 | params_active | ours_wrong | agree |
-| MiniMaxAI/MiniMax-M3 | params_active | name_rounding | card_unreproducible |
-| MiniMaxAI/MiniMax-M3.1-Flash | params_active | name_rounding | card_unreproducible |
-| NaiveAI/Naive-N0.5-Flash | params_active | agree | card_unreproducible |
-| Nanbeige/Nanbeige4.1-3B | params_total | name_rounding | card_unreproducible |
-| PrimeIntellect/INTELLECT-3 | params_active | ours_wrong | card_unreproducible |
-| Qwen/Qwen3-32B | params_total | name_rounding | card_unreproducible |
-| Qwen/Qwen3-Coder-30B-A3B-Instruct | params_active | definition | card_unreproducible |
-| Qwen/Qwen3-Next-80B-A3B-Instruct | params_total | definition | agree |
-| Qwen/Qwen3-Next-80B-A3B-Instruct | params_active | name_rounding | card_unreproducible |
-| Qwen/Qwen3.5-397B-A17B | params_total | definition | agree |
-| Qwen/Qwen3.5-397B-A17B | params_active | agree | card_unreproducible |
-| Qwen/Qwen3.6-27B | params_total | definition | agree |
-| Qwen/Qwen3.6-35B-A3B | params_total | definition | agree |
-| Qwen/Qwen3.8-27B | params_total | definition | agree |
-| Qwen/Qwen3.8-Flash-Next | params_total | agree | definition |
-| Qwen/Qwen3.8-Flash-Next | params_active | ours_wrong | card_unreproducible |
-| RecursiveSI/flint | params_active | definition | agree |
-| SHSLab/Step-5-Preview-BF16 | params_total | not compared | agree |
-| SHSLab/Step-5-Preview-BF16 | params_active | not compared | agree |
-| XiaomiMiMo/MiMo-V2-Flash | params_total | definition | agree |
-| XiaomiMiMo/MiMo-V2.5 | params_total | definition | agree |
-| XiaomiMiMo/MiMo-V2.5 | params_active | ours_wrong | agree |
-| XiaomiMiMo/MiMo-V2.5-Pro | params_active | agree | card_unreproducible |
-| XiaomiMiMo/MiMo-V2.6-Flash-RL | params_active | ours_wrong | agree |
-| XiaomiMiMo/MiMo-V2.6-Pro-RL | params_active | agree | definition |
-| Zyphra/ZAYA1-8B | params_total | ours_wrong | card_unreproducible |
-| Zyphra/ZAYA1-8B | params_active | ours_wrong | card_unreproducible |
-| baidu/ERNIE-5.5-Flash-Base | params_total | ours_wrong | agree |
-| baidu/ERNIE-5.5-Flash-Base | params_active | agree | card_unreproducible |
-| deepseek-ai/DeepSeek-R1 | params_total | ours_wrong | agree |
-| deepseek-ai/DeepSeek-R1 | params_active | definition | agree |
-| deepseek-ai/DeepSeek-V3 | params_total | definition | agree |
-| deepseek-ai/DeepSeek-V3 | params_active | definition | agree |
-| deepseek-ai/DeepSeek-V3.2 | params_total | ours_wrong | definition |
-| deepseek-ai/DeepSeek-V3.2 | params_active | ours_wrong | agree |
-| deepseek-ai/DeepSeek-V4-Flash | params_total | ours_wrong | agree |
-| deepseek-ai/DeepSeek-V4-Flash | params_active | ours_wrong | agree |
-| deepseek-ai/DeepSeek-V4-Pro | params_active | definition | agree |
-| deepseek-ai/DeepSeek-V4.1-Flash | params_total | definition | agree |
-| deepseek-ai/DeepSeek-V4.1-Flash | params_active | ours_wrong | definition |
-| ibm-granite/granite-4.1-30b | params_total | name_rounding | card_unreproducible |
-| inclusionAI/Ling-3.0-flash | params_total | ours_wrong | agree |
-| inclusionAI/Ling-3.0-flash | params_active | ours_wrong | agree |
-| inclusionAI/Ling-3.1-flash | params_total | ours_wrong | definition |
-| inclusionAI/Ling-3.1-flash | params_active | agree | card_unreproducible |
-| meta-llama/Llama-4-Maverick-17B-128E-Instruct | params_active | agree | card_unreproducible |
-| meta-models/Muse-Spark-Open-816B-A42B | params_active | name_rounding | card_unreproducible |
-| microsoft/phi-4 | params_total | ours_wrong | card_unreproducible |
-| mistralai/Mistral-Large-4-1T-A52B | params_active | agree | definition |
-| mistralai/Mistral-Small-4-119B-2603 | params_active | agree | card_unreproducible |
-| moonshotai/Kimi-K2.5 | params_total | not compared | agree |
-| moonshotai/Kimi-K2.5 | params_active | not compared | agree |
-| moonshotai/Kimi-K2.5 | kv_cache_per_token_bf16 | not compared | agree |
-| moonshotai/Kimi-K2.6 | params_total | not compared | agree |
-| moonshotai/Kimi-K2.6 | params_active | not compared | agree |
-| moonshotai/Kimi-K2.6 | kv_cache_per_token_bf16 | not compared | agree |
-| moonshotai/Kimi-K2.7-Code | params_total | not compared | agree |
-| moonshotai/Kimi-K2.7-Code | params_active | not compared | agree |
-| moonshotai/Kimi-K2.7-Code | kv_cache_per_token_bf16 | not compared | agree |
-| moonshotai/Kimi-Linear-48B-A3B-Base | params_total | name_rounding | card_unreproducible |
-| nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 | params_active | name_rounding | agree |
-| openai/gpt-oss-120b | params_active | ours_wrong | agree |
-| openai/gpt-oss-20b | params_active | ours_wrong | agree |
-| ornith-ai/Ornith-1.5-35B-A3B | params_total | definition | agree |
-| reflection/Beam-1.0-501B-A23B | params_active | agree | card_unreproducible |
-| sarvamai/sarvam-105b | params_active | ours_wrong | card_unreproducible |
-| sarvamai/sarvam-30b | params_total | name_rounding | card_unreproducible |
-| stepfun-ai/Step-3.5-Flash | params_active | not compared | agree |
-| tencent/Hy3-preview | params_total | not compared | agree |
-| tencent/Hy3-preview | params_active | agree | card_unreproducible |
-| tencent/Hy3-preview | kv_cache_per_token_bf16 | not compared | agree |
-| tencent/Hy4-preview | params_total | not compared | definition |
-| tencent/Hy4-preview | params_active | agree | definition |
-| thinkingmachines/Inkling | params_total | ours_wrong | card_unreproducible |
-| thinkingmachines/Inkling | params_active | agree | card_unreproducible |
-| upstage/Solar-Open2-250B | params_active | agree | card_unreproducible |
-| zai-org/GLM-4.5 | params_active | ours_wrong | card_unreproducible |
-| zai-org/GLM-4.5-Air | params_total | ours_wrong | definition |
-| zai-org/GLM-4.5-Air | params_active | ours_wrong | card_unreproducible |
-| zai-org/GLM-4.7 | params_active | ours_wrong | card_unreproducible |
-| zai-org/GLM-5 | params_total | definition | agree |
-| zai-org/GLM-5 | params_active | ours_wrong | card_unreproducible |
-| zai-org/GLM-5.1 | params_total | definition | agree |
-| zai-org/GLM-5.1 | params_active | ours_wrong | card_unreproducible |
-| zai-org/GLM-5.2 | params_active | ours_wrong | agree |
-| zai-org/GLM-5.3-Flash | params_total | definition | card_unreproducible |
-| zai-org/GLM-5.3-Flash | params_active | ours_wrong | card_unreproducible |
+| arcee-ai/Trinity-Large-Base | params_total | not compared | definition |
+| arcee-ai/Trinity-Large-Base | kv_cache_per_token_bf16 | not compared | definition |
+| stepfun-ai/Step-3.5-Flash | params_total | not compared | definition |
 
 ## Not analyzed
 
