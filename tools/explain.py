@@ -26,7 +26,10 @@ def explain(repo, config, client, *, out=None):
     settings = config["explainer"]
     record = json.loads((ROOT / "data/models" / (repo.replace("/", "__") + ".json")).read_text())
     data = diff_input(record)
-    diff = json.dumps({k: data[k] for k in ("changes", "weights")}, indent=1, ensure_ascii=False)
+    shown = dict(
+        changes=[{k: v for k, v in c.items() if k != "exact"} for c in data["changes"]], weights=data["weights"]
+    )
+    diff = json.dumps(shown, indent=1, ensure_ascii=False)
     limit = word_limit(data, settings)
     system = (PROMPTS / "system_instructions.txt").read_text().format(max_words=limit)
     path = (out or OUT) / (repo.replace("/", "__") + ".json")

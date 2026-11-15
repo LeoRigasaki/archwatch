@@ -1,68 +1,72 @@
 {
   "model": "google/diffusiongemma-26B-A4B-it",
-  "predecessor": "google/gemma-4-26B-A4B",
+  "predecessor": "gemma-4-26B-A4B",
   "input": {
-    "predecessor": "google/gemma-4-26B-A4B",
-    "successor": "google/diffusiongemma-26B-A4B-it",
+    "predecessor": "gemma-4-26B-A4B",
+    "successor": "diffusiongemma-26B-A4B-it",
     "changes": [
       {
-        "what": "Active parameters",
-        "before": "3,822,530,590",
-        "after": "3,840,375,612",
-        "direction": "up"
+        "what": "generation method",
+        "before": "not stated for gemma-4-26B-A4B",
+        "after": "block diffusion",
+        "direction": null,
+        "exact": []
       },
       {
-        "what": "Model type",
-        "before": "gemma4",
-        "after": "diffusion_gemma",
-        "direction": null
-      },
-      {
-        "what": "Generation type",
-        "before": "not published for google/gemma-4-26B-A4B",
-        "after": "block_diffusion",
-        "direction": null
-      },
-      {
-        "what": "Canvas length",
-        "before": "not published for google/gemma-4-26B-A4B",
+        "what": "diffusion canvas length",
+        "before": "not stated for gemma-4-26B-A4B",
         "after": "256",
-        "direction": null
+        "direction": null,
+        "exact": [
+          256
+        ]
+      },
+      {
+        "what": "active parameters",
+        "before": "3.82B",
+        "after": "3.84B",
+        "direction": "up",
+        "exact": [
+          3822530590,
+          3840375612
+        ]
       }
     ],
-    "weights": "The weight namespace changed (language_model to decoder), so added and removed tensor-group totals are not comparable."
+    "weights": "The weight namespace changed (language_model to decoder), so added and removed tensor-group totals are not comparable.",
+    "exact_values": [
+      42,
+      47,
+      256,
+      3822530590,
+      3840375612,
+      25805936206,
+      25823781228
+    ]
   },
-  "input_sha256": "685693abe576256175a29f210000bba0542901ef169f4d9c7688dc8d4afc66e6",
-  "text": "The model type changed from gemma4 to diffusion_gemma. Active parameters went up from 3,822,530,590 to 3,840,375,612. The generation type changed from not published for google/gemma-4-26B-A4B to block_diffusion, and the canvas length changed from not published for google/gemma-4-26B-A4B to 256. Regarding the weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.",
+  "input_sha256": "cc20c049ea416b424f47608851c203ca56f10e9cb0a8f54a5f3830ba7aad7afa",
+  "text": "The successor uses block diffusion as its generation method, with a diffusion canvas length of 256. Its active parameters went up to 3.84B from 3.82B in the predecessor. Regarding weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.",
   "passed": true,
   "attempts": [
     {
-      "text": "The model type changed from gemma4 to diffusion_gemma. Active parameters went up from 3,822,530,590 to 3,840,375,612. The generation type changed from not published for google/gemma-4-26B-A4B to block_diffusion, and the canvas length changed from not published for google/gemma-4-26B-A4B to 256. Regarding the weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.",
+      "text": "The successor uses block diffusion as its generation method, with a diffusion canvas length of 256. Its active parameters went up to 3.84B from 3.82B in the predecessor. Regarding weights, the weight namespace changed from language_model to decoder, so added and removed tensor-group totals are not comparable.",
       "check": {
         "passed": true,
         "problems": [],
         "numbers": [
-          "4",
-          "3822530590",
-          "3840375612",
-          "4",
-          "26",
-          "4",
-          "4",
-          "26",
-          "4",
-          "256"
+          "256",
+          "3.84",
+          "3.82"
         ],
-        "words": 59
+        "words": 47
       },
       "usage": {
-        "promptTokenCount": 603,
-        "candidatesTokenCount": 132,
-        "totalTokenCount": 735,
+        "promptTokenCount": 700,
+        "candidatesTokenCount": 70,
+        "totalTokenCount": 770,
         "promptTokensDetails": [
           {
             "modality": "TEXT",
-            "tokenCount": 603
+            "tokenCount": 700
           }
         ],
         "serviceTier": "standard"
