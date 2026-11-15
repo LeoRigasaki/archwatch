@@ -1,0 +1,50 @@
+name: reference-audit
+on:
+  # Weekly. Re-runs the deterministic audit only when the answer sheet's reference.yml commit changed.
+  # No LLM calls. Results stay out of the public site and open a needs-review PR.
+  schedule:
+    - cron: "11 4 * * 0"   # Sunday 09:11 Asia/Karachi
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: reference-audit
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.8"
+      - run: uv sync --locked --python 3.12
+      - name: Has reference.yml changed since the last audit?
+        id: changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(gh api "repos/owner/reference/commits?path=reference.yml&per_page=1" --jq '.[0].sha')
+          audited=$(python3 -c "import json;print(json.load(open('results/reference-audit.json'))['reference']['file_commit'])")
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          if [ "$latest" = "$audited" ]; then echo "run=false" >> "$GITHUB_OUTPUT"; else echo "run=true" >> "$GITHUB_OUTPUT"; fi
+      - name: Re-run the deterministic audit (no LLM calls)
+        if: steps.changed.outputs.run == 'true'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: uv run --frozen python tools/reference_audit.py --analyze --commit "${{ steps.changed.outputs.latest }}"
+      - name: Confirm no Gemini call was made
+        if: steps.changed.outputs.run == 'true'
+        run: git diff --quiet -- data/gemini-requests.json
+      - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+        if: steps.changed.outputs.run == 'true'
+        with:
+          branch: reference-audit-update
+          title: "Reference audit: reference.yml changed (${{ steps.changed.outputs.latest }})"
+          labels: needs-review
+          add-paths: results/reference-audit.md,results/reference-audit.json
+          body: The answer sheet changed. New differences start as unresolved until classified with evidence.

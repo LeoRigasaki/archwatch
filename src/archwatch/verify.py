@@ -328,6 +328,7 @@ def verify(
             ("text_active_without_embeddings", "text model, input embedding excluded"),
             ("text_active", "text model, all non-expert weights included"),
             ("with_vision", "text + vision"),
+            ("text_active_non_embedding", "text model, input embedding and output head excluded"),
         ]
         kc = k("params_active")
         pick = conventions[1]
@@ -337,6 +338,12 @@ def verify(
                     pick = (key, label)
                     break
         out.append(check("params_active", [w(active[pick[0]], f"total - unselected routed experts ({pick[1]})"), kc]))
+        out.append(
+            check(
+                "params_active_non_embedding",
+                [w(active["text_active_non_embedding"], "active weights without input embedding and output head")],
+            )
+        )
     if "vision_params" in card:
         out.append(
             check(

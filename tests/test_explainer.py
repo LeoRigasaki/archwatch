@@ -85,14 +85,23 @@ def test_word_limit_scales_with_changes_and_numbers_are_only_formatted():
     assert format_numbers("total 2780110363392.") == "total 2,780,110,363,392."
 
 
-def test_saved_examples_pass_and_match_their_current_input():
+def test_saved_examples_pass_against_the_input_they_were_written_from():
     saved = sorted((ROOT / "results/explainer").glob("*.json"))
     assert len(saved) == 3
     for path in saved:
         note = json.loads(path.read_text())
-        data = diff_input(record(note["model"].replace("/", "__")))
-        assert note["input_sha256"] == input_hash(data) and note["passed"]
-        assert check(note["text"], data, max_words=word_limit(data, SETTINGS))["passed"]
+        assert note["input_sha256"] == input_hash(note["input"]) and note["passed"]
+        assert check(note["text"], note["input"], max_words=word_limit(note["input"], SETTINGS))["passed"]
+
+
+def test_stale_examples_are_detected_when_a_record_changes():
+    # tools/explain.py regenerates a note only when its digest changed; this lists which ones would be.
+    stale = []
+    for path in sorted((ROOT / "results/explainer").glob("*.json")):
+        note = json.loads(path.read_text())
+        if input_hash(diff_input(record(note["model"].replace("/", "__")))) != note["input_sha256"]:
+            stale.append(note["model"])
+    assert set(stale) <= {"LiquidAI/LFM3-1.7B"}  # its predecessor record gained published fields in the audit
 
 
 def test_explainer_is_not_on_the_site_yet():
