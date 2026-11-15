@@ -51,12 +51,12 @@ def test_publish_refuses_failed_or_stale_diagrams(tmp_path):
 
 
 def test_site_labels_which_diagram_is_shown():
-    page = (ROOT / "site/index.html").read_text()
-    assert "Generated diagram: drawn by Gemini from the verified spec" in page
-    assert "Code-drawn diagram: no generated diagram has passed every check" in page
+    gemini = (ROOT / "site/models/meta-llama__Llama-3.1-8B.html").read_text()
+    code = (ROOT / "site/models/microsoft__phi-2.html").read_text()
+    assert "Drawn by Gemini from verified fields, passed" in gemini and 'src="../diagrams/' in gemini
+    assert "Drawn by code from verified fields; no generated diagram has passed every check yet" in code
 
 
 def test_dense_models_show_all_active_parameters():
-    page = (ROOT / "site/index.html").read_text()
-    assert "all (dense)" in page and "every parameter is used for each token" in page
-    assert ">not reported<" not in page
+    page = (ROOT / "site/models/microsoft__phi-2.html").read_text()
+    assert "active per token (dense)" in page and "not reported" not in page

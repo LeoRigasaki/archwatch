@@ -104,5 +104,16 @@ def test_stale_examples_are_detected_when_a_record_changes():
     assert set(stale) <= {"LiquidAI/LFM3-1.7B"}  # its predecessor record gained published fields in the audit
 
 
-def test_explainer_is_not_on_the_site_yet():
-    assert "explainer" not in (ROOT / "build_site.py").read_text()
+def test_site_shows_an_explainer_note_only_if_it_passed_for_the_current_diff():
+    import copy
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("site_builder", ROOT / "build_site.py")
+    site = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(site)
+    kimi = record("moonshotai__Kimi-K3.1-Pro")
+    note = site.explainer_note(kimi)
+    assert note and note in (ROOT / "site/models/moonshotai__Kimi-K3.1-Pro.html").read_text()
+    changed = copy.deepcopy(kimi)
+    changed["published"]["dsa_index_topk"] = 4096  # a different diff: the saved note is stale
+    assert site.explainer_note(changed) is None
