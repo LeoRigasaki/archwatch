@@ -3,6 +3,10 @@
     uv run --frozen python tools/diagram_gen.py --specs-only     # build specs, no model calls
     uv run --frozen python tools/diagram_gen.py                  # full run (needs GEMINI_API_KEY)
     uv run --frozen python tools/diagram_gen.py --recheck        # re-run checks on saved SVGs, no model calls
+    uv run --frozen python tools/diagram_gen.py --approve-reference results/diagram-gen/<model>/vN.svg
+
+Every call carries the approved house-style reference (docs/diagram-kit/reference.*). Repairs also send
+the PNG render of the previous attempt. At most 1 + repairs calls per diagram.
 
 Saved SVGs are reused, so an interrupted run resumes without repeating calls.
 """
@@ -19,6 +23,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from archwatch.diagram_checks import extract_svg, review  # noqa: E402
 from archwatch.diagram_spec import build_spec, dump  # noqa: E402
+from archwatch.house_style import approve, load  # noqa: E402
 
 PROMPTS = ROOT / "config/diagram-gen"
 OUT = ROOT / "results/diagram-gen"
@@ -39,6 +44,7 @@ def run_model(repo, config, client, *, recheck=False):
     if client is None and not recheck:
         return dict(model=repo, spec_only=True)
     system = (PROMPTS / "system_instructions.txt").read_text()
+    ref_svg, ref_png = load(ROOT) if client is not None else ("", b"")
     attempts = []
     svg = None
     for n in range(1, settings["repairs"] + 2):
@@ -55,15 +61,17 @@ def run_model(repo, config, client, *, recheck=False):
                     .format(
                         spec=spec_text,
                         num_layers=spec["model"]["layers"],
-                        house_style=(PROMPTS / "house-style/nemotron-h-8b.svg").read_text(),
+                        house_style=ref_svg,
                     )
                 )
+                images = [ref_png]
             else:
                 failures = "\n".join(f"- {f}" for f in attempts[-1]["failures"])
                 prompt = (PROMPTS / "repair_prompt.txt").read_text().format(failures=failures, spec=spec_text, svg=svg)
+                images = [(folder / f"v{n - 1}.png").read_bytes(), ref_png]
             write(folder / f"v{n}.prompt.txt", prompt)
             try:
-                text, meta = client.generate(system, prompt)
+                text, meta = client.generate(system, prompt, images)
             except Exception as error:  # provider errors are recorded, never retried silently
                 write(folder / f"v{n}.error.json", json.dumps(dict(error=str(error)), indent=2) + "\n")
                 attempts.append(dict(version=n, error=str(error)))
@@ -97,7 +105,11 @@ def main():
     parser.add_argument("--specs-only", action="store_true")
     parser.add_argument("--recheck", action="store_true")
     parser.add_argument("--models", nargs="*")
+    parser.add_argument("--approve-reference", metavar="SVG")
     args = parser.parse_args()
+    if args.approve_reference:
+        print(json.dumps(approve(ROOT, args.approve_reference), indent=2))
+        return
     config = yaml.safe_load((ROOT / "config/providers.yaml").read_text())
     client = None
     if not args.specs_only and not args.recheck:

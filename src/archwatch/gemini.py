@@ -1,5 +1,6 @@
 """Small standard-request Gemini adapter with a local request ledger; no agent loop, no fallback."""
 
+import base64
 import json
 import os
 import time
@@ -12,6 +13,7 @@ from zoneinfo import ZoneInfo
 from .artifacts import write_if_changed
 
 MAX_RESPONSE_BYTES = 8 * 1024 * 1024
+IMAGE_TOKEN_ALLOWANCE = 4000
 
 
 class ProviderError(RuntimeError):
@@ -93,14 +95,19 @@ class Gemini:
         write_if_changed(self.ledger, json.dumps(entries, indent=2) + "\n")
         return now
 
-    def generate(self, system, prompt):
+    def generate(self, system, prompt, images=()):
+        """`images`: PNG bytes sent after the text (e.g. a render of the previous attempt)."""
         model = self.config["models"][self.role]
-        started = self._reserve(len(system.encode()) + len(prompt.encode()))
+        # An image costs a bounded number of tokens; count it generously against the per-minute bound.
+        started = self._reserve(len(system.encode()) + len(prompt.encode()) + IMAGE_TOKEN_ALLOWANCE * len(images))
+        parts = [dict(text=prompt)] + [
+            dict(inline_data=dict(mime_type="image/png", data=base64.b64encode(png).decode())) for png in images
+        ]
         response = self._request(
             "/models/" + model["id"] + ":generateContent",
             dict(
                 systemInstruction=dict(parts=[dict(text=system)]),
-                contents=[dict(role="user", parts=[dict(text=prompt)])],
+                contents=[dict(role="user", parts=parts)],
                 generationConfig=dict(
                     temperature=self.config["temperature"], maxOutputTokens=self.section["max_output_tokens"]
                 ),
