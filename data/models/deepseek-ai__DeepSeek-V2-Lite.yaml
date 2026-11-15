@@ -2,7 +2,7 @@ id: deepseek-ai/DeepSeek-V2-Lite
 source_commit: 604d5664dddd88a0433dbae533b7fe9472482de0
 hub_created: '2024-05-15T05:31:53+00:00'
 license: deepseek
-analyzed_at: '2026-11-13T20:59:25+00:00'
+analyzed_at: '2026-11-15T08:35:31+00:00'
 published:
   num_layers: 27
   hidden_size: 2048
@@ -16,6 +16,7 @@ published:
   moe_num_experts: 64
   moe_active_experts: 6
   moe_shared_experts: 2
+  moe_shared_expert_intermediate: 2816
   moe_expert_intermediate: 1408
   dense_layers: 1
   layer_type_counts:
@@ -51,6 +52,7 @@ published:
   mla_cached_width_per_token: 576
   params_total: 15706484224
   params_active: 2661150208
+  model_type: deepseek_v2
   layer_types:
   - full_attention_mla
   - full_attention_mla
@@ -109,6 +111,69 @@ published:
   weight_header_summary:
     tensor_count: 5291
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      full_attention_mla:
+        layers: 27
+        tensors:
+          input_layernorm.weight:
+          - 2048
+          post_attention_layernorm.weight:
+          - 2048
+          self_attn.kv_a_layernorm.weight:
+          - 512
+          self_attn.kv_a_proj_with_mqa.weight:
+          - 576
+          - 2048
+          self_attn.kv_b_proj.weight:
+          - 4096
+          - 512
+          self_attn.o_proj.weight:
+          - 2048
+          - 2048
+          self_attn.q_proj.weight:
+          - 3072
+          - 2048
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 0
+      tensors:
+        mlp.down_proj.weight:
+        - 2048
+        - 10944
+        mlp.gate_proj.weight:
+        - 10944
+        - 2048
+        mlp.up_proj.weight:
+        - 10944
+        - 2048
+    - layer_ranges:
+      - - 1
+        - 26
+      tensors:
+        mlp.gate.weight:
+        - 64
+        - 2048
+        mlp.shared_experts.down_proj.weight:
+        - 2048
+        - 2816
+        mlp.shared_experts.gate_proj.weight:
+        - 2816
+        - 2048
+        mlp.shared_experts.up_proj.weight:
+        - 2816
+        - 2048
+    globals:
+      embed_tokens.weight:
+      - 102400
+      - 2048
+      lm_head.weight:
+      - 102400
+      - 2048
+      norm.weight:
+      - 2048
 review_queue: []
 unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,

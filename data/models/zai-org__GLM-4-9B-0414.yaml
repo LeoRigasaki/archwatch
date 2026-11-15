@@ -2,7 +2,7 @@ id: zai-org/GLM-4-9B-0414
 source_commit: 645b8482494e31b6b752272bf7f7f273ef0f3caf
 hub_created: '2025-04-07T11:57:02+00:00'
 license: mit
-analyzed_at: '2026-11-13T20:58:42+00:00'
+analyzed_at: '2026-11-15T08:35:34+00:00'
 published:
   num_layers: 40
   hidden_size: 4096
@@ -59,6 +59,7 @@ published:
   - attention
   - attention
   params_total: 9400279040
+  model_type: glm4
   layer_types:
   - full_attention
   - full_attention
@@ -116,6 +117,58 @@ published:
   weight_header_summary:
     tensor_count: 523
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      full_attention:
+        layers: 40
+        tensors:
+          input_layernorm.weight:
+          - 4096
+          post_attention_layernorm.weight:
+          - 4096
+          post_mlp_layernorm.weight:
+          - 4096
+          post_self_attn_layernorm.weight:
+          - 4096
+          self_attn.k_proj.bias:
+          - 256
+          self_attn.k_proj.weight:
+          - 256
+          - 4096
+          self_attn.o_proj.weight:
+          - 4096
+          - 4096
+          self_attn.q_proj.bias:
+          - 4096
+          self_attn.q_proj.weight:
+          - 4096
+          - 4096
+          self_attn.v_proj.bias:
+          - 256
+          self_attn.v_proj.weight:
+          - 256
+          - 4096
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 39
+      tensors:
+        mlp.down_proj.weight:
+        - 4096
+        - 13696
+        mlp.gate_up_proj.weight:
+        - 27392
+        - 4096
+    globals:
+      embed_tokens.weight:
+      - 151552
+      - 4096
+      lm_head.weight:
+      - 151552
+      - 4096
+      norm.weight:
+      - 4096
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
