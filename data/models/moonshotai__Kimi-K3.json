@@ -22,7 +22,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-14T09:57:45+00:00",
+ "analyzed_at": "2026-11-15T18:08:22+00:00",
  "facts": {
   "architecture_class": {
    "value": "KimiK3ForConditionalGeneration",
@@ -561,6 +561,8 @@
   "counted_from_weights": {
    "total": 2779931837184,
    "text_total": 2779484478208,
+   "mtp_params": 0,
+   "headline_total": 2779931837184,
    "by_component": {
     "moe_routed_experts": 2722740830208,
     "attention_or_linear_mixer": 36190795008,
@@ -589,8 +591,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 104189614848,
    "text_active": 105364019968,
    "text_active_without_embeddings": 104189614848,
+   "text_active_non_embedding": 103015209728,
    "with_vision": 105811378944
   }
  },
@@ -1141,6 +1145,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -1706,7 +1727,7 @@
    "candidates": [
     {
      "value": 2779931837184,
-     "evidence": "weights:sum of tensor shapes"
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
     },
     {
      "value": 2800000000000.0,
@@ -1718,18 +1739,31 @@
   {
    "field": "params_active",
    "value": 104189614848,
-   "status": "verified",
-   "confidence": 1.0,
+   "status": "single source",
+   "confidence": 0.7,
    "published": true,
    "candidates": [
     {
      "value": 104189614848,
-     "evidence": "weights:total - unselected routed experts (text model, input embedding excluded)"
-    },
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ],
+   "card_reference": {
+    "value": 104000000000.0,
+    "raw": "104B",
+    "agrees": true
+   }
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 103015209728,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
     {
-     "value": 104000000000.0,
-     "evidence": "card:params_active",
-     "raw": "104B"
+     "value": 103015209728,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1988,19 +2022,6 @@
     {
      "value": "MoE",
      "evidence": "config:text_config.num_experts"
-    }
-   ]
-  },
-  {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
     }
    ]
   },
@@ -2716,6 +2737,7 @@
   "head_dim": 192,
   "attention_type": "MLA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "moe_num_experts": 896,
   "moe_active_experts": 16,
   "moe_shared_experts": 2,
@@ -2829,6 +2851,7 @@
   "attention_output_gate": true,
   "params_total": 2779931837184,
   "params_active": 104189614848,
+  "params_active_non_embedding": 103015209728,
   "vision_params": 401214464,
   "model_type": "kimi_k3",
   "num_mtp_layers": 0,
@@ -2928,7 +2951,6 @@
    "full_attention_mla"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": false,
   "linear_attn_num_heads": 96,
   "linear_attn_head_dim": 128,
   "linear_attn_conv_kernel": 4,

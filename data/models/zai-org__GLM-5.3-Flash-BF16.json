@@ -20,7 +20,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-15T17:10:26+00:00",
+ "analyzed_at": "2026-11-15T18:08:23+00:00",
  "facts": {
   "architecture_class": {
    "value": "Glm5NextForConditionalGeneration",
@@ -446,6 +446,8 @@
   "counted_from_weights": {
    "total": 321323031390,
    "text_total": 320759404382,
+   "mtp_params": 7432592416,
+   "headline_total": 313890438974,
    "by_component": {
     "moe_routed_experts": 304405807104,
     "auxiliary": 7432592416,
@@ -473,8 +475,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 16742333246,
    "text_active": 17376721726,
    "text_active_without_embeddings": 16742333246,
+   "text_active_non_embedding": 16107944766,
    "with_vision": 17940348734
   }
  },
@@ -983,27 +987,53 @@
   },
   {
    "field": "params_total",
-   "value": 321323031390,
+   "value": 313890438974,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 321323031390,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 313890438974,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 7432592416,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 7432592416,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 17376721726,
+   "value": 16742333246,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 17376721726,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 16742333246,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 16107944766,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 16107944766,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1948,8 +1978,10 @@
   ],
   "mla_cached_width_per_token": 512,
   "layer_index_base_in_config": 0,
-  "params_total": 321323031390,
-  "params_active": 17376721726,
+  "params_total": 313890438974,
+  "params_mtp": 7432592416,
+  "params_active": 16742333246,
+  "params_active_non_embedding": 16107944766,
   "model_type": "glm5_next",
   "hyper_connection_multiplier": 4,
   "num_mtp_layers": 1,
@@ -2361,13 +2393,13 @@
   },
   {
    "field": "params_total",
-   "before": 753329940480,
-   "after": 321323031390
+   "before": 743377019904,
+   "after": 313890438974
   },
   {
    "field": "params_active",
-   "before": 41250530304,
-   "after": 17376721726
+   "before": 40298947584,
+   "after": 16742333246
   },
   {
    "field": "kv_cache_per_token_bytes",

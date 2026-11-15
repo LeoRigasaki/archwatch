@@ -60,7 +60,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-15T17:10:25+00:00",
+ "analyzed_at": "2026-11-15T18:08:09+00:00",
  "facts": {
   "architecture_class": {
    "value": "MistralLarge4ForConditionalGeneration",
@@ -422,6 +422,8 @@
   "counted_from_weights": {
    "total": 1053161553184,
    "text_total": 1051457334560,
+   "mtp_params": 2099969024,
+   "headline_total": 1051061584160,
    "by_component": {
     "moe_routed_experts": 1029181538304,
     "other": 9164304160,
@@ -448,8 +450,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 51079459104,
    "text_active": 52337750304,
    "text_active_without_embeddings": 51079459104,
+   "text_active_non_embedding": 49821167904,
    "with_vision": 54041968928
   }
  },
@@ -999,27 +1003,53 @@
   },
   {
    "field": "params_total",
-   "value": 1053161553184,
+   "value": 1051061584160,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 1053161553184,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 1051061584160,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 2099969024,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2099969024,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 52337750304,
+   "value": 51079459104,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 52337750304,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 51079459104,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 49821167904,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 49821167904,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1431,8 +1461,10 @@
    "indexed_mla": 72
   },
   "layer_index_base_in_config": 0,
-  "params_total": 1053161553184,
-  "params_active": 52337750304,
+  "params_total": 1051061584160,
+  "params_mtp": 2099969024,
+  "params_active": 51079459104,
+  "params_active_non_embedding": 49821167904,
   "model_type": "mistral_large4",
   "shared_kv_layers": 9,
   "layer_types": [

@@ -18,7 +18,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-15T17:34:49+00:00",
+ "analyzed_at": "2026-11-15T18:08:06+00:00",
  "facts": {
   "architecture_class": {
    "value": "Qwen4ExpForConditionalGeneration",
@@ -442,6 +442,8 @@
   "counted_from_weights": {
    "total": 179999981424,
    "text_total": 179551050368,
+   "mtp_params": 2607150848,
+   "headline_total": 177392830576,
    "by_component": {
     "moe_routed_experts": 120795955200,
     "lookup_embedding": 51200245760,
@@ -469,6 +471,7 @@
    "skipped_buffer_tensors": 3
   },
   "active": {
+   "active": 6671295360,
    "text_active": 7306994560,
    "text_active_without_embeddings": 6671295360,
    "text_active_non_embedding": 6035596160,
@@ -1037,27 +1040,40 @@
   },
   {
    "field": "params_total",
-   "value": 179999981424,
+   "value": 177392830576,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 179999981424,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 177392830576,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 2607150848,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2607150848,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 7306994560,
+   "value": 6671295360,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 7306994560,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 6671295360,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
     }
    ]
   },
@@ -1506,8 +1522,9 @@
   ],
   "layer_index_base_in_config": 0,
   "qk_norm": true,
-  "params_total": 179999981424,
-  "params_active": 7306994560,
+  "params_total": 177392830576,
+  "params_mtp": 2607150848,
+  "params_active": 6671295360,
   "params_active_non_embedding": 6035596160,
   "model_type": "qwen4_exp",
   "linear_num_key_heads": 16,
@@ -1700,13 +1717,13 @@
   },
   {
    "field": "params_total",
-   "before": 2446182725504,
-   "after": 179999981424
+   "before": 2419804697984,
+   "after": 177392830576
   },
   {
    "field": "params_active",
-   "before": 95287866752,
-   "after": 7306994560
+   "before": 93253629312,
+   "after": 6671295360
   },
   {
    "field": "model_type",

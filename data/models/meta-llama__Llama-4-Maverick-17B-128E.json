@@ -35,7 +35,7 @@
    "vi"
   ]
  },
- "analyzed_at": "2026-11-15T17:10:25+00:00",
+ "analyzed_at": "2026-11-15T18:08:08+00:00",
  "facts": {
   "architecture_class": {
    "value": "Llama4ForConditionalGeneration",
@@ -315,6 +315,8 @@
   "counted_from_weights": {
    "total": 401583781376,
    "text_total": 400711848960,
+   "mtp_params": 0,
+   "headline_total": 401583781376,
    "by_component": {
     "moe_routed_experts": 386547056640,
     "dense_ffn": 6039797760,
@@ -341,8 +343,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 16150205440,
    "text_active": 17184691200,
    "text_active_without_embeddings": 16150205440,
+   "text_active_non_embedding": 15115719680,
    "with_vision": 18056623616
   }
  },
@@ -818,20 +822,33 @@
    "candidates": [
     {
      "value": 401583781376,
-     "evidence": "weights:sum of tensor shapes"
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 17184691200,
+   "value": 16150205440,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 17184691200,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 16150205440,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 15115719680,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 15115719680,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1749,7 +1766,8 @@
    "attention"
   ],
   "params_total": 401583781376,
-  "params_active": 17184691200,
+  "params_active": 16150205440,
+  "params_active_non_embedding": 15115719680,
   "model_type": "llama4",
   "layer_types": [
    "full_attention",

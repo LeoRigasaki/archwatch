@@ -2,7 +2,7 @@ id: moonshotai/Kimi-K3
 source_commit: f831ab66814297da540d832a5235f8e904f29d06
 hub_created: '2026-06-13T06:42:57+00:00'
 license: kimi-k3
-analyzed_at: '2026-11-14T09:57:45+00:00'
+analyzed_at: '2026-11-15T18:08:22+00:00'
 published:
   num_layers: 93
   hidden_size: 7168
@@ -13,6 +13,7 @@ published:
   head_dim: 192
   attention_type: MLA
   ffn_gated: true
+  tied_embeddings: false
   moe_num_experts: 896
   moe_active_experts: 16
   moe_shared_experts: 2
@@ -124,6 +125,7 @@ published:
   attention_output_gate: true
   params_total: 2779931837184
   params_active: 104189614848
+  params_active_non_embedding: 103015209728
   vision_params: 401214464
   model_type: kimi_k3
   num_mtp_layers: 0
@@ -222,7 +224,6 @@ published:
   - full_attention_mla
   - full_attention_mla
   decoder_type: MoE
-  tied_embeddings: false
   linear_attn_num_heads: 96
   linear_attn_head_dim: 128
   linear_attn_conv_kernel: 4
