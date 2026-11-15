@@ -282,6 +282,11 @@ def _extract(config: dict) -> dict[str, Fact]:
         sh = _first(text, ["num_shared_experts", "n_shared_experts"], prefix)
         if sh:
             f["moe_shared_experts"] = sh
+        # Private flag: does the config name shared experts at all? (Zero is only published with weight evidence.)
+        f["_config_names_shared_experts"] = (
+            any("shared_expert" in key or key in ("num_shared_experts", "n_shared_experts") for key in list(text)),
+            f"config:{prefix}* keys",
+        )
         mi = _first(text, ["moe_intermediate_size", "expert_intermediate_size"], prefix)
         if mi is None and text.get("model_type") == "llama4_text":
             mi = _first(text, ["intermediate_size"], prefix)
