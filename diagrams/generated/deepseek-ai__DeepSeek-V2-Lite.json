@@ -1,0 +1,33 @@
+{
+  "model": "deepseek-ai/DeepSeek-V2-Lite",
+  "source_commit": "604d5664dddd88a0433dbae533b7fe9472482de0",
+  "spec_sha256": "a904877f45e72953d34360af74156be062fd84658aa115f68ebad94911abeb33",
+  "svg_sha256": "8c5252568cb9d9aad4a7aa89a5cd157a3dccbf804db136ae02f6241d401c51e7",
+  "source": "data/generated-diagrams/deepseek-ai__DeepSeek-V2-Lite/a904877f45e7/v1.svg",
+  "checks_passed": [
+    "callouts_beside_their_part",
+    "callouts_present",
+    "canvas_size",
+    "columns_balanced",
+    "do_not_include",
+    "edges_connect_their_nodes",
+    "fixed_layout_positions",
+    "fixed_layout_sections",
+    "graph_edges_match_spec",
+    "graph_nodes_match_spec",
+    "inside_canvas_with_margin",
+    "labels_from_spec",
+    "layer_bars_match_spec",
+    "layer_sum",
+    "lines_avoid_other_boxes",
+    "no_covered_text",
+    "no_leader_lines",
+    "no_lines_through_text",
+    "no_text_overlap",
+    "numbers_from_spec",
+    "readable_font_sizes",
+    "repeat_counts_once",
+    "svg_valid_and_safe",
+    "zoom_panels_present"
+  ]
+}
