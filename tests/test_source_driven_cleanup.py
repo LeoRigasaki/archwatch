@@ -33,11 +33,10 @@ def test_gallery_discovers_unseen_record_and_watcher_sources(tmp_path, monkeypat
     )
     module.main()
     page = (tmp_path / "site/index.html").read_text()
-    assert "<title>ArchWatch: 1 model architectures</title>" in page
-    assert "1 published architecture records from 1 publishers" in page
-    assert "new-publisher/UnseenArchitecture" in page and "other/FutureModel" in page
-    assert f"/blob/{rec['source_commit']}/weights.safetensors" in page
-    assert "&lt;unverified&gt;" in page
+    assert "Search 1 models" in page and "UnseenArchitecture" in page and "FutureModel" in page
+    assert "<unverified>" not in page and "&lt;unverified&gt;" not in page  # held: plain reason only
+    model = (tmp_path / "site/models/arbitrary-filename.html").read_text()
+    assert f"huggingface.co/new-publisher/UnseenArchitecture/tree/{rec['source_commit']}" in model
     before = (page, (tmp_path / "site/index.html").stat().st_mtime_ns)
     module.main()
     assert ((tmp_path / "site/index.html").read_text(), (tmp_path / "site/index.html").stat().st_mtime_ns) == before

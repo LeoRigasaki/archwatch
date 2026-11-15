@@ -1,0 +1,15 @@
+# Static site settings. Display names only; every number on the site comes from published records.
+repo_url: https://github.com/LeoRigasaki/archwatch
+publishers:
+  moonshotai: Moonshot AI
+  LiquidAI: Liquid AI
+  Qwen: Alibaba Qwen
+  deepseek-ai: DeepSeek
+  google: Google
+  meta-llama: Meta
+  microsoft: Microsoft
+  mistralai: Mistral AI
+  nvidia: NVIDIA
+  zai-org: Z.ai
+# Context lengths offered by the cache-memory picker (the model's maximum is always added).
+memory_contexts: [8192, 131072]
