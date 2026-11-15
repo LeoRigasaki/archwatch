@@ -1,0 +1,13 @@
+Your note failed these checks:
+{failures}
+
+Rewrite it so every check passes. Same rules as before.
+
+Predecessor: {old}
+Successor: {new}
+
+DIGEST:
+{diff}
+
+YOUR PREVIOUS NOTE:
+{text}
