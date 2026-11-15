@@ -2,7 +2,7 @@ id: Qwen/Qwen3-0.6B-Base
 source_commit: da87bfb608c14b7cf20ba1ce41287e8de496c0cd
 hub_created: '2025-04-28T05:09:54+00:00'
 license: apache-2.0
-analyzed_at: '2026-11-13T20:58:36+00:00'
+analyzed_at: '2026-11-15T08:35:31+00:00'
 published:
   num_layers: 28
   hidden_size: 1024
@@ -47,6 +47,7 @@ published:
   - attention
   qk_norm: true
   params_total: 596049920
+  model_type: qwen3
   layer_types:
   - full_attention
   - full_attention
@@ -90,6 +91,52 @@ published:
   weight_header_summary:
     tensor_count: 310
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      full_attention:
+        layers: 28
+        tensors:
+          input_layernorm.weight:
+          - 1024
+          post_attention_layernorm.weight:
+          - 1024
+          self_attn.k_norm.weight:
+          - 128
+          self_attn.k_proj.weight:
+          - 1024
+          - 1024
+          self_attn.o_proj.weight:
+          - 1024
+          - 2048
+          self_attn.q_norm.weight:
+          - 128
+          self_attn.q_proj.weight:
+          - 2048
+          - 1024
+          self_attn.v_proj.weight:
+          - 1024
+          - 1024
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 27
+      tensors:
+        mlp.down_proj.weight:
+        - 1024
+        - 3072
+        mlp.gate_proj.weight:
+        - 3072
+        - 1024
+        mlp.up_proj.weight:
+        - 3072
+        - 1024
+    globals:
+      embed_tokens.weight:
+      - 151936
+      - 1024
+      norm.weight:
+      - 1024
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,

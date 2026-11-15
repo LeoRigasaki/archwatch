@@ -2,7 +2,7 @@ id: google/gemma-3-1b-pt
 source_commit: fcf18a2a879aab110ca39f8bffbccd5d49d8eb29
 hub_created: '2025-02-20T21:21:06+00:00'
 license: gemma
-analyzed_at: '2026-11-13T20:58:37+00:00'
+analyzed_at: '2026-11-15T08:35:32+00:00'
 published:
   num_layers: 26
   hidden_size: 1152
@@ -48,6 +48,7 @@ published:
   - attention
   qk_norm: true
   params_total: 999885952
+  model_type: gemma3_text
   layer_types:
   - sliding_attention
   - sliding_attention
@@ -92,6 +93,83 @@ published:
   weight_header_summary:
     tensor_count: 340
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      sliding_attention:
+        layers: 22
+        tensors:
+          input_layernorm.weight:
+          - 1152
+          post_attention_layernorm.weight:
+          - 1152
+          post_feedforward_layernorm.weight:
+          - 1152
+          pre_feedforward_layernorm.weight:
+          - 1152
+          self_attn.k_norm.weight:
+          - 256
+          self_attn.k_proj.weight:
+          - 256
+          - 1152
+          self_attn.o_proj.weight:
+          - 1152
+          - 1024
+          self_attn.q_norm.weight:
+          - 256
+          self_attn.q_proj.weight:
+          - 1024
+          - 1152
+          self_attn.v_proj.weight:
+          - 256
+          - 1152
+      full_attention:
+        layers: 4
+        tensors:
+          input_layernorm.weight:
+          - 1152
+          post_attention_layernorm.weight:
+          - 1152
+          post_feedforward_layernorm.weight:
+          - 1152
+          pre_feedforward_layernorm.weight:
+          - 1152
+          self_attn.k_norm.weight:
+          - 256
+          self_attn.k_proj.weight:
+          - 256
+          - 1152
+          self_attn.o_proj.weight:
+          - 1152
+          - 1024
+          self_attn.q_norm.weight:
+          - 256
+          self_attn.q_proj.weight:
+          - 1024
+          - 1152
+          self_attn.v_proj.weight:
+          - 256
+          - 1152
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 25
+      tensors:
+        mlp.down_proj.weight:
+        - 1152
+        - 6912
+        mlp.gate_proj.weight:
+        - 6912
+        - 1152
+        mlp.up_proj.weight:
+        - 6912
+        - 1152
+    globals:
+      embed_tokens.weight:
+      - 262144
+      - 1152
+      norm.weight:
+      - 1152
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,
