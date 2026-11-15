@@ -74,3 +74,21 @@ def test_comparison_never_feeds_records_gold_or_diagrams():
         text = path.read_text()
         assert "reference_agreement" not in text and "reference gallery" not in text, path
     assert not list((ROOT / "evals").rglob("*gallery*")) and not list((ROOT / "data").rglob("*gallery*"))
+
+
+def test_every_recorded_disagreement_has_a_checked_cause():
+    saved = json.loads((ROOT / "results/reference-agreement.json").read_text())
+    causes = yaml.safe_load((ROOT / "config/reference-causes.yaml").read_text())
+    bad = [r for r in saved["rows"] if not r["agree"]]
+    assert bad and all(r["cause"] in ref.CAUSES for r in bad)
+    for r in bad:
+        entry = causes[r["model"]][r["field"]]
+        assert entry["cause"] == r["cause"] and len(entry["why"]) > 40
+    # The one ArchWatch error found is the Mistral speculative-decoding head counted as active.
+    assert [(r["model"], r["field"]) for r in bad if r["cause"] == "error-ours"] == [
+        ("mistralai/Mistral-Large-4-1T-A52B", "params_active")
+    ]
+
+
+def test_site_labels_the_growing_cache_definition():
+    assert "sliding-window and constant states excluded" in (ROOT / "build_site.py").read_text()
