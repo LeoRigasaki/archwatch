@@ -23,7 +23,7 @@
    "vision-language-model"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:07+00:00",
+ "analyzed_at": "2026-11-15T08:35:32+00:00",
  "facts": {
   "architecture_class": {
    "value": "MageVLForConditionalGeneration",
@@ -994,6 +994,285 @@
      "evidence": "weights:tensor header inventory"
     }
    ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "full_attention": {
+      "layers": 36,
+      "tensors": {
+       "input_layernorm.weight": [
+        2560
+       ],
+       "post_attention_layernorm.weight": [
+        2560
+       ],
+       "self_attn.k_norm.weight": [
+        128
+       ],
+       "self_attn.k_proj.weight": [
+        1024,
+        2560
+       ],
+       "self_attn.o_proj.weight": [
+        2560,
+        4096
+       ],
+       "self_attn.q_norm.weight": [
+        128
+       ],
+       "self_attn.q_proj.weight": [
+        4096,
+        2560
+       ],
+       "self_attn.v_proj.weight": [
+        1024,
+        2560
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        35
+       ]
+      ],
+      "tensors": {
+       "mlp.down_proj.weight": [
+        2560,
+        9728
+       ],
+       "mlp.gate_proj.weight": [
+        9728,
+        2560
+       ],
+       "mlp.up_proj.weight": [
+        9728,
+        2560
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      151936,
+      2560
+     ],
+     "lm_head.weight": [
+      151936,
+      2560
+     ],
+     "mamba_model.norm_fn.bias": [
+      2560
+     ],
+     "mamba_model.norm_fn.weight": [
+      2560
+     ],
+     "mamba_model.ssms.0.mixer.A_log": [
+      5120,
+      16
+     ],
+     "mamba_model.ssms.0.mixer.D": [
+      5120
+     ],
+     "mamba_model.ssms.0.mixer.conv1d.bias": [
+      5120
+     ],
+     "mamba_model.ssms.0.mixer.conv1d.weight": [
+      5120,
+      1,
+      4
+     ],
+     "mamba_model.ssms.0.mixer.dt_proj.bias": [
+      5120
+     ],
+     "mamba_model.ssms.0.mixer.dt_proj.weight": [
+      5120,
+      160
+     ],
+     "mamba_model.ssms.0.mixer.in_proj.weight": [
+      10240,
+      2560
+     ],
+     "mamba_model.ssms.0.mixer.out_proj.weight": [
+      2560,
+      5120
+     ],
+     "mamba_model.ssms.0.mixer.x_proj.weight": [
+      192,
+      5120
+     ],
+     "mamba_model.ssms.0.norm.bias": [
+      2560
+     ],
+     "mamba_model.ssms.0.norm.weight": [
+      2560
+     ],
+     "norm.weight": [
+      2560
+     ],
+     "post_net.fc3.bias": [
+      2560
+     ],
+     "post_net.fc3.weight": [
+      2560,
+      2560
+     ],
+     "pre_net.fc3.bias": [
+      2560
+     ],
+     "pre_net.fc3.weight": [
+      2560,
+      2560
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "full_attention": {
+        "layers": 36,
+        "tensors": {
+         "input_layernorm.weight": [
+          2560
+         ],
+         "post_attention_layernorm.weight": [
+          2560
+         ],
+         "self_attn.k_norm.weight": [
+          128
+         ],
+         "self_attn.k_proj.weight": [
+          1024,
+          2560
+         ],
+         "self_attn.o_proj.weight": [
+          2560,
+          4096
+         ],
+         "self_attn.q_norm.weight": [
+          128
+         ],
+         "self_attn.q_proj.weight": [
+          4096,
+          2560
+         ],
+         "self_attn.v_proj.weight": [
+          1024,
+          2560
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          35
+         ]
+        ],
+        "tensors": {
+         "mlp.down_proj.weight": [
+          2560,
+          9728
+         ],
+         "mlp.gate_proj.weight": [
+          9728,
+          2560
+         ],
+         "mlp.up_proj.weight": [
+          9728,
+          2560
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        151936,
+        2560
+       ],
+       "lm_head.weight": [
+        151936,
+        2560
+       ],
+       "mamba_model.norm_fn.bias": [
+        2560
+       ],
+       "mamba_model.norm_fn.weight": [
+        2560
+       ],
+       "mamba_model.ssms.0.mixer.A_log": [
+        5120,
+        16
+       ],
+       "mamba_model.ssms.0.mixer.D": [
+        5120
+       ],
+       "mamba_model.ssms.0.mixer.conv1d.bias": [
+        5120
+       ],
+       "mamba_model.ssms.0.mixer.conv1d.weight": [
+        5120,
+        1,
+        4
+       ],
+       "mamba_model.ssms.0.mixer.dt_proj.bias": [
+        5120
+       ],
+       "mamba_model.ssms.0.mixer.dt_proj.weight": [
+        5120,
+        160
+       ],
+       "mamba_model.ssms.0.mixer.in_proj.weight": [
+        10240,
+        2560
+       ],
+       "mamba_model.ssms.0.mixer.out_proj.weight": [
+        2560,
+        5120
+       ],
+       "mamba_model.ssms.0.mixer.x_proj.weight": [
+        192,
+        5120
+       ],
+       "mamba_model.ssms.0.norm.bias": [
+        2560
+       ],
+       "mamba_model.ssms.0.norm.weight": [
+        2560
+       ],
+       "norm.weight": [
+        2560
+       ],
+       "post_net.fc3.bias": [
+        2560
+       ],
+       "post_net.fc3.weight": [
+        2560,
+        2560
+       ],
+       "pre_net.fc3.bias": [
+        2560
+       ],
+       "pre_net.fc3.weight": [
+        2560,
+        2560
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
+    }
+   ]
   }
  ],
  "published": {
@@ -1115,6 +1394,140 @@
    "tensor_count": 760,
    "skipped_scale_tensors": 0,
    "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "full_attention": {
+     "layers": 36,
+     "tensors": {
+      "input_layernorm.weight": [
+       2560
+      ],
+      "post_attention_layernorm.weight": [
+       2560
+      ],
+      "self_attn.k_norm.weight": [
+       128
+      ],
+      "self_attn.k_proj.weight": [
+       1024,
+       2560
+      ],
+      "self_attn.o_proj.weight": [
+       2560,
+       4096
+      ],
+      "self_attn.q_norm.weight": [
+       128
+      ],
+      "self_attn.q_proj.weight": [
+       4096,
+       2560
+      ],
+      "self_attn.v_proj.weight": [
+       1024,
+       2560
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       35
+      ]
+     ],
+     "tensors": {
+      "mlp.down_proj.weight": [
+       2560,
+       9728
+      ],
+      "mlp.gate_proj.weight": [
+       9728,
+       2560
+      ],
+      "mlp.up_proj.weight": [
+       9728,
+       2560
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     151936,
+     2560
+    ],
+    "lm_head.weight": [
+     151936,
+     2560
+    ],
+    "mamba_model.norm_fn.bias": [
+     2560
+    ],
+    "mamba_model.norm_fn.weight": [
+     2560
+    ],
+    "mamba_model.ssms.0.mixer.A_log": [
+     5120,
+     16
+    ],
+    "mamba_model.ssms.0.mixer.D": [
+     5120
+    ],
+    "mamba_model.ssms.0.mixer.conv1d.bias": [
+     5120
+    ],
+    "mamba_model.ssms.0.mixer.conv1d.weight": [
+     5120,
+     1,
+     4
+    ],
+    "mamba_model.ssms.0.mixer.dt_proj.bias": [
+     5120
+    ],
+    "mamba_model.ssms.0.mixer.dt_proj.weight": [
+     5120,
+     160
+    ],
+    "mamba_model.ssms.0.mixer.in_proj.weight": [
+     10240,
+     2560
+    ],
+    "mamba_model.ssms.0.mixer.out_proj.weight": [
+     2560,
+     5120
+    ],
+    "mamba_model.ssms.0.mixer.x_proj.weight": [
+     192,
+     5120
+    ],
+    "mamba_model.ssms.0.norm.bias": [
+     2560
+    ],
+    "mamba_model.ssms.0.norm.weight": [
+     2560
+    ],
+    "norm.weight": [
+     2560
+    ],
+    "post_net.fc3.bias": [
+     2560
+    ],
+    "post_net.fc3.weight": [
+     2560,
+     2560
+    ],
+    "pre_net.fc3.bias": [
+     2560
+    ],
+    "pre_net.fc3.weight": [
+     2560,
+     2560
+    ]
+   }
   }
  },
  "review_queue": [],
