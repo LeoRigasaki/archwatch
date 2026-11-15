@@ -5,6 +5,7 @@ import shutil
 from datetime import date
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,6 +27,11 @@ def root_with(tmp_path, repos, extra_status=None):
     models.update(extra_status or {})
     (tmp_path / "data/seen.json").write_text(json.dumps({"models": models}))
     return tmp_path
+
+
+@pytest.fixture(autouse=True)
+def no_publish(monkeypatch):
+    monkeypatch.setattr(queue, "publish", lambda root, record, svg: None)
 
 
 def fake_runner(results, log):

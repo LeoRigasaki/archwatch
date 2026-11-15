@@ -1,0 +1,33 @@
+{
+  "model": "moonshotai/Kimi-K3.1-Pro",
+  "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+  "spec_sha256": "65ed0c2e612e3652a804a9bc926bf02fa5bcab7048cbe32e3a3f989e8587948b",
+  "svg_sha256": "dd6c0969ff8d5575cbc0b104bd2a28fa5b24b7f27f6454347791f099140282f1",
+  "source": "results/diagram-gen/moonshotai__Kimi-K3.1-Pro/v1.svg",
+  "checks_passed": [
+    "callouts_beside_their_part",
+    "callouts_present",
+    "canvas_size",
+    "columns_balanced",
+    "do_not_include",
+    "edges_connect_their_nodes",
+    "fixed_layout_positions",
+    "fixed_layout_sections",
+    "graph_edges_match_spec",
+    "graph_nodes_match_spec",
+    "inside_canvas_with_margin",
+    "labels_from_spec",
+    "layer_bars_match_spec",
+    "layer_sum",
+    "lines_avoid_other_boxes",
+    "no_covered_text",
+    "no_leader_lines",
+    "no_lines_through_text",
+    "no_text_overlap",
+    "numbers_from_spec",
+    "readable_font_sizes",
+    "repeat_counts_once",
+    "svg_valid_and_safe",
+    "zoom_panels_present"
+  ]
+}

@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from archwatch.diagram_spec import SpecError, build_spec, dump  # noqa: E402
+from archwatch.generated import publish  # noqa: E402
 
 _gen_spec = importlib.util.spec_from_file_location("diagram_gen", ROOT / "tools/diagram_gen.py")
 diagram_gen = importlib.util.module_from_spec(_gen_spec)
@@ -80,6 +81,8 @@ def run(root: Path, config: dict, client, *, today=None) -> dict:
         row = diagram_gen.run_model(item["model"], config, client, out=folder, spec=item["spec"], record=item["record"])
         budget -= row["calls"]
         status = "passed" if row["passed"] else ("error" if row["errors"] else "failed")
+        if row["passed"]:
+            publish(root, item["record"], folder / f"v{row['final_version']}.svg")  # gallery shows it after review
         state["models"][item["model"]] = dict(
             spec_sha256=item["spec_sha256"],
             status=status,
