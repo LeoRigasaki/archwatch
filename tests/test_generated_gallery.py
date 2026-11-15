@@ -54,3 +54,9 @@ def test_site_labels_which_diagram_is_shown():
     page = (ROOT / "site/index.html").read_text()
     assert "Generated diagram: drawn by Gemini from the verified spec" in page
     assert "Code-drawn diagram: no generated diagram has passed every check" in page
+
+
+def test_dense_models_show_all_active_parameters():
+    page = (ROOT / "site/index.html").read_text()
+    assert "all (dense)" in page and "every parameter is used for each token" in page
+    assert ">not reported<" not in page

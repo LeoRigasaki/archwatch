@@ -92,12 +92,19 @@ def model_section(name, anchor):
     commit = rec["source_commit"]
     ctx = pub["context_length"]
     full = cache["grows_per_token_bytes"] * ctx + cache["constant_bytes"]
+    dense = "moe_num_experts" not in pub and "moe" not in str(pub.get("decoder_type", "")).lower()
     tiles = [
         ("Total parameters", human(pub["params_total"]), "summed from weight shapes"),
         (
             "Active per token",
-            human(pub["params_active"]) if "params_active" in pub else "not reported",
-            "published counting convention" if "params_active" in pub else "no published active-count convention",
+            human(pub["params_active"]) if "params_active" in pub else ("all (dense)" if dense else "not reported"),
+            "published counting convention"
+            if "params_active" in pub
+            else (
+                "no routed experts: every parameter is used for each token"
+                if dense
+                else "no published active-count convention"
+            ),
         ),
         ("Layers", f"{pub['num_layers']}", show("layer_type_counts", pub["layer_type_counts"])),
         ("Context", f"{int(ctx):,}", "tokens"),
