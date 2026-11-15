@@ -2,7 +2,7 @@ id: mistralai/Mistral-7B-v0.1
 source_commit: 27d67f1b5f57dc0953326b2601d68371d40ea8da
 hub_created: '2023-09-20T13:03:50+00:00'
 license: apache-2.0
-analyzed_at: '2026-11-13T20:58:36+00:00'
+analyzed_at: '2026-11-15T08:35:33+00:00'
 published:
   num_layers: 32
   hidden_size: 4096
@@ -51,6 +51,7 @@ published:
   - attention
   - attention
   params_total: 7241732096
+  model_type: mistral
   layer_types:
   - sliding_attention
   - sliding_attention
@@ -99,6 +100,51 @@ published:
   weight_header_summary:
     tensor_count: 291
     skipped_scale_tensors: 0
+    skipped_buffer_tensors: 0
+  block_shapes:
+    mixers:
+      sliding_attention:
+        layers: 32
+        tensors:
+          input_layernorm.weight:
+          - 4096
+          post_attention_layernorm.weight:
+          - 4096
+          self_attn.k_proj.weight:
+          - 1024
+          - 4096
+          self_attn.o_proj.weight:
+          - 4096
+          - 4096
+          self_attn.q_proj.weight:
+          - 4096
+          - 4096
+          self_attn.v_proj.weight:
+          - 1024
+          - 4096
+    ffns:
+    - layer_ranges:
+      - - 0
+        - 31
+      tensors:
+        mlp.down_proj.weight:
+        - 4096
+        - 14336
+        mlp.gate_proj.weight:
+        - 14336
+        - 4096
+        mlp.up_proj.weight:
+        - 14336
+        - 4096
+    globals:
+      embed_tokens.weight:
+      - 32000
+      - 4096
+      lm_head.weight:
+      - 32000
+      - 4096
+      norm.weight:
+      - 4096
 review_queue: []
 unchecked_notes:
 - 'No modeling_*.py in the repo: mechanism details (layer internals, residual scheme,

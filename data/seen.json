@@ -40,11 +40,11 @@
       "last_successful_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
       "pool": "core",
       "predecessor": null,
-      "reason": "Frozen primary-source backfill passed publication checks",
-      "status": "ready_for_diagram"
+      "reason": "Required published inputs are unavailable: moe_shared_experts",
+      "status": "review"
     },
     "Qwen/Qwen3-0.6B-Base": {
-      "architecture_hash": "9999560f4a6d9d7f82ff30702fa83aa4cbc0c983e1083bfe70a10316ab1503e1",
+      "architecture_hash": "750af524820ffcd3a53264125605e49f8ef638764b1921c44799abc2cb3f7107",
       "attempts": 1,
       "created_at": "2025-04-28T05:09:54+00:00",
       "family": "qwen",
@@ -76,7 +76,7 @@
       "status": "review"
     },
     "deepseek-ai/DeepSeek-V2-Lite": {
-      "architecture_hash": "566c43f36d833b25735f78653f70e97dbd0b1369679172848841d735e8ef988e",
+      "architecture_hash": "07e12f749da416e616275581aec55f9e57df69e48adc78aae1466abb52f3172b",
       "attempts": 1,
       "created_at": "2024-05-15T05:31:53+00:00",
       "family": "deepseek-v",
@@ -118,7 +118,7 @@
       "status": "review"
     },
     "google/gemma-3-1b-pt": {
-      "architecture_hash": "e40b8c7cdd14940fa3609cf1469a84bd8abed8fdcbef9b8ee6cbcf5fab7d9dd0",
+      "architecture_hash": "701014ba2b0af2e0ff2c7d769ad1ba2b412881c83cfbf7446cb7ebddc162f301",
       "attempts": 1,
       "created_at": "2025-02-20T21:21:06+00:00",
       "family": "gemma",
@@ -169,16 +169,18 @@
     "microsoft/Mage-VL": {
       "analyzed_commit": "d88b153285f1633a61b2f693c59c8576693af185",
       "architecture_hash": "e25e2ecd6c157a563e865c1378e3d7478c353f12b7ff9111d68b1eb8b4d4df49",
+      "attempts": 1,
       "created_at": "2026-07-25T08:29:09+00:00",
       "family": "mage:vl",
       "last_observed_commit": "d88b153285f1633a61b2f693c59c8576693af185",
       "last_successful_commit": "d88b153285f1633a61b2f693c59c8576693af185",
       "pool": "core",
-      "reason": "Frozen primary-source backfill passed publication checks",
+      "predecessor": null,
+      "reason": "No earlier same-org family release in the inspected catalog",
       "status": "ready_for_diagram"
     },
     "microsoft/phi-2": {
-      "architecture_hash": "ff8b8237b8aece69eb1b0f9713d6dfd1b56089d5d8deb5c66c273349d6ea4a47",
+      "architecture_hash": "3dd723996c3691898a32b120ccc24c9a3a8cd1fca0c5a47e2557915de14d2bce",
       "attempts": 1,
       "created_at": "2023-12-13T21:19:59+00:00",
       "family": "phi",
@@ -190,7 +192,7 @@
       "status": "ready_for_diagram"
     },
     "mistralai/Mistral-7B-v0.1": {
-      "architecture_hash": "9dd457f91370e1f2d6b6d06b96d051957b0a799797b0ee1da225ea892b78358f",
+      "architecture_hash": "da6d84d87a96be42ef172f7c318e18d9e0f322fdf525367abf6305649854c076",
       "attempts": 1,
       "created_at": "2023-09-20T13:03:50+00:00",
       "family": "mistral",
@@ -263,7 +265,7 @@
       "status": "ready_for_diagram"
     },
     "zai-org/GLM-4-9B-0414": {
-      "architecture_hash": "0a3e03998cbe475f498902d8cdccdf289cb68896ce3c372760a415254c933ba0",
+      "architecture_hash": "3b7c3d4510fe722f25e1fab667efcefa080d91b53c1d6c1aaaf2fcad05180e4a",
       "attempts": 1,
       "created_at": "2025-04-07T11:57:02+00:00",
       "family": "glm",

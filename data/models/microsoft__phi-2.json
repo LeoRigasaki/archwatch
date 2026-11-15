@@ -22,7 +22,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-13T20:58:37+00:00",
+ "analyzed_at": "2026-11-15T08:35:33+00:00",
  "facts": {
   "architecture_class": {
    "value": "PhiForCausalLM",
@@ -197,7 +197,8 @@
     31
    ],
    "tensor_count": 453,
-   "skipped_scale_tensors": 0
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
   },
   "active": null
  },
@@ -547,6 +548,19 @@
    ]
   },
   {
+   "field": "model_type",
+   "value": "phi",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "phi",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
    "field": "layer_types",
    "value": [
     "full_attention",
@@ -738,7 +752,8 @@
    "field": "weight_header_summary",
    "value": {
     "tensor_count": 453,
-    "skipped_scale_tensors": 0
+    "skipped_scale_tensors": 0,
+    "skipped_buffer_tensors": 0
    },
    "status": "single source",
    "confidence": 0.7,
@@ -747,9 +762,197 @@
     {
      "value": {
       "tensor_count": 453,
-      "skipped_scale_tensors": 0
+      "skipped_scale_tensors": 0,
+      "skipped_buffer_tensors": 0
      },
      "evidence": "weights:tensor header inventory"
+    }
+   ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "full_attention": {
+      "layers": 32,
+      "tensors": {
+       "input_layernorm.bias": [
+        2560
+       ],
+       "input_layernorm.weight": [
+        2560
+       ],
+       "self_attn.dense.bias": [
+        2560
+       ],
+       "self_attn.dense.weight": [
+        2560,
+        2560
+       ],
+       "self_attn.k_proj.bias": [
+        2560
+       ],
+       "self_attn.k_proj.weight": [
+        2560,
+        2560
+       ],
+       "self_attn.q_proj.bias": [
+        2560
+       ],
+       "self_attn.q_proj.weight": [
+        2560,
+        2560
+       ],
+       "self_attn.v_proj.bias": [
+        2560
+       ],
+       "self_attn.v_proj.weight": [
+        2560,
+        2560
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        31
+       ]
+      ],
+      "tensors": {
+       "mlp.fc1.bias": [
+        10240
+       ],
+       "mlp.fc1.weight": [
+        10240,
+        2560
+       ],
+       "mlp.fc2.bias": [
+        2560
+       ],
+       "mlp.fc2.weight": [
+        2560,
+        10240
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      51200,
+      2560
+     ],
+     "final_layernorm.bias": [
+      2560
+     ],
+     "final_layernorm.weight": [
+      2560
+     ],
+     "lm_head.bias": [
+      51200
+     ],
+     "lm_head.weight": [
+      51200,
+      2560
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "full_attention": {
+        "layers": 32,
+        "tensors": {
+         "input_layernorm.bias": [
+          2560
+         ],
+         "input_layernorm.weight": [
+          2560
+         ],
+         "self_attn.dense.bias": [
+          2560
+         ],
+         "self_attn.dense.weight": [
+          2560,
+          2560
+         ],
+         "self_attn.k_proj.bias": [
+          2560
+         ],
+         "self_attn.k_proj.weight": [
+          2560,
+          2560
+         ],
+         "self_attn.q_proj.bias": [
+          2560
+         ],
+         "self_attn.q_proj.weight": [
+          2560,
+          2560
+         ],
+         "self_attn.v_proj.bias": [
+          2560
+         ],
+         "self_attn.v_proj.weight": [
+          2560,
+          2560
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          31
+         ]
+        ],
+        "tensors": {
+         "mlp.fc1.bias": [
+          10240
+         ],
+         "mlp.fc1.weight": [
+          10240,
+          2560
+         ],
+         "mlp.fc2.bias": [
+          2560
+         ],
+         "mlp.fc2.weight": [
+          2560,
+          10240
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        51200,
+        2560
+       ],
+       "final_layernorm.bias": [
+        2560
+       ],
+       "final_layernorm.weight": [
+        2560
+       ],
+       "lm_head.bias": [
+        51200
+       ],
+       "lm_head.weight": [
+        51200,
+        2560
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
     }
    ]
   }
@@ -803,6 +1006,7 @@
    "attention"
   ],
   "params_total": 2779683840,
+  "model_type": "phi",
   "layer_types": [
    "full_attention",
    "full_attention",
@@ -855,7 +1059,96 @@
   },
   "weight_header_summary": {
    "tensor_count": 453,
-   "skipped_scale_tensors": 0
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "full_attention": {
+     "layers": 32,
+     "tensors": {
+      "input_layernorm.bias": [
+       2560
+      ],
+      "input_layernorm.weight": [
+       2560
+      ],
+      "self_attn.dense.bias": [
+       2560
+      ],
+      "self_attn.dense.weight": [
+       2560,
+       2560
+      ],
+      "self_attn.k_proj.bias": [
+       2560
+      ],
+      "self_attn.k_proj.weight": [
+       2560,
+       2560
+      ],
+      "self_attn.q_proj.bias": [
+       2560
+      ],
+      "self_attn.q_proj.weight": [
+       2560,
+       2560
+      ],
+      "self_attn.v_proj.bias": [
+       2560
+      ],
+      "self_attn.v_proj.weight": [
+       2560,
+       2560
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       31
+      ]
+     ],
+     "tensors": {
+      "mlp.fc1.bias": [
+       10240
+      ],
+      "mlp.fc1.weight": [
+       10240,
+       2560
+      ],
+      "mlp.fc2.bias": [
+       2560
+      ],
+      "mlp.fc2.weight": [
+       2560,
+       10240
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     51200,
+     2560
+    ],
+    "final_layernorm.bias": [
+     2560
+    ],
+    "final_layernorm.weight": [
+     2560
+    ],
+    "lm_head.bias": [
+     51200
+    ],
+    "lm_head.weight": [
+     51200,
+     2560
+    ]
+   }
   }
  },
  "review_queue": [],
