@@ -22,7 +22,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:16+00:00",
+ "analyzed_at": "2026-11-15T17:10:26+00:00",
  "facts": {
   "architecture_class": {
    "value": "GlmMoeDsaForCausalLM",
@@ -583,17 +583,17 @@
    "total": 753329940480,
    "text_total": 753329940480,
    "by_component": {
-    "moe_routed_experts": 734439407616,
-    "attention_or_linear_mixer": 13242936320,
-    "moe_shared_experts": 2868903936,
+    "moe_routed_experts": 724775731200,
+    "attention_or_linear_mixer": 13068542208,
+    "auxiliary": 9952920576,
+    "moe_shared_experts": 2831155200,
     "embedding": 951582720,
     "lm_head": 951582720,
     "dense_ffn": 679477248,
-    "moe_router": 119557120,
-    "other": 75497472,
-    "norms": 995328
+    "moe_router": 117984000,
+    "norms": 964608
    },
-   "routed_expert_params": 734439407616,
+   "routed_expert_params": 724775731200,
    "moe_layers": 75,
    "experts_per_moe_layer": [
     256
@@ -607,9 +607,9 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
-   "text_active": 41841764352,
-   "text_active_without_embeddings": 40890181632,
-   "with_vision": 41841764352
+   "text_active": 41250530304,
+   "text_active_without_embeddings": 40298947584,
+   "with_vision": 41250530304
   }
  },
  "cache": {
@@ -793,6 +793,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -1189,13 +1206,13 @@
   },
   {
    "field": "params_active",
-   "value": 41841764352,
+   "value": 41250530304,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 41841764352,
+     "value": 41250530304,
      "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
     }
    ]
@@ -1411,19 +1428,6 @@
    ]
   },
   {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
-    }
-   ]
-  },
-  {
    "field": "rope",
    "value": {
     "rope_theta": 8000000,
@@ -1521,17 +1525,30 @@
    ]
   },
   {
+   "field": "mla_q_lora_rank",
+   "value": 2048,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:q_lora_rank"
+    }
+   ]
+  },
+  {
    "field": "parameter_components",
    "value": {
-    "moe_routed_experts": 734439407616,
-    "attention_or_linear_mixer": 13242936320,
-    "moe_shared_experts": 2868903936,
+    "moe_routed_experts": 724775731200,
+    "attention_or_linear_mixer": 13068542208,
+    "auxiliary": 9952920576,
+    "moe_shared_experts": 2831155200,
     "embedding": 951582720,
     "lm_head": 951582720,
     "dense_ffn": 679477248,
-    "moe_router": 119557120,
-    "other": 75497472,
-    "norms": 995328
+    "moe_router": 117984000,
+    "norms": 964608
    },
    "status": "single source",
    "confidence": 0.7,
@@ -1539,15 +1556,15 @@
    "candidates": [
     {
      "value": {
-      "moe_routed_experts": 734439407616,
-      "attention_or_linear_mixer": 13242936320,
-      "moe_shared_experts": 2868903936,
+      "moe_routed_experts": 724775731200,
+      "attention_or_linear_mixer": 13068542208,
+      "auxiliary": 9952920576,
+      "moe_shared_experts": 2831155200,
       "embedding": 951582720,
       "lm_head": 951582720,
       "dense_ffn": 679477248,
-      "moe_router": 119557120,
-      "other": 75497472,
-      "norms": 995328
+      "moe_router": 117984000,
+      "norms": 964608
      },
      "evidence": "weights:parameter totals by tensor group"
     }
@@ -1585,6 +1602,7 @@
   "head_dim": 256,
   "attention_type": "MLA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "moe_num_experts": 256,
   "moe_active_experts": 8,
   "moe_shared_experts": 1,
@@ -1596,7 +1614,7 @@
   },
   "mla_cached_width_per_token": 576,
   "params_total": 753329940480,
-  "params_active": 41841764352,
+  "params_active": 41250530304,
   "model_type": "glm_moe_dsa",
   "num_mtp_layers": 1,
   "layer_types": [
@@ -1680,7 +1698,6 @@
    "full_attention_mla"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": false,
   "rope": {
    "rope_theta": 8000000,
    "rope_type": "default"
@@ -1691,16 +1708,17 @@
   "dense_ffn_intermediate": 12288,
   "activation": "silu",
   "released_weights_format": "bfloat16",
+  "mla_q_lora_rank": 2048,
   "parameter_components": {
-   "moe_routed_experts": 734439407616,
-   "attention_or_linear_mixer": 13242936320,
-   "moe_shared_experts": 2868903936,
+   "moe_routed_experts": 724775731200,
+   "attention_or_linear_mixer": 13068542208,
+   "auxiliary": 9952920576,
+   "moe_shared_experts": 2831155200,
    "embedding": 951582720,
    "lm_head": 951582720,
    "dense_ffn": 679477248,
-   "moe_router": 119557120,
-   "other": 75497472,
-   "norms": 995328
+   "moe_router": 117984000,
+   "norms": 964608
   },
   "weight_header_summary": {
    "tensor_count": 59585,

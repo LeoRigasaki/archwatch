@@ -80,11 +80,20 @@ def parse_scale(text):
 
 
 def parse_layers(text):
-    """First clause only, without parentheticals: '45 sliding-window + 15 global' -> 60."""
+    """Decoder layers in the first clause: the leading count of each '+'-separated term.
+
+    '30 sliding-window + 10 global' -> 40; '3 GQA + 15 Mamba-2 + 12 FFN' -> 30 (the 2 in 'Mamba-2' is a name);
+    '80 GQA + 1 MTP layer' -> 80 (MTP predictors are not decoder layers); 'N shared x 2 passes' counts N.
+    """
     clause = re.sub(r"\([^)]*\)", "", str(text or "").split(";")[0])
-    clause = re.sub(r"[×x]\s*\d+\s*\w*", "", clause)  # 'N shared x 2 passes' counts N stored layers
-    numbers = [int(n) for n in re.findall(r"\b(\d+)\b", clause)]
-    return (sum(numbers), 0) if numbers else None
+    total, found = 0, False
+    for term in clause.split("+"):
+        if re.search(r"\bMTP\b", term):
+            continue
+        m = re.match(r"\s*(\d+)\b", term)
+        if m:
+            total, found = total + int(m.group(1)), True
+    return (total, 0) if found else None
 
 
 def parse_bytes(text):
@@ -94,6 +103,14 @@ def parse_bytes(text):
     number = m.group(1).replace(",", "")
     unit = BYTES[m.group(2)]
     return float(number) * unit, 0.5 * 10 ** -_decimals(number) * unit
+
+
+def same_k_shorthand(ours: int, theirs: float) -> bool:
+    """Unit normalisation: '128,000' and '1,000,000' are written shorthand for 128K = 131,072 and 1M = 2^20."""
+    for base, unit in ((1000, 1024), (1_000_000, 1024**2)):
+        if theirs % base == 0 and ours == theirs / base * unit:
+            return True
+    return False
 
 
 def decoder_kind(text):
@@ -175,6 +192,8 @@ def compare(records: dict, gallery: dict) -> dict:
                 agree = mine[field] == value
             else:
                 agree = abs(float(mine[field]) - value) <= tol + 1e-9 * max(1.0, value)
+                if not agree and field == "context_length":
+                    agree = same_k_shorthand(int(mine[field]), value)
             rows.append(
                 dict(
                     model=repo,
