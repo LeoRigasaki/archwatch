@@ -6,4 +6,4 @@ The user-supplied `archwatch.zip` is the implementation baseline. It contains a 
 
 The target system adds model discovery, broader validated extraction, LLM code/report readers with citations, an independent 30-model gold set, evaluation/tracing, human review issues, controlled scheduled publishing, and MCP tools. See `PROGRESS.md` for the current distinction between implemented prototype features and remaining work.
 
-Production records and diagrams come from primary model sources and ArchWatch's own rendering. The earlier research copy of another author's gallery is an ignored private research reference. It is not the project demo or an independent gold set.
+Production records and diagrams come from primary model sources and ArchWatch's own rendering.

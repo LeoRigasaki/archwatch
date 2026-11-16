@@ -202,7 +202,10 @@ def test_card_ranges_hold_for_lookup_table_models():
 
 
 def saved():
-    return json.loads((ROOT / "results/reference-audit.json").read_text())
+    path = ROOT / "cache" / "reference" / "audit.json"
+    if not path.exists():
+        pytest.skip("no local audit report (cache/reference/ is built on demand and never committed)")
+    return json.loads(path.read_text())
 
 
 def test_every_difference_has_exactly_one_group_and_definitions_are_recomputed():
@@ -234,23 +237,27 @@ def test_his_wrong_entries_cite_a_file_or_key_at_a_pinned_commit():
 def test_reference_values_never_reach_records_site_or_gold():
     source = (ROOT / "tools/reference_audit.py").read_text()
     writes = set(re.findall(r'\(out / "([^"]+)"\)\.write_text', source))
-    assert writes == {"reference-audit.json", "reference-audit.md"}
+    assert writes == {"audit.json", "audit.md"} and "out = ref.REPORTS" in source
     code = source.split('"""', 2)[2]  # the module docstring describes the boundary; check the code itself
     assert "data/models" not in code
     for path in list((ROOT / "src").rglob("*.py")) + [ROOT / "build_site.py", ROOT / "run.py", ROOT / "watch.py"]:
         text = path.read_text()
         assert "reference_audit" not in text and "reference-audit" not in text, path
     assert "reference-audit" not in (ROOT / "site/index.html").read_text()
+    assert not list((ROOT / "results").glob("reference-*"))  # reports live only in the ignored cache
 
 
-def test_audit_workflow_is_weekly_change_gated_and_llm_free():
+def test_audit_workflow_is_manual_commits_nothing_and_uploads_an_artifact():
     import yaml
 
     flow = yaml.safe_load((ROOT / ".github/workflows/reference-audit.yml").read_text())
-    assert flow[True]["schedule"] == [{"cron": "11 4 * * 0"}]
+    on = flow[True]
+    assert set(on) == {"workflow_dispatch"} and on["workflow_dispatch"]["inputs"]["repo"]["required"] is True
+    assert "default" not in on["workflow_dispatch"]["inputs"]["repo"]  # the reference is never named in the repo
+    assert flow["permissions"] == {"contents": "read"}
     text = (ROOT / ".github/workflows/reference-audit.yml").read_text()
-    assert "steps.changed.outputs.run == 'true'" in text and "GEMINI" not in text
-    assert "git diff --quiet -- data/gemini-requests.json" in text and "needs-review" in text
+    assert "create-pull-request" not in text and "actions/upload-artifact" in text and "GEMINI" not in text
+    assert "git diff --quiet" in text
 
 
 @pytest.mark.parametrize("repo", ["openai/gpt-oss-120b", "deepseek-ai/DeepSeek-V3", "xai-org/grok-2"])

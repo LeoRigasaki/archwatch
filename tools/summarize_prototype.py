@@ -121,12 +121,6 @@ def main():
             "evidence": "results/newest-first-run/meta-late-access.json",
         },
         "formal_archwatch_accuracy_measured": False,
-        "legacy_research": {
-            "path": "research-reference/private-notes",
-            "usage": "Private research and spot checks only",
-            "production_input": False,
-        },
-        "deployment_access_evidence": "docs/deployment-access-review.json",
         "note": "Saved-record agreement and tests are prototype evidence, not gold-set accuracy or universal model-family coverage.",
     }
     (ROOT / "docs/progress-snapshot.json").write_text(json.dumps(snapshot, indent=2) + "\n")

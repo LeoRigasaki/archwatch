@@ -9,16 +9,27 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("reference_agreement", ROOT / "tools/reference_agreement.py")
 ref = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ref)
-CONFIG = yaml.safe_load((ROOT / "config/reference-gallery.yaml").read_text())
+CONFIG = ref.reference_config(repo="owner/reference", path="sheet.yml", commit="0" * 40)
 
 
 def record(stem):
     return json.loads((ROOT / "data/models" / f"{stem}.json").read_text())
 
 
-def test_reference_is_pinned_to_an_exact_commit_and_license():
-    assert re.fullmatch(r"[0-9a-f]{40}", CONFIG["commit"]) and CONFIG["license"] == "Apache-2.0"
-    assert "{commit}" in CONFIG["raw_url"] and CONFIG["path"] == "reference.yml"
+def test_reference_is_named_at_run_time_and_never_stored(monkeypatch):
+    import pytest
+
+    for key in ("REFERENCE_REPO", "REFERENCE_PATH", "REFERENCE_COMMIT"):
+        monkeypatch.delenv(key, raising=False)
+    with pytest.raises(SystemExit):
+        ref.reference_config()
+    monkeypatch.setenv("REFERENCE_REPO", "owner/reference")
+    monkeypatch.setenv("REFERENCE_PATH", "sheet.yml")
+    monkeypatch.setenv("REFERENCE_COMMIT", "a" * 40)
+    config = ref.reference_config()
+    assert config["repo"] == "owner/reference" and config["commit"] == "a" * 40 and "{commit}" in config["raw_url"]
+    assert re.fullmatch(r"a{40}", config["commit"])
+    assert not list((ROOT / "config").glob("reference*"))  # nothing about the reference is committed
 
 
 def test_fact_sheet_parsers():
@@ -58,7 +69,7 @@ def test_compare_reports_agreement_disagreement_evidence_and_unprocessed():
 
 
 def test_images_are_dropped_and_cache_is_not_vendored(tmp_path):
-    cached = tmp_path / "reference-gallery" / CONFIG["commit"] / "reference.yml"
+    cached = tmp_path / "reference" / "source" / CONFIG["commit"] / "sheet.yml"
     cached.parent.mkdir(parents=True)
     cached.write_text(yaml.safe_dump({"M": {"image": "https://example.invalid/x.webp", "scale": "1B parameters"}}))
     assert ref.fetch(CONFIG, tmp_path) == {"M": {"scale": "1B parameters"}}
@@ -67,17 +78,22 @@ def test_images_are_dropped_and_cache_is_not_vendored(tmp_path):
 
 def test_comparison_never_feeds_records_gold_or_diagrams():
     source = (ROOT / "tools/reference_agreement.py").read_text()
-    writes = re.findall(r'\(out / "([^"]+)"\)\.write_text', source)
-    assert set(writes) == {"reference-agreement.json", "reference-agreement.md"}
-    assert 'out = ROOT / "results"' in source
+    writes = re.findall(r'\(REPORTS / "([^"]+)"\)\.write_text', source)
+    assert set(writes) == {"agreement.json", "agreement.md"}
+    assert 'REPORTS = ROOT / "cache" / "reference"' in source  # reports with reference values stay out of git
     for path in list((ROOT / "src").rglob("*.py")) + [ROOT / "run.py", ROOT / "watch.py", ROOT / "build_site.py"]:
         text = path.read_text()
-        assert "reference_agreement" not in text and "reference gallery" not in text, path
+        assert "reference_agreement" not in text, path
     assert not list((ROOT / "evals").rglob("*gallery*")) and not list((ROOT / "data").rglob("*gallery*"))
 
 
 def test_every_disagreement_is_closed_by_recomputation_or_marked_ours():
-    saved = json.loads((ROOT / "results/reference-agreement.json").read_text())
+    import pytest
+
+    path = ref.REPORTS / "agreement.json"
+    if not path.exists():
+        pytest.skip("no local reference report (cache/reference/ is built on demand and never committed)")
+    saved = json.loads(path.read_text())
     bad = [r for r in saved["rows"] if not r["agree"]]
     assert bad and all(r["cause"] in ref.CAUSES for r in bad)
     for r in bad:

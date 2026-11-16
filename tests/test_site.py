@@ -68,7 +68,7 @@ def test_held_list_is_collapsed_has_no_numbers_and_no_fine_tunes():
 def test_site_never_mentions_the_audit_or_its_reference():
     for path, page in pages().items():
         low = page.lower()
-        assert "audit" not in low and "owner" not in low and "external" not in low, path
+        assert "audit" not in low and "answer sheet" not in low and "reference sheet" not in low, path
 
 
 def test_memory_planner_values_come_from_our_calculator():

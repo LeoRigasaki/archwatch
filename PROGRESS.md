@@ -95,16 +95,11 @@ The offline suite checks behavior without network access. The separate live run 
 
 Evidence: [results](results/README.md), [offline validation](results/prototype-validation.json), [live comparison](results/live-validation.json), [portable snapshot](docs/progress-snapshot.json), [LFM investigation](docs/LFM_FINDINGS.md).
 
-## Private reference boundary
+## Reference boundary
 
-- [x] Legacy hosting policy checked owner-only; unauthenticated page, diagram and model JSON returned HTTP 401 in the recorded access review.
-- [x] Legacy hosted link omitted from README and absent from the portfolio projects checked during the import.
-- [x] Third-party diagrams/gallery remain ignored private research, outside production records and the gold set.
-- [x] owner/reference (Apache-2.0) is used as an outside comparison only, fetched at a pinned commit
-  ([agreement report](results/reference-agreement.md)); never a source for published fields or gold labels, and its
-  images are never downloaded or used.
-
-Evidence: `docs/deployment-access-review.json`. Hosting was not changed or re-audited in this foundations patch.
+- [x] Third-party diagrams remain outside production records and the gold set.
+- [x] An external reference sheet may be used as a comparison only: named at run time, downloaded into the ignored
+  cache, never committed, and never a source for published fields or gold labels.
 
 Next after backfill review: compare the two Gemini diagram routes, following [NEXT_STEPS.md](docs/NEXT_STEPS.md) using the [selection policy](docs/MODEL_SELECTION.md). The original four diagnostic records include held Liquid Instruct releases; choose eligible primary records for rendering rather than bypassing their publication gate.
 

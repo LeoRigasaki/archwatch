@@ -1,11 +1,12 @@
-"""Audit the deterministic pipeline against owner/reference's reference.yml as an answer sheet.
+"""Audit the deterministic pipeline against an external reference sheet used as an answer sheet.
 
-    uv run --frozen python tools/reference_audit.py --analyze     # map + run our pipeline (no LLM calls)
-    uv run --frozen python tools/reference_audit.py               # compare cached analyses, write the report
+    REFERENCE_REPO=owner/repo REFERENCE_PATH=file.yml uv run --frozen python tools/reference_audit.py --analyze
+    REFERENCE_REPO=owner/repo REFERENCE_PATH=file.yml uv run --frozen python tools/reference_audit.py
 
-His values are NEVER a source: nothing here writes data/models, gold labels, diagrams or the site. Our side is
-always our own published (verifier-approved) fields. Full analyses are cached under the ignored cache/ folder;
-results/reference-audit.{md,json} hold the comparison only and are not part of the site.
+The reference's values are NEVER a source: nothing here writes data/models, gold labels, diagrams or the site.
+Our side is always our own published (verifier-approved) fields. The reference is named at run time and
+downloaded into the ignored cache/ folder; the report goes to cache/reference/audit.{md,json} and is never
+committed. Optional hand-checked causes are read from cache/reference/audit-causes.yaml.
 """
 
 import argparse
@@ -14,7 +15,6 @@ import importlib.util
 import json
 import re
 import sys
-import urllib.request
 from pathlib import Path
 
 import yaml
@@ -79,12 +79,6 @@ FIXED = [
     ),
 ]
 GROUPS = ("ours_wrong", "his_wrong", "card_unreproducible", "name_rounding", "definition", "unresolved")
-
-
-def latest_commit(config: dict) -> str:
-    url = f"https://api.github.com/repos/{config['repo']}/commits?path={config['path']}&per_page=1"
-    with urllib.request.urlopen(url, timeout=60) as response:
-        return json.loads(response.read())[0]["sha"]
 
 
 def mapping(gallery: dict) -> list[dict]:
@@ -692,30 +686,34 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--analyze", action="store_true", help="run our pipeline on every mapped repo (no LLM)")
     parser.add_argument("--reanalyze", action="store_true", help="re-run current code on cached sources")
-    parser.add_argument("--commit", help="answer-sheet commit (default: latest commit touching reference.yml)")
+    parser.add_argument("--repo", help="reference repository, owner/name (or REFERENCE_REPO)")
+    parser.add_argument("--path", help="YAML file in that repository (or REFERENCE_PATH)")
+    parser.add_argument("--commit", help="answer-sheet commit (default: latest commit touching the file)")
     args = parser.parse_args()
-    config = yaml.safe_load((ROOT / "config/reference-gallery.yaml").read_text())
-    file_commit = args.commit or latest_commit(config)
-    gallery = ref.fetch(dict(config, commit=file_commit), ROOT / "cache")
+    config = ref.reference_config(args.repo, args.path, args.commit)
+    file_commit = config["commit"]
+    gallery = ref.fetch(config, ROOT / "cache")
     rows_map = mapping(gallery)
     CACHE.mkdir(parents=True, exist_ok=True)
     global REFRESH
     REFRESH = not args.reanalyze
     runs = analyze(rows_map) if (args.analyze or args.reanalyze) else json.loads((CACHE / "runs.json").read_text())
-    causes = yaml.safe_load((ROOT / "config/reference-audit-causes.yaml").read_text()) or {}
+    causes_path = ref.REPORTS / "audit-causes.yaml"  # optional, hand-checked, kept out of git
+    causes = (yaml.safe_load(causes_path.read_text()) or {}) if causes_path.exists() else {}
     records = load_records()
     by_repo = {(e.get("config") or {}).get("repo", ""): e for e in gallery.values()}
     theirs = {repo: ref.theirs(by_repo[repo]) for repo in records if repo in by_repo}
     compared = classify(ref.compare(records, gallery)["rows"], causes, records, theirs)
-    meta = dict(repo=config["repo"], path=config["path"], file_commit=file_commit, head=config["commit"])
-    out = ROOT / "results"
-    previous_path = out / "reference-audit.json"
+    meta = dict(repo=config["repo"], path=config["path"], file_commit=file_commit, head=file_commit)
+    out = ref.REPORTS
+    out.mkdir(parents=True, exist_ok=True)
+    previous_path = out / "audit.json"
     previous = json.loads(previous_path.read_text())["rows"] if previous_path.exists() else []
     moved = moved_rows(previous, compared)
-    (out / "reference-audit.json").write_text(
+    (out / "audit.json").write_text(
         json.dumps(dict(reference=meta, mapping=rows_map, runs=runs, rows=compared), indent=1, default=str) + "\n"
     )
-    (out / "reference-audit.md").write_text(report(meta, rows_map, runs, compared, moved))
+    (out / "audit.md").write_text(report(meta, rows_map, runs, compared, moved))
     diffs = [r for r in compared if not r["agree"]]
     print(
         {g: sum(r["group"] == g for r in diffs) for g in GROUPS}, f"{len(compared) - len(diffs)}/{len(compared)} agree"

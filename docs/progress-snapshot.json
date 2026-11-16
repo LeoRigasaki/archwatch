@@ -545,11 +545,5 @@
     "evidence": "results/newest-first-run/meta-late-access.json"
   },
   "formal_archwatch_accuracy_measured": false,
-  "legacy_research": {
-    "path": "research-reference/private-notes",
-    "usage": "Private research and spot checks only",
-    "production_input": false
-  },
-  "deployment_access_evidence": "docs/deployment-access-review.json",
   "note": "Saved-record agreement and tests are prototype evidence, not gold-set accuracy or universal model-family coverage."
 }

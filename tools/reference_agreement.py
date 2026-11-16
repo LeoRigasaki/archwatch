@@ -1,13 +1,14 @@
-"""Compare ArchWatch's published fields with owner/reference's fact sheets (Apache-2.0).
+"""Compare ArchWatch's published fields with an external reference sheet (a YAML file in a GitHub repo).
 
-    uv run --frozen python tools/reference_agreement.py
+    REFERENCE_REPO=owner/repo REFERENCE_PATH=file.yml uv run --frozen python tools/reference_agreement.py
 
-Comparison only. The gallery's reference.yml is fetched at the commit pinned in config/reference-gallery.yaml
-(cached under the ignored cache/ folder, never vendored). Nothing here writes records, gold labels or
-diagrams: the only outputs are results/reference-agreement.{md,json}. Image fields are dropped unread.
+Comparison only. The reference is named at run time (environment or arguments), downloaded into the ignored
+cache/ folder and never committed. Nothing here writes records, gold labels, diagrams or the site: the report
+goes to cache/reference/agreement.{md,json}. Image fields are dropped unread.
 """
 
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -22,11 +23,32 @@ from archwatch.publication import PublicationError, render_cache, render_values 
 
 UNITS = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
 BYTES = {"B": 1, "KiB": 1024, "MiB": 1024**2, "GiB": 1024**3, "KB": 1024, "MB": 1024**2}
-DROP = ("image",)  # never read or fetch the gallery's images
+DROP = ("image",)  # never read or fetch the reference's images
+REPORTS = ROOT / "cache" / "reference"  # ignored: reports that contain reference values never reach git
+RAW_URL = "https://raw.githubusercontent.com/{repo}/{commit}/{path}"
+MAX_BYTES = 2_000_000
+
+
+def reference_config(repo=None, path=None, commit=None, license=None) -> dict:
+    """The reference named at run time; nothing about it is stored in the repository."""
+    repo = repo or os.environ.get("REFERENCE_REPO")
+    path = path or os.environ.get("REFERENCE_PATH")
+    if not repo or not path:
+        raise SystemExit("Name the reference: REFERENCE_REPO=owner/repo REFERENCE_PATH=file.yml (or --repo/--path)")
+    config = dict(repo=repo, path=path, raw_url=RAW_URL, max_bytes=MAX_BYTES)
+    config["commit"] = commit or os.environ.get("REFERENCE_COMMIT") or latest_commit(config)
+    config["license"] = license or os.environ.get("REFERENCE_LICENSE") or "see the reference repository"
+    return config
+
+
+def latest_commit(config: dict) -> str:
+    url = f"https://api.github.com/repos/{config['repo']}/commits?path={config['path']}&per_page=1"
+    with urllib.request.urlopen(url, timeout=60) as response:
+        return json.loads(response.read())[0]["sha"]
 
 
 def fetch(config: dict, cache: Path) -> dict:
-    path = cache / "reference-gallery" / config["commit"] / config["path"]
+    path = cache / "reference" / "source" / config["commit"] / config["path"]
     if not path.exists():
         url = config["raw_url"].format(**config)
         with urllib.request.urlopen(url, timeout=60) as response:
@@ -243,8 +265,8 @@ def report(result: dict, config: dict) -> str:
     lines = [
         "# Agreement with an outside reference",
         "",
-        f"Reference: [{config['repo']}](https://github.com/{config['repo']}) `reference.yml` at commit "
-        f"`{config['commit'][:10]}` ({config['license']}), by an external author. **Comparison only**: it is never a "
+        f"Reference: [{config['repo']}](https://github.com/{config['repo']}) `{config['path']}` at commit "
+        f"`{config['commit'][:10]}` ({config['license']}). **Comparison only**: it is never a "
         "source for ArchWatch's published fields, gold labels or diagrams, and its images are not used.",
         "",
         "Ours: published, verifier-approved record fields (KV cache recomputed from published values, bf16, "
@@ -303,21 +325,29 @@ def report(result: dict, config: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main():
-    config = yaml.safe_load((ROOT / "config/reference-gallery.yaml").read_text())
+def main(argv=None):
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--repo", help="reference repository, owner/name (or REFERENCE_REPO)")
+    parser.add_argument("--path", help="YAML file in that repository (or REFERENCE_PATH)")
+    parser.add_argument("--commit", help="commit to read (default: latest commit touching the file)")
+    args = parser.parse_args(argv)
+    config = reference_config(args.repo, args.path, args.commit)
     gallery = fetch(config, ROOT / "cache")
     records = {
         json.loads(p.read_text())["id"]: json.loads(p.read_text()) for p in (ROOT / "data/models").glob("*.json")
     }
-    causes = yaml.safe_load((ROOT / "config/reference-audit-causes.yaml").read_text()) or {}
+    causes_path = REPORTS / "audit-causes.yaml"  # optional, hand-checked, kept out of git
+    causes = (yaml.safe_load(causes_path.read_text()) or {}) if causes_path.exists() else {}
     result = attach_causes(compare(records, gallery), records, gallery, causes)
-    out = ROOT / "results"
-    (out / "reference-agreement.json").write_text(
+    REPORTS.mkdir(parents=True, exist_ok=True)
+    (REPORTS / "agreement.json").write_text(
         json.dumps(dict(reference=dict(repo=config["repo"], commit=config["commit"]), **result), indent=2) + "\n"
     )
-    (out / "reference-agreement.md").write_text(report(result, config))
+    (REPORTS / "agreement.md").write_text(report(result, config))
     agree = sum(r["agree"] for r in result["rows"])
-    print(f"{agree}/{len(result['rows'])} values agree; {len(result['not_processed'])} gallery models not processed")
+    print(f"{agree}/{len(result['rows'])} values agree; report in cache/reference/agreement.md")
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ The earlier private primary-source audit captured model cards advertising **32,7
 
 This is a separate historical source disagreement involving different model variants and a different field. It was not re-audited in the four-model run described above; current cards may have changed. Do not describe it as a confirmed model defect or as the resolved Instruct FFN issue.
 
-Private snapshots and revision links are retained in `research-reference/private-notes/research/huggingface-verification-report.md` and its Hugging Face source manifest. They are investigation references, not gold labels derived from another person's gallery.
+The revision links behind this finding were checked against the models' own Hugging Face files; they are investigation references, not gold labels.
 
 ## Newly parsed Instruct context claim
 

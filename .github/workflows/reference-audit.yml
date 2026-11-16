@@ -1,13 +1,21 @@
 name: reference-audit
 on:
-  # Weekly. Re-runs the deterministic audit only when the answer sheet's reference.yml commit changed.
-  # No LLM calls. Results stay out of the public site and open a needs-review PR.
-  schedule:
-    - cron: "11 4 * * 0"   # Sunday 09:11 Asia/Karachi
+  # Manual only. Audits the deterministic pipeline against an external reference sheet named at run time.
+  # No LLM calls. Nothing is committed: the reference is downloaded into cache/ and the report is uploaded as a
+  # workflow artifact.
   workflow_dispatch:
+    inputs:
+      repo:
+        description: Reference repository (owner/name)
+        required: true
+      path:
+        description: YAML file in that repository
+        required: true
+      commit:
+        description: Commit to read (empty = latest commit touching the file)
+        required: false
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 concurrency:
   group: reference-audit
   cancel-in-progress: false
@@ -23,28 +31,17 @@ jobs:
         with:
           version: "0.11.8"
       - run: uv sync --locked --python 3.12
-      - name: Has reference.yml changed since the last audit?
-        id: changed
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          latest=$(gh api "repos/owner/reference/commits?path=reference.yml&per_page=1" --jq '.[0].sha')
-          audited=$(python3 -c "import json;print(json.load(open('results/reference-audit.json'))['reference']['file_commit'])")
-          echo "latest=$latest" >> "$GITHUB_OUTPUT"
-          if [ "$latest" = "$audited" ]; then echo "run=false" >> "$GITHUB_OUTPUT"; else echo "run=true" >> "$GITHUB_OUTPUT"; fi
-      - name: Re-run the deterministic audit (no LLM calls)
-        if: steps.changed.outputs.run == 'true'
+      - name: Run the deterministic audit (no LLM calls)
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: uv run --frozen python tools/reference_audit.py --analyze --commit "${{ steps.changed.outputs.latest }}"
-      - name: Confirm no Gemini call was made
-        if: steps.changed.outputs.run == 'true'
-        run: git diff --quiet -- data/gemini-requests.json
-      - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
-        if: steps.changed.outputs.run == 'true'
+          REFERENCE_REPO: ${{ inputs.repo }}
+          REFERENCE_PATH: ${{ inputs.path }}
+          REFERENCE_COMMIT: ${{ inputs.commit }}
+        run: uv run --frozen python tools/reference_audit.py --analyze
+      - name: Confirm no Gemini call was made and nothing tracked changed
+        run: git diff --quiet
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          branch: reference-audit-update
-          title: "Reference audit: reference.yml changed (${{ steps.changed.outputs.latest }})"
-          labels: needs-review
-          add-paths: results/reference-audit.md,results/reference-audit.json
-          body: The answer sheet changed. New differences start as unresolved until classified with evidence.
+          name: reference-audit
+          path: cache/reference/audit.*
+          retention-days: 7
