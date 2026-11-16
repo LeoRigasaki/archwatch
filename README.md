@@ -6,7 +6,7 @@ The user-supplied prototype is integrated under `src/archwatch/`. The determinis
 
 ## Local demo
 
-[site/index.html](site/index.html) is a self-contained gallery built from model records and watcher state. It currently shows 12 eligible architectures across ten publishers, with generated SVGs, pinned source links, predecessor/tensor diffs and interactive cache calculators. Two historical derived records are held.
+The site is built by `build_site.py` from the committed model records and watcher state (offline, no LLM calls) and deployed on Vercel (`vercel.json`); `site/` is a build output and not committed. It currently shows 12 eligible architectures across ten publishers, with generated SVGs, pinned source links, predecessor/tensor diffs and interactive cache calculators. Two historical derived records are held.
 
 ```bash
 python -m http.server 4173 --directory site
