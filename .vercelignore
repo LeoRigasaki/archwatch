@@ -1,0 +1,12 @@
+# Never uploaded by `vercel` from a local machine (Git deployments only contain committed files anyway)
+.env
+.env.*
+.venv/
+cache/
+research-reference/
+.import-staging/
+site/
+.vercel/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/

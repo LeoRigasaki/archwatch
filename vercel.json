@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "pip install uv",
+  "installCommand": "uv --version",
   "buildCommand": "uv run --frozen --python 3.12 python build_site.py",
   "outputDirectory": "site",
   "cleanUrls": true
