@@ -156,14 +156,35 @@ def test_site_settings_hold_no_numbers_for_models():
     assert set(config) == {"repo_url", "publishers", "memory_contexts", "layer_colors"}
 
 
-def test_pages_workflow_publishes_site_from_main_after_the_daily_run_and_is_gated():
-    flow = yaml.safe_load((ROOT / ".github/workflows/pages.yml").read_text())
-    on = flow[True]
-    assert on["workflow_run"]["workflows"] == ["daily"] and on["workflow_run"]["types"] == ["completed"]
-    assert "vars.PAGES_ENABLED == 'true'" in flow["jobs"]["deploy"]["if"]
-    text = (ROOT / ".github/workflows/pages.yml").read_text()
-    assert "actions/upload-pages-artifact" in text and "actions/deploy-pages" in text
-    assert "path: site" in text and "ref: main" in text and "GEMINI" not in text
+def test_vercel_builds_the_site_from_committed_records():
+    import json as _json
+
+    config = _json.loads((ROOT / "vercel.json").read_text())
+    assert config["framework"] is None and config["outputDirectory"] == "site" and config["cleanUrls"] is True
+    assert "build_site.py" in config["buildCommand"] and "GEMINI" not in json.dumps(config)
+    assert not (ROOT / ".github/workflows/pages.yml").exists()
+    assert "site/" in (ROOT / ".gitignore").read_text().split()
+
+
+def test_site_builds_offline_from_committed_records(tmp_path, monkeypatch):
+    import shutil
+    import socket
+
+    def refuse(*args, **kwargs):
+        raise AssertionError("build_site.py tried to use the network")
+
+    monkeypatch.setattr(socket, "socket", refuse)
+    monkeypatch.setattr(socket, "create_connection", refuse)
+    for folder in ("data", "config", "results/explainer", "diagrams/generated"):
+        shutil.copytree(ROOT / folder, tmp_path / folder)
+    for folder in ("data/generated-diagrams",):
+        if (ROOT / folder).exists() and not (tmp_path / folder).exists():
+            shutil.copytree(ROOT / folder, tmp_path / folder)
+    site = builder()
+    monkeypatch.setattr(site, "ROOT", tmp_path)
+    site.main()
+    built = {p.relative_to(tmp_path / "site").as_posix() for p in (tmp_path / "site").rglob("*.html")}
+    assert built == {p.relative_to(SITE).as_posix() for p in SITE.rglob("*.html")}
 
 
 def test_one_colour_per_layer_type_on_every_page_and_in_the_diagrams():

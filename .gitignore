@@ -15,3 +15,6 @@ build/
 dist/
 results/test-results.xml
 .vscode/
+
+# Built by build_site.py (Vercel runs it on deploy)
+site/
