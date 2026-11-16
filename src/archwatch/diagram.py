@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from html import escape
 
+from .palette import color
 from .publication import render_values
 
 KIND = {
@@ -30,13 +31,17 @@ STYLE = """
 .edge{stroke:#8c959f;stroke-width:1.25;fill:none}
 .box{fill:#ffffff;stroke:#8c959f;stroke-width:1.25}
 .cont{fill:#f6f8fa;stroke:#8c959f;stroke-width:1;stroke-dasharray:4 4}
-.k-kda{fill:#2a9d8f}.k-dsa{fill:#e76f51}.k-mla{fill:#f4a261}.k-conv{fill:#5b7fbf}.k-swa{fill:#8ab17d}.k-full{fill:#e76f51}
-.mix.k-kda{fill:#2a9d8f22;stroke:#2a9d8f}.mix.k-dsa{fill:#e76f5122;stroke:#e76f51}.mix.k-mla{fill:#f4a26122;stroke:#f4a261}
-.mix.k-conv{fill:#5b7fbf22;stroke:#5b7fbf}.mix.k-swa{fill:#8ab17d22;stroke:#8ab17d}.mix.k-full{fill:#e76f5122;stroke:#e76f51}
 .mix{stroke-width:2}
-.k-mamba{fill:#a17bbb}.k-mlp{fill:#c69b50}
-.mix.k-mamba{fill:#a17bbb22;stroke:#a17bbb}.mix.k-mlp{fill:#c69b5022;stroke:#c69b50}
 """
+
+
+def kind_css() -> str:
+    """Fill and outline classes per layer kind, from the shared palette."""
+    out = []
+    for kind, (_, cls) in KIND.items():
+        c = color(kind)
+        out.append(f".{cls}{{fill:{c}}}.mix.{cls}{{fill:{c}22;stroke:{c}}}")
+    return "\n".join(out)
 
 
 def _t(x, y, s, cls="b", anchor="middle"):
@@ -215,7 +220,9 @@ def _alternative_layout(rec: dict, v: dict) -> str:
     defs = '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8c959f"/></marker></defs>'
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img" aria-label="{escape(name)} architecture">'
-        f'<style>{STYLE}</style>{defs}<rect width="{width}" height="{height}" fill="#fff"/>' + "".join(out) + "</svg>"
+        f'<style>{STYLE}{kind_css()}</style>{defs}<rect width="{width}" height="{height}" fill="#fff"/>'
+        + "".join(out)
+        + "</svg>"
     )
 
 
@@ -409,16 +416,6 @@ def render(rec: dict) -> str:
         )
         y += 32 + 60
     y += 30
-    for note in rec.get("unchecked_notes", [])[:1]:
-        words, line = ("Note: " + note).split(), ""
-        for wd in words:
-            if len(line) + len(wd) > 140:
-                out.append(_t(24, y, line, "q", "start"))
-                y += 16
-                line = ""
-            line += wd + " "
-        out.append(_t(24, y, line, "q", "start"))
-        y += 16
     H = y + 12
     defs = (
         '<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" '
@@ -426,6 +423,6 @@ def render(rec: dict) -> str:
     )
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H:.0f}" role="img" '
-        f'aria-label="{escape(name)} architecture"><style>{STYLE}</style>{defs}'
+        f'aria-label="{escape(name)} architecture"><style>{STYLE}{kind_css()}</style>{defs}'
         f'<rect width="{W}" height="{H:.0f}" fill="#ffffff"/>' + "".join(out) + "</svg>"
     )
