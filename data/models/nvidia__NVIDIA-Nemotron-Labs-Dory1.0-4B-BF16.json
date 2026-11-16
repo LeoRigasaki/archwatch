@@ -23,7 +23,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:04+00:00",
+ "analyzed_at": "2026-11-15T18:26:34+00:00",
  "facts": {
   "architecture_class": {
    "value": "DoryForCausalLM",
@@ -264,6 +264,8 @@
   "counted_from_weights": {
    "total": 3975229440,
    "text_total": 3975229440,
+   "mtp_params": 0,
+   "headline_total": 3975229440,
    "by_component": {
     "dense_ffn": 1321205760,
     "other": 1039085568,
@@ -490,6 +492,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -802,7 +821,7 @@
    "candidates": [
     {
      "value": 3975229440,
-     "evidence": "weights:sum of tensor shapes"
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
     },
     {
      "value": 4000000000.0,
@@ -1075,19 +1094,6 @@
    ]
   },
   {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
-    }
-   ]
-  },
-  {
    "field": "rope",
    "value": {
     "sliding_attention": {
@@ -1193,6 +1199,241 @@
      "evidence": "weights:tensor header inventory"
     }
    ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "sliding_attention": {
+      "layers": 27,
+      "tensors": {
+       "attn_alpha": [
+        2560
+       ],
+       "mixer.g_proj.weight": [
+        4096,
+        2560
+       ],
+       "mixer.k_proj.weight": [
+        1024,
+        2560
+       ],
+       "mixer.o_proj.weight": [
+        2560,
+        4096
+       ],
+       "mixer.q_proj.weight": [
+        4096,
+        2560
+       ],
+       "mixer.s_gate": [
+        4096
+       ],
+       "mixer.sqk": [
+        4096
+       ],
+       "mixer.v_proj.weight": [
+        1024,
+        2560
+       ]
+      }
+     },
+     "mlp": {
+      "layers": 36,
+      "tensors": {
+       "mixer.down_proj.weight": [
+        2560,
+        7168
+       ],
+       "mixer.gate_proj.weight": [
+        7168,
+        2560
+       ],
+       "mixer.suv_gate": [
+        7168
+       ],
+       "mixer.suv_up": [
+        7168
+       ],
+       "mixer.up_proj.weight": [
+        7168,
+        2560
+       ],
+       "mlp_alpha": [
+        2560
+       ]
+      }
+     },
+     "full_attention": {
+      "layers": 9,
+      "tensors": {
+       "attn_alpha": [
+        2560
+       ],
+       "mixer.g_proj.weight": [
+        4096,
+        2560
+       ],
+       "mixer.k_proj.weight": [
+        1024,
+        2560
+       ],
+       "mixer.o_proj.weight": [
+        2560,
+        4096
+       ],
+       "mixer.q_proj.weight": [
+        4096,
+        2560
+       ],
+       "mixer.s_gate": [
+        4096
+       ],
+       "mixer.sqk": [
+        4096
+       ],
+       "mixer.v_proj.weight": [
+        1024,
+        2560
+       ]
+      }
+     }
+    },
+    "ffns": [],
+    "globals": {
+     "embeddings.weight": [
+      131072,
+      2560
+     ],
+     "lm_head.logit_scale": [
+      131072
+     ],
+     "lm_head.weight": [
+      131072,
+      2560
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "sliding_attention": {
+        "layers": 27,
+        "tensors": {
+         "attn_alpha": [
+          2560
+         ],
+         "mixer.g_proj.weight": [
+          4096,
+          2560
+         ],
+         "mixer.k_proj.weight": [
+          1024,
+          2560
+         ],
+         "mixer.o_proj.weight": [
+          2560,
+          4096
+         ],
+         "mixer.q_proj.weight": [
+          4096,
+          2560
+         ],
+         "mixer.s_gate": [
+          4096
+         ],
+         "mixer.sqk": [
+          4096
+         ],
+         "mixer.v_proj.weight": [
+          1024,
+          2560
+         ]
+        }
+       },
+       "mlp": {
+        "layers": 36,
+        "tensors": {
+         "mixer.down_proj.weight": [
+          2560,
+          7168
+         ],
+         "mixer.gate_proj.weight": [
+          7168,
+          2560
+         ],
+         "mixer.suv_gate": [
+          7168
+         ],
+         "mixer.suv_up": [
+          7168
+         ],
+         "mixer.up_proj.weight": [
+          7168,
+          2560
+         ],
+         "mlp_alpha": [
+          2560
+         ]
+        }
+       },
+       "full_attention": {
+        "layers": 9,
+        "tensors": {
+         "attn_alpha": [
+          2560
+         ],
+         "mixer.g_proj.weight": [
+          4096,
+          2560
+         ],
+         "mixer.k_proj.weight": [
+          1024,
+          2560
+         ],
+         "mixer.o_proj.weight": [
+          2560,
+          4096
+         ],
+         "mixer.q_proj.weight": [
+          4096,
+          2560
+         ],
+         "mixer.s_gate": [
+          4096
+         ],
+         "mixer.sqk": [
+          4096
+         ],
+         "mixer.v_proj.weight": [
+          1024,
+          2560
+         ]
+        }
+       }
+      },
+      "ffns": [],
+      "globals": {
+       "embeddings.weight": [
+        131072,
+        2560
+       ],
+       "lm_head.logit_scale": [
+        131072
+       ],
+       "lm_head.weight": [
+        131072,
+        2560
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
+    }
+   ]
   }
  ],
  "published": {
@@ -1205,6 +1446,7 @@
   "head_dim": 256,
   "attention_type": "GQA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "ffn_intermediate": 7168,
   "sliding_window": 1024,
   "layer_type_counts": {
@@ -1370,7 +1612,6 @@
    "mlp"
   ],
   "decoder_type": "Dense",
-  "tied_embeddings": false,
   "rope": {
    "sliding_attention": {
     "rope_type": "default",
@@ -1396,6 +1637,118 @@
    "tensor_count": 507,
    "skipped_scale_tensors": 0,
    "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "sliding_attention": {
+     "layers": 27,
+     "tensors": {
+      "attn_alpha": [
+       2560
+      ],
+      "mixer.g_proj.weight": [
+       4096,
+       2560
+      ],
+      "mixer.k_proj.weight": [
+       1024,
+       2560
+      ],
+      "mixer.o_proj.weight": [
+       2560,
+       4096
+      ],
+      "mixer.q_proj.weight": [
+       4096,
+       2560
+      ],
+      "mixer.s_gate": [
+       4096
+      ],
+      "mixer.sqk": [
+       4096
+      ],
+      "mixer.v_proj.weight": [
+       1024,
+       2560
+      ]
+     }
+    },
+    "mlp": {
+     "layers": 36,
+     "tensors": {
+      "mixer.down_proj.weight": [
+       2560,
+       7168
+      ],
+      "mixer.gate_proj.weight": [
+       7168,
+       2560
+      ],
+      "mixer.suv_gate": [
+       7168
+      ],
+      "mixer.suv_up": [
+       7168
+      ],
+      "mixer.up_proj.weight": [
+       7168,
+       2560
+      ],
+      "mlp_alpha": [
+       2560
+      ]
+     }
+    },
+    "full_attention": {
+     "layers": 9,
+     "tensors": {
+      "attn_alpha": [
+       2560
+      ],
+      "mixer.g_proj.weight": [
+       4096,
+       2560
+      ],
+      "mixer.k_proj.weight": [
+       1024,
+       2560
+      ],
+      "mixer.o_proj.weight": [
+       2560,
+       4096
+      ],
+      "mixer.q_proj.weight": [
+       4096,
+       2560
+      ],
+      "mixer.s_gate": [
+       4096
+      ],
+      "mixer.sqk": [
+       4096
+      ],
+      "mixer.v_proj.weight": [
+       1024,
+       2560
+      ]
+     }
+    }
+   },
+   "ffns": [],
+   "globals": {
+    "embeddings.weight": [
+     131072,
+     2560
+    ],
+    "lm_head.logit_scale": [
+     131072
+    ],
+    "lm_head.weight": [
+     131072,
+     2560
+    ]
+   }
   }
  },
  "review_queue": [],

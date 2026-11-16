@@ -38,6 +38,16 @@ def held(values: dict) -> str | None:
     return None
 
 
+def plain_hold(values: dict) -> str | None:
+    """Short, number-free hold reason for public listing (config/publication.yaml `plain`)."""
+    h = holds()
+    for field, group in (("generation_type", "generation_types"), ("model_type", "model_types")):
+        entry = h[group].get(values.get(field))
+        if entry:
+            return entry.get("plain")
+    return None
+
+
 def render_values(record: dict) -> dict:
     values = dict(record["published"])
     hold = held(values)

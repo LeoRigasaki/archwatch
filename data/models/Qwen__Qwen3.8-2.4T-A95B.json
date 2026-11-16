@@ -18,7 +18,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-14T08:16:00+00:00",
+ "analyzed_at": "2026-11-15T18:08:06+00:00",
  "facts": {
   "architecture_class": {
    "value": "Qwen3_5MoeForCausalLM",
@@ -508,6 +508,8 @@
   "counted_from_weights": {
    "total": 2446182725504,
    "text_total": 2446182725504,
+   "mtp_params": 26378027520,
+   "headline_total": 2419804697984,
    "by_component": {
     "moe_routed_experts": 2370821947392,
     "other": 30248699136,
@@ -533,9 +535,11 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
-   "text_active": 121665894272,
-   "text_active_without_embeddings": 119631656832,
-   "with_vision": 121665894272
+   "active": 93253629312,
+   "text_active": 95287866752,
+   "text_active_without_embeddings": 93253629312,
+   "text_active_non_embedding": 91219391872,
+   "with_vision": 95287866752
   }
  },
  "cache": {
@@ -773,6 +777,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -1214,27 +1235,53 @@
   },
   {
    "field": "params_total",
-   "value": 2446182725504,
+   "value": 2419804697984,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 2446182725504,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 2419804697984,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 26378027520,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 26378027520,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 121665894272,
+   "value": 93253629312,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 121665894272,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 93253629312,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 91219391872,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 91219391872,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -1542,19 +1589,6 @@
    ]
   },
   {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
-    }
-   ]
-  },
-  {
    "field": "rope",
    "value": {
     "partial_rotary_factor": 0.25,
@@ -1654,6 +1688,271 @@
      "evidence": "weights:tensor header inventory"
     }
    ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "linear_attention": {
+      "layers": 69,
+      "tensors": {
+       "input_layernorm.weight": [
+        8192
+       ],
+       "linear_attn.A_log": [
+        128
+       ],
+       "linear_attn.conv1d.weight": [
+        20480,
+        1,
+        4
+       ],
+       "linear_attn.dt_bias": [
+        128
+       ],
+       "linear_attn.in_proj_a.weight": [
+        128,
+        8192
+       ],
+       "linear_attn.in_proj_b.weight": [
+        128,
+        8192
+       ],
+       "linear_attn.in_proj_qkv.weight": [
+        20480,
+        8192
+       ],
+       "linear_attn.in_proj_z.weight": [
+        16384,
+        8192
+       ],
+       "linear_attn.norm.weight": [
+        128
+       ],
+       "linear_attn.out_proj.weight": [
+        8192,
+        16384
+       ],
+       "post_attention_layernorm.weight": [
+        8192
+       ]
+      }
+     },
+     "full_attention": {
+      "layers": 23,
+      "tensors": {
+       "input_layernorm.weight": [
+        8192
+       ],
+       "post_attention_layernorm.weight": [
+        8192
+       ],
+       "self_attn.k_norm.weight": [
+        256
+       ],
+       "self_attn.k_proj.weight": [
+        1024,
+        8192
+       ],
+       "self_attn.o_proj.weight": [
+        8192,
+        16384
+       ],
+       "self_attn.q_norm.weight": [
+        256
+       ],
+       "self_attn.q_proj.weight": [
+        32768,
+        8192
+       ],
+       "self_attn.v_proj.weight": [
+        1024,
+        8192
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        91
+       ]
+      ],
+      "tensors": {
+       "mlp.gate.weight": [
+        512,
+        8192
+       ],
+       "mlp.shared_expert.down_proj.weight": [
+        8192,
+        2048
+       ],
+       "mlp.shared_expert.gate_proj.weight": [
+        2048,
+        8192
+       ],
+       "mlp.shared_expert.up_proj.weight": [
+        2048,
+        8192
+       ],
+       "mlp.shared_expert_gate.weight": [
+        1,
+        8192
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      248320,
+      8192
+     ],
+     "lm_head.weight": [
+      248320,
+      8192
+     ],
+     "norm.weight": [
+      8192
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "linear_attention": {
+        "layers": 69,
+        "tensors": {
+         "input_layernorm.weight": [
+          8192
+         ],
+         "linear_attn.A_log": [
+          128
+         ],
+         "linear_attn.conv1d.weight": [
+          20480,
+          1,
+          4
+         ],
+         "linear_attn.dt_bias": [
+          128
+         ],
+         "linear_attn.in_proj_a.weight": [
+          128,
+          8192
+         ],
+         "linear_attn.in_proj_b.weight": [
+          128,
+          8192
+         ],
+         "linear_attn.in_proj_qkv.weight": [
+          20480,
+          8192
+         ],
+         "linear_attn.in_proj_z.weight": [
+          16384,
+          8192
+         ],
+         "linear_attn.norm.weight": [
+          128
+         ],
+         "linear_attn.out_proj.weight": [
+          8192,
+          16384
+         ],
+         "post_attention_layernorm.weight": [
+          8192
+         ]
+        }
+       },
+       "full_attention": {
+        "layers": 23,
+        "tensors": {
+         "input_layernorm.weight": [
+          8192
+         ],
+         "post_attention_layernorm.weight": [
+          8192
+         ],
+         "self_attn.k_norm.weight": [
+          256
+         ],
+         "self_attn.k_proj.weight": [
+          1024,
+          8192
+         ],
+         "self_attn.o_proj.weight": [
+          8192,
+          16384
+         ],
+         "self_attn.q_norm.weight": [
+          256
+         ],
+         "self_attn.q_proj.weight": [
+          32768,
+          8192
+         ],
+         "self_attn.v_proj.weight": [
+          1024,
+          8192
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          91
+         ]
+        ],
+        "tensors": {
+         "mlp.gate.weight": [
+          512,
+          8192
+         ],
+         "mlp.shared_expert.down_proj.weight": [
+          8192,
+          2048
+         ],
+         "mlp.shared_expert.gate_proj.weight": [
+          2048,
+          8192
+         ],
+         "mlp.shared_expert.up_proj.weight": [
+          2048,
+          8192
+         ],
+         "mlp.shared_expert_gate.weight": [
+          1,
+          8192
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        248320,
+        8192
+       ],
+       "lm_head.weight": [
+        248320,
+        8192
+       ],
+       "norm.weight": [
+        8192
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
+    }
+   ]
   }
  ],
  "published": {
@@ -1666,6 +1965,7 @@
   "head_dim": 256,
   "attention_type": "GQA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "moe_num_experts": 512,
   "moe_active_experts": 10,
   "moe_shared_experts": 1,
@@ -1678,8 +1978,10 @@
   },
   "layer_index_base_in_config": 0,
   "qk_norm": true,
-  "params_total": 2446182725504,
-  "params_active": 121665894272,
+  "params_total": 2419804697984,
+  "params_mtp": 26378027520,
+  "params_active": 93253629312,
+  "params_active_non_embedding": 91219391872,
   "model_type": "qwen3_5_moe_text",
   "linear_num_key_heads": 16,
   "linear_num_value_heads": 128,
@@ -1782,7 +2084,6 @@
    "full_attention"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": false,
   "rope": {
    "partial_rotary_factor": 0.25,
    "rope_theta": 10000000,
@@ -1805,6 +2106,133 @@
    "tensor_count": 1609,
    "skipped_scale_tensors": 0,
    "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "linear_attention": {
+     "layers": 69,
+     "tensors": {
+      "input_layernorm.weight": [
+       8192
+      ],
+      "linear_attn.A_log": [
+       128
+      ],
+      "linear_attn.conv1d.weight": [
+       20480,
+       1,
+       4
+      ],
+      "linear_attn.dt_bias": [
+       128
+      ],
+      "linear_attn.in_proj_a.weight": [
+       128,
+       8192
+      ],
+      "linear_attn.in_proj_b.weight": [
+       128,
+       8192
+      ],
+      "linear_attn.in_proj_qkv.weight": [
+       20480,
+       8192
+      ],
+      "linear_attn.in_proj_z.weight": [
+       16384,
+       8192
+      ],
+      "linear_attn.norm.weight": [
+       128
+      ],
+      "linear_attn.out_proj.weight": [
+       8192,
+       16384
+      ],
+      "post_attention_layernorm.weight": [
+       8192
+      ]
+     }
+    },
+    "full_attention": {
+     "layers": 23,
+     "tensors": {
+      "input_layernorm.weight": [
+       8192
+      ],
+      "post_attention_layernorm.weight": [
+       8192
+      ],
+      "self_attn.k_norm.weight": [
+       256
+      ],
+      "self_attn.k_proj.weight": [
+       1024,
+       8192
+      ],
+      "self_attn.o_proj.weight": [
+       8192,
+       16384
+      ],
+      "self_attn.q_norm.weight": [
+       256
+      ],
+      "self_attn.q_proj.weight": [
+       32768,
+       8192
+      ],
+      "self_attn.v_proj.weight": [
+       1024,
+       8192
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       91
+      ]
+     ],
+     "tensors": {
+      "mlp.gate.weight": [
+       512,
+       8192
+      ],
+      "mlp.shared_expert.down_proj.weight": [
+       8192,
+       2048
+      ],
+      "mlp.shared_expert.gate_proj.weight": [
+       2048,
+       8192
+      ],
+      "mlp.shared_expert.up_proj.weight": [
+       2048,
+       8192
+      ],
+      "mlp.shared_expert_gate.weight": [
+       1,
+       8192
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     248320,
+     8192
+    ],
+    "lm_head.weight": [
+     248320,
+     8192
+    ],
+    "norm.weight": [
+     8192
+    ]
+   }
   }
  },
  "review_queue": [

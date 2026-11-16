@@ -1701,13 +1701,8 @@
   },
   {
    "field": "model_type",
-   "before": null,
+   "before": "lfm2",
    "after": "lfm3"
-  },
-  {
-   "field": "ffn_gated",
-   "before": null,
-   "after": true
   }
  ],
  "tensor_diff_vs_predecessor": {

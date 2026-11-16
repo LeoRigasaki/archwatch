@@ -22,7 +22,7 @@
    "transformers"
   ]
  },
- "analyzed_at": "2026-11-15T09:52:59+00:00",
+ "analyzed_at": "2026-11-15T18:08:07+00:00",
  "facts": {
   "architecture_class": {
    "value": "DeepseekV41ForCausalLM",
@@ -346,12 +346,16 @@
   "counted_from_weights": {
    "total": 763205315794,
    "text_total": 762793473234,
+   "mtp_params": 14225362530,
+   "headline_total": 748979953264,
    "by_component": {
     "moe_routed_experts": 543581798400,
-    "other": 202908332144,
+    "lookup_embedding": 196613849600,
     "auxiliary": 14225362530,
+    "other": 5632568944,
     "moe_shared_experts": 1415577600,
     "embedding": 661913600,
+    "lm_head": 661913600,
     "vision": 411842560,
     "norms": 488960
    },
@@ -369,9 +373,11 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
-   "text_active": 213479777904,
-   "text_active_without_embeddings": 212817864304,
-   "with_vision": 228116982994
+   "active": 16204014704,
+   "text_active": 16865928304,
+   "text_active_without_embeddings": 16204014704,
+   "text_active_non_embedding": 15542101104,
+   "with_vision": 17277770864
   }
  },
  "cache": {
@@ -555,6 +561,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": false,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": false,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -807,27 +830,53 @@
   },
   {
    "field": "params_total",
-   "value": 763205315794,
+   "value": 748979953264,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 763205315794,
-     "evidence": "weights:sum of tensor shapes"
+     "value": 748979953264,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    }
+   ]
+  },
+  {
+   "field": "params_mtp",
+   "value": 14225362530,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 14225362530,
+     "evidence": "weights:multi-token-prediction module tensors"
     }
    ]
   },
   {
    "field": "params_active",
-   "value": 213479777904,
+   "value": 16204014704,
    "status": "single source",
    "confidence": 0.7,
    "published": true,
    "candidates": [
     {
-     "value": 213479777904,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
+     "value": 16204014704,
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ]
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 15542101104,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 15542101104,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -998,19 +1047,6 @@
    ]
   },
   {
-   "field": "tied_embeddings",
-   "value": false,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": false,
-     "evidence": "config:tie_word_embeddings"
-    }
-   ]
-  },
-  {
    "field": "rope",
    "value": {
     "rope_theta": 10000,
@@ -1097,10 +1133,12 @@
    "field": "parameter_components",
    "value": {
     "moe_routed_experts": 543581798400,
-    "other": 202908332144,
+    "lookup_embedding": 196613849600,
     "auxiliary": 14225362530,
+    "other": 5632568944,
     "moe_shared_experts": 1415577600,
     "embedding": 661913600,
+    "lm_head": 661913600,
     "vision": 411842560,
     "norms": 488960
    },
@@ -1111,10 +1149,12 @@
     {
      "value": {
       "moe_routed_experts": 543581798400,
-      "other": 202908332144,
+      "lookup_embedding": 196613849600,
       "auxiliary": 14225362530,
+      "other": 5632568944,
       "moe_shared_experts": 1415577600,
       "embedding": 661913600,
+      "lm_head": 661913600,
       "vision": 411842560,
       "norms": 488960
      },
@@ -1154,6 +1194,7 @@
   "head_dim": 512,
   "attention_type": "MQA",
   "ffn_gated": true,
+  "tied_embeddings": false,
   "moe_num_experts": 384,
   "moe_active_experts": 6,
   "moe_shared_experts": 1,
@@ -1205,8 +1246,10 @@
    "compressed_attention",
    "compressed_attention"
   ],
-  "params_total": 763205315794,
-  "params_active": 213479777904,
+  "params_total": 748979953264,
+  "params_mtp": 14225362530,
+  "params_active": 16204014704,
+  "params_active_non_embedding": 15542101104,
   "model_type": "deepseek_v41",
   "ngram_layer_ids": [
    1,
@@ -1257,7 +1300,6 @@
    "compressed_attention"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": false,
   "rope": {
    "rope_theta": 10000,
    "scaling": {
@@ -1274,10 +1316,12 @@
   "released_weights_format": "fp8",
   "parameter_components": {
    "moe_routed_experts": 543581798400,
-   "other": 202908332144,
+   "lookup_embedding": 196613849600,
    "auxiliary": 14225362530,
+   "other": 5632568944,
    "moe_shared_experts": 1415577600,
    "embedding": 661913600,
+   "lm_head": 661913600,
    "vision": 411842560,
    "norms": 488960
   },

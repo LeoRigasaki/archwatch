@@ -144,24 +144,47 @@ def family(repo: str, policy: dict) -> str:
     return root + (":" + ":".join(stream) if stream else "")
 
 
-def predecessor(candidate: dict, catalog: dict[str, dict]) -> tuple[dict | None, str]:
+def size_class(record: dict | None) -> tuple[float, bool] | None:
+    """(total parameters, is MoE) from a record's published fields; None when the total is not published."""
+    pub = (record or {}).get("published") or {}
+    total = pub.get("params_total")
+    if not total:
+        return None
+    return float(total), "moe_num_experts" in pub or str(pub.get("decoder_type", "")).lower() in ("moe", "sparse")
+
+
+def same_size_class(a, b) -> bool:
+    """Total parameters within 2x of each other and the same dense/MoE kind."""
+    return bool(a and b) and a[1] == b[1] and max(a[0], b[0]) <= 2 * min(a[0], b[0])
+
+
+def predecessor(candidate: dict, catalog: dict[str, dict], sizes: dict | None = None) -> tuple[dict | None, str]:
+    """Latest earlier release of the same org and family AND the same size class (2x total, dense/MoE kind).
+
+    `sizes` maps repo -> (total params, is MoE); a release whose size is unknown cannot be a predecessor."""
+    sizes = sizes or {}
+    own = sizes.get(candidate["id"])
     earlier = [
         m
         for key, m in catalog.items()
         if key != candidate["id"]
         and key.split("/")[0].casefold() == candidate["id"].split("/")[0].casefold()
         and m.get("family") == candidate["family"]
+        and bool(m.get("derived")) == bool(candidate.get("derived"))  # base with base, fine-tune with fine-tune
         and timestamp(m.get("created_at"))
         and timestamp(candidate.get("created_at"))
         and timestamp(m["created_at"]) < timestamp(candidate["created_at"])
     ]
     if not earlier:
         return None, "No earlier same-org family release in the inspected catalog"
+    earlier = [m for m in earlier if same_size_class(own, sizes.get(m["id"]))]
+    if not earlier:
+        return None, "No earlier same-family release of the same size class (2x total, dense/MoE kind)"
     newest = max(timestamp(m["created_at"]) for m in earlier)
     matches = sorted((m for m in earlier if timestamp(m["created_at"]) == newest), key=lambda m: m["id"])
     if len(matches) != 1:
         return None, "Ambiguous previous release: " + ", ".join(m["id"] for m in matches)
-    return matches[0], "Latest earlier Hub creation date in the inspected same-org family catalog"
+    return matches[0], "Latest earlier same-family release of the same size class (2x total, dense/MoE kind)"
 
 
 def _structural(value):
@@ -309,6 +332,7 @@ def run(
             "source_commit": record["source_commit"],
             "created_at": record.get("hub_created"),
             "family": family(repo, policy),
+            "derived": bool(derivative_relation(record.get("hub_metadata") or {})),
         }
         entry = entries.setdefault(
             repo,
@@ -438,6 +462,7 @@ def run(
                 "source_commit": info["sha"],
                 "created_at": info.get("created_at"),
                 "family": family(repo, policy),
+                "derived": bool(derivative_relation(info)),
             }
             catalog[repo] = meta
             if previous.get("last_observed_commit") != info["sha"] or previous.get("status") != "pending":
@@ -515,7 +540,9 @@ def run(
                         reason="Published dimensions match but config/custom code differs; verify mechanism before deduplication or a new diagram",
                     )
                 else:
-                    pred, reason = predecessor(catalog[repo], catalog)
+                    sizes = {key: size_class(rec) for key, rec in records.items()}
+                    sizes[repo] = size_class(record)
+                    pred, reason = predecessor(catalog[repo], catalog, sizes)
                     if pred:
                         saved_old = records.get(pred["id"])
                         old = saved_old
