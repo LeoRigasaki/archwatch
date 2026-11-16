@@ -64,24 +64,28 @@ def load(url, tmp_path):
     return out.stdout, console
 
 
-def pages():
-    model = sorted((SITE / "models").glob("*.html"))[0].name
-    pair = sorted(p.name for p in (SITE / "compare").glob("*.html") if p.name != "index.html")[0]
+KINDS = ("home", "model", "compare tool", "compare pair", "compare three-way")
+
+
+def path_for(kind):
+    """Resolved at test time: site/ is built by the session fixture, after collection."""
     import json
 
+    if kind == "home":
+        return "/index.html"
+    if kind == "model":
+        return "/models/" + sorted((SITE / "models").glob("*.html"))[0].name
+    if kind == "compare tool":
+        return "/compare/index.html"
+    if kind == "compare pair":
+        return "/compare/" + sorted(p.name for p in (SITE / "compare").glob("*.html") if p.name != "index.html")[0]
     stems = [m["stem"] for m in json.loads((SITE / "data/models.json").read_text())["models"]]
-    return [
-        ("home", "/index.html"),
-        ("model", f"/models/{model}"),
-        ("compare tool", "/compare/index.html"),
-        ("compare pair", f"/compare/{pair}"),
-        ("compare three-way", f"/compare/index.html?a={stems[0]}&b={stems[1]}&c={stems[2]}"),
-    ]
+    return f"/compare/index.html?a={stems[0]}&b={stems[1]}&c={stems[2]}"
 
 
-@pytest.mark.parametrize("name,path", pages())
-def test_page_loads_without_console_or_page_errors(name, path, server, tmp_path):
-    dom, console = load(server + path, tmp_path)
+@pytest.mark.parametrize("name", KINDS)
+def test_page_loads_without_console_or_page_errors(name, server, tmp_path):
+    dom, console = load(server + path_for(name), tmp_path)
     assert not console, f"{name}: {console}"
     assert "</html>" in dom
     if name.startswith("compare"):
