@@ -13,6 +13,8 @@ small vanilla script for the filters, the memory planner and the theme switch.
 import datetime as dt
 import html
 import json
+import math
+import re
 from pathlib import Path
 
 import yaml
@@ -909,137 +911,240 @@ def model_section(name, anchor):
     return model_page(name, rec, pub, {})
 
 
-# ---------------------------------------------------------------- compare
+# ---------------------------------------------------------------- compare tool data (site/data/models.json)
+
+TABLE_FIRST = (
+    "layer_type_counts",
+    "params_total",
+    "params_active",
+    "params_active_non_embedding",
+    "params_mtp",
+    "num_layers",
+    "context_length",
+    "cache",
+    "hidden_size",
+    "attention_type",
+    "num_attention_heads",
+    "num_kv_heads",
+    "head_dim",
+    "moe_num_experts",
+    "moe_active_experts",
+    "moe_shared_experts",
+    "vocab_size",
+)
+CHART_MIN = 1024
+CONTEXTS = (8192, 32768, 131072, 1048576)
+SLOT_COLORS = ("#0B6E66", "#C2410C", "#6D28D9")  # line colours for compare slots A, B, C (not layer types)
 
 
-def compare_card(rec, pub):
+def cache_parts(pub, cache):
+    """Cache split into what grows per token, what is capped by a sliding window, and fixed-size state."""
+    sliding = [r for r in cache["breakdown"] if r["layer_type"] == "sliding_attention" and r["constant_bytes"]]
+    window = int(pub.get("sliding_window") or 0)
+    full = sum(r["constant_bytes"] for r in sliding) if window else 0
+    return dict(
+        grow=cache["grows_per_token_bytes"],
+        window=window if full else 0,
+        window_full=full,
+        fixed=cache["constant_bytes"] - full,
+    )
+
+
+def cache_bytes(parts, n):
+    """Cache for one sequence at n tokens: growing layers scale with n, windowed layers up to their window, plus
+    fixed-size state. At or past the window this equals the calculator's grows_per_token x n + constant."""
+    windowed = parts["window_full"] * min(n, parts["window"]) // parts["window"] if parts["window"] else 0
+    return parts["grow"] * n + windowed + parts["fixed"]
+
+
+def chart_grid(max_context):
+    points, n = [], CHART_MIN
+    while n < max_context:
+        points.append(n)
+        n *= 2
+    return points + [max_context]
+
+
+def display(field, value):
+    if field == "layer_type_counts":
+        return " + ".join(f"{n} {SHORT.get(k, k)}" for k, n in value.items())
+    if field.startswith("params") and isinstance(value, (int, float)):
+        for unit, d in (("T", 1e12), ("B", 1e9), ("M", 1e6)):
+            if value >= d:
+                return f"{sig(value / d)}{unit}"
+    return show(field, value)
+
+
+def note_follows_filter(rec, before, note):
+    """A saved note may be shown only if it states no change the site leaves out (under 1%, bookkeeping)."""
+    if "weight group" in note.lower():
+        return False
+    hidden = set()
+    for row in pipeline.diff(rec, before):
+        if not significant(row["field"], row["before"], row["after"]):
+            for v in (row["before"], row["after"]):
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    hidden.update({f"{v:,}", str(v), change_value(row["field"], v)})
+    numbers = {x.replace(",", "") for x in re.findall(r"\d[\d,.]*[KMBT]?", note)}
+    return not any(h.replace(",", "") in numbers for h in hidden)
+
+
+def model_data(stem, rec, pub, published, max_context):
+    cache = render_cache(pub)
+    parts = cache_parts(pub, cache)
     org, name = rec["id"].split("/")
-    stem = rec["id"].replace("/", "__")
-    pubs = settings()["publishers"]
-    legend = "".join(
-        f'<li><span class="sw" style="background:{COLOR.get(k, "#999")}" aria-hidden="true"></span>{e(SHORT.get(k, k))} {pub["layer_type_counts"][k]}</li>'
-        for k in kinds_in_order(pub)
-    )
-    return f"""<div class="panel ccard"><h2><a href="../models/{e(stem)}.html">{e(name)}</a></h2>
-<p class="sub">{e(pubs.get(org, org))} · {e(date(rec["hub_created"]))}</p>
-{cells(pub, f"{name} layer order, layer 1 first: " + mix_text(pub))}<ul class="legend">{legend}</ul></div>"""
-
-
-def experts_text(p):
-    if "moe_num_experts" not in p:
-        return "dense"
-    return f"{p['moe_num_experts']} / {p['moe_active_experts']} / {p.get('moe_shared_experts', 0)}"
-
-
-def compare_page(stem, rec, pub, before):
-    _, old, old_pub = before
-    old_name, new_name = old["id"].split("/")[-1], rec["id"].split("/")[-1]
-    old_cache, new_cache = render_cache(old_pub), render_cache(pub)
-    items = changes(rec, old)
-    if True:  # an explainer note is shown only once it is regenerated under the same change filter
-        what = (
-            "<ul class=changes>"
-            + "".join(
-                f"<li><b>{e(lb)}</b>: <span class=mono>{e(a)}</span> &rarr; <span class=mono>{e(b)}</span></li>"
-                for lb, a, b in items
-            )
-            + "</ul><p class=byline>Listed by code from the verified diff: changes under 1% (or under 0.1B parameters) and weight-group bookkeeping are left out.</p>"
-        )
-    rows = []
-
-    def row(label, a, b, chip):
-        word, cls = chip
-        diff = "0" if word == "same" else "1"
-        rows.append(
-            f'<tr data-diff="{diff}"><th scope=row>{e(label)}</th><td class=mono>{e(a)}</td><td class=mono>{e(b)}</td>'
-            f'<td><span class="chip chip-{cls}">{e(word)}</span></td></tr>'
-        )
-
-    for field in ("layer_type_counts", "params_active", "params_total", "num_layers", "context_length", "hidden_size"):
-        a, b = old_pub.get(field), pub.get(field)
-        if a is None and b is None:
+    fields = {}
+    for field, value in pub.items():
+        if (
+            field in NOT_SHOWN | NOT_A_CHANGE
+            or field not in PLAIN
+            or isinstance(value, (list, dict))
+            and field != "layer_type_counts"
+        ):
             continue
-        held = a is None and field in {r["field"] for r in old["review_queue"]}
-
-        def fmt(v, side, field=field):
-            if field == "context_length":
-                return f"{v:,}" if v else "not stated"
-            return change_value(field, v, side)
-
-        row(
-            PLAIN.get(field, field),
-            "held for review" if held else fmt(a, old_pub),
-            fmt(b, pub),
-            ("held", "warn")
-            if held
-            else change_chip(field, a, b, old_pub, pub)
-            if field != "layer_type_counts"
-            else (("same", "same") if a == b else ("changed", "up")),
-        )
-    ga, gb = old_cache["grows_per_token_bytes"], new_cache["grows_per_token_bytes"]
-    row(
-        "Cache per token",
-        " ".join(cache_value(old_pub, old_cache)) if capped(old_pub, old_cache) else size(ga),
-        " ".join(cache_value(pub, new_cache)) if capped(pub, new_cache) else size(gb),
-        change_chip("kv", ga, gb),
+        raw = value if isinstance(value, (int, float)) and not isinstance(value, bool) else None
+        fields[field] = [display(field, value), raw]
+    value, label = cache_value(pub, cache)
+    fields["cache"] = [
+        value if label == "cache / token" else f"{value} ({label.replace('cache, ', '')})",
+        parts["grow"],
+    ]
+    before = published_predecessor(rec, published)
+    note = explainer_note(rec) if before else None
+    if note and not note_follows_filter(rec, before[1], note):
+        note = None
+    grid = [n for n in chart_grid(max_context) if n <= int(pub["context_length"])] + [int(pub["context_length"])]
+    return dict(
+        stem=stem,
+        id=rec["id"],
+        name=name,
+        publisher=settings()["publishers"].get(org, org),
+        date=date(rec["hub_created"]),
+        design=design(pub),
+        hybrid=hybrid(pub),
+        layers=pub["layer_types"],
+        counts=pub["layer_type_counts"],
+        context=int(pub["context_length"]),
+        params=dict(
+            total=pub["params_total"],
+            active=pub.get("params_active"),
+            active_non_embedding=pub.get("params_active_non_embedding"),
+            mtp=pub.get("params_mtp"),
+        ),
+        cache=parts,
+        cache_label=fields["cache"][0],
+        series=[[n, cache_bytes(parts, n)] for n in sorted(set(grid))],
+        fields=fields,
+        predecessor=before[0] if before else None,
+        note=note,
     )
-    if "moe_num_experts" in pub or "moe_num_experts" in old_pub:
-        row(
-            "Experts (routed / per token / shared)",
-            experts_text(old_pub),
-            experts_text(pub),
-            ("same", "same") if experts_text(old_pub) == experts_text(pub) else ("changed", "up"),
+
+
+def suggestions(models):
+    """Predecessor pairs, then code-chosen pairs: closest total parameters across different designs, and a dense
+    model next to a hybrid one of similar size."""
+    out, seen = [], set()
+
+    def add(a, b, why):
+        key = tuple(sorted((a["stem"], b["stem"])))
+        if key not in seen:
+            seen.add(key)
+            out.append(dict(a=a["stem"], b=b["stem"], label=f"{a['name']} vs {b['name']}", why=why))
+
+    by_stem = {m["stem"]: m for m in models}
+    for m in models:
+        if m["predecessor"] in by_stem:
+            add(by_stem[m["predecessor"]], m, "predecessor")
+
+    def gap(a, b):
+        return abs(math.log(a["params"]["total"] / b["params"]["total"]))
+
+    pairs = [(a, b) for i, a in enumerate(models) for b in models[i + 1 :]]
+    combos = sorted({tuple(sorted((a["design"], b["design"]))) for a, b in pairs if a["design"] != b["design"]})
+    for combo in combos:  # closest total parameters for each combination of different designs
+        best = min(
+            (p for p in pairs if tuple(sorted((p[0]["design"], p[1]["design"]))) == combo), key=lambda p: gap(*p)
         )
-    seen = {
-        "layer_type_counts",
-        "params_active",
-        "params_total",
-        "num_layers",
-        "context_length",
-        "hidden_size",
-        "kv_cache_per_token_bytes",
+        add(*best, f"closest total parameters, {combo[0]} vs {combo[1]}")
+    return out
+
+
+def compare_data(published):
+    max_context = max(int(p["context_length"]) for _, _, p in published.values())
+    models = [model_data(s, r, p, published, max_context) for s, r, p in published.values()]
+    models.sort(key=lambda m: m["name"].lower())
+    labels = {f: PLAIN.get(f, f) for m in models for f in m["fields"]}
+    labels["cache"] = "Cache per token"
+    implied_values = {
+        m["stem"]: {
+            f: implied(f, published[m["id"]][2])
+            for f in labels
+            if f not in m["fields"] and implied(f, published[m["id"]][2])
+        }
+        for m in models
     }
-    for r in pipeline.diff(rec, old):
-        if r["field"] in seen or r["field"] in NOT_SHOWN | NOT_A_CHANGE or r["field"].startswith("moe_"):
-            continue
-        row(
-            PLAIN.get(r["field"], r["field"]),
-            change_value(r["field"], r["before"], old_pub),
-            change_value(r["field"], r["after"], pub),
-            change_chip(r["field"], r["before"], r["after"], old_pub, pub),
-        )
-    points = sorted({131072, int(old_pub["context_length"]), int(pub["context_length"])})
-    bars = []
-    top = max(cache_at(p, c, n) for p, c in ((old_pub, old_cache), (pub, new_cache)) for n in points) or 1
-    for n in points:
-        for nm, p, c in ((old_name, old_pub, old_cache), (new_name, pub, new_cache)):
-            if n > int(p["context_length"]):
-                continue
-            v = cache_at(p, c, n)
-            bars.append(
-                f'<li><span>{e(nm)} at {e(tokens(n))}</span><span class="track"><span class="fill" style="width:{100 * v / top:.1f}%"></span></span>'
-                f'<span class="mono">{e(size(v))}</span></li>'
-            )
+    order = [f for f in TABLE_FIRST if f in labels] + sorted(
+        (f for f in labels if f not in TABLE_FIRST), key=lambda f: labels[f].lower()
+    )
+    return dict(
+        colors=COLOR,
+        kinds={k: SHORT.get(k, k) for k in COLOR},
+        labels=labels,
+        order=order,
+        implied=implied_values,
+        contexts=[n for n in CONTEXTS if n <= max_context],
+        precision=[dict(key=k, label=lb, bytes=b) for k, lb, b in PRECISION],
+        devices=[dict(label=lb, bytes=b) for lb, b in DEVICES],
+        slots=SLOT_COLORS,
+        models=models,
+        suggested=suggestions(models),
+    )
+
+
+def compare_tool(data, default=None):
+    """The compare tool page. `default` = (a, b) pre-selects a pair (the /compare/<pair> pages)."""
+    pairs = [s for s in data["suggested"] if s["why"] == "predecessor"]
+    nojs = (
+        "".join(f'<li><a href="../compare/{e(s["b"])}.html">{e(s["label"])}</a></li>' for s in pairs)
+        or "<li>No published model has a published predecessor yet.</li>"
+    )
+    chips = "".join(
+        f'<li><a class="chipbtn" href="../compare/index.html?a={e(s["a"])}&amp;b={e(s["b"])}" data-a="{e(s["a"])}" data-b="{e(s["b"])}">'
+        f"{e(s['label'])}<span>{e(s['why'])}</span></a></li>"
+        for s in data["suggested"]
+    )
+    options = "".join(f'<option value="{e(m["name"])}">{e(m["publisher"])}</option>' for m in data["models"])
+    pick = lambda slot, label: (  # noqa: E731
+        f'<div class="slot" data-slot="{slot}"><label for="pick-{slot}">{label}</label>'
+        f'<input id="pick-{slot}" list="models-list" autocomplete="off" placeholder="Search models">'
+        f'<span class="slotmeta"></span></div>'
+    )
+    preset = f' data-a="{e(default[0])}" data-b="{e(default[1])}"' if default else ""
     body = f"""<h1>Compare</h1>
-<div class="pair">{compare_card(old, old_pub)}{compare_card(rec, pub)}</div>
-<section class="panel" aria-labelledby="what"><h2 id="what">What changed</h2>{what}</section>
+<noscript><p class="lead">The compare tool needs JavaScript. Each model next to its predecessor:</p><ul class="plainlist">{nojs}</ul></noscript>
+<div id="tool" class="tool" hidden{preset}>
+<section aria-labelledby="sugg"><h2 id="sugg" class="sr">Suggested comparisons</h2><ul class="suggest">{chips}</ul></section>
+<datalist id="models-list">{options}</datalist>
+<form class="panel pickers" id="pickers" aria-label="Models to compare">
+{pick("a", "Model A")}<button type="button" class="btn swap" id="swap" aria-label="Swap model A and model B">Swap</button>{pick("b", "Model B")}
+{pick("c", "Model C (optional)")}<div class="pickact"><button type="button" class="btn" id="clear-c">Remove C</button>
+<button type="button" class="btn" id="copylink">Copy link</button><span class="sub" id="copied" aria-live="polite"></span></div></form>
+<section class="panel" aria-labelledby="kd"><h2 id="kd">Key differences</h2><div id="keydiff"></div></section>
+<section aria-labelledby="ls"><h2 id="ls">Layer by layer</h2><p class="sub">Every strip has the same width; layer 1 is on the left.</p><div id="strips"></div></section>
+<section class="panel" aria-labelledby="cc"><h2 id="cc">Cache as context grows</h2>
+<p class="sub">bf16, one sequence. Growing layers rise with context, sliding-window layers stop at their window, fixed-size state is a flat floor. Each line ends at the model's maximum context.</p>
+<div id="chart"></div><details><summary>Show the numbers</summary><div id="chartdata" class="tablebox"></div></details></section>
+<section class="panel" aria-labelledby="fit-h"><h2 id="fit-h">Will they fit?</h2>
+<p class="sub">Weights plus cache for one conversation; runtime overhead not included. "Tight" means over 75% of the device's memory.</p>
+<div class="choice"><span>Context length</span><div class="seg" role="group" aria-label="Context length" id="ctxseg"></div></div>
+<div class="choice"><span>Weight precision</span><div class="seg" role="group" aria-label="Weight precision" id="precseg"></div></div>
+<div id="fit" aria-live="polite"></div></section>
 <section aria-labelledby="fbf"><div class="sechead"><h2 id="fbf">Field by field</h2>
 <label class="toggle"><input type="checkbox" id="onlydiff"> Only show differences</label></div>
-<div class="tablebox"><table class="facts cmp"><thead><tr><th scope=col>Field</th><th scope=col>{e(old_name)}</th>
-<th scope=col>{e(new_name)}</th><th scope=col>Change</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div></section>
-<section class="panel" aria-labelledby="cm"><h2 id="cm">Cache memory as context grows</h2>
-<ul class="devices cachebars">{"".join(bars)}</ul>
-<p class="sub">Growing cache only, bf16, one sequence. Fixed-size state in non-attention layers is not included.</p></section>"""
-    return frame(f"{old_name} vs {new_name} · ArchWatch", body, depth=1, active="compare")
-
-
-def compare_index(pairs):
-    items = "".join(f'<li><a href="{e(stem)}.html">{e(old)} &rarr; {e(new)}</a></li>' for stem, old, new in pairs) or (
-        "<li>No published model has a published predecessor yet.</li>"
-    )
-    body = f"""<h1>Compare</h1><p class="lead">A model next to its predecessor: same family, same size class
-(total parameters within 2x, both dense or both MoE), both published.</p><ul class="plainlist">{items}</ul>"""
-    return frame("Compare · ArchWatch", body, depth=1, active="compare")
+<div class="tablebox" id="fields"></div></section>
+</div>"""
+    page = frame("Compare · ArchWatch", body, depth=1, active="compare")
+    return page.replace("</body>", '<script src="../compare.js" defer></script></body>')
 
 
 # ---------------------------------------------------------------- assets
@@ -1145,6 +1250,21 @@ section{margin-bottom:44px}section h2{margin-bottom:10px}.prose{max-width:760px;
 .plainlist{font-size:18px}
 .foot{border-top:1px solid var(--line);background:var(--card);color:var(--mut);font-size:14px;padding:22px 0}.foot p{margin:0;max-width:900px}
 .explore>*,.pair>*,.titlerow>*{min-width:0}h1,.sub{overflow-wrap:anywhere}
+[hidden]{display:none!important}
+.suggest{list-style:none;padding:0;margin:20px 0 18px;display:flex;flex-wrap:wrap;gap:10px}
+.chipbtn{display:inline-flex;flex-direction:column;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);text-decoration:none;font-size:14px;font-weight:500}
+.chipbtn span{font-size:12px;color:var(--mut);font-weight:400}.chipbtn:hover{border-color:var(--acc)}
+.pickers{display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:16px;align-items:end;margin-bottom:28px}
+.slot{display:flex;flex-direction:column;gap:6px;border-left:4px solid var(--slot,var(--line));padding-left:12px}
+.slot label{font-size:13px;color:var(--mut)}.slot input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg);min-width:0}
+.slotmeta{font-size:12.5px;color:var(--mut);min-height:1.2em}.swap{align-self:center}
+.pickact{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#strips{display:grid;gap:14px}.stripcard h3{font-size:18px}.stripcard h3 a{color:var(--fg);text-decoration:none}
+.stripcard .cells{height:22px;margin:12px 0 8px}
+#chart svg{width:100%;height:auto;display:block}#chart .grid{stroke:var(--line);stroke-width:1}
+#chart .axis{fill:var(--mut);font:12px Inter,sans-serif}#chart .series{fill:none;stroke-width:2.5}
+.fitrow{padding:12px 0;border-top:1px solid var(--line)}.fithead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:860px){.pickers{grid-template-columns:1fr}.swap{justify-self:start}}
 @media (max-width:860px){.explore,.pair{grid-template-columns:1fr}.lastrun{display:none}.topbar{gap:16px;overflow-x:auto}
 .stats>div{border-right:0;border-bottom:1px solid var(--line)}.big{font-size:34px}.mini{grid-template-columns:repeat(2,1fr);row-gap:8px}
 .devices li,.cachebars li{grid-template-columns:110px 1fr 80px}.choice>span{width:auto}}
@@ -1191,6 +1311,321 @@ JS = """
 })();
 """
 
+COMPARE_JS = r"""
+/* ArchWatch compare tool. Plain JS; reads ../data/models.json (published values only). */
+var AW = (function () {
+  function parseState(search, stems, preset) {
+    /* ?a=&b=&c= -> up to three distinct known stems; falls back to the page preset. */
+    var q = new URLSearchParams(search || ''), out = [];
+    ['a', 'b', 'c'].forEach(function (k) {
+      var v = q.get(k);
+      if (v && stems.indexOf(v) >= 0 && out.indexOf(v) < 0) out.push(v);
+    });
+    if (out.length < 2 && preset && preset.length === 2) return preset.slice();
+    return out;
+  }
+  function stateQuery(sel) {
+    var keys = ['a', 'b', 'c'], parts = [];
+    sel.forEach(function (s, i) { if (s) parts.push(keys[i] + '=' + encodeURIComponent(s)); });
+    return parts.length ? '?' + parts.join('&') : '';
+  }
+  function cacheBytes(c, n) {
+    var windowed = c.window ? Math.floor(c.window_full * Math.min(n, c.window) / c.window) : 0;
+    return c.grow * n + windowed + c.fixed;
+  }
+  return { parseState: parseState, stateQuery: stateQuery, cacheBytes: cacheBytes };
+})();
+if (typeof module !== 'undefined') module.exports = AW;
+
+(function () {
+  if (typeof document === 'undefined') return;
+  var tool = document.getElementById('tool');
+  if (!tool) return;
+  var D, byStem = {}, byName = {}, sel = [];
+  var ctxPick, precPick = '16';
+
+  function el(tag, attrs, text) {
+    var x = document.createElement(tag);
+    for (var k in (attrs || {})) x.setAttribute(k, attrs[k]);
+    if (text !== undefined) x.textContent = text;
+    return x;
+  }
+  function sig(x) { var t = Number(x).toPrecision(3); return String(parseFloat(t)); }
+  function params(n) {
+    if (n === null || n === undefined) return 'n/a';
+    if (n >= 1e12) return sig(n / 1e12) + 'T';
+    if (n >= 1e9) return sig(n / 1e9) + 'B';
+    return sig(n / 1e6) + 'M';
+  }
+  function bytes(b) {
+    if (b >= Math.pow(2, 30)) return (b / Math.pow(2, 30)).toFixed(2) + ' GiB';
+    if (b >= Math.pow(2, 20)) return sig(b / Math.pow(2, 20)) + ' MiB';
+    if (b >= 1024) return sig(b / 1024) + ' KiB';
+    return b + ' B';
+  }
+  function tokens(n) {
+    if (n >= 1048576 && n % 1048576 === 0) return (n / 1048576) + 'M';
+    if (n % 1024 === 0) return (n / 1024) + 'K';
+    return n.toLocaleString('en-US');
+  }
+  function models() { return sel.map(function (s) { return byStem[s]; }).filter(Boolean); }
+
+  function setUrl() { history.replaceState(null, '', location.pathname + AW.stateQuery(sel)); }
+
+  function fillPickers() {
+    ['a', 'b', 'c'].forEach(function (k, i) {
+      var box = tool.querySelector('[data-slot=' + k + ']'), m = byStem[sel[i]];
+      box.querySelector('input').value = m ? m.name : '';
+      box.querySelector('.slotmeta').textContent = m ? m.publisher + ' · ' + m.date + ' · ' + m.design : '';
+      box.style.setProperty('--slot', D.slots[i]);
+    });
+    document.getElementById('clear-c').hidden = !sel[2];
+  }
+
+  function sentence(a, b) {
+    /* candidate sentences with a score = size of the difference; written only from published values */
+    var out = [], pa = a.params, pb = b.params;
+    function ratio(x, y) { return Math.abs(Math.log(x / y)); }
+    if (pa.total && pb.total && ratio(pa.total, pb.total) > Math.log(1.1)) {
+      var big = pa.total > pb.total ? [a, b] : [b, a];
+      out.push([ratio(pa.total, pb.total), big[0].name + ' has ' + sig(big[0].params.total / big[1].params.total) + 'x the total parameters of ' + big[1].name + ' (' + params(big[0].params.total) + ' vs ' + params(big[1].params.total) + ').']);
+    }
+    if ((a.design === 'MoE') !== (b.design === 'MoE')) {
+      var moe = a.design === 'MoE' ? a : b, dense = moe === a ? b : a;
+      out.push([2, moe.name + ' is a mixture of experts and uses ' + params(moe.params.active) + ' of its ' + params(moe.params.total) + ' parameters per token; ' + dense.name + ' uses all of its parameters for every token.']);
+    } else if (pa.active && pb.active && ratio(pa.active, pb.active) > Math.log(1.1)) {
+      out.push([ratio(pa.active, pb.active), 'Per token, ' + a.name + ' uses ' + params(pa.active) + ' active parameters and ' + b.name + ' uses ' + params(pb.active) + '.']);
+    }
+    var ka = Object.keys(a.counts), kb = Object.keys(b.counts);
+    ka.filter(function (k) { return kb.indexOf(k) < 0; }).forEach(function (k) {
+      out.push([1.5, a.name + ' has ' + a.counts[k] + ' ' + D.kinds[k] + ' layers of ' + a.layers.length + '; ' + b.name + ' has none.']);
+    });
+    kb.filter(function (k) { return ka.indexOf(k) < 0; }).forEach(function (k) {
+      out.push([1.5, b.name + ' has ' + b.counts[k] + ' ' + D.kinds[k] + ' layers of ' + b.layers.length + '; ' + a.name + ' has none.']);
+    });
+    if (a.layers.length !== b.layers.length && ratio(a.layers.length, b.layers.length) > Math.log(1.1))
+      out.push([ratio(a.layers.length, b.layers.length), a.name + ' has ' + a.layers.length + ' layers and ' + b.name + ' has ' + b.layers.length + '.']);
+    if (a.context !== b.context)
+      out.push([ratio(a.context, b.context), a.name + ' reads up to ' + tokens(a.context) + ' tokens and ' + b.name + ' up to ' + tokens(b.context) + '.']);
+    var n = Math.min(131072, a.context, b.context), ca = AW.cacheBytes(a.cache, n), cb = AW.cacheBytes(b.cache, n);
+    if (ca && cb && ratio(ca, cb) > Math.log(1.1)) {
+      var capped = [a, b].filter(function (m) { return !m.cache.grow && m.cache.window; });
+      var tail = capped.length ? ' ' + capped.map(function (m) { return m.name + "'s cache stops growing at " + m.cache.window.toLocaleString('en-US') + ' tokens.'; }).join(' ') : '';
+      out.push([ratio(ca, cb), 'At ' + tokens(n) + ' tokens the cache is ' + bytes(ca) + ' for ' + a.name + ' and ' + bytes(cb) + ' for ' + b.name + '.' + tail]);
+    }
+    var fa = a.fields, fb = b.fields;
+    if (fa.attention_type && fb.attention_type && fa.attention_type[0] !== fb.attention_type[0])
+      out.push([1, a.name + ' uses ' + fa.attention_type[0] + ' attention and ' + b.name + ' uses ' + fb.attention_type[0] + '.']);
+    ['hidden_size', 'vocab_size'].forEach(function (f) {
+      if (fa[f] && fb[f] && fa[f][1] && fb[f][1] && ratio(fa[f][1], fb[f][1]) > Math.log(1.2))
+        out.push([ratio(fa[f][1], fb[f][1]) * 0.6, D.labels[f] + ': ' + fa[f][0] + ' for ' + a.name + ', ' + fb[f][0] + ' for ' + b.name + '.']);
+    });
+    return out;
+  }
+
+  function renderKeyDiff(ms) {
+    var box = document.getElementById('keydiff'); box.textContent = '';
+    var a = ms[0], items = [];
+    ms.slice(1).forEach(function (b) { items = items.concat(sentence(a, b)); });
+    items.sort(function (x, y) { return y[0] - x[0]; });
+    var ul = el('ul', { 'class': 'changes' });
+    items.slice(0, 7).forEach(function (it) { ul.appendChild(el('li', {}, it[1])); });
+    if (!items.length) ul.appendChild(el('li', {}, 'No difference of 10% or more in size, layers, context or cache.'));
+    box.appendChild(ul);
+    var pred = ms.length === 2 && (ms[1].predecessor === ms[0].stem ? ms[1] : ms[0].predecessor === ms[1].stem ? ms[0] : null);
+    if (pred && pred.note) {
+      box.appendChild(el('p', { 'class': 'prose' }, pred.note));
+      box.appendChild(el('p', { 'class': 'byline' }, 'Written by Gemini from the verified diff; every number checked by code.'));
+    }
+    box.appendChild(el('p', { 'class': 'byline' }, 'Sentences written by code from published values, largest differences first.'));
+  }
+
+  function renderStrips(ms) {
+    var box = document.getElementById('strips'); box.textContent = '';
+    ms.forEach(function (m, i) {
+      var card = el('div', { 'class': 'panel stripcard' });
+      var head = el('div', { 'class': 'stackhead' });
+      var h = el('h3'); var a = el('a', { href: '../models/' + m.stem + '.html' }, m.name); h.appendChild(a); head.appendChild(h);
+      head.appendChild(el('span', { 'class': 'mono' }, m.layers.length + ' layers'));
+      card.appendChild(head);
+      var strip = el('div', { 'class': 'cells', role: 'img', 'aria-label': m.name + ' layer order, layer 1 first' });
+      m.layers.forEach(function (k) { strip.appendChild(el('i', { style: 'background:' + D.colors[k] })); });
+      card.appendChild(strip);
+      var lg = el('ul', { 'class': 'legend' });
+      Object.keys(m.counts).forEach(function (k) {
+        var li = el('li'); li.appendChild(el('span', { 'class': 'sw', style: 'background:' + D.colors[k], 'aria-hidden': 'true' }));
+        li.appendChild(document.createTextNode(D.kinds[k] + ' ' + m.counts[k])); lg.appendChild(li);
+      });
+      card.appendChild(lg); box.appendChild(card);
+    });
+  }
+
+  function renderChart(ms) {
+    var box = document.getElementById('chart'), dataBox = document.getElementById('chartdata');
+    box.textContent = ''; dataBox.textContent = '';
+    var maxX = Math.max.apply(null, ms.map(function (m) { return m.context; }));
+    var maxY = 0;
+    ms.forEach(function (m) { m.series.forEach(function (p) { if (p[0] <= maxX && p[1] > maxY) maxY = p[1]; }); });
+    maxY = maxY || 1;
+    var W = Math.max(300, Math.min(900, box.clientWidth || 760)), H = W < 500 ? 260 : 300, L = 64, R = 14, T = 16, B = 40, NS = 'http://www.w3.org/2000/svg';
+    var lo = Math.log(1024), hi = Math.log(maxX);
+    function X(n) { return L + (W - L - R) * (Math.log(n) - lo) / (hi - lo || 1); }
+    function Y(v) { return T + (H - T - B) * (1 - v / maxY); }
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Cache memory against context length for ' + ms.map(function (m) { return m.name; }).join(', '));
+    function line(x1, y1, x2, y2, cls) { var l = document.createElementNS(NS, 'line'); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); l.setAttribute('class', cls); svg.appendChild(l); }
+    function text(x, y, s, anchor) { var t = document.createElementNS(NS, 'text'); t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('text-anchor', anchor || 'middle'); t.setAttribute('class', 'axis'); t.textContent = s; svg.appendChild(t); }
+    for (var g = 0; g <= 4; g++) { var v = maxY * g / 4; line(L, Y(v), W - R, Y(v), 'grid'); text(L - 8, Y(v) + 4, bytes(v), 'end'); }
+    [1024, 8192, 32768, 131072, 1048576].filter(function (n) { return n <= maxX; }).forEach(function (n) { line(X(n), T, X(n), H - B, 'grid'); text(X(n), H - B + 18, tokens(n)); });
+    text((L + W - R) / 2, H - 4, 'context length (tokens, log scale)');
+    ms.forEach(function (m, i) {
+      var pts = m.series.filter(function (p) { return p[0] <= maxX; }).map(function (p) { return X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1); });
+      var pl = document.createElementNS(NS, 'polyline'); pl.setAttribute('points', pts.join(' ')); pl.setAttribute('class', 'series');
+      pl.setAttribute('stroke', D.slots[i]); svg.appendChild(pl);
+      var last = m.series[m.series.length - 1], dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('cx', X(last[0])); dot.setAttribute('cy', Y(last[1])); dot.setAttribute('r', 4); dot.setAttribute('fill', D.slots[i]); svg.appendChild(dot);
+    });
+    box.appendChild(svg);
+    var lg = el('ul', { 'class': 'legend' });
+    ms.forEach(function (m, i) {
+      var li = el('li'); li.appendChild(el('span', { 'class': 'sw', style: 'background:' + D.slots[i], 'aria-hidden': 'true' }));
+      li.appendChild(document.createTextNode(m.name + ' (max ' + tokens(m.context) + ', ' + m.cache_label + ')')); lg.appendChild(li);
+    });
+    box.appendChild(lg);
+    var t = el('table', { 'class': 'facts' }), hd = el('tr'); hd.appendChild(el('th', { scope: 'col' }, 'Context'));
+    ms.forEach(function (m) { hd.appendChild(el('th', { scope: 'col' }, m.name)); });
+    var th = el('thead'); th.appendChild(hd); t.appendChild(th); var tb = el('tbody');
+    var xs = []; ms.forEach(function (m) { m.series.forEach(function (p) { if (p[0] <= maxX && xs.indexOf(p[0]) < 0) xs.push(p[0]); }); });
+    xs.sort(function (a, b) { return a - b; }).forEach(function (n) {
+      var tr = el('tr'); tr.appendChild(el('th', { scope: 'row' }, tokens(n)));
+      ms.forEach(function (m) { var p = m.series.filter(function (q) { return q[0] === n; })[0]; tr.appendChild(el('td', { 'class': 'mono' }, p ? bytes(p[1]) : (n > m.context ? 'beyond max' : bytes(AW.cacheBytes(m.cache, n))))); });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); dataBox.appendChild(t);
+  }
+
+  function renderFit(ms) {
+    var maxX = Math.max.apply(null, ms.map(function (m) { return m.context; }));
+    var ctxs = D.contexts.filter(function (n) { return n <= maxX; });
+    if (ctxs.indexOf(ctxPick) < 0) ctxPick = ctxs.indexOf(32768) >= 0 ? 32768 : ctxs[ctxs.length - 1];
+    function seg(id, items, current, onpick) {
+      var g = document.getElementById(id); g.textContent = '';
+      items.forEach(function (it) {
+        var b = el('button', { type: 'button', 'aria-pressed': String(it[0] === current) }, it[1]);
+        b.addEventListener('click', function () { onpick(it[0]); renderFit(models()); }); g.appendChild(b);
+      });
+    }
+    seg('ctxseg', ctxs.map(function (n) { return [n, tokens(n)]; }), ctxPick, function (v) { ctxPick = v; });
+    seg('precseg', D.precision.map(function (p) { return [p.key, p.label]; }), precPick, function (v) { precPick = v; });
+    var per = D.precision.filter(function (p) { return p.key === precPick; })[0].bytes;
+    var box = document.getElementById('fit'); box.textContent = '';
+    ms.forEach(function (m, i) {
+      var row = el('div', { 'class': 'fitrow' }), head = el('div', { 'class': 'fithead' });
+      head.appendChild(el('b', { style: 'color:' + D.slots[i] }, m.name));
+      if (ctxPick > m.context) {
+        head.appendChild(el('span', { 'class': 'sub' }, 'beyond its maximum context (' + tokens(m.context) + ')'));
+        row.appendChild(head); box.appendChild(row); return;
+      }
+      var w = m.params.total * per, c = AW.cacheBytes(m.cache, ctxPick), total = w + c;
+      head.appendChild(el('span', { 'class': 'mono' }, bytes(total) + '  (weights ' + bytes(w) + ', cache ' + bytes(c) + ')'));
+      row.appendChild(head);
+      var ul = el('ul', { 'class': 'devices' });
+      D.devices.forEach(function (d) {
+        var word = total <= 0.75 * d.bytes ? 'fits' : total <= d.bytes ? 'tight' : 'too big';
+        var li = el('li'); li.appendChild(el('span', {}, d.label));
+        var tr = el('span', { 'class': 'track' }); tr.appendChild(el('span', { 'class': 'fill', style: 'width:' + Math.min(100, 100 * total / d.bytes).toFixed(1) + '%;background:' + D.slots[i] }));
+        li.appendChild(tr); li.appendChild(el('span', { 'class': 'verdict v-' + word.replace(' ', '-') }, word)); ul.appendChild(li);
+      });
+      row.appendChild(ul); box.appendChild(row);
+    });
+  }
+
+  function chip(a, b) {
+    if (a === b) return ['same', 'same'];
+    return ['differs', 'up'];
+  }
+  function chipNum(ra, rb, da, db) {
+    if (ra && rb && ra === rb) return ['same', 'same'];
+    if (!(ra && rb) && da === db) return ['same', 'same'];
+    if (ra && rb) {
+      if (rb === 2 * ra) return ['doubled', 'up'];
+      if (2 * rb === ra) return ['halved', 'warn'];
+      var pct = 100 * (rb - ra) / ra;
+      if (Math.abs(pct) < 0.1) return [(pct > 0 ? '<+0.1%' : '<-0.1%'), 'same'];
+      return [(pct > 0 ? '+' : '') + pct.toFixed(Math.abs(pct) >= 1 ? 0 : 1) + '%', rb > ra ? 'up' : 'warn'];
+    }
+    return ['differs', 'up'];
+  }
+  function renderFields(ms) {
+    var box = document.getElementById('fields'); box.textContent = '';
+    var t = el('table', { 'class': 'facts cmp' }), hd = el('tr');
+    hd.appendChild(el('th', { scope: 'col' }, 'Field'));
+    ms.forEach(function (m) { hd.appendChild(el('th', { scope: 'col' }, m.name)); });
+    hd.appendChild(el('th', { scope: 'col' }, 'Change'));
+    var th = el('thead'); th.appendChild(hd); t.appendChild(th);
+    var tb = el('tbody');
+    D.order.forEach(function (f) {
+      if (!ms.some(function (m) { return m.fields[f]; })) return;
+      var shown = ms.map(function (m) { return m.fields[f] ? m.fields[f][0] : ((D.implied[m.stem] || {})[f] || 'not stated'); });
+      var raws = ms.map(function (m) { return m.fields[f] ? m.fields[f][1] : null; });
+      var c = ms.length === 2 ? chipNum(raws[0], raws[1], shown[0], shown[1]) : chip(shown.every(function (s) { return s === shown[0]; }) ? 1 : 0, 1);
+      var tr = el('tr', { 'data-diff': c[0] === 'same' ? '0' : '1' });
+      tr.appendChild(el('th', { scope: 'row' }, D.labels[f]));
+      shown.forEach(function (s) { tr.appendChild(el('td', { 'class': 'mono' }, s)); });
+      var td = el('td'); td.appendChild(el('span', { 'class': 'chip chip-' + c[1] }, c[0])); tr.appendChild(td);
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); box.appendChild(t);
+    applyOnlyDiff();
+  }
+  function applyOnlyDiff() {
+    var on = document.getElementById('onlydiff').checked;
+    document.querySelectorAll('#fields tr[data-diff="0"]').forEach(function (r) { r.hidden = on; });
+  }
+
+  function render() {
+    var ms = models();
+    fillPickers(); setUrl();
+    if (ms.length < 2) return;
+    renderKeyDiff(ms); renderStrips(ms); renderChart(ms); renderFit(ms); renderFields(ms);
+  }
+
+  function start(data) {
+    D = data;
+    D.models.forEach(function (m) { byStem[m.stem] = m; byName[m.name.toLowerCase()] = m.stem; });
+    var stems = D.models.map(function (m) { return m.stem; });
+    var preset = tool.dataset.a ? [tool.dataset.a, tool.dataset.b] : null;
+    if (!preset && D.suggested.length) preset = [D.suggested[0].a, D.suggested[0].b];
+    sel = AW.parseState(location.search, stems, preset);
+    tool.hidden = false;
+    ['a', 'b', 'c'].forEach(function (k, i) {
+      var input = tool.querySelector('#pick-' + k);
+      input.addEventListener('change', function () {
+        var s = byName[input.value.trim().toLowerCase()];
+        if (s && sel.indexOf(s) < 0) { sel[i] = s; } else if (!input.value.trim() && i === 2) { sel.splice(2, 1); }
+        render();
+      });
+    });
+    document.getElementById('swap').addEventListener('click', function () { var t = sel[0]; sel[0] = sel[1]; sel[1] = t; render(); });
+    document.getElementById('clear-c').addEventListener('click', function () { sel = sel.slice(0, 2); render(); });
+    document.getElementById('onlydiff').addEventListener('change', applyOnlyDiff);
+    document.getElementById('copylink').addEventListener('click', function () {
+      var url = location.origin + location.pathname + AW.stateQuery(sel);
+      var done = function () { document.getElementById('copied').textContent = 'Link copied'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, done); else done();
+    });
+    tool.querySelectorAll('.chipbtn').forEach(function (a) {
+      a.addEventListener('click', function (ev) { ev.preventDefault(); sel = [a.dataset.a, a.dataset.b]; render(); });
+    });
+    render();
+  }
+  fetch('../data/models.json').then(function (r) { return r.json(); }).then(start).catch(function () {
+    tool.hidden = true;
+  });
+})();
+"""
+
 
 def main():
     published, held, seen = inventory()
@@ -1198,15 +1633,18 @@ def main():
     write_if_changed(site / "style.css", CSS.lstrip())
     write_if_changed(site / "site.js", JS.lstrip())
     write_if_changed(site / "index.html", home(published, held, seen))
+    data = compare_data(published)
+    write_if_changed(site / "data" / "models.json", json.dumps(data, indent=1, sort_keys=True) + "\n")
+    write_if_changed(site / "compare.js", COMPARE_JS.lstrip())
     pairs, expected = [], {"index.html"}
     for repo, (stem, rec, pub) in published.items():
         write_if_changed(site / "models" / f"{stem}.html", model_page(stem, rec, pub, published))
         before = published_predecessor(rec, published)
         if before:
-            write_if_changed(site / "compare" / f"{stem}.html", compare_page(stem, rec, pub, before))
-            pairs.append((stem, before[1]["id"].split("/")[-1], rec["id"].split("/")[-1]))
+            write_if_changed(site / "compare" / f"{stem}.html", compare_tool(data, (before[0], stem)))
+            pairs.append(stem)
             expected.add(f"{stem}.html")
-    write_if_changed(site / "compare" / "index.html", compare_index(sorted(pairs)))
+    write_if_changed(site / "compare" / "index.html", compare_tool(data))
     # pages of records that are no longer published are removed, so held numbers never stay online
     stems = {stem for stem, _, _ in published.values()}
     for folder, keep in (("models", {f"{s}.html" for s in stems}), ("compare", expected)):

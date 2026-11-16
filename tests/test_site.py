@@ -111,9 +111,15 @@ def test_what_changed_skips_small_changes_and_bookkeeping():
     labels = [label for label, _, _ in site.changes(rec, old)]
     assert "Layer mix" in labels and "Cache per token" in labels
     assert "Total parameters" not in labels and "Active parameters per token" not in labels  # under 1%
-    page = (SITE / "compare" / "moonshotai__Kimi-K3.1-Pro.html").read_text()
-    what = page.split('id="what"')[1].split("</section>")[0]
+    page = (SITE / "models" / "moonshotai__Kimi-K3.1-Pro.html").read_text()
+    what = page.split('id="chg"')[1].split("</section>")[0]
     assert "weight group" not in what and "2.7799T" not in what and "27 KiB" in what and "33 KiB" in what
+    kimi = next(
+        m
+        for m in json.loads((SITE / "data/models.json").read_text())["models"]
+        if m["stem"] == "moonshotai__Kimi-K3.1-Pro"
+    )
+    assert kimi["note"] is None  # the saved note states sub-1% changes and weight groups, so it is not shown
 
 
 def test_sig_figures():
@@ -225,10 +231,11 @@ def test_capped_cache_is_never_shown_as_zero():
 
 
 def test_compare_derives_implied_values_instead_of_not_stated():
-    page = (SITE / "compare" / "moonshotai__Kimi-K3.1-Pro.html").read_text()
-    row = re.search(r"<th scope=row>Tokens each sparse layer attends to</th>(.*?)</tr>", page).group(1)
-    assert "all earlier tokens" in row and "2,048" in row and "new limit" in row
-    assert "not stated" not in page
+    d = json.loads((SITE / "data/models.json").read_text())
+    k3 = next(m for m in d["models"] if m["stem"] == "moonshotai__Kimi-K3")
+    k31 = next(m for m in d["models"] if m["stem"] == "moonshotai__Kimi-K3.1-Pro")
+    assert d["implied"]["moonshotai__Kimi-K3"]["dsa_index_topk"] == "all earlier tokens"
+    assert k31["fields"]["dsa_index_topk"][0] == "2,048" and "dsa_index_topk" not in k3["fields"]
     site = builder()
     dense = {"layer_types": ["full_attention"]}
     assert site.implied("dsa_index_topk", dense) == "all earlier tokens"
