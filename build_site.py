@@ -21,6 +21,7 @@ from archwatch import diagram, generated, pipeline
 from archwatch.artifacts import write_if_changed
 from archwatch.explainer import diff_input, input_hash
 from archwatch.labels import KIND_LABELS
+from archwatch.palette import colors
 from archwatch.publication import PublicationError, plain_hold, render_cache, render_values
 from archwatch.watcher import derivative_relation
 
@@ -37,16 +38,7 @@ SHORT = {
     "mamba2": "Mamba-2",
     "mlp": "MLP",
 }
-COLOR = {
-    "kda_linear": "#2a9d8f",
-    "gated_dsa_mla": "#e07a5f",
-    "full_attention_mla": "#f2a65a",
-    "short_conv": "#6a994e",
-    "sliding_attention": "#4f7cc3",
-    "full_attention": "#e07a5f",
-    "mamba2": "#8e6cc4",
-    "mlp": "#a3a9b1",
-}
+COLOR = colors()  # one colour per layer type, shared with the code-drawn diagrams
 LINEAR, SPARSE, NON_ATTENTION = {"kda_linear"}, {"gated_dsa_mla"}, {"kda_linear", "short_conv", "mamba2"}
 LAYER_FILTERS = (
     ("linear", "Linear attention", {"kda_linear"}),
@@ -335,10 +327,37 @@ def significant(field, before, after):
     return True
 
 
-def change_value(field, v):
-    """Parameter counts and byte sizes to 3 significant figures; configuration integers stay exact."""
+IMPLIED = (
+    # (field prefix, layer kinds whose absence makes the value implied, what the architecture implies)
+    ("dsa_index", {"gated_dsa_mla"}, "all earlier tokens"),
+    ("sliding_window", {"sliding_attention"}, "no sliding window"),
+    ("short_conv_kernel", {"short_conv"}, "no convolution layers"),
+    ("mla_", {"gated_dsa_mla", "full_attention_mla"}, "no MLA layers"),
+    ("linear_", {"kda_linear"}, "no linear-attention layers"),
+    ("mamba_", {"mamba2"}, "no Mamba layers"),
+)
+
+
+def implied(field, pub):
+    """What the architecture implies for a field the files do not state; None when nothing is implied."""
+    if not pub:
+        return None
+    if field == "params_active" and "moe_num_experts" not in pub:
+        return "all (dense)"
+    if field.startswith("moe_") and "moe_num_experts" not in pub:
+        return "none (dense)"
+    kinds = set(pub.get("layer_types", []))
+    for prefix, members, text in IMPLIED:
+        if field.startswith(prefix) and not kinds & members:
+            return text if prefix != "dsa_index" or field == "dsa_index_topk" else "no sparse-attention indexer"
+    return None
+
+
+def change_value(field, v, pub=None):
+    """Parameter counts and byte sizes to 3 significant figures; configuration integers stay exact. A missing
+    value the architecture implies is derived ('all earlier tokens'); 'not stated' only when nothing is implied."""
     if v is None:
-        return "not stated"
+        return implied(field, pub) or "not stated"
     if field in ("kv_cache_per_token_bytes", "kv"):
         return size(v)
     if field == "layer_type_counts":
@@ -358,11 +377,21 @@ def changes(rec, before):
         if field in NOT_SHOWN | NOT_A_CHANGE or not significant(field, row["before"], row["after"]):
             continue
         label = "Cache per token" if field == "kv_cache_per_token_bytes" else PLAIN.get(field, field)
-        out.append((label, change_value(field, row["before"]), change_value(field, row["after"])))
+        out.append(
+            (
+                label,
+                change_value(field, row["before"], before["published"]),
+                change_value(field, row["after"], rec["published"]),
+            )
+        )
     return out
 
 
-def change_chip(field, before, after):
+def change_chip(field, before, after, old_pub=None, new_pub=None):
+    if before is None and after is not None and implied(field, old_pub):
+        return ("new limit", "new") if field == "dsa_index_topk" else ("changed", "up")
+    if after is None and before is not None and implied(field, new_pub):
+        return "removed", "warn"
     if before == after:
         return "same", "same"
     if before is None:
@@ -484,8 +513,29 @@ def published_predecessor(rec, published):
     return published.get(pred) if pred else None
 
 
-def cache_per_token(pub):
-    return render_cache(pub)["grows_per_token_bytes"]
+def capped(pub, cache):
+    """(window, bytes when the window is full) when every growing layer is capped by a sliding window."""
+    sliding = [r for r in cache["breakdown"] if r["layer_type"] == "sliding_attention"]
+    if cache["grows_per_token_bytes"] or not sliding or not pub.get("sliding_window"):
+        return None
+    return int(pub["sliding_window"]), sum(r["constant_bytes"] for r in sliding)
+
+
+def cache_value(pub, cache=None):
+    """(value, label) for cache per token; a capped cache shows its full-window size, never '0 B'."""
+    cache = cache or render_cache(pub)
+    cap = capped(pub, cache)
+    if cap:
+        return size(cap[1]), f"cache, capped at {cap[0]:,} tokens"
+    return size(cache["grows_per_token_bytes"]), "cache / token"
+
+
+def cache_at(pub, cache, n):
+    """Growing cache at n tokens; capped layers count up to their window."""
+    cap = capped(pub, cache)
+    if cap:
+        return cap[1] * min(n, cap[0]) // cap[0]
+    return cache["grows_per_token_bytes"] * n
 
 
 # ---------------------------------------------------------------- explore (home)
@@ -518,7 +568,7 @@ def model_card(stem, rec, pub, published, pubs):
 {cells(pub, "Layer order, layer 1 on the left: " + mix_text(pub))}<p class="mixcap">{e(mix_text(pub))}</p>
 <dl class="mini"><div><dt>parameters</dt><dd>{e(human(pub["params_total"]))}</dd></div>
 <div><dt>layers</dt><dd>{pub["num_layers"]}</dd></div><div><dt>context</dt><dd>{e(tokens(pub["context_length"]))}</dd></div>
-<div><dt>cache / token</dt><dd>{e(size(cache_per_token(pub)))}</dd></div></dl>
+<div><dt>{e(cache_value(pub)[1])}</dt><dd>{e(cache_value(pub)[0])}</dd></div></dl>
 <div class="cardbtns">{compare}<a class="btn" href="models/{e(stem)}.html#fit">Will it fit?</a><a class="btn" href="models/{e(stem)}.html">Open</a></div>
 </article></li>"""
 
@@ -529,7 +579,7 @@ def table_row(stem, rec, pub, pubs):
         f'<tr><th scope=row><a href="models/{e(stem)}.html">{e(name)}</a><span class="detail">{e(pubs.get(org, org))} · '
         f"{e(date(rec['hub_created']))}</span></th><td>{e(design(pub))}</td><td class=mono>{e(human(pub['params_total']))}</td>"
         f"<td class=mono>{pub['num_layers']}</td><td class=mono>{e(tokens(pub['context_length']))}</td>"
-        f"<td class=mono>{e(size(cache_per_token(pub)))}</td><td>{cells(pub, mix_text(pub))}</td></tr>"
+        f"<td class=mono>{e(cache_value(pub)[0])}{'' if cache_value(pub)[1] == 'cache / token' else '<span class=detail>' + e(cache_value(pub)[1].replace('cache, ', '')) + '</span>'}</td><td>{cells(pub, mix_text(pub))}</td></tr>"
     )
 
 
@@ -670,7 +720,7 @@ def facts(rec, pub, cache):
             one(field)
     key_rows.append(
         f'<tr><th scope=row>Cache per token<span class="key">bf16; sliding-window and constant states excluded</span></th>'
-        f"<td class=mono>{cache['grows_per_token_bytes']:,} B</td><td>ArchWatch calculator</td>"
+        f"<td class=mono>{e(cache_fact(pub, cache))}</td><td>ArchWatch calculator</td>"
         f'<td><span class="st st-computed">computed</span></td></tr>'
     )
     rest = []
@@ -697,6 +747,13 @@ def facts(rec, pub, cache):
         f'<details class="allfields"><summary>All {len(rest) + len(key_rows) - 1} fields</summary>'
         f'<table class="facts">{head}<tbody>{"".join(rest)}</tbody></table></details></div>'
     )
+
+
+def cache_fact(pub, cache):
+    cap = capped(pub, cache)
+    if cap:
+        return f"capped at {cap[0]:,} tokens: {cap[1]:,} B ({size(cap[1])}) when the window is full"
+    return f"{cache['grows_per_token_bytes']:,} B"
 
 
 def fit_planner(pub, cache):
@@ -743,8 +800,22 @@ def fit_planner(pub, cache):
 <div class="fitsum" aria-live="polite"><p class="big mono"><span data-out="total">{e(pick["total"])}</span></p>
 <p class="mono split2">weights <span data-out="weights">{e(pick["weights"])}</span><br>cache <span data-out="cache">{e(pick["cache"])}</span></p></div>
 <ul class="devices">{bars}</ul>
-<p class="sub">Weights = {pub["params_total"]:,} parameters × bytes per parameter. Cache = {cache["grows_per_token_bytes"]:,} B per token × context
-{f"+ {size(cache['constant_bytes'])} of fixed-size state" if cache["constant_bytes"] else ""}, bf16. "Tight" means over 75% of the device's memory.</p></section>"""
+<p class="sub">Weights = {pub["params_total"]:,} parameters × bytes per parameter. {e(cache_rule(pub, cache))}, bf16. "Tight" means over 75% of the device's memory.</p></section>"""
+
+
+def cache_rule(pub, cache):
+    cap = capped(pub, cache)
+    if cap:
+        return (
+            f"Cache is capped at {cap[0]:,} tokens: {size(cap[1])} once the window is full, then it stops growing"
+            + (
+                f" (plus {size(cache['constant_bytes'] - cap[1])} of fixed-size state)"
+                if cache["constant_bytes"] > cap[1]
+                else ""
+            )
+        )
+    fixed = f" + {size(cache['constant_bytes'])} of fixed-size state" if cache["constant_bytes"] else ""
+    return f"Cache = {cache['grows_per_token_bytes']:,} B per token × context{fixed}"
 
 
 def layer_section(pub):
@@ -773,7 +844,7 @@ def model_page(stem, rec, pub, published):
         else ("all", "active per token (dense)"),
         (str(pub["num_layers"]), "layers"),
         (f"{int(pub['context_length']):,}", "context tokens"),
-        (size(cache["grows_per_token_bytes"]), "cache per token"),
+        cache_value(pub, cache),
     ]
     t_html = "".join(f"<div><dt>{e(b)}</dt><dd class=mono>{e(a)}</dd></div>" for a, b in tiles)
     compare = ""
@@ -889,23 +960,29 @@ def compare_page(stem, rec, pub, before):
         if a is None and b is None:
             continue
         held = a is None and field in {r["field"] for r in old["review_queue"]}
-        fmt = (
-            (lambda v: change_value(field, v))
-            if field != "context_length"
-            else (lambda v: f"{v:,}" if v else "not stated")
-        )
+
+        def fmt(v, side, field=field):
+            if field == "context_length":
+                return f"{v:,}" if v else "not stated"
+            return change_value(field, v, side)
+
         row(
             PLAIN.get(field, field),
-            "held for review" if held else fmt(a),
-            fmt(b),
+            "held for review" if held else fmt(a, old_pub),
+            fmt(b, pub),
             ("held", "warn")
             if held
-            else change_chip(field, a, b)
+            else change_chip(field, a, b, old_pub, pub)
             if field != "layer_type_counts"
             else (("same", "same") if a == b else ("changed", "up")),
         )
     ga, gb = old_cache["grows_per_token_bytes"], new_cache["grows_per_token_bytes"]
-    row("Cache per token", size(ga), size(gb), change_chip("kv", ga, gb))
+    row(
+        "Cache per token",
+        " ".join(cache_value(old_pub, old_cache)) if capped(old_pub, old_cache) else size(ga),
+        " ".join(cache_value(pub, new_cache)) if capped(pub, new_cache) else size(gb),
+        change_chip("kv", ga, gb),
+    )
     if "moe_num_experts" in pub or "moe_num_experts" in old_pub:
         row(
             "Experts (routed / per token / shared)",
@@ -927,18 +1004,18 @@ def compare_page(stem, rec, pub, before):
             continue
         row(
             PLAIN.get(r["field"], r["field"]),
-            change_value(r["field"], r["before"]),
-            change_value(r["field"], r["after"]),
-            change_chip(r["field"], r["before"], r["after"]),
+            change_value(r["field"], r["before"], old_pub),
+            change_value(r["field"], r["after"], pub),
+            change_chip(r["field"], r["before"], r["after"], old_pub, pub),
         )
     points = sorted({131072, int(old_pub["context_length"]), int(pub["context_length"])})
     bars = []
-    top = max(c["grows_per_token_bytes"] * n for c in (old_cache, new_cache) for n in points)
+    top = max(cache_at(p, c, n) for p, c in ((old_pub, old_cache), (pub, new_cache)) for n in points) or 1
     for n in points:
         for nm, p, c in ((old_name, old_pub, old_cache), (new_name, pub, new_cache)):
             if n > int(p["context_length"]):
                 continue
-            v = c["grows_per_token_bytes"] * n
+            v = cache_at(p, c, n)
             bars.append(
                 f'<li><span>{e(nm)} at {e(tokens(n))}</span><span class="track"><span class="fill" style="width:{100 * v / top:.1f}%"></span></span>'
                 f'<span class="mono">{e(size(v))}</span></li>'

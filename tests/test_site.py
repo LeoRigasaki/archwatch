@@ -153,7 +153,7 @@ def test_style_matches_the_brief():
 
 def test_site_settings_hold_no_numbers_for_models():
     config = yaml.safe_load((ROOT / "config/site.yaml").read_text())
-    assert set(config) == {"repo_url", "publishers", "memory_contexts"}
+    assert set(config) == {"repo_url", "publishers", "memory_contexts", "layer_colors"}
 
 
 def test_pages_workflow_publishes_site_from_main_after_the_daily_run_and_is_gated():
@@ -164,3 +164,53 @@ def test_pages_workflow_publishes_site_from_main_after_the_daily_run_and_is_gate
     text = (ROOT / ".github/workflows/pages.yml").read_text()
     assert "actions/upload-pages-artifact" in text and "actions/deploy-pages" in text
     assert "path: site" in text and "ref: main" in text and "GEMINI" not in text
+
+
+def test_one_colour_per_layer_type_on_every_page_and_in_the_diagrams():
+    from archwatch import diagram, palette
+
+    pal = palette.colors()
+    assert len(set(pal.values())) == len(pal)  # no two layer types share a colour
+    names = {}
+    for path, page in pages().items():
+        for colour in re.findall(r'<i style="background:(#[0-9a-fA-F]{6})"', page):
+            assert colour in pal.values(), path
+        for colour, label in re.findall(
+            r'background:(#[0-9a-fA-F]{6})" aria-hidden="true"></span>(?:<b>\d+</b> )?([A-Za-z][A-Za-z ()-]*)', page
+        ):
+            names.setdefault(label.strip(), set()).add(colour)
+    assert names and all(len(c) == 1 for c in names.values()), names
+    css = diagram.kind_css()
+    for kind, (_, cls) in diagram.KIND.items():
+        assert f".{cls}{{fill:{pal[kind]}}}" in css
+
+
+def test_public_diagrams_carry_no_extractor_notes():
+    for path, page in pages().items():
+        assert "Config keys not consumed" not in page and "not consumed by the extractor" not in page, path
+
+
+def test_capped_cache_is_never_shown_as_zero():
+    home = (SITE / "index.html").read_text()
+    model = (SITE / "models" / "mistralai__Mistral-7B-v0.1.html").read_text()
+    card = home.split('id="h-mistralai__Mistral-7B-v0.1"')[1].split("</article>")[0]
+    assert "capped at 4,096 tokens" in card and "512 MiB" in card
+    row = re.search(r"Mistral-7B-v0.1</a>.*?</tr>", home, re.S).group(0)
+    assert "capped at 4,096 tokens" in row
+    assert "cache, capped at 4,096 tokens" in model  # tile
+    assert "when the window is full" in model and "Cache is capped at 4,096 tokens" in model  # facts + planner
+    for page in pages().values():
+        assert ">0 B<" not in page and not re.search(r"[^\d,]0 B per token", page)
+
+
+def test_compare_derives_implied_values_instead_of_not_stated():
+    page = (SITE / "compare" / "moonshotai__Kimi-K3.1-Pro.html").read_text()
+    row = re.search(r"<th scope=row>Tokens each sparse layer attends to</th>(.*?)</tr>", page).group(1)
+    assert "all earlier tokens" in row and "2,048" in row and "new limit" in row
+    assert "not stated" not in page
+    site = builder()
+    dense = {"layer_types": ["full_attention"]}
+    assert site.implied("dsa_index_topk", dense) == "all earlier tokens"
+    assert site.implied("sliding_window", dense) == "no sliding window"
+    assert site.implied("params_active", dense) == "all (dense)"
+    assert site.implied("num_mtp_layers", dense) is None  # nothing implied: stays 'not stated'
