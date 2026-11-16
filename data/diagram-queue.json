@@ -18,11 +18,12 @@
     },
     "deepseek-ai/DeepSeek-V2-Lite": {
       "spec_sha256": "a904877f45e72953d34360af74156be062fd84658aa115f68ebad94911abeb33",
-      "status": "passed",
-      "version": 1,
-      "folder": "data/generated-diagrams/deepseek-ai__DeepSeek-V2-Lite/a904877f45e7",
+      "status": "withdrawn",
+      "version": null,
+      "folder": null,
       "calls": 1,
-      "updated": "2026-11-15"
+      "updated": "2026-11-15",
+      "reason": "Diagram removed before merge: it shows 2.66B active, the record now publishes 2.45B; redraw from the current spec"
     },
     "google/gemma-3-1b-pt": {
       "spec_sha256": "db76f8a7a3c26b6c729b40ba5870f5040fb68c7398b7093c0fbe61fcda3aae25",
