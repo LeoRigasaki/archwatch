@@ -116,3 +116,33 @@ def test_pair_pages_are_prefilled_and_the_tool_works_without_js_as_a_list():
     assert "http" not in js.replace("http://www.w3.org/2000/svg", "")  # no external requests from the tool
     whys = {s["why"] for s in d["suggested"]}
     assert any(w.startswith("closest total parameters") for w in whys)
+
+
+def test_key_rows_first_merged_fields_once_and_rest_collapsed():
+    site = builder()
+    d = data()
+    assert d["order"] == [f for f in site.KEY_ROWS if f in d["labels"]]
+    assert not set(d["order"]) & set(d["rest"]) and not site.MERGED & set(d["labels"])
+    assert d["labels"]["ffn"] == "FFN hidden size" and "dense_ffn_intermediate" not in d["rest"]
+
+
+def test_values_the_architecture_implies_are_derived_not_not_stated():
+    site = builder()
+    published, _, _ = site.inventory()
+    models = {m["id"]: m for m in data()["models"]}
+    llama, pub = models["meta-llama/Llama-3.1-8B"], published["meta-llama/Llama-3.1-8B"][2]
+    comp = pub["parameter_components"]
+    assert (
+        llama["derived"]["params_active_non_embedding"][1] == pub["params_total"] - comp["embedding"] - comp["lm_head"]
+    )
+    assert llama["derived"]["v_head_dim"] == [f"{pub['head_dim']:,} (same as head size)", pub["head_dim"]]
+    assert llama["derived"]["ffn"][1] == pub["ffn_intermediate"] and llama["derived"]["experts"][0] == "none (dense)"
+    lfm = models["LiquidAI/LFM3-1.7B-Base"]  # tied embeddings: the shared matrix is subtracted once
+    lpub = published["LiquidAI/LFM3-1.7B-Base"][2]
+    assert (
+        lfm["derived"]["params_active_non_embedding"][1]
+        == lpub["params_total"] - lpub["parameter_components"]["embedding"]
+    )
+    ds = models["deepseek-ai/DeepSeek-V2-Lite"]
+    assert "v_head_dim" not in ds["derived"]  # MLA has its own value head size; nothing is assumed
+    assert ds["derived"]["ffn"][0].endswith("(dense layers)")

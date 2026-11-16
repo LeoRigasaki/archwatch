@@ -42,6 +42,7 @@ SHORT = {
 }
 COLOR = colors()  # one colour per layer type, shared with the code-drawn diagrams
 LINEAR, SPARSE, NON_ATTENTION = {"kda_linear"}, {"gated_dsa_mla"}, {"kda_linear", "short_conv", "mamba2"}
+MLA_KINDS = {"gated_dsa_mla", "full_attention_mla"}
 LAYER_FILTERS = (
     ("linear", "Linear attention", {"kda_linear"}),
     ("sparse", "Sparse attention", {"gated_dsa_mla"}),
@@ -1009,6 +1010,7 @@ def model_data(stem, rec, pub, published, max_context):
         value if label == "cache / token" else f"{value} ({label.replace('cache, ', '')})",
         parts["grow"],
     ]
+    derived = derived_fields(pub)
     before = published_predecessor(rec, published)
     note = explainer_note(rec) if before else None
     if note and not note_follows_filter(rec, before[1], note):
@@ -1035,9 +1037,72 @@ def model_data(stem, rec, pub, published, max_context):
         cache_label=fields["cache"][0],
         series=[[n, cache_bytes(parts, n)] for n in sorted(set(grid))],
         fields=fields,
+        derived=derived,
         predecessor=before[0] if before else None,
         note=note,
     )
+
+
+KEY_ROWS = (
+    "design",
+    "params_total",
+    "params_active",
+    "params_active_non_embedding",
+    "num_layers",
+    "layer_type_counts",
+    "context_length",
+    "cache",
+    "hidden_size",
+    "attention",
+    "experts",
+    "vocab_size",
+)
+MERGED = {  # shown inside a combined row instead of on their own
+    "attention_type",
+    "num_attention_heads",
+    "num_kv_heads",
+    "moe_num_experts",
+    "moe_active_experts",
+    "moe_shared_experts",
+    "ffn_intermediate",
+    "dense_ffn_intermediate",
+}
+DERIVED_LABELS = {
+    "design": "Design",
+    "attention": "Attention type and heads",
+    "experts": "Experts (routed / per token / shared)",
+    "ffn": "FFN hidden size",
+}
+
+
+def derived_fields(pub):
+    """Rows computed from published values, or implied by the architecture (never read from a held field)."""
+    out = {"design": [design(pub) + (" (hybrid)" if hybrid(pub) and design(pub) == "MoE" else ""), None]}
+    if "num_attention_heads" in pub:
+        kv = f" ({pub['num_kv_heads']} key-value)" if "num_kv_heads" in pub else ""
+        kind = f"{pub['attention_type']} · " if pub.get("attention_type") else ""
+        out["attention"] = [f"{kind}{pub['num_attention_heads']} heads{kv}", None]
+    if "moe_num_experts" in pub:
+        out["experts"] = [
+            f"{pub['moe_num_experts']} / {pub['moe_active_experts']} / {pub.get('moe_shared_experts', 0)}",
+            pub["moe_num_experts"],
+        ]
+    else:
+        out["experts"] = ["none (dense)", None]
+    comp = pub.get("parameter_components") or {}
+    if "moe_num_experts" not in pub:
+        out["params_active"] = [f"all, {display('params_total', pub['params_total'])} (dense)", pub["params_total"]]
+        if "params_active_non_embedding" not in pub and comp:
+            # dense: every parameter is active; 'excluding embeddings' drops the input embedding and output head
+            value = pub["params_total"] - comp.get("embedding", 0) - comp.get("lm_head", 0)
+            out["params_active_non_embedding"] = [f"{display('params_total', value)} (dense)", value]
+    if "v_head_dim" not in pub and "head_dim" in pub and not set(pub["layer_types"]) & MLA_KINDS:
+        out["v_head_dim"] = [f"{pub['head_dim']:,} (same as head size)", pub["head_dim"]]
+    if "ffn_intermediate" in pub:
+        out["ffn"] = [f"{pub['ffn_intermediate']:,}", pub["ffn_intermediate"]]
+    elif "dense_ffn_intermediate" in pub:
+        out["ffn"] = [f"{pub['dense_ffn_intermediate']:,} (dense layers)", pub["dense_ffn_intermediate"]]
+    return out
 
 
 def suggestions(models):
@@ -1073,7 +1138,8 @@ def compare_data(published):
     max_context = max(int(p["context_length"]) for _, _, p in published.values())
     models = [model_data(s, r, p, published, max_context) for s, r, p in published.values()]
     models.sort(key=lambda m: m["name"].lower())
-    labels = {f: PLAIN.get(f, f) for m in models for f in m["fields"]}
+    labels = {f: PLAIN.get(f, f) for m in models for f in list(m["fields"]) + list(m["derived"]) if f not in MERGED}
+    labels.update({f: DERIVED_LABELS[f] for f in DERIVED_LABELS if f in labels})
     labels["cache"] = "Cache per token"
     implied_values = {
         m["stem"]: {
@@ -1083,14 +1149,14 @@ def compare_data(published):
         }
         for m in models
     }
-    order = [f for f in TABLE_FIRST if f in labels] + sorted(
-        (f for f in labels if f not in TABLE_FIRST), key=lambda f: labels[f].lower()
-    )
+    order = [f for f in KEY_ROWS if f in labels]
+    rest = sorted((f for f in labels if f not in KEY_ROWS), key=lambda f: labels[f].lower())
     return dict(
         colors=COLOR,
         kinds={k: SHORT.get(k, k) for k in COLOR},
         labels=labels,
         order=order,
+        rest=rest,
         implied=implied_values,
         contexts=[n for n in CONTEXTS if n <= max_context],
         precision=[dict(key=k, label=lb, bytes=b) for k, lb, b in PRECISION],
@@ -1138,7 +1204,7 @@ def compare_tool(data, default=None):
 <p class="sub">Weights plus cache for one conversation; runtime overhead not included. "Tight" means over 75% of the device's memory.</p>
 <div class="choice"><span>Context length</span><div class="seg" role="group" aria-label="Context length" id="ctxseg"></div></div>
 <div class="choice"><span>Weight precision</span><div class="seg" role="group" aria-label="Weight precision" id="precseg"></div></div>
-<div id="fit" aria-live="polite"></div></section>
+<div id="fit-compare" aria-live="polite"></div></section>
 <section aria-labelledby="fbf"><div class="sechead"><h2 id="fbf">Field by field</h2>
 <label class="toggle"><input type="checkbox" id="onlydiff"> Only show differences</label></div>
 <div class="tablebox" id="fields"></div></section>
@@ -1277,7 +1343,7 @@ JS = """
     var t=cur()==='dark'?'light':'dark';root.dataset.theme=t;btn.setAttribute('aria-pressed',t==='dark');
     try{localStorage.setItem('aw-theme',t)}catch(e){}});}
 })();
-(function(){var p=document.getElementById('fit');if(!p)return;var combos=JSON.parse(p.dataset.combos),ctx,prec;
+(function(){var p=document.getElementById('fit');if(!p||!p.dataset.combos)return;var combos=JSON.parse(p.dataset.combos),ctx,prec;
   function sel(attr){var b=p.querySelector('['+attr+'][aria-pressed=true]');return b.getAttribute(attr)}
   function draw(){var c=combos[sel('data-ctx')+'-'+sel('data-prec')];['total','weights','cache'].forEach(function(k){
       p.querySelector('[data-out='+k+']').textContent=c[k]});
@@ -1382,62 +1448,62 @@ if (typeof module !== 'undefined') module.exports = AW;
     document.getElementById('clear-c').hidden = !sel[2];
   }
 
-  function sentence(a, b) {
-    /* candidate sentences with a score = size of the difference; written only from published values */
-    var out = [], pa = a.params, pb = b.params;
-    function ratio(x, y) { return Math.abs(Math.log(x / y)); }
-    if (pa.total && pb.total && ratio(pa.total, pb.total) > Math.log(1.1)) {
-      var big = pa.total > pb.total ? [a, b] : [b, a];
-      out.push([ratio(pa.total, pb.total), big[0].name + ' has ' + sig(big[0].params.total / big[1].params.total) + 'x the total parameters of ' + big[1].name + ' (' + params(big[0].params.total) + ' vs ' + params(big[1].params.total) + ').']);
-    }
-    if ((a.design === 'MoE') !== (b.design === 'MoE')) {
-      var moe = a.design === 'MoE' ? a : b, dense = moe === a ? b : a;
-      out.push([2, moe.name + ' is a mixture of experts and uses ' + params(moe.params.active) + ' of its ' + params(moe.params.total) + ' parameters per token; ' + dense.name + ' uses all of its parameters for every token.']);
-    } else if (pa.active && pb.active && ratio(pa.active, pb.active) > Math.log(1.1)) {
-      out.push([ratio(pa.active, pb.active), 'Per token, ' + a.name + ' uses ' + params(pa.active) + ' active parameters and ' + b.name + ' uses ' + params(pb.active) + '.']);
-    }
-    var ka = Object.keys(a.counts), kb = Object.keys(b.counts);
-    ka.filter(function (k) { return kb.indexOf(k) < 0; }).forEach(function (k) {
-      out.push([1.5, a.name + ' has ' + a.counts[k] + ' ' + D.kinds[k] + ' layers of ' + a.layers.length + '; ' + b.name + ' has none.']);
-    });
-    kb.filter(function (k) { return ka.indexOf(k) < 0; }).forEach(function (k) {
-      out.push([1.5, b.name + ' has ' + b.counts[k] + ' ' + D.kinds[k] + ' layers of ' + b.layers.length + '; ' + a.name + ' has none.']);
-    });
-    if (a.layers.length !== b.layers.length && ratio(a.layers.length, b.layers.length) > Math.log(1.1))
-      out.push([ratio(a.layers.length, b.layers.length), a.name + ' has ' + a.layers.length + ' layers and ' + b.name + ' has ' + b.layers.length + '.']);
-    if (a.context !== b.context)
-      out.push([ratio(a.context, b.context), a.name + ' reads up to ' + tokens(a.context) + ' tokens and ' + b.name + ' up to ' + tokens(b.context) + '.']);
-    var n = Math.min(131072, a.context, b.context), ca = AW.cacheBytes(a.cache, n), cb = AW.cacheBytes(b.cache, n);
-    if (ca && cb && ratio(ca, cb) > Math.log(1.1)) {
-      var capped = [a, b].filter(function (m) { return !m.cache.grow && m.cache.window; });
-      var tail = capped.length ? ' ' + capped.map(function (m) { return m.name + "'s cache stops growing at " + m.cache.window.toLocaleString('en-US') + ' tokens.'; }).join(' ') : '';
-      out.push([ratio(ca, cb), 'At ' + tokens(n) + ' tokens the cache is ' + bytes(ca) + ' for ' + a.name + ' and ' + bytes(cb) + ' for ' + b.name + '.' + tail]);
-    }
-    var fa = a.fields, fb = b.fields;
-    if (fa.attention_type && fb.attention_type && fa.attention_type[0] !== fb.attention_type[0])
-      out.push([1, a.name + ' uses ' + fa.attention_type[0] + ' attention and ' + b.name + ' uses ' + fb.attention_type[0] + '.']);
-    ['hidden_size', 'vocab_size'].forEach(function (f) {
-      if (fa[f] && fb[f] && fa[f][1] && fb[f][1] && ratio(fa[f][1], fb[f][1]) > Math.log(1.2))
-        out.push([ratio(fa[f][1], fb[f][1]) * 0.6, D.labels[f] + ': ' + fa[f][0] + ' for ' + a.name + ', ' + fb[f][0] + ' for ' + b.name + '.']);
-    });
-    return out;
+  function value(m, f) {
+    if (m.fields[f]) return m.fields[f];
+    if (m.derived[f]) return m.derived[f];
+    var imp = (D.implied[m.stem] || {})[f];
+    return [imp || 'not stated', null];
   }
-
+  function spread(nums) {
+    var xs = nums.filter(function (x) { return x; });
+    if (xs.length < 2) return 0;
+    return Math.log(Math.max.apply(null, xs) / Math.min.apply(null, xs));
+  }
+  function list(ms, fn) { return ms.map(function (m) { return m.name + ' ' + fn(m); }).join(', '); }
   function renderKeyDiff(ms) {
+    /* one sentence per field, covering every selected model; ranked by the size of the difference */
     var box = document.getElementById('keydiff'); box.textContent = '';
-    var a = ms[0], items = [];
-    ms.slice(1).forEach(function (b) { items = items.concat(sentence(a, b)); });
+    var items = [], n = Math.min.apply(null, [131072].concat(ms.map(function (m) { return m.context; })));
+    function same(fn) { var v = ms.map(fn); return v.every(function (x) { return x === v[0]; }); }
+    if (!same(function (m) { return m.design + m.hybrid; }))
+      items.push([2.5, 'Design: ' + list(ms, function (m) {
+        return m.design === 'MoE' ? 'MoE (' + params(m.params.active) + ' of ' + params(m.params.total) + ' active per token)' : m.design + ' (every parameter active)';
+      }) + '.']);
+    var tot = spread(ms.map(function (m) { return m.params.total; }));
+    if (tot > Math.log(1.1)) items.push([tot, 'Total parameters: ' + list(ms, function (m) { return params(m.params.total); }) + '.']);
+    if (ms.every(function (m) { return m.params.active; })) {
+      var act = spread(ms.map(function (m) { return m.params.active; }));
+      if (act > Math.log(1.1)) items.push([act, 'Active parameters per token: ' + list(ms, function (m) { return params(m.params.active); }) + '.']);
+    }
+    if (!same(function (m) { return Object.keys(m.counts).sort().join(); }))
+      items.push([2, 'Layer types: ' + ms.map(function (m) {
+        return m.name + ' ' + Object.keys(m.counts).map(function (k) { return m.counts[k] + ' ' + D.kinds[k]; }).join(' + ');
+      }).join('; ') + '.']);
+    var lay = spread(ms.map(function (m) { return m.layers.length; }));
+    if (lay > Math.log(1.1)) items.push([lay, 'Layers: ' + list(ms, function (m) { return m.layers.length; }) + '.']);
+    var ctx = spread(ms.map(function (m) { return m.context; }));
+    if (ctx > 0) items.push([ctx, 'Context: ' + list(ms, function (m) { return tokens(m.context); }) + '.']);
+    var cs = ms.map(function (m) { return AW.cacheBytes(m.cache, n); }), cache = spread(cs);
+    if (cache > Math.log(1.1)) items.push([cache, 'Cache at ' + tokens(n) + ' tokens: ' + ms.map(function (m, i) {
+      return m.name + ' ' + bytes(cs[i]) + (!m.cache.grow && m.cache.window ? ' (stops growing at ' + m.cache.window.toLocaleString('en-US') + ' tokens)' : '');
+    }).join(', ') + '.']);
+    if (!same(function (m) { return value(m, 'attention')[0]; }))
+      items.push([1, 'Attention: ' + list(ms, function (m) { return value(m, 'attention')[0]; }) + '.']);
+    ['hidden_size', 'vocab_size'].forEach(function (f) {
+      var r = spread(ms.map(function (m) { return value(m, f)[1]; }));
+      if (r > Math.log(1.2)) items.push([r * 0.6, D.labels[f] + ': ' + list(ms, function (m) { return value(m, f)[0]; }) + '.']);
+    });
     items.sort(function (x, y) { return y[0] - x[0]; });
     var ul = el('ul', { 'class': 'changes' });
-    items.slice(0, 7).forEach(function (it) { ul.appendChild(el('li', {}, it[1])); });
-    if (!items.length) ul.appendChild(el('li', {}, 'No difference of 10% or more in size, layers, context or cache.'));
+    items.forEach(function (it) { ul.appendChild(el('li', {}, it[1])); });
+    if (!items.length) ul.appendChild(el('li', {}, 'No difference of 10% or more in design, size, layers, context or cache.'));
     box.appendChild(ul);
     var pred = ms.length === 2 && (ms[1].predecessor === ms[0].stem ? ms[1] : ms[0].predecessor === ms[1].stem ? ms[0] : null);
     if (pred && pred.note) {
       box.appendChild(el('p', { 'class': 'prose' }, pred.note));
       box.appendChild(el('p', { 'class': 'byline' }, 'Written by Gemini from the verified diff; every number checked by code.'));
     }
-    box.appendChild(el('p', { 'class': 'byline' }, 'Sentences written by code from published values, largest differences first.'));
+    box.appendChild(el('p', { 'class': 'byline' }, 'One sentence per field, written by code from published values; largest differences first.'));
   }
 
   function renderStrips(ms) {
@@ -1519,7 +1585,7 @@ if (typeof module !== 'undefined') module.exports = AW;
     seg('ctxseg', ctxs.map(function (n) { return [n, tokens(n)]; }), ctxPick, function (v) { ctxPick = v; });
     seg('precseg', D.precision.map(function (p) { return [p.key, p.label]; }), precPick, function (v) { precPick = v; });
     var per = D.precision.filter(function (p) { return p.key === precPick; })[0].bytes;
-    var box = document.getElementById('fit'); box.textContent = '';
+    var box = document.getElementById('fit-compare'); box.textContent = '';
     ms.forEach(function (m, i) {
       var row = el('div', { 'class': 'fitrow' }), head = el('div', { 'class': 'fithead' });
       head.appendChild(el('b', { style: 'color:' + D.slots[i] }, m.name));
@@ -1557,26 +1623,32 @@ if (typeof module !== 'undefined') module.exports = AW;
     }
     return ['differs', 'up'];
   }
-  function renderFields(ms) {
-    var box = document.getElementById('fields'); box.textContent = '';
+  function table(ms, fieldsList) {
     var t = el('table', { 'class': 'facts cmp' }), hd = el('tr');
     hd.appendChild(el('th', { scope: 'col' }, 'Field'));
     ms.forEach(function (m) { hd.appendChild(el('th', { scope: 'col' }, m.name)); });
     hd.appendChild(el('th', { scope: 'col' }, 'Change'));
     var th = el('thead'); th.appendChild(hd); t.appendChild(th);
     var tb = el('tbody');
-    D.order.forEach(function (f) {
-      if (!ms.some(function (m) { return m.fields[f]; })) return;
-      var shown = ms.map(function (m) { return m.fields[f] ? m.fields[f][0] : ((D.implied[m.stem] || {})[f] || 'not stated'); });
-      var raws = ms.map(function (m) { return m.fields[f] ? m.fields[f][1] : null; });
-      var c = ms.length === 2 ? chipNum(raws[0], raws[1], shown[0], shown[1]) : chip(shown.every(function (s) { return s === shown[0]; }) ? 1 : 0, 1);
+    fieldsList.forEach(function (f) {
+      if (!ms.some(function (m) { return m.fields[f] || m.derived[f]; })) return;
+      var vals = ms.map(function (m) { return value(m, f); });
+      var shown = vals.map(function (v) { return v[0]; }), raws = vals.map(function (v) { return v[1]; });
+      var c = ms.length === 2 ? chipNum(raws[0], raws[1], shown[0], shown[1]) : chip(shown.every(function (x) { return x === shown[0]; }) ? 1 : 0, 1);
       var tr = el('tr', { 'data-diff': c[0] === 'same' ? '0' : '1' });
       tr.appendChild(el('th', { scope: 'row' }, D.labels[f]));
-      shown.forEach(function (s) { tr.appendChild(el('td', { 'class': 'mono' }, s)); });
+      shown.forEach(function (x) { tr.appendChild(el('td', { 'class': 'mono' }, x)); });
       var td = el('td'); td.appendChild(el('span', { 'class': 'chip chip-' + c[1] }, c[0])); tr.appendChild(td);
       tb.appendChild(tr);
     });
-    t.appendChild(tb); box.appendChild(t);
+    t.appendChild(tb);
+    return t;
+  }
+  function renderFields(ms) {
+    var box = document.getElementById('fields'); box.textContent = '';
+    box.appendChild(table(ms, D.order));
+    var more = el('details', { 'class': 'allfields' }), sum = el('summary', {}, 'All fields');
+    more.appendChild(sum); more.appendChild(table(ms, D.rest)); box.appendChild(more);
     applyOnlyDiff();
   }
   function applyOnlyDiff() {
