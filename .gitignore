@@ -18,3 +18,6 @@ results/test-results.xml
 
 # Built by build_site.py (Vercel runs it on deploy)
 site/
+
+# Vercel CLI project link (local only)
+.vercel/
