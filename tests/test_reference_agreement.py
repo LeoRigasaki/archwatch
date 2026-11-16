@@ -34,14 +34,14 @@ def test_reference_is_named_at_run_time_and_never_stored(monkeypatch):
 
 def test_fact_sheet_parsers():
     assert ref.parse_scale("300B total, 12B active (4% active)") == {
-        "params_total": (400e9, 0.5e9),
-        "params_active": (13e9, 0.5e9),
+        "params_total": (300e9, 0.5e9),
+        "params_active": (12e9, 0.5e9),
     }
     total = ref.parse_scale("100B core, 5B active; plus 40B n-gram embeddings and 2B MTP")["params_total"]
-    assert total[0] == 180e9
-    assert ref.parse_layers("30 sliding-window + 10 global") == (60, 0)
-    assert ref.parse_layers("6 input + 10 shared × 3 passes + 6 output (42 applications)") == (36, 0)
-    assert ref.parse_layers("12 encoder + 12 decoder layers; 2 SWA-only + 22 CSA2/SWA") == (40, 0)
+    assert total[0] == 142e9
+    assert ref.parse_layers("30 sliding-window + 10 global") == (40, 0)
+    assert ref.parse_layers("6 input + 10 shared × 3 passes + 6 output (42 applications)") == (22, 0)
+    assert ref.parse_layers("12 encoder + 12 decoder layers; 2 SWA-only + 22 CSA2/SWA") == (24, 0)
     assert ref.parse_bytes("240 KiB") == (240 * 1024, 512)
     assert ref.parse_count("512,000") == (512000.0, 0)
     assert ref.decoder_kind("Sparse hybrid") == ref.decoder_kind("MoE") == "sparse"

@@ -125,9 +125,9 @@ def test_moe_keys_with_moe_prefix_are_read():
 
 def test_layer_mix_counts_leading_terms_and_skips_mtp():
     ref = load_tool("reference_agreement")
-    assert ref.parse_layers("3 GQA + 15 Mamba-2 + 12 FFN") == (42, 0)
-    assert ref.parse_layers("80 GQA + 1 MTP layer") == (80, 0)
-    assert ref.parse_layers("8 MLA + 40 Lightning Attention + 1 MTP layer") == (80, 0)
+    assert ref.parse_layers("3 GQA + 15 Mamba-2 + 12 FFN") == (30, 0)
+    assert ref.parse_layers("60 GQA + 1 MTP layer") == (60, 0)
+    assert ref.parse_layers("8 MLA + 40 Lightning Attention + 1 MTP layer") == (48, 0)
     assert ref.same_k_shorthand(131072, 128000) and ref.same_k_shorthand(1048576, 1_000_000)
     assert not ref.same_k_shorthand(163840, 128000)
 
@@ -136,10 +136,10 @@ def test_his_value_becomes_an_accepted_range():
     audit = load_tool("reference_audit")
     lo, hi, _ = audit.his_range("params_active", "30B total, 3B active", None)
     assert (lo, hi) == (2.5e9, 3.5e9)  # card rounding: '3B' covers 2.5-3.5B
-    lo, hi, _ = audit.his_range("params_total", "671B total, 37B active", (671e9, 0.5e9))
-    assert lo == 671e9 * 0.98 and hi == 671e9 * 1.02  # 2% is wider than the rounding here
+    lo, hi, _ = audit.his_range("params_total", "500B total, 30B active", (500e9, 0.5e9))
+    assert lo == 500e9 * 0.98 and hi == 500e9 * 1.02  # 2% is wider than the rounding here
     lo, hi, label = audit.his_range("params_active", "400B backbone; 6B active prefill, 12B active decode", None)
-    assert lo == 8e9 * 0.98 and hi == 16e9 * 1.02 and "prefill" in label
+    assert lo == 6e9 * 0.98 and hi == 12e9 * 1.02 and "prefill" in label
 
 
 def test_lookup_tables_are_stored_but_not_active():
