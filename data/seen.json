@@ -40,8 +40,8 @@
       "last_observed_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
       "last_successful_commit": "7bca5038823c0d0f14efe06439109354a10e014c",
       "pool": "core",
-      "predecessor": "LiquidAI/LFM2.5-24B-A2B-Base",
-      "reason": "Latest earlier Hub creation date in the inspected same-org family catalog",
+      "predecessor": null,
+      "reason": "No earlier same-family release of the same size class (2x total, dense/MoE kind)",
       "status": "recorded"
     },
     "Qwen/Qwen3-0.6B-Base": {

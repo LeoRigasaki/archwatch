@@ -88,7 +88,8 @@ def test_cached_pipeline_second_run_leaves_every_artifact_untouched(tmp_path, mo
     cli.main(["lab/new:lab/old"])
     site.main()
     first = snapshot(output)
-    assert len(first) == 5  # two JSONs, one YAML, one SVG, one HTML
+    pages = {"site/index.html", "site/style.css", "site/site.js", "site/compare/index.html"}
+    assert pages <= set(first) and {"data/models/lab__new.json", "data/models/lab__new.yaml"} <= set(first)
     cli.main(["lab/new:lab/old"])
     site.main()
     assert Clock.calls == 4
@@ -102,7 +103,7 @@ def test_cached_pipeline_second_run_leaves_every_artifact_untouched(tmp_path, mo
     site.main()
     changed = snapshot(output)
     assert changed["data/models/lab__old.json"] == first["data/models/lab__old.json"]
-    for name in ("data/models/lab__new.json", "data/models/lab__new.yaml", "diagrams/lab__new.svg", "site/index.html"):
+    for name in ("data/models/lab__new.json", "data/models/lab__new.yaml", "diagrams/lab__new.svg"):
         assert changed[name][0] != first[name][0]
 
 

@@ -1,0 +1,25 @@
+# Static site settings. Display names only; every number on the site comes from published records.
+repo_url: https://github.com/LeoRigasaki/archwatch
+publishers:
+  moonshotai: Moonshot AI
+  LiquidAI: Liquid AI
+  Qwen: Alibaba Qwen
+  deepseek-ai: DeepSeek
+  google: Google
+  meta-llama: Meta
+  microsoft: Microsoft
+  mistralai: Mistral AI
+  nvidia: NVIDIA
+  zai-org: Z.ai
+# Context lengths offered by the memory planner (the model's maximum is always added).
+memory_contexts: [8192, 32768]
+# One colour per layer type, used by every page and by the code-drawn diagrams.
+layer_colors:
+  kda_linear: "#2a9d8f"
+  gated_dsa_mla: "#b5487a"
+  full_attention_mla: "#f2a65a"
+  short_conv: "#6a994e"
+  sliding_attention: "#4f7cc3"
+  full_attention: "#e07a5f"
+  mamba2: "#8e6cc4"
+  mlp: "#a3a9b1"
