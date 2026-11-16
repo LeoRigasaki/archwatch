@@ -11,5 +11,5 @@ publishers:
   mistralai: Mistral AI
   nvidia: NVIDIA
   zai-org: Z.ai
-# Context lengths offered by the cache-memory picker (the model's maximum is always added).
-memory_contexts: [8192, 131072]
+# Context lengths offered by the memory planner (the model's maximum is always added).
+memory_contexts: [8192, 32768]

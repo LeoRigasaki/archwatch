@@ -2,10 +2,12 @@
 
     uv run --frozen python build_site.py
 
-Pages: site/index.html (home), site/models/<stem>.html (one per published model), site/compare/<stem>.html (each
-published model whose predecessor is also published) and site/compare/index.html. Every number comes from
-published, verifier-approved record fields or from the cache calculator run on them. Held records appear by name
-with a plain reason only. Plain HTML/CSS; a small script runs the cache-memory picker and the home-page filter.
+Pages: site/index.html (explore), site/models/<stem>.html (one per published model), site/compare/<stem>.html
+(a model next to its predecessor, only when both are published) and site/compare/index.html. Every number comes
+from published, verifier-approved record fields or from the cache calculator run on them; every sentence is
+written by code from those fields, except an explainer note that passed every check for the current diff. Held
+records appear by name and a plain reason only; fine-tunes are out of scope and not listed. Plain HTML/CSS with a
+small vanilla script for the filters, the memory planner and the theme switch.
 """
 
 import datetime as dt
@@ -18,12 +20,23 @@ import yaml
 from archwatch import diagram, generated, pipeline
 from archwatch.artifacts import write_if_changed
 from archwatch.explainer import diff_input, input_hash
-from archwatch.labels import FIELD_NAMES, KIND_LABELS
+from archwatch.labels import KIND_LABELS
 from archwatch.publication import PublicationError, plain_hold, render_cache, render_values
+from archwatch.watcher import derivative_relation
 
 ROOT = Path(__file__).parent
 CODE = Path(__file__).parent  # site settings live with the code; ROOT is where records are read and pages written
 LABEL = KIND_LABELS
+SHORT = {
+    "kda_linear": "KDA linear",
+    "gated_dsa_mla": "Gated DSA",
+    "full_attention_mla": "MLA (full)",
+    "short_conv": "Short conv",
+    "sliding_attention": "Sliding window",
+    "full_attention": "Global attention",
+    "mamba2": "Mamba-2",
+    "mlp": "MLP",
+}
 COLOR = {
     "kda_linear": "#2a9d8f",
     "gated_dsa_mla": "#e07a5f",
@@ -34,42 +47,121 @@ COLOR = {
     "mamba2": "#8e6cc4",
     "mlp": "#a3a9b1",
 }
-LINEAR = {"kda_linear"}
-NON_ATTENTION = {"kda_linear", "short_conv", "mamba2"}
-MLA = {"gated_dsa_mla", "full_attention_mla"}
-# Fields shown elsewhere on the page (layer mix bar, diagram) or internal to the renderer.
-NOT_IN_TABLE = {
-    "block_shapes",
-    "parameter_components",
-    "weight_header_summary",
-    "layer_types",
-    "layer_pattern_per_layer",
-    "layer_index_base_in_config",
+LINEAR, SPARSE, NON_ATTENTION = {"kda_linear"}, {"gated_dsa_mla"}, {"kda_linear", "short_conv", "mamba2"}
+LAYER_FILTERS = (
+    ("linear", "Linear attention", {"kda_linear"}),
+    ("sparse", "Sparse attention", {"gated_dsa_mla"}),
+    ("sliding", "Sliding window", {"sliding_attention"}),
+    ("conv", "Short convolution", {"short_conv"}),
+    ("mamba", "Mamba-2", {"mamba2"}),
+)
+SIZE_FILTERS = (("s", "Under 3B", 0, 3e9), ("m", "3B to 30B", 3e9, 30e9), ("l", "Over 30B", 30e9, float("inf")))
+# Plain labels for every published field. The config key is shown under the label, never instead of it.
+PLAIN = {
+    "params_total": "Total parameters",
+    "params_active": "Active parameters per token",
+    "params_active_non_embedding": "Active parameters, excluding embeddings",
+    "params_mtp": "Multi-token-prediction module (not in the total)",
+    "num_layers": "Layers",
+    "layer_type_counts": "Layer mix",
+    "context_length": "Context length",
+    "hidden_size": "Hidden size (width)",
+    "attention_type": "Attention type",
+    "num_attention_heads": "Attention heads",
+    "num_kv_heads": "Key-value heads",
+    "head_dim": "Head size",
+    "v_head_dim": "Value head size",
+    "vocab_size": "Vocabulary",
+    "moe_num_experts": "Routed experts",
+    "moe_active_experts": "Experts used per token",
+    "moe_shared_experts": "Shared experts",
+    "moe_expert_intermediate": "Expert hidden size",
+    "moe_shared_expert_intermediate": "Shared-expert hidden size",
+    "moe_latent_dim": "Expert latent width",
+    "moe_router": "Expert router",
+    "dense_layers": "Layers with a dense FFN",
+    "dense_ffn_intermediate": "Dense FFN hidden size",
+    "ffn_intermediate": "FFN hidden size",
+    "ffn_gated": "Gated FFN",
+    "activation": "Activation function",
+    "activation_card_name": "Activation (name on the card)",
+    "attention_output_gate": "Gate on the attention output",
+    "attn_res_block_size": "Residual-mixing block size",
+    "block_layout": "Block layout",
+    "canvas_length": "Diffusion canvas length",
+    "decoder_type": "Design",
+    "dsa_index_head_dim": "Sparse-attention indexer head size",
+    "dsa_index_key_width": "Sparse-attention indexer key width",
+    "dsa_index_num_heads": "Sparse-attention indexer heads",
+    "dsa_index_topk": "Tokens each sparse layer attends to",
+    "generation_type": "Generation method",
+    "global_head_dim": "Global-layer head size",
+    "hyper_connection_multiplier": "Residual streams",
+    "input_layers": "Input layers",
+    "output_layers": "Output layers",
+    "recurrent_layers": "Recurrent layers",
+    "recurrent_loops": "Recurrent passes",
+    "recurrent_kv_cache_mode": "Cache in recurrent passes",
+    "linear_attn_conv_kernel": "Linear-attention convolution width",
+    "linear_attn_head_dim": "Linear-attention head size",
+    "linear_attn_num_heads": "Linear-attention heads",
+    "linear_conv_kernel": "Linear-attention convolution width",
+    "linear_key_head_dim": "Linear-attention key head size",
+    "linear_num_key_heads": "Linear-attention key heads",
+    "linear_num_value_heads": "Linear-attention value heads",
+    "linear_value_head_dim": "Linear-attention value head size",
+    "mamba_activation": "Mamba activation",
+    "mamba_conv_channels": "Mamba convolution channels",
+    "mamba_conv_kernel": "Mamba convolution width",
+    "mamba_groups": "Mamba groups",
+    "mamba_head_dim": "Mamba head size",
+    "mamba_num_heads": "Mamba heads",
+    "mamba_state_size": "Mamba state size",
+    "mla_cached_width_per_token": "Values cached per token in MLA layers",
+    "mla_kv_lora_rank": "MLA key-value compression width",
+    "mla_q_lora_rank": "MLA query compression width",
+    "mla_qk_rope_head_dim": "MLA position-encoded key size",
+    "mla_use_nope": "Sparse layers without position encoding",
+    "model_type": "Architecture name in the config",
+    "num_global_kv_heads": "Global-layer key-value heads",
+    "num_mtp_layers": "Multi-token-prediction layers",
+    "qk_norm": "Normalised queries and keys",
+    "released_weights_format": "Released weight format",
+    "rope": "Position encoding",
+    "sandwich_norm": "Norm before and after each block",
+    "shared_kv_layers": "Layers sharing a key-value cache",
+    "short_conv_kernel": "Convolution width",
+    "sliding_window": "Sliding window",
+    "tied_embeddings": "Input and output embeddings shared",
+    "vision_encoder_layers": "Vision encoder layers",
+    "vision_hidden_size": "Vision encoder width",
+    "vision_params": "Vision encoder parameters",
+    "ngram_layer_ids": "Layers with n-gram memory",
 }
-KEY_FACTS = ("params_total", "params_active", "num_layers", "layer_type_counts", "context_length")
-FIRST = (
+KEY_FACTS = (
     "params_total",
     "params_active",
     "params_active_non_embedding",
-    "params_mtp",
     "num_layers",
     "layer_type_counts",
     "context_length",
     "hidden_size",
-    "vocab_size",
-    "attention_type",
-    "num_attention_heads",
-    "num_kv_heads",
-    "head_dim",
+    "attention",
+    "experts",
 )
+NOT_SHOWN = {"block_shapes", "parameter_components", "weight_header_summary", "layer_types", "layer_pattern_per_layer"}
+NOT_SHOWN |= {"layer_index_base_in_config"}
+NOT_A_CHANGE = {"model_type"}  # a renamed config class is not an architecture change
 SOURCE_WORDS = {
     "config": "config.json",
-    "weights": "safetensors headers",
+    "weights": "weight file headers",
     "code": "modeling code",
     "card": "model card",
-    "derived": "computed from published fields",
+    "derived": "computed from the facts above",
 }
 STATUS_WORDS = {"verified": "verified", "single source": "one source", "differs from card": "differs from card"}
+PRECISION = (("16", "16-bit (full)", 2.0), ("8", "8-bit", 1.0), ("4", "4-bit", 0.5))
+DEVICES = (("8 GB laptop", 8e9), ("16 GB laptop", 16e9), ("24 GB GPU", 24e9))
 
 
 def e(x):
@@ -83,51 +175,60 @@ def settings():
 # ---------------------------------------------------------------- formatting
 
 
+def sig(x, digits=3):
+    """x to `digits` significant figures, trailing zeros dropped (27.0 -> 27, 1.734 -> 1.73)."""
+    if x == 0:
+        return "0"
+    text = f"{x:.{digits}g}"
+    if "e" in text:
+        text = f"{x:.0f}"
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
 def human(n):
     for unit, d in (("T", 1e12), ("B", 1e9), ("M", 1e6), ("K", 1e3)):
         if abs(n) >= d:
-            return f"{n / d:.2f}{unit}"
+            if unit in ("T", "B"):
+                return f"{n / d:.2f}{unit}"
+            if round(n / d) >= 1000:
+                return f"{n / 1e9:.2f}B" if unit == "M" else f"{n / 1e6:.2f}M"
+            return f"{n / d:.0f}{unit}"
     return f"{n:,}"
 
 
 def tokens(n):
     n = int(n)
-    if n >= 2**20 and n % 2**20 == 0:
-        return f"{n // 2**20}M"
-    if n >= 1_000_000 and n % 1_000_000 == 0:
-        return f"{n // 1_000_000}M"
-    if n % 1024 == 0:
-        return f"{n // 1024}K"
-    if n % 1000 == 0:
-        return f"{n // 1000}K"
+    for div, unit in ((2**20, "M"), (10**6, "M"), (1024, "K"), (1000, "K")):
+        if n >= div and n % div == 0:
+            return f"{n // div}{unit}"
     return f"{n:,}"
 
 
 def size(b):
     for unit, d in (("GiB", 2**30), ("MiB", 2**20), ("KiB", 2**10)):
         if b >= d:
-            return f"{b / d:.2f} {unit}" if b / d < 100 else f"{b / d:,.0f} {unit}"
+            return f"{b / d:.2f} {unit}" if unit == "GiB" else f"{sig(b / d)} {unit}"
     return f"{b:,} B"
 
 
-def date(iso):
+def date(iso, year=True):
     d = dt.date.fromisoformat(iso[:10])
-    return f"{d.day} {d:%b %Y}"
+    return f"{d.day} {d:%b %Y}" if year else f"{d.day} {d:%b}"
 
 
 def show(field, v):
     if isinstance(v, bool):
         return "yes" if v else "no"
+    if field == "layer_type_counts":
+        return ", ".join(f"{n} {SHORT.get(k, k)}" for k, n in v.items())
     if isinstance(v, dict):
-        if all(isinstance(n, int) for n in v.values()):
-            return ", ".join(f"{LABEL.get(k, k)} {n}" for k, n in sorted(v.items(), key=lambda kv: -kv[1]))
-        return ", ".join(f"{k.replace('_', ' ')}: {show(k, n)}" for k, n in v.items())
+        return "; ".join(f"{k.replace('_', ' ')}: {show(k, n)}" for k, n in v.items())
     if isinstance(v, list):
         return ", ".join(str(x) for x in v)
     if isinstance(v, float) and v.is_integer():
         v = int(v)
     if isinstance(v, int) and (field.startswith("params") or field == "vision_params"):
-        return f"{human(v)} ({v:,})"
+        return f"{v:,}"
     if isinstance(v, int):
         return f"{v:,}"
     return str(v)
@@ -149,91 +250,54 @@ def kinds_in_order(pub):
     return list(dict.fromkeys(pub["layer_types"]))
 
 
-def tags(pub):
+def design(pub):
     kinds = set(pub["layer_types"]) - {"mlp"}
-    out = ["MoE" if "moe_num_experts" in pub else "Dense"]
+    if "moe_num_experts" in pub:
+        return "MoE"
     if kinds & NON_ATTENTION and kinds - NON_ATTENTION:
-        out.append("Hybrid")
-    if kinds & LINEAR:
-        out.append("Linear attention")
-    if kinds & MLA or "MLA" in str(pub.get("attention_type", "")):
-        out.append("MLA")
-    return out
+        return "Hybrid"
+    return "Dense"
 
 
-def legend(pub, *, counts=True):
-    c = pub["layer_type_counts"]
-    return "".join(
-        f'<li><span class="sw" style="background:{COLOR.get(k, "#999")}" aria-hidden="true"></span>'
-        f"{e(LABEL.get(k, k))}{f' <span class=num>{c[k]}</span>' if counts else ''}</li>"
-        for k in kinds_in_order(pub)
-    )
+def hybrid(pub):
+    kinds = set(pub["layer_types"]) - {"mlp"}
+    return bool(kinds & NON_ATTENTION and kinds - NON_ATTENTION)
 
 
-def mix_bar(pub, label):
-    """Layer mix: one segment per layer kind, sized by its layer count, in order of first appearance."""
-    runs = [[k, pub["layer_type_counts"][k]] for k in kinds_in_order(pub)]
-    segs = "".join(
-        f'<span style="flex:{n};background:{COLOR.get(k, "#999")}" title="{e(LABEL.get(k, k))} x{n}"></span>'
-        for k, n in runs
-    )
-    return f'<div class="bar" role="img" aria-label="{e(label)}">{segs}</div>'
+def mix_text(pub, sep=" · "):
+    return sep.join(f"{SHORT.get(k, k)} {pub['layer_type_counts'][k]}" for k in kinds_in_order(pub))
 
 
-def mix_text(pub):
-    return ", ".join(f"{LABEL.get(k, k)} {pub['layer_type_counts'][k]}" for k in kinds_in_order(pub))
+def cells(pub, label):
+    """Every layer as one cell, layer 1 on the left."""
+    spans = "".join(f'<i style="background:{COLOR.get(k, "#999")}"></i>' for k in pub["layer_types"])
+    return f'<div class="cells" role="img" aria-label="{e(label)}">{spans}</div>'
 
 
-def pattern_text(pub):
-    """The repeating unit of the layer pattern, if there is one ('3 KDA linear, then 1 Gated DSA on MLA')."""
-    types = pub["layer_types"]
-    for period in range(2, 9):
-        unit = types[-period:]
-        body = types[len(types) % period :]
-        if len(set(unit)) > 1 and all(body[i] == unit[i % period] for i in range(len(body))):
-            runs = []
-            for kind in unit:
-                if runs and runs[-1][0] == kind:
-                    runs[-1][1] += 1
-                else:
-                    runs.append([kind, 1])
-            return ", then ".join(f"{n} {LABEL.get(k, k)}" for k, n in runs)
-    return None
-
-
-def summary_line(pub, before=None):
-    """One plain sentence written by code from published fields (no model text)."""
-    n = pub["num_layers"]
-    if before:
-        a, b = before["layer_type_counts"], pub["layer_type_counts"]
-        gone, new = [k for k in a if k not in b], [k for k in b if k not in a]
-        parts = []
-        if len(gone) == 1 and len(new) == 1 and a[gone[0]] == b[new[0]]:
-            parts.append(f"{LABEL[new[0]]} replaces {LABEL[gone[0]]} in {b[new[0]]} of {n} layers")
-        else:
-            if n != before["num_layers"]:
-                parts.append(
-                    f"{abs(n - before['num_layers'])} {'more' if n > before['num_layers'] else 'fewer'} layers"
-                )
-            parts += [f"new {LABEL.get(k, k)} layers ({b[k]})" for k in new]
-            parts += [f"no {LABEL.get(k, k)} layers" for k in gone]
-        if parts:
-            text = "; ".join(parts)
-            return text[0].upper() + text[1:] + "."
-        return "Same layer mix as its predecessor; see the changed fields."
-    counts = pub["layer_type_counts"]
-    moe = (
-        f"MoE with {pub['moe_num_experts']} experts, {pub['moe_active_experts']} per token"
-        if "moe_num_experts" in pub
-        else "Dense"
-    )
+def describe(pub):
+    """One technical sentence written by code from published fields."""
+    counts, n = pub["layer_type_counts"], pub["num_layers"]
+    extra = {
+        "short_conv": f" (kernel {pub['short_conv_kernel']})" if pub.get("short_conv_kernel") else "",
+        "sliding_attention": f" (window {pub['sliding_window']:,})" if pub.get("sliding_window") else "",
+        "gated_dsa_mla": f" (top-k {pub['dsa_index_topk']:,})" if pub.get("dsa_index_topk") else "",
+        "full_attention": f" ({pub['attention_type']})" if pub.get("attention_type") else "",
+    }
     if len(counts) == 1:
         kind = next(iter(counts))
+        head = (
+            f" ({pub['num_attention_heads']} heads, {pub['num_kv_heads']} KV heads)"
+            if pub.get("num_attention_heads") and pub.get("num_kv_heads")
+            else ""
+        )
         what = pub.get("attention_type") if kind == "full_attention" and pub.get("attention_type") else LABEL[kind]
-        return f"{moe}: {what} in all {n} layers."
-    top = max(counts, key=counts.get)
-    rest = ", ".join(f"{LABEL.get(k, k)} {v}" for k, v in counts.items() if k != top)
-    return f"{moe}: {LABEL[top]} in {counts[top]} of {n} layers, plus {rest}."
+        text = f"{'MoE' if 'moe_num_experts' in pub else 'Dense'} decoder, {what} in all {n} layers{head}"
+    else:
+        text = ", ".join(f"{counts[k]} {LABEL.get(k, k)} layers{extra.get(k, '')}" for k in kinds_in_order(pub))
+    if "moe_num_experts" in pub:
+        shared = f" + {pub['moe_shared_experts']} shared" if pub.get("moe_shared_experts") else ""
+        text += f"; {pub['moe_num_experts']} routed experts, {pub['moe_active_experts']} per token{shared}"
+    return text + "."
 
 
 def explainer_note(rec):
@@ -257,24 +321,63 @@ def explainer_note(rec):
     return note.get("text")
 
 
-def change_label(field, before, after):
+def significant(field, before, after):
+    """Changes worth stating: the architecture and the cache always; numbers only when they move by at least 1%
+    (and parameter counts by at least 0.1B). Weight-group bookkeeping is never listed."""
+    if field in ("layer_type_counts", "kv_cache_per_token_bytes"):
+        return True
+    if before is None or after is None:
+        return True
+    if isinstance(before, (int, float)) and isinstance(after, (int, float)) and not isinstance(before, bool):
+        if field.startswith("params") and abs(after - before) < 1e8:
+            return False  # under 0.1B parameters
+        return before == 0 or abs(after - before) / abs(before) >= 0.01
+    return True
+
+
+def change_value(field, v):
+    """Parameter counts and byte sizes to 3 significant figures; configuration integers stay exact."""
+    if v is None:
+        return "not stated"
+    if field in ("kv_cache_per_token_bytes", "kv"):
+        return size(v)
+    if field == "layer_type_counts":
+        return " + ".join(f"{n} {SHORT.get(k, k)}" for k, n in v.items())
+    if field.startswith("params") and isinstance(v, (int, float)):
+        for unit, d in (("T", 1e12), ("B", 1e9), ("M", 1e6)):
+            if v >= d:
+                return f"{sig(v / d)}{unit}"
+    return show(field, v)
+
+
+def changes(rec, before):
+    """(label, before, after) for each significant change since the predecessor, rounded to 3 figures."""
+    out = []
+    for row in pipeline.diff(rec, before):
+        field = row["field"]
+        if field in NOT_SHOWN | NOT_A_CHANGE or not significant(field, row["before"], row["after"]):
+            continue
+        label = "Cache per token" if field == "kv_cache_per_token_bytes" else PLAIN.get(field, field)
+        out.append((label, change_value(field, row["before"]), change_value(field, row["after"])))
+    return out
+
+
+def change_chip(field, before, after):
+    if before == after:
+        return "same", "same"
     if before is None:
         return "now stated", "new"
     if after is None:
-        return "not published", "warn"
-    if before == after:
-        return "same", "same"
-    if isinstance(before, str) or isinstance(after, str):
-        return "changed", "up"
+        return "not stated", "warn"
     if isinstance(before, (int, float)) and isinstance(after, (int, float)) and not isinstance(before, bool):
         if after == 2 * before:
             return "doubled", "up"
         if 2 * after == before:
             return "halved", "warn"
-        if field.startswith("params") or field in ("vocab_size", "context_length"):
-            pct = 100 * (after - before) / before
-            return (f"{pct:+.0f}%" if abs(pct) >= 1 else f"{pct:+.2f}%"), "up" if after > before else "warn"
-        return f"{after - before:+,}", "up" if after > before else "warn"
+        pct = 100 * (after - before) / before
+        if abs(pct) < 0.1:
+            return ("<+0.1%" if pct > 0 else "<-0.1%"), "same"
+        return f"{pct:+.{0 if abs(pct) >= 1 else 1}f}%", "up" if after > before else "warn"
     return "changed", "up"
 
 
@@ -287,7 +390,7 @@ def frame(title, body, *, depth=0, active="", description=""):
     nav = "".join(
         f'<a href="{href}"{" aria-current=page" if key == active else ""}>{text}</a>'
         for key, href, text in (
-            ("models", f"{up}index.html#models", "Models"),
+            ("explore", f"{up}index.html", "Explore"),
             ("compare", f"{up}compare/index.html", "Compare"),
             ("method", f"{up}index.html#method", "Method"),
             ("github", repo, "GitHub"),
@@ -296,20 +399,20 @@ def frame(title, body, *, depth=0, active="", description=""):
     return f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title><meta name="description" content="{e(description or title)}">
+<script>try{{var t=localStorage.getItem('aw-theme');if(t)document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="{up}style.css"></head>
 <body><a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="wrap topbar"><a class="brand" href="{up}index.html">ArchWatch</a><nav aria-label="Main">{nav}</nav>
-<span class="lastrun">{e(last_run())}</span></div></header>
+<span class="lastrun">{e(last_run())}</span>
+<button type="button" class="themebtn" aria-pressed="false" aria-label="Dark theme"><span class="knob" aria-hidden="true"></span>Dark</button></div></header>
 <main id="main" class="wrap">{body}</main>
-<footer id="method" class="foot"><div class="wrap cols2">
-<p>Facts come from config.json, safetensors headers, modeling code and model cards at pinned commits. A fact is verified
-when two independent sources agree; a fact with one source is labelled as such, and a disagreement is held for a
-person to resolve. Cache sizes are computed by ArchWatch's calculator from published fields. Diagrams and
-explanations are written by Gemini from verified fields only, and every number they contain is checked by code.</p>
-<p>Open source, rebuilt daily by GitHub Actions on free tiers. <a href="{e(repo)}">View the code</a>.</p>
-</div></footer>
+<footer id="method" class="foot"><div class="wrap"><p>Every number is read from the model's own files at a pinned
+commit (config.json, weight file headers, modeling code, model card) and labelled verified, one source or
+computed. Verified means two independent files agree; a disagreement is held for a person to resolve. Cache and
+memory figures come from ArchWatch's calculator. Diagrams are drawn by Gemini from verified fields and checked by
+code. Rebuilt daily by GitHub Actions on free tiers. <a href="{e(repo)}">View the code</a>.</p></div></footer>
 <script src="{up}site.js" defer></script></body></html>"""
 
 
@@ -320,7 +423,7 @@ def last_run():
     if ROOT not in _LAST:
         stamps = [json.loads(p.read_text()).get("analyzed_at", "") for p in (ROOT / "data/models").glob("*.json")]
         latest = max((s for s in stamps if s), default="")
-        _LAST[ROOT] = f"Last analysis {date(latest)}, {latest[11:16]} UTC" if latest else ""
+        _LAST[ROOT] = f"Last analysis {date(latest)}" if latest else ""
     return _LAST[ROOT]
 
 
@@ -328,15 +431,16 @@ def last_run():
 
 
 def inventory():
-    """Published records (all checks pass, not held) and held repos with plain reasons; no numbers for held."""
+    """Published records, and held repos with plain reasons (no numbers). Fine-tunes are out of scope: not listed."""
     seen_path = ROOT / "data/seen.json"
     seen = json.loads(seen_path.read_text()).get("models", {}) if seen_path.exists() else {}
-    published, held = {}, {}
-    records = {}
+    published, held, records = {}, {}, {}
     for path in sorted((ROOT / "data/models").glob("*.json")):
         rec = json.loads(path.read_text())
         records[rec["id"]] = (path.stem, rec)
     for repo, (stem, rec) in sorted(records.items()):
+        if derivative_relation(rec.get("hub_metadata") or {}):
+            continue
         state = seen.get(repo, {})
         try:
             if (
@@ -350,8 +454,9 @@ def inventory():
         except (PublicationError, KeyError, TypeError) as error:
             held[repo] = plain_reason(str(error), rec.get("published", {}))
     for repo, state in sorted(seen.items()):
-        if repo not in records:
-            held[repo] = plain_reason(f"{state.get('status', 'unprocessed')}: {state.get('reason', '')}", {})
+        if repo in records or "base_model relation" in state.get("reason", ""):
+            continue
+        held[repo] = plain_reason(f"{state.get('status', 'unprocessed')}: {state.get('reason', '')}", {})
     return published, held, seen
 
 
@@ -361,8 +466,6 @@ def plain_reason(reason, values):
     if configured:
         return configured
     text = reason.lower()
-    if "finetune" in text or "derived" in text:
-        return "Fine-tuned from another model: ArchWatch publishes base architectures."
     if "403" in text or "401" in text or "gated" in text:
         return "Gated repository: waiting for access to the weights."
     if "config.json" in text or "format" in text:
@@ -381,154 +484,277 @@ def published_predecessor(rec, published):
     return published.get(pred) if pred else None
 
 
-# ---------------------------------------------------------------- home
+def cache_per_token(pub):
+    return render_cache(pub)["grows_per_token_bytes"]
+
+
+# ---------------------------------------------------------------- explore (home)
+
+
+def model_card(stem, rec, pub, published, pubs):
+    org, name = rec["id"].split("/")
+    kinds = set(pub["layer_types"])
+    flags = [key for key, _, members in LAYER_FILTERS if kinds & members]
+    data = dict(
+        design=design(pub).lower(),
+        hybrid="1" if hybrid(pub) else "0",
+        layers=" ".join(flags),
+        params=int(pub["params_total"]),
+        date=rec["hub_created"][:10],
+        name=name.lower(),
+        search=" ".join([rec["id"], pubs.get(org, org), design(pub), mix_text(pub), describe(pub)]).lower(),
+    )
+    attrs = " ".join(f'data-{k}="{e(v)}"' for k, v in data.items())
+    before = published_predecessor(rec, published)
+    compare = (
+        f'<a class="btn" href="compare/{e(stem)}.html">Compare with {e(before[1]["id"].split("/")[-1])}</a>'
+        if before
+        else ""
+    )
+    return f"""<li class="card" {attrs}><article aria-labelledby="h-{e(stem)}">
+<div class="cardhead"><span>{e(pubs.get(org, org))}</span><time datetime="{e(rec["hub_created"][:10])}">{e(date(rec["hub_created"]))}</time></div>
+<h3 id="h-{e(stem)}"><a href="models/{e(stem)}.html">{e(name)}</a> <span class="tag">{e(design(pub))}</span></h3>
+<p class="line">{e(describe(pub))}</p>
+{cells(pub, "Layer order, layer 1 on the left: " + mix_text(pub))}<p class="mixcap">{e(mix_text(pub))}</p>
+<dl class="mini"><div><dt>parameters</dt><dd>{e(human(pub["params_total"]))}</dd></div>
+<div><dt>layers</dt><dd>{pub["num_layers"]}</dd></div><div><dt>context</dt><dd>{e(tokens(pub["context_length"]))}</dd></div>
+<div><dt>cache / token</dt><dd>{e(size(cache_per_token(pub)))}</dd></div></dl>
+<div class="cardbtns">{compare}<a class="btn" href="models/{e(stem)}.html#fit">Will it fit?</a><a class="btn" href="models/{e(stem)}.html">Open</a></div>
+</article></li>"""
+
+
+def table_row(stem, rec, pub, pubs):
+    org, name = rec["id"].split("/")
+    return (
+        f'<tr><th scope=row><a href="models/{e(stem)}.html">{e(name)}</a><span class="detail">{e(pubs.get(org, org))} · '
+        f"{e(date(rec['hub_created']))}</span></th><td>{e(design(pub))}</td><td class=mono>{e(human(pub['params_total']))}</td>"
+        f"<td class=mono>{pub['num_layers']}</td><td class=mono>{e(tokens(pub['context_length']))}</td>"
+        f"<td class=mono>{e(size(cache_per_token(pub)))}</td><td>{cells(pub, mix_text(pub))}</td></tr>"
+    )
 
 
 def home(published, held, seen):
-    cards = []
-    order = sorted(published.values(), key=lambda x: (x[1]["hub_created"] or "", x[1]["id"]), reverse=True)
     pubs = settings()["publishers"]
-    for stem, rec, pub in order:
-        org, name = rec["id"].split("/")
-        before = published_predecessor(rec, published)
-        line = summary_line(pub, before[2] if before else None)
-        tag_list = tags(pub)
-        search = " ".join(
-            [rec["id"], name, pubs.get(org, org), *tag_list, mix_text(pub), pub.get("attention_type", "")]
+    order = sorted(published.values(), key=lambda x: (x[1]["hub_created"] or "", x[1]["id"]), reverse=True)
+    cards = "".join(model_card(s, r, p, published, pubs) for s, r, p in order)
+    rows = "".join(table_row(s, r, p, pubs) for s, r, p in order)
+    newest = "".join(
+        f'<li><span class="mono">{e(date(r["hub_created"], year=False))}</span> <a href="models/{e(s)}.html">'
+        f"{e(r['id'].split('/')[-1])}</a></li>"
+        for s, r, _ in order[:3]
+    )
+    pubs_list = [p for _, _, p in published.values()]
+
+    def box(group, value, label, count, checked=False):
+        return (
+            f'<li><label><input type="checkbox" name="{group}" value="{e(value)}"{" checked" if checked else ""}>'
+            f'{e(label)}</label><span class="count">{count}</span></li>'
         )
-        cards.append(f"""<li class="card" data-tags="{e("|".join(tag_list))}" data-search="{e(search.lower())}">
-<a class="cardlink" href="models/{e(stem)}.html">
-<div class="cardhead"><span>{e(pubs.get(org, org))}</span><time datetime="{e(rec["hub_created"][:10])}">{e(date(rec["hub_created"]))}</time></div>
-<h3>{e(name)}</h3><p class="line">{e(line)}</p>
-{mix_bar(pub, "Layer mix: " + mix_text(pub))}<ul class="legend">{legend(pub)}</ul>
-<dl class="mini"><div><dt>parameters</dt><dd>{e(human(pub["params_total"]))}</dd></div>
-<div><dt>layers</dt><dd>{pub["num_layers"]}</dd></div><div><dt>context</dt><dd>{e(tokens(pub["context_length"]))}</dd></div></dl>
-</a></li>""")
-    filters = ["All", "MoE", "Hybrid", "Linear attention", "MLA", "Dense"]
-    pills = "".join(
-        f'<button type="button" class="pill" data-filter="{e(f)}" aria-pressed="{"true" if f == "All" else "false"}">{e(f)}</button>'
-        for f in filters
-        if f == "All" or any(f in tags(p) for _, _, p in published.values())
+
+    designs = "".join(
+        box("design", key, label, sum(1 for p in pubs_list if test(p)), True)
+        for key, label, test in (
+            ("dense", "Dense", lambda p: design(p) != "MoE"),
+            ("moe", "Mixture of experts", lambda p: design(p) == "MoE"),
+            ("hybrid", "Hybrid (not only attention)", hybrid),
+        )
     )
-    held_rows = "".join(
-        f"<tr><th scope=row>{e(repo.split('/')[-1])}</th><td>{e(reason)}</td></tr>" for repo, reason in held.items()
+    layers = "".join(
+        box("layers", key, label, sum(1 for p in pubs_list if set(p["layer_types"]) & members))
+        for key, label, members in LAYER_FILTERS
+        if any(set(p["layer_types"]) & members for p in pubs_list)
     )
-    shown_facts = linked = 0
-    for _, rec, pub in published.values():
-        for c in rec["checks"]:
-            if c["field"] in pub and c["field"] not in NOT_IN_TABLE:
-                shown_facts += 1
-                linked += any(
-                    x["evidence"].split(":", 1)[0] in ("config", "weights", "code", "card") for x in c["candidates"]
-                )
-    share = f"{100 * linked / shown_facts:.0f}%" if shown_facts else "-"
-    body = f"""<section class="hero"><h1>Every new open model, explained from its own files.</h1>
-<p class="lead">ArchWatch reads each model's config, weights and code when it lands on Hugging Face, checks every
-number against a second source, and shows what changed.</p></section>
-<div class="controls" hidden><label class="sr" for="q">Search models</label>
-<input id="q" type="search" placeholder="Search {len(published)} models, e.g. MLA, Mamba, Qwen" autocomplete="off">
-<div class="pills" role="group" aria-label="Filter by architecture">{pills}</div></div>
-<dl class="stats"><div><dt>architectures published</dt><dd>{len(published)}</dd></div>
-<div><dt>repositories tracked</dt><dd>{len(seen)}</dd></div>
-<div><dt>of published facts read from a source file</dt><dd>{share}</dd></div>
-<div><dt>a month to run (free tiers only)</dt><dd>$0</dd></div></dl>
-<section id="models" aria-labelledby="latest"><div class="sechead"><h2 id="latest">Latest architectures</h2>
-<p class="hint">Bar = layer mix by count; the compare pages show every layer in order</p></div>
-<ul class="cards">{"".join(cards)}</ul><p class="empty" hidden>No model matches.</p></section>
-<section aria-labelledby="held"><h2 id="held">Held for review</h2>
-<p class="sub">Found and analysed, but not published until every rule for them is checked.</p>
-<div class="tablebox"><table class="held"><thead class="sr"><tr><th scope=col>Model</th><th scope=col>Reason</th></tr></thead><tbody>{held_rows or "<tr><td colspan=2>Nothing held.</td></tr>"}</tbody></table></div></section>"""
+    sizes = "".join(
+        box("size", key, label, sum(1 for p in pubs_list if lo <= p["params_total"] < hi))
+        for key, label, lo, hi in SIZE_FILTERS
+    )
+    held_rows = "".join(f"<li><b>{e(repo.split('/')[-1])}</b><span>{e(r)}</span></li>" for repo, r in held.items())
+    body = f"""<section class="hero"><h1>Find, compare and size any open LLM architecture.</h1>
+<p class="lead">Read from each model's own files at a pinned commit. Every number is labelled with where it came from.</p>
+<div class="searchrow"><label class="sr" for="q">Search models</label>
+<input id="q" type="search" placeholder="Search a model, lab or idea: Kimi, Liquid, sliding window" autocomplete="off"></div></section>
+<section class="newbar" aria-label="Newest releases"><b>Newest</b><ul>{newest}</ul></section>
+<div class="explore">
+<aside class="filters" aria-label="Filters"><form id="filters">
+<fieldset><legend>Design</legend><ul>{designs}</ul></fieldset>
+<fieldset><legend>Layer types inside</legend><ul>{layers}</ul></fieldset>
+<fieldset><legend>Size</legend><ul>{sizes}</ul></fieldset>
+<fieldset><legend>Released</legend><ul>
+<li><label><input type="radio" name="released" value="any" checked>Any time</label></li>
+<li><label><input type="radio" name="released" value="6m">Last 6 months</label></li>
+<li><label><input type="radio" name="released" value="year">This year</label></li></ul></fieldset>
+<button type="reset" class="linkbtn">Reset filters</button></form></aside>
+<section id="models" aria-labelledby="count">
+<div class="listhead"><h2 id="count"><span class="shown">{len(published)}</span> models</h2>
+<div class="tools"><label for="sort">Sort</label><select id="sort"><option value="new">Newest first</option>
+<option value="big">Largest first</option><option value="small">Smallest first</option><option value="name">Name</option></select>
+<div class="seg" role="group" aria-label="View"><button type="button" data-view="cards" aria-pressed="true">Cards</button>
+<button type="button" data-view="table" aria-pressed="false">Table</button></div></div></div>
+<ul class="cards">{cards}</ul>
+<div class="tablebox tableview" hidden><table class="facts"><thead><tr><th scope=col>Model</th><th scope=col>Design</th>
+<th scope=col>Parameters</th><th scope=col>Layers</th><th scope=col>Context</th><th scope=col>Cache / token</th>
+<th scope=col>Layer order</th></tr></thead><tbody>{rows}</tbody></table></div>
+<p class="empty" hidden>No model matches these filters.</p>
+<details class="heldbox"><summary>{len(held)} models found but not yet published</summary>
+<p class="sub">Analysed, but not published until every rule for them is checked. Fine-tunes are out of scope and not listed.</p>
+<ul>{held_rows}</ul></details>
+</section></div>"""
     return frame(
-        "ArchWatch: open model architectures from their own files",
+        "ArchWatch: find, compare and size open LLM architectures",
         body,
-        active="models",
-        description="Architectures of new open-weight models, read from config, weights and code and checked.",
+        active="explore",
+        description="Architectures of open-weight models, read from their own files and checked.",
     )
 
 
 # ---------------------------------------------------------------- model page
 
 
-def sources(c):
-    words = []
+def config_key(c):
+    """The config key behind a fact (small text under its label), or where else it was read."""
     for x in c["candidates"]:
-        word = SOURCE_WORDS.get(x["evidence"].split(":", 1)[0], x["evidence"].split(":", 1)[0])
-        if word not in words:
-            words.append(word)
-    detail = "; ".join(x["evidence"].split(":", 1)[-1] for x in c["candidates"])
-    return ", ".join(words), detail
+        src, _, detail = x["evidence"].partition(":")
+        if src == "config":
+            return detail.split(" ")[0]
+    first = c["candidates"][0]["evidence"] if c["candidates"] else ""
+    src, _, detail = first.partition(":")
+    return f"{SOURCE_WORDS.get(src, src)}: {detail}"[:80]
 
 
-def facts_table(rec, pub, cache):
+def fact_row(label, key, value, c):
+    status, note = card_status(c) if c else ("computed", None)
+    word = STATUS_WORDS.get(status, status)
+    sources = (
+        ", ".join(dict.fromkeys(SOURCE_WORDS.get(x["evidence"].split(":")[0], "") for x in c["candidates"]))
+        if c
+        else "computed from the facts above"
+    )
+    extra = f'<span class="note">{e(note)}; recorded, not a gate</span>' if note else ""
+    return (
+        f'<tr><th scope=row>{e(label)}<span class="key">{e(key)}</span></th><td class="mono">{e(value)}</td>'
+        f'<td>{e(sources)}{extra}</td><td><span class="st st-{word.replace(" ", "-")}">{e(word)}</span></td></tr>'
+    )
+
+
+def facts(rec, pub, cache):
     checks = {c["field"]: c for c in rec["checks"]}
-    order = [f for f in FIRST if f in checks] + sorted(f for f in checks if f not in FIRST)
-    rows = []
-    for field in order:
-        c = checks[field]
-        if field in NOT_IN_TABLE:
-            continue
-        status, note = card_status(c)
-        word, detail = sources(c)
-        if field in pub:
-            value = show(field, pub[field])
-            label = STATUS_WORDS.get(status, status)
-        else:
-            value, label = "held for review", "held for review"
-        extra = f'<span class="note">{e(note)}; recorded, not a gate</span>' if note else ""
-        rows.append(
-            f"<tr><th scope=row>{e(FIELD_NAMES.get(field, field.replace('_', ' ').capitalize()))}</th>"
-            f'<td class="mono">{e(value)}</td><td>{e(word)}<span class="detail">{e(detail)}</span>{extra}</td>'
-            f'<td><span class="st st-{label.replace(" ", "-")}">{e(label)}</span></td></tr>'
+    shown = set()
+    key_rows = []
+
+    def one(field, label=None, value=None):
+        if field not in pub or field not in checks:
+            return
+        shown.add(field)
+        key_rows.append(
+            fact_row(
+                label or PLAIN.get(field, field),
+                config_key(checks[field]),
+                value or show(field, pub[field]),
+                checks[field],
+            )
         )
-    rows.append(
-        f"<tr><th scope=row>Cache per token</th><td class=mono>{cache['grows_per_token_bytes']:,} B</td>"
-        f"<td>ArchWatch calculator<span class=detail>bf16; growing part per token (sliding-window and constant states excluded), from published fields</span></td>"
+
+    for field in KEY_FACTS:
+        if field == "attention":
+            if "num_attention_heads" in pub:
+                kv = f" ({pub['num_kv_heads']} key-value)" if "num_kv_heads" in pub else ""
+                value = f"{pub.get('attention_type', '')} · {pub['num_attention_heads']} heads{kv}".lstrip(" ·")
+                one("num_attention_heads", "Attention type and heads", value)
+                shown.update({"attention_type", "num_kv_heads"})
+        elif field == "experts":
+            if "moe_num_experts" in pub:
+                value = f"{pub['moe_num_experts']} routed / {pub['moe_active_experts']} per token / {pub.get('moe_shared_experts', 0)} shared"
+                one("moe_num_experts", "Experts (routed / per token / shared)", value)
+                shown.update({"moe_active_experts", "moe_shared_experts"})
+        else:
+            one(field)
+    key_rows.append(
+        f'<tr><th scope=row>Cache per token<span class="key">bf16; sliding-window and constant states excluded</span></th>'
+        f"<td class=mono>{cache['grows_per_token_bytes']:,} B</td><td>ArchWatch calculator</td>"
         f'<td><span class="st st-computed">computed</span></td></tr>'
     )
-    return "".join(rows)
-
-
-def sentence(text):
-    return text[:1].upper() + text[1:] + "."
-
-
-def memory_picker(pub, cache):
-    ctx = int(pub["context_length"])
-    points = [n for n in settings()["memory_contexts"] if n < ctx] + [ctx]
-    default = 131072 if 131072 in points else points[-1]
-    options = []
-    for n in points:
-        total = cache["grows_per_token_bytes"] * n + cache["constant_bytes"]
-        options.append(
-            f'<button type="button" class="pill" aria-pressed="{"true" if n == default else "false"}" '
-            f'data-bytes="{e(size(total))}" data-tokens="{n:,}">{e(tokens(n))} tokens{" (max)" if n == ctx else ""}</button>'
-        )
-    first = cache["grows_per_token_bytes"] * default + cache["constant_bytes"]
-    grow = [r for r in cache["breakdown"] if r["grows_per_token_bytes"]]
-    fixed = [r for r in cache["breakdown"] if not r["grows_per_token_bytes"]]
-    parts = [
-        f"{LABEL.get(r['layer_type'], r['layer_type'])} layers ({r['layers']}) add {r['grows_per_token_bytes']:,} B per token"
-        for r in grow
-    ]
-    if fixed:
-        parts.append(
-            "; ".join(
-                f"the {r['layers']} {LABEL.get(r['layer_type'], r['layer_type'])} layers keep a fixed-size state "
-                f"({size(r['constant_bytes'])}) that does not grow with context"
-                for r in fixed
-                if r["constant_bytes"]
+    rest = []
+    for field in sorted(pub, key=lambda f: PLAIN.get(f, f).lower()):
+        if field in shown or field in NOT_SHOWN or field not in checks:
+            continue
+        rest.append(
+            fact_row(
+                PLAIN.get(field, field.replace("_", " ").capitalize()),
+                config_key(checks[field]),
+                show(field, pub[field]),
+                checks[field],
             )
-            or "the other layers keep no cache"
         )
-    capped = [r for r in cache["breakdown"] if r["layer_type"] == "sliding_attention"]
-    if capped:
-        parts.append("sliding-window layers stop growing at their window")
-    return f"""<section class="panel" aria-labelledby="mem"><h2 id="mem">How much memory does the cache need?</h2>
-<p class="sub">One sequence, bf16, weights not included. Pick a context length.</p>
-<div class="pills" role="group" aria-label="Context length">{"".join(options)}</div>
-<p class="big mono" aria-live="polite"><span class="membytes">{e(size(first))}</span>
-<span class="sr"> at <span class="memtokens">{default:,}</span> tokens</span></p>
-<p class="sub">{e(sentence("; ".join(parts)))}</p></section>"""
+    for field, c in sorted(checks.items()):
+        if field not in pub and field not in NOT_SHOWN:  # held for review: no value shown
+            rest.append(
+                f'<tr><th scope=row>{e(PLAIN.get(field, field.replace("_", " ").capitalize()))}<span class="key">{e(config_key(c))}</span></th>'
+                f'<td class=mono>held for review</td><td>sources disagree</td><td><span class="st st-held-for-review">held for review</span></td></tr>'
+            )
+    head = "<thead><tr><th scope=col>Fact</th><th scope=col>Value</th><th scope=col>Read from</th><th scope=col>Status</th></tr></thead>"
+    return (
+        f'<div class="tablebox"><table class="facts">{head}<tbody>{"".join(key_rows)}</tbody></table>'
+        f'<details class="allfields"><summary>All {len(rest) + len(key_rows) - 1} fields</summary>'
+        f'<table class="facts">{head}<tbody>{"".join(rest)}</tbody></table></details></div>'
+    )
+
+
+def fit_planner(pub, cache):
+    ctx = int(pub["context_length"])
+    contexts = [n for n in settings()["memory_contexts"] if n < ctx] + [ctx]
+    default_ctx = 32768 if 32768 in contexts else contexts[-1]
+    combos = {}
+    for n in contexts:
+        kv = cache["grows_per_token_bytes"] * n + cache["constant_bytes"]
+        for key, _, per in PRECISION:
+            weights = pub["params_total"] * per
+            total = weights + kv
+            combos[f"{n}-{key}"] = dict(
+                total=size(total),
+                weights=size(weights),
+                cache=size(kv),
+                devices=[
+                    [
+                        min(100, round(100 * total / cap, 1)),
+                        "fits" if total <= 0.75 * cap else "tight" if total <= cap else "too big",
+                    ]
+                    for _, cap in DEVICES
+                ],
+            )
+    pick = combos[f"{default_ctx}-16"]
+    ctx_btns = "".join(
+        f'<button type="button" data-ctx="{n}" aria-pressed="{"true" if n == default_ctx else "false"}">{e(tokens(n))}{" (max)" if n == ctx else ""}</button>'
+        for n in contexts
+    )
+    prec_btns = "".join(
+        f'<button type="button" data-prec="{k}" aria-pressed="{"true" if k == "16" else "false"}">{e(label)}</button>'
+        for k, label, _ in PRECISION
+    )
+    bars = "".join(
+        f'<li><span>{e(name)}</span><span class="track"><span class="fill" style="width:{pct}%"></span></span>'
+        f'<span class="verdict v-{word.replace(" ", "-")}">{e(word)}</span></li>'
+        for (name, _), (pct, word) in zip(DEVICES, pick["devices"])
+    )
+    return f"""<section id="fit" class="panel planner" aria-labelledby="fit-h" data-combos='{e(json.dumps(combos))}'>
+<h2 id="fit-h">Will it fit on my machine?</h2>
+<p class="sub">Weights plus the cache that grows with context, for one conversation. Runtime overhead is not included.</p>
+<div class="choice"><span>Context length</span><div class="seg" role="group" aria-label="Context length">{ctx_btns}</div></div>
+<div class="choice"><span>Weight precision</span><div class="seg" role="group" aria-label="Weight precision">{prec_btns}</div></div>
+<div class="fitsum" aria-live="polite"><p class="big mono"><span data-out="total">{e(pick["total"])}</span></p>
+<p class="mono split2">weights <span data-out="weights">{e(pick["weights"])}</span><br>cache <span data-out="cache">{e(pick["cache"])}</span></p></div>
+<ul class="devices">{bars}</ul>
+<p class="sub">Weights = {pub["params_total"]:,} parameters × bytes per parameter. Cache = {cache["grows_per_token_bytes"]:,} B per token × context
+{f"+ {size(cache['constant_bytes'])} of fixed-size state" if cache["constant_bytes"] else ""}, bf16. "Tight" means over 75% of the device's memory.</p></section>"""
+
+
+def layer_section(pub):
+    legend = "".join(
+        f'<li><span class="sw" style="background:{COLOR.get(k, "#999")}" aria-hidden="true"></span><b>{pub["layer_type_counts"][k]}</b> {e(LABEL.get(k, k))}</li>'
+        for k in kinds_in_order(pub)
+    )
+    return f"""<section id="layers" aria-labelledby="layers-h"><h2 id="layers-h">Layer by layer</h2>
+<p class="sub">Layer 1 is on the left.</p>{cells(pub, "Layer order, layer 1 on the left: " + mix_text(pub))}
+<ul class="legendboxes">{legend}</ul></section>"""
 
 
 def model_page(stem, rec, pub, published):
@@ -537,56 +763,31 @@ def model_page(stem, rec, pub, published):
     pubs = settings()["publishers"]
     before = published_predecessor(rec, published)
     checks = {c["field"]: c for c in rec["checks"]}
-    key = [f for f in KEY_FACTS if f in pub]
+    key = [f for f in ("params_total", "num_layers", "layer_type_counts", "context_length") if f in pub]
     verified = [f for f in key if card_status(checks[f])[0] == "verified"]
-    badge = (
-        "All key facts verified" if len(verified) == len(key) else f"{len(verified)} of {len(key)} key facts verified"
-    )
-    active = (
+    badge = "Key facts verified" if len(verified) == len(key) else f"{len(verified)} of {len(key)} key facts verified"
+    tiles = [
+        (human(pub["params_total"]), "parameters"),
         (human(pub["params_active"]), "active per token")
         if "params_active" in pub
-        else ("all", "active per token (dense)")
-    )
-    tiles = [
-        (human(pub["params_total"]), "total parameters"),
-        active,
+        else ("all", "active per token (dense)"),
         (str(pub["num_layers"]), "layers"),
-        (tokens(pub["context_length"]), "context tokens"),
+        (f"{int(pub['context_length']):,}", "context tokens"),
         (size(cache["grows_per_token_bytes"]), "cache per token"),
     ]
     t_html = "".join(f"<div><dt>{e(b)}</dt><dd class=mono>{e(a)}</dd></div>" for a, b in tiles)
-    pattern = pattern_text(pub)
-    mix_rows = "".join(
-        f'<li><span class="sw" style="background:{COLOR.get(k, "#999")}" aria-hidden="true"></span>{e(LABEL.get(k, k))}'
-        f'<span class="mono">{pub["layer_type_counts"][k]} layers</span></li>'
-        for k in kinds_in_order(pub)
-    )
-    mix_box = f"""<aside class="panel mixbox" aria-labelledby="mix-{e(stem)}"><h3 id="mix-{e(stem)}">Layer mix</h3>
-{mix_bar(pub, "Layer mix, layer 1 on the left: " + mix_text(pub))}<ul class="mixlist">{mix_rows}
-{f"<li>Pattern<span>{e(pattern)}</span></li>" if pattern else ""}</ul></aside>"""
+    compare = ""
+    changed_html = ""
     if before:
         pred_name = before[1]["id"].split("/")[-1]
-        note = explainer_note(rec)
-        if note:
-            text = f'<p>{e(note)}</p><p class="byline">Written by Gemini from the verified diff; every number checked by code.</p>'
-        else:
-            changed = pipeline.diff(rec, before[1])
-            items = "".join(
-                f"<li>{e(FIELD_NAMES.get(r['field'], r['field']))}: "
-                f"{e(show(r['field'], r['before']) if r['before'] is not None else 'not published')} &rarr; "
-                f"{e(show(r['field'], r['after']) if r['after'] is not None else 'not published')}</li>"
-                for r in changed
-                if r["field"] in FIELD_NAMES
-            )
-            text = (
-                f"<p>{e(summary_line(pub, before[2]))}</p><ul class=changes>{items}</ul>"
-                f'<p class="byline">Listed by code from the verified diff; no written explanation has passed the checks yet.</p>'
-            )
-        left = f"<div><h2>What changed since {e(pred_name)}</h2>{text}</div>"
-        compare = f'<a class="button" href="../compare/{e(stem)}.html">Compare with {e(pred_name)}</a>'
-    else:
-        left = f"<div><h2>Overview</h2><p>{e(summary_line(pub))}</p><p class=byline>Written by code from published fields.</p></div>"
-        compare = ""
+        compare = f'<a class="btn" href="../compare/{e(stem)}.html">Compare with {e(pred_name)}</a>'
+        items = "".join(
+            f"<li><b>{e(label)}</b>: <span class=mono>{e(a)}</span> &rarr; <span class=mono>{e(b)}</span></li>"
+            for label, a, b in changes(rec, before[1])
+        )
+        changed_html = f"""<section aria-labelledby="chg"><h2 id="chg">What changed since {e(pred_name)}</h2>
+<ul class="changes">{items or "<li>No architectural change above 1%.</li>"}</ul>
+<p class="byline">Listed by code from the verified diff: changes under 1% (or under 0.1B parameters) and weight-group bookkeeping are left out; numbers to 3 significant figures.</p></section>"""
     chosen = generated.select(rec)
     if chosen:
         svg_path = ROOT / "site/diagrams" / f"{stem}.svg"
@@ -594,30 +795,44 @@ def model_page(stem, rec, pub, published):
         write_if_changed(svg_path, chosen[0])
         n = len(chosen[1]["checks_passed"])
         art = f'<img src="../diagrams/{e(stem)}.svg" alt="Architecture diagram of {e(name)}: {e(mix_text(pub))}">'
-        art_label = f"Drawn by Gemini from verified fields, passed {n} of {n} checks"
+        art_label = f"Drawn by Gemini from verified fields, {n} of {n} checks passed"
+        art_link = f' · <a href="../diagrams/{e(stem)}.svg">Open full size</a>'
     else:
         art = diagram.render(rec)
         art_label = "Drawn by code from verified fields; no generated diagram has passed every check yet"
+        art_link = ""
     commit = rec["source_commit"]
-    body = f"""<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html#models">Models</a> / {e(pubs.get(org, org))}</nav>
+    tabs = "".join(
+        f'<a href="#{a}">{t}</a>'
+        for a, t in (
+            ("short", "Overview"),
+            ("layers", "Layers"),
+            ("diagram", "Diagram"),
+            ("fit", "Memory planner"),
+            ("facts", "Facts and sources"),
+        )
+    )
+    body = f"""<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Explore</a> / {e(pubs.get(org, org))}</nav>
 <div class="titlerow"><div><h1>{e(name)}</h1>
 <p class="sub"><a href="https://huggingface.co/{e(rec["id"])}">{e(rec["id"])}</a> · released {e(date(rec["hub_created"]))} ·
-analysed at commit <a class="mono" href="https://huggingface.co/{e(rec["id"])}/tree/{e(commit)}">{e(commit[:10])}</a></p></div>
+read at commit <a class="mono" href="https://huggingface.co/{e(rec["id"])}/tree/{e(commit)}">{e(commit[:10])}</a></p></div>
 <div class="actions"><span class="badge">{e(badge)}</span>{compare}</div></div>
+<nav class="tabs" aria-label="On this page">{tabs}</nav>
 <dl class="stats tiles">{t_html}</dl>
-<section class="split">{left}{mix_box}</section>
-<section aria-labelledby="arch"><div class="sechead"><h2 id="arch">Architecture</h2><p class="hint">{e(art_label)}</p></div>
+<section id="short" aria-labelledby="short-h"><h2 id="short-h">In short</h2><p class="prose">{e(describe(pub))}</p>
+<p class="byline">Written by code from the published facts.</p></section>
+{changed_html}
+{layer_section(pub)}
+<section id="diagram" aria-labelledby="arch"><div class="sechead"><h2 id="arch">Diagram</h2><p class="hint">{e(art_label)}{art_link}</p></div>
 <figure class="panel diagram">{art}</figure></section>
-<section aria-labelledby="facts"><h2 id="facts">Where every number comes from</h2>
-<p class="sub">Each fact is read from the model's own files. Verified means two independent sources agree.</p>
-<div class="tablebox"><table class="facts"><thead><tr><th scope=col>Fact</th><th scope=col>Value</th><th scope=col>Sources</th><th scope=col>Status</th></tr></thead>
-<tbody>{facts_table(rec, pub, cache)}</tbody></table></div></section>
-{memory_picker(pub, cache)}"""
-    return frame(f"{name} architecture · ArchWatch", body, depth=1, active="models", description=summary_line(pub))
+{fit_planner(pub, cache)}
+<section id="facts" aria-labelledby="facts-h"><h2 id="facts-h">Facts and where they come from</h2>
+<p class="sub">Verified means two independent files agree.</p>{facts(rec, pub, cache)}</section>"""
+    return frame(f"{name} architecture · ArchWatch", body, depth=1, active="explore", description=describe(pub))
 
 
 def model_section(name, anchor):
-    """Body of one model page from data/models/<name>.json (raises PublicationError when it is not publishable)."""
+    """One model page from data/models/<name>.json (raises PublicationError when it is not publishable)."""
     rec = json.loads((ROOT / "data/models" / f"{name}.json").read_text())
     pub = render_values(rec)
     return model_page(name, rec, pub, {})
@@ -626,167 +841,276 @@ def model_section(name, anchor):
 # ---------------------------------------------------------------- compare
 
 
-def stack(rec, pub):
-    cells = "".join(
-        f'<span style="background:{COLOR.get(k, "#999")}" title="Layer {i + 1}: {e(LABEL.get(k, k))}"></span>'
-        for i, k in enumerate(pub["layer_types"])
+def compare_card(rec, pub):
+    org, name = rec["id"].split("/")
+    stem = rec["id"].replace("/", "__")
+    pubs = settings()["publishers"]
+    legend = "".join(
+        f'<li><span class="sw" style="background:{COLOR.get(k, "#999")}" aria-hidden="true"></span>{e(SHORT.get(k, k))} {pub["layer_type_counts"][k]}</li>'
+        for k in kinds_in_order(pub)
     )
-    name = rec["id"].split("/")[-1]
-    return f"""<div class="panel stack"><div class="stackhead"><h2>{e(name)}</h2><span class="mono">{pub["num_layers"]} layers</span></div>
-<div class="cells" role="img" aria-label="{e(name)} layer stack, layer 1 first: {e(mix_text(pub))}">{cells}</div>
-<p class="sub">{e(" · ".join(f"{LABEL.get(k, k)} {pub['layer_type_counts'][k]}" for k in kinds_in_order(pub)))}</p></div>"""
+    return f"""<div class="panel ccard"><h2><a href="../models/{e(stem)}.html">{e(name)}</a></h2>
+<p class="sub">{e(pubs.get(org, org))} · {e(date(rec["hub_created"]))}</p>
+{cells(pub, f"{name} layer order, layer 1 first: " + mix_text(pub))}<ul class="legend">{legend}</ul></div>"""
 
 
-def dense_word(field, value, pub):
-    """Dense models publish no active count or expert fields: say so instead of 'not published'."""
-    if value is None and "moe_num_experts" not in pub and (field == "params_active" or field.startswith("moe_")):
-        return "all (dense)" if field == "params_active" else "none (dense)"
-    return value
+def experts_text(p):
+    if "moe_num_experts" not in p:
+        return "dense"
+    return f"{p['moe_num_experts']} / {p['moe_active_experts']} / {p.get('moe_shared_experts', 0)}"
 
 
 def compare_page(stem, rec, pub, before):
     _, old, old_pub = before
     old_name, new_name = old["id"].split("/")[-1], rec["id"].split("/")[-1]
-    changed = {r["field"]: r for r in pipeline.diff(rec, old)}
-    fields = [f for f in ("params_total", "params_active", "num_layers", "context_length") if f in pub or f in old_pub]
-    fields += [f for f in changed if f not in fields and f in FIELD_NAMES]
     old_cache, new_cache = render_cache(old_pub), render_cache(pub)
+    items = changes(rec, old)
+    if True:  # an explainer note is shown only once it is regenerated under the same change filter
+        what = (
+            "<ul class=changes>"
+            + "".join(
+                f"<li><b>{e(lb)}</b>: <span class=mono>{e(a)}</span> &rarr; <span class=mono>{e(b)}</span></li>"
+                for lb, a, b in items
+            )
+            + "</ul><p class=byline>Listed by code from the verified diff: changes under 1% (or under 0.1B parameters) and weight-group bookkeeping are left out.</p>"
+        )
     rows = []
-    for f in fields:
-        a, b = old_pub.get(f), pub.get(f)
-        if a is None and b is None:
-            continue
-        held_old = a is None and f in {r["field"] for r in old["review_queue"]}
-        a, b = dense_word(f, a, old_pub), dense_word(f, b, pub)
-        word, cls = ("held", "warn") if held_old else change_label(f, a, b)
+
+    def row(label, a, b, chip):
+        word, cls = chip
+        diff = "0" if word == "same" else "1"
         rows.append(
-            f"<tr><th scope=row>{e(FIELD_NAMES.get(f, f))}</th>"
-            f"<td class=mono>{e('held for review' if held_old else show(f, a) if a is not None else 'not published')}</td>"
-            f"<td class=mono>{e(show(f, b) if b is not None else 'not published')}</td>"
+            f'<tr data-diff="{diff}"><th scope=row>{e(label)}</th><td class=mono>{e(a)}</td><td class=mono>{e(b)}</td>'
             f'<td><span class="chip chip-{cls}">{e(word)}</span></td></tr>'
         )
+
+    for field in ("layer_type_counts", "params_active", "params_total", "num_layers", "context_length", "hidden_size"):
+        a, b = old_pub.get(field), pub.get(field)
+        if a is None and b is None:
+            continue
+        held = a is None and field in {r["field"] for r in old["review_queue"]}
+        fmt = (
+            (lambda v: change_value(field, v))
+            if field != "context_length"
+            else (lambda v: f"{v:,}" if v else "not stated")
+        )
+        row(
+            PLAIN.get(field, field),
+            "held for review" if held else fmt(a),
+            fmt(b),
+            ("held", "warn")
+            if held
+            else change_chip(field, a, b)
+            if field != "layer_type_counts"
+            else (("same", "same") if a == b else ("changed", "up")),
+        )
     ga, gb = old_cache["grows_per_token_bytes"], new_cache["grows_per_token_bytes"]
-    word, cls = change_label("kv", ga, gb)
-    rows.append(
-        f"<tr><th scope=row>Cache per token</th><td class=mono>{ga:,} B</td><td class=mono>{gb:,} B</td>"
-        f'<td><span class="chip chip-{cls}">{e(word)}</span></td></tr>'
-    )
-    body = f"""<h1>{e(old_name)} &rarr; {e(new_name)}</h1>
-<p class="lead">{e(summary_line(pub, old_pub))}</p>
-<div class="pair">{stack(old, old_pub)}{stack(rec, pub)}</div>
-<div class="tablebox"><table class="facts"><caption class="sr">Changed fields</caption><thead><tr><th scope=col>Field</th>
-<th scope=col>{e(old_name)}</th><th scope=col>{e(new_name)}</th><th scope=col>Change</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>
-<p class="sub">Only published values are compared. A field held for review in either model is marked, not shown.
-<a href="../models/{e(stem)}.html">Back to {e(new_name)}</a></p>"""
-    return frame(f"{old_name} to {new_name} · ArchWatch", body, depth=1, active="compare")
+    row("Cache per token", size(ga), size(gb), change_chip("kv", ga, gb))
+    if "moe_num_experts" in pub or "moe_num_experts" in old_pub:
+        row(
+            "Experts (routed / per token / shared)",
+            experts_text(old_pub),
+            experts_text(pub),
+            ("same", "same") if experts_text(old_pub) == experts_text(pub) else ("changed", "up"),
+        )
+    seen = {
+        "layer_type_counts",
+        "params_active",
+        "params_total",
+        "num_layers",
+        "context_length",
+        "hidden_size",
+        "kv_cache_per_token_bytes",
+    }
+    for r in pipeline.diff(rec, old):
+        if r["field"] in seen or r["field"] in NOT_SHOWN | NOT_A_CHANGE or r["field"].startswith("moe_"):
+            continue
+        row(
+            PLAIN.get(r["field"], r["field"]),
+            change_value(r["field"], r["before"]),
+            change_value(r["field"], r["after"]),
+            change_chip(r["field"], r["before"], r["after"]),
+        )
+    points = sorted({131072, int(old_pub["context_length"]), int(pub["context_length"])})
+    bars = []
+    top = max(c["grows_per_token_bytes"] * n for c in (old_cache, new_cache) for n in points)
+    for n in points:
+        for nm, p, c in ((old_name, old_pub, old_cache), (new_name, pub, new_cache)):
+            if n > int(p["context_length"]):
+                continue
+            v = c["grows_per_token_bytes"] * n
+            bars.append(
+                f'<li><span>{e(nm)} at {e(tokens(n))}</span><span class="track"><span class="fill" style="width:{100 * v / top:.1f}%"></span></span>'
+                f'<span class="mono">{e(size(v))}</span></li>'
+            )
+    body = f"""<h1>Compare</h1>
+<div class="pair">{compare_card(old, old_pub)}{compare_card(rec, pub)}</div>
+<section class="panel" aria-labelledby="what"><h2 id="what">What changed</h2>{what}</section>
+<section aria-labelledby="fbf"><div class="sechead"><h2 id="fbf">Field by field</h2>
+<label class="toggle"><input type="checkbox" id="onlydiff"> Only show differences</label></div>
+<div class="tablebox"><table class="facts cmp"><thead><tr><th scope=col>Field</th><th scope=col>{e(old_name)}</th>
+<th scope=col>{e(new_name)}</th><th scope=col>Change</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div></section>
+<section class="panel" aria-labelledby="cm"><h2 id="cm">Cache memory as context grows</h2>
+<ul class="devices cachebars">{"".join(bars)}</ul>
+<p class="sub">Growing cache only, bf16, one sequence. Fixed-size state in non-attention layers is not included.</p></section>"""
+    return frame(f"{old_name} vs {new_name} · ArchWatch", body, depth=1, active="compare")
 
 
 def compare_index(pairs):
-    items = (
-        "".join(f'<li><a href="{e(stem)}.html">{e(old)} &rarr; {e(new)}</a></li>' for stem, old, new in pairs)
-        or "<li>No published model has a published predecessor yet.</li>"
+    items = "".join(f'<li><a href="{e(stem)}.html">{e(old)} &rarr; {e(new)}</a></li>' for stem, old, new in pairs) or (
+        "<li>No published model has a published predecessor yet.</li>"
     )
-    body = f"""<h1>Compare</h1><p class="lead">Each model next to its predecessor, block by block.</p>
-<ul class="plainlist">{items}</ul>"""
+    body = f"""<h1>Compare</h1><p class="lead">A model next to its predecessor: same family, same size class
+(total parameters within 2x, both dense or both MoE), both published.</p><ul class="plainlist">{items}</ul>"""
     return frame("Compare · ArchWatch", body, depth=1, active="compare")
 
 
 # ---------------------------------------------------------------- assets
 
 CSS = """
-:root{--bg:#F7F7F5;--fg:#111418;--mut:#5b6169;--line:#e3e3df;--card:#fff;--acc:#0B6E66;--soft:#efefeb}
-*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 Inter,system-ui,sans-serif}
+:root{--bg:#F7F7F5;--fg:#111418;--mut:#5b6169;--line:#e3e3df;--card:#fff;--acc:#0B6E66;--soft:#efefeb;--accsoft:#0B6E6618;
+--warn:#f3e6c4;--warnfg:#7a5a00;--bad:#f8dcd7;--badfg:#9b2c1f;--new:#dde8f7;--newfg:#244c86;--diff:#ece4fb;--difffg:#5b34b0;color-scheme:light}
+:root[data-theme=dark]{--bg:#111418;--fg:#e9ebee;--mut:#9aa1a9;--line:#2a2f36;--card:#181c21;--acc:#4fd1c0;--soft:#1f242a;--accsoft:#4fd1c022;
+--warn:#3a3020;--warnfg:#e8c46a;--bad:#3d2421;--badfg:#f2a196;--new:#1e2a3d;--newfg:#9cc0f2;--diff:#2b2340;--difffg:#c4b0f5;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111418;--fg:#e9ebee;--mut:#9aa1a9;--line:#2a2f36;--card:#181c21;--acc:#4fd1c0;--soft:#1f242a;--accsoft:#4fd1c022;
+--warn:#3a3020;--warnfg:#e8c46a;--bad:#3d2421;--badfg:#f2a196;--new:#1e2a3d;--newfg:#9cc0f2;--diff:#2b2340;--difffg:#c4b0f5;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 Inter,system-ui,sans-serif}
 h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em;line-height:1.15;margin:0}
-h1{font-size:clamp(34px,5vw,56px);font-weight:600}h2{font-size:26px;font-weight:600}h3{font-size:21px;font-weight:600}
-a{color:var(--acc)}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.mono,.num,.stats dd,.mini dd{font-family:"IBM Plex Mono",ui-monospace,monospace}
+h1{font-size:clamp(32px,4.4vw,48px);font-weight:600}h2{font-size:24px;font-weight:600}h3{font-size:20px;font-weight:600}
+a{color:var(--acc)}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.mono,.stats dd,.mini dd,.count{font-family:"IBM Plex Mono",ui-monospace,monospace}
 .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
-.skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;background:#fff;padding:8px;z-index:9}
+.skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;background:var(--card);padding:8px;z-index:9}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.top{background:#fff;border-bottom:1px solid var(--line)}
-.topbar{display:flex;align-items:center;gap:28px;height:62px}
+.top{background:var(--card);border-bottom:1px solid var(--line)}
+.topbar{display:flex;align-items:center;gap:28px;height:60px}
 .brand{font:600 20px "Space Grotesk",sans-serif;color:var(--fg);text-decoration:none}
 .top nav{display:flex;gap:22px}.top nav a{color:var(--mut);text-decoration:none;font-size:15px}
-.top nav a[aria-current]{color:var(--fg);font-weight:500}.top nav a:hover{color:var(--fg)}
+.top nav a[aria-current]{color:var(--fg);font-weight:500}
 .lastrun{margin-left:auto;font-size:13px;color:var(--mut)}
+.themebtn{font:inherit;font-size:14px;color:var(--mut);background:none;border:0;display:flex;align-items:center;gap:8px;cursor:pointer}
+.knob{width:34px;height:20px;border-radius:99px;background:var(--line);position:relative}
+.knob::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--card);transition:left .15s}
+.themebtn[aria-pressed=true] .knob{background:var(--acc)}.themebtn[aria-pressed=true] .knob::after{left:17px}
 main.wrap{padding:40px 20px 72px}
-.hero h1{max-width:820px}.lead{font-size:19px;color:var(--mut);max-width:720px;margin:20px 0 32px}
-.sub{color:var(--mut);margin:6px 0 16px}.hint{color:var(--mut);font-size:14px;margin:0}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:36px}
-.controls input{flex:1 1 360px;max-width:520px;font:inherit;padding:12px 16px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.pills{display:flex;flex-wrap:wrap;gap:8px}
-.pill{font:inherit;font-size:15px;padding:7px 16px;border-radius:99px;border:1px solid var(--line);background:#fff;color:var(--fg);cursor:pointer}
-.pill[aria-pressed=true]{background:var(--fg);color:#fff;border-color:var(--fg)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin:0 0 56px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.stats>div{padding:20px 22px;border-right:1px solid var(--line);display:flex;flex-direction:column-reverse}
-.stats>div:last-child{border-right:0}.stats dd{margin:0;font-size:28px;font-weight:500}.stats dt{color:var(--mut);font-size:14px}
-.tiles{margin:28px 0 48px}
-.sechead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin:0 0 20px}
-.cards{list-style:none;padding:0;margin:0 0 64px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-.card{background:#fff;border:1px solid var(--line);border-radius:12px}
-.cardlink{display:block;padding:22px;color:inherit;text-decoration:none;height:100%}
-.cardlink:hover{background:#fcfcfa}.cardlink:hover h3{color:var(--acc)}
+.lead{font-size:18px;color:var(--mut);max-width:640px;margin:16px 0 24px}
+.sub{color:var(--mut);margin:6px 0 14px}.hint{color:var(--mut);font-size:14px;margin:0}.byline{font-size:13px;color:var(--mut)}
+.searchrow input{width:100%;max-width:520px;font:inherit;padding:12px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+.newbar{display:flex;align-items:center;gap:24px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 20px;margin:28px 0}
+.newbar ul{list-style:none;display:flex;gap:28px;flex-wrap:wrap;margin:0;padding:0;font-size:15px}.newbar .mono{color:var(--mut);font-size:13px}
+.newbar a{color:var(--fg);text-decoration:none}.newbar a:hover{text-decoration:underline}
+.explore{display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:start}
+.filters fieldset{border:0;margin:0 0 22px;padding:0}.filters legend{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;font-weight:600}
+.filters ul{list-style:none;margin:0;padding:0}.filters li{display:flex;justify-content:space-between;font-size:14.5px;padding:3px 0}
+.filters label{display:flex;gap:8px;align-items:center;cursor:pointer}.filters input{accent-color:var(--acc);width:16px;height:16px;margin:0}
+.count{color:var(--mut);font-size:13px}.linkbtn{background:none;border:0;padding:0;font:inherit;font-size:14px;color:var(--acc);text-decoration:underline;cursor:pointer}
+.listhead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.tools{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mut)}
+.tools select{font:inherit;font-size:14px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.seg{display:inline-flex;gap:6px;flex-wrap:wrap}.seg button,.btn{font:inherit;font-size:14px;padding:6px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;text-decoration:none;display:inline-block}
+.seg button[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.cards{list-style:none;padding:0;margin:0 0 28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:18px}
+.card article{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;height:100%;display:flex;flex-direction:column}
 .cardhead{display:flex;justify-content:space-between;font-size:13px;color:var(--mut)}
-.card h3{margin:10px 0 12px}.line{margin:0 0 16px;color:#2b3036;font-size:15.5px}
-.bar{display:flex;gap:3px;height:9px;border-radius:99px;overflow:hidden}.bar span{display:block;min-width:2px}
-.legend{list-style:none;padding:0;margin:10px 0 16px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13.5px}
-.sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
-.mini{display:grid;grid-template-columns:repeat(3,1fr);margin:0;padding-top:14px;border-top:1px solid var(--line)}
-.mini div{display:flex;flex-direction:column-reverse}.mini dd{margin:0;font-size:16px}.mini dt{font-size:12.5px;color:var(--mut)}
+.card h3{margin:10px 0 10px;font-size:20px}.card h3 a{color:var(--fg);text-decoration:none}.card h3 a:hover{color:var(--acc)}
+.tag{font:500 12px Inter,sans-serif;background:var(--soft);color:var(--fg);padding:2px 9px;border-radius:99px;vertical-align:3px;margin-left:6px}
+.line{margin:0 0 14px;font-size:15px}
+.cells{display:flex;gap:2px;height:12px;overflow:hidden}.cells i{flex:1 1 0;border-radius:2px;min-width:0}
+@media (max-width:860px){.cells{gap:1px}}
+.mixcap{font-size:12.5px;color:var(--mut);margin:6px 0 12px}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);margin:auto 0 14px;padding-top:12px;border-top:1px solid var(--line)}
+.mini div,.stats>div{display:flex;flex-direction:column-reverse}.mini dd{margin:0;font-size:15px}.mini dt{font-size:12px;color:var(--mut)}
+.cardbtns{display:flex;gap:8px;flex-wrap:wrap}
 .empty{color:var(--mut)}
-.tablebox{background:#fff;border:1px solid var(--line);border-radius:12px;overflow-x:auto;margin-bottom:56px}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 20px;border-bottom:1px solid var(--line);vertical-align:top}
-tbody tr:last-child>*{border-bottom:0}thead th{background:var(--soft);font-size:14px;font-weight:600}
-tbody th{font-weight:400}.held tbody th{font-weight:500;width:30%}.held td{color:#3a4047;font-size:15px}
-.facts td.mono{overflow-wrap:anywhere}.detail,.note{display:block;font-size:12.5px;color:var(--mut);word-break:break-word}
-.note{color:#6b46c1}
+.heldbox{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 20px}
+.heldbox summary{cursor:pointer;font-weight:500}.heldbox ul{list-style:none;padding:0;margin:0}
+.heldbox li{display:grid;grid-template-columns:minmax(160px,30%) 1fr;gap:16px;padding:9px 0;border-top:1px solid var(--line);font-size:14.5px}
+.heldbox li span{color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin:24px 0 40px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stats>div{padding:18px 22px;border-right:1px solid var(--line)}.stats>div:last-child{border-right:0}
+.stats dd{margin:0;font-size:26px;font-weight:500}.stats dt{color:var(--mut);font-size:14px}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.tablebox{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto;margin-bottom:48px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child>*{border-bottom:0}thead th{background:var(--soft);font-size:14px;font-weight:600}tbody th{font-weight:400}
+.facts td.mono{overflow-wrap:anywhere}.key,.detail,.note{display:block;font-size:12px;color:var(--mut);font-family:"IBM Plex Mono",monospace;overflow-wrap:anywhere}
+.note{color:var(--difffg);font-family:Inter,sans-serif}.detail{font-family:Inter,sans-serif}
+.tableview .cells{min-width:160px}
+.allfields{border-top:1px solid var(--line)}.allfields summary{padding:12px 18px;cursor:pointer;font-weight:500}
 .st,.chip{display:inline-block;font-size:13px;padding:1px 10px;border-radius:99px;white-space:nowrap}
-.st-verified,.chip-up{background:#0B6E6618;color:#0B6E66}.st-one-source,.st-computed,.chip-warn{background:#f3e6c4;color:#7a5a00}
-.st-differs-from-card{background:#ece4fb;color:#5b34b0}.st-held-for-review{background:#f8dcd7;color:#9b2c1f}
-.chip-same{background:var(--soft);color:var(--mut)}.chip-new{background:#dde8f7;color:#244c86}
-.crumbs{font-size:14px;color:var(--mut);margin-bottom:10px}
+.st-verified,.chip-up{background:var(--accsoft);color:var(--acc)}.st-one-source,.st-computed,.chip-warn{background:var(--warn);color:var(--warnfg)}
+.st-differs-from-card{background:var(--diff);color:var(--difffg)}.st-held-for-review{background:var(--bad);color:var(--badfg)}
+.chip-same{background:var(--soft);color:var(--mut)}.chip-new{background:var(--new);color:var(--newfg)}
+.crumbs{font-size:14px;color:var(--mut);margin-bottom:8px}
 .titlerow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.badge{background:#0B6E6618;color:var(--acc);padding:6px 14px;border-radius:99px;font-size:14px;font-weight:500}
-.badge::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-right:8px;vertical-align:1px}
-.button{border:1px solid var(--line);background:#fff;color:var(--fg);padding:6px 14px;border-radius:99px;font-size:14px;text-decoration:none}
-.split{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;margin-bottom:56px;align-items:start}
-.split p{color:#2b3036}.split h2{margin-bottom:12px}.byline{font-size:13px;color:var(--mut)}
-.changes{padding-left:20px;color:#2b3036}
-.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px}
-.mixbox h3{font-size:17px;margin-bottom:14px}.mixlist{list-style:none;padding:0;margin:16px 0 0}
-.mixlist li{display:flex;align-items:center;padding:4px 0}.mixlist li>span:last-child{margin-left:auto;color:var(--mut)}
-.diagram{margin:0 0 56px;overflow-x:auto}.diagram img,.diagram svg{display:block;width:100%;height:auto;min-width:720px}
-.big{font-size:44px;margin:18px 0 8px}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:32px 0}
-.stackhead{display:flex;justify-content:space-between;align-items:baseline}.stack h2{font-size:20px}
-.cells{display:flex;flex-wrap:wrap;gap:4px;margin:16px 0 8px}.cells span{width:28px;height:18px;border-radius:3px}
+.badge{background:var(--accsoft);color:var(--acc);padding:6px 14px;border-radius:99px;font-size:14px;font-weight:500}
+.tabs{display:flex;gap:22px;flex-wrap:wrap;margin:22px 0 0;padding:10px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px;font-size:14px}
+.tabs a{text-decoration:none}
+section{margin-bottom:44px}section h2{margin-bottom:10px}.prose{max-width:760px;font-size:16.5px}
+.changes{padding-left:20px;max-width:820px}.changes li{margin:4px 0}
+.legendboxes{list-style:none;display:flex;gap:10px;flex-wrap:wrap;padding:0;margin:14px 0 0}
+.legendboxes li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:14.5px}
+#layers .cells{height:28px;gap:3px}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 24px}
+.diagram{margin:0;overflow-x:auto;background:#fff}.diagram img,.diagram svg{display:block;width:100%;height:auto;min-width:720px}
+.choice{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:10px 0}.choice>span{width:130px;font-size:14px;color:var(--mut)}
+.fitsum{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;margin:14px 0}.big{font-size:44px;margin:0;line-height:1}
+.split2{font-size:14px;color:var(--mut);margin:0}
+.devices{list-style:none;padding:0;margin:8px 0}.devices li{display:grid;grid-template-columns:150px 1fr 90px;gap:14px;align-items:center;padding:4px 0;font-size:14px}
+.track{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}.fill{display:block;height:100%;background:var(--acc)}
+.verdict{text-align:center;border-radius:99px;font-size:12.5px;padding:1px 8px}.v-fits{background:var(--accsoft);color:var(--acc)}
+.v-tight{background:var(--warn);color:var(--warnfg)}.v-too-big{background:var(--bad);color:var(--badfg)}
+.cachebars li{grid-template-columns:220px 1fr 110px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0}.ccard h2{font-size:20px;margin:0}.ccard h2 a{color:var(--fg);text-decoration:none}
+.legend{list-style:none;padding:0;margin:10px 0 0;display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px}
+.toggle{font-size:14px;color:var(--mut);display:flex;gap:8px;align-items:center}
 .plainlist{font-size:18px}
-.foot{border-top:1px solid var(--line);background:#fff;color:var(--mut);font-size:14px;padding:28px 0}
-.cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:48px}
-@media (max-width:800px){.split,.pair,.cols2{grid-template-columns:1fr}.lastrun{display:none}.topbar{gap:16px;overflow-x:auto}
-.stats>div{border-right:0;border-bottom:1px solid var(--line)}.big{font-size:34px}}
-.split>*,.pair>*,.cols2>*,.titlerow>*{min-width:0}h1,.sub{overflow-wrap:anywhere}.diagram{max-width:100%}
-@media (prefers-reduced-motion:no-preference){.cardlink{transition:background .15s}}
+.foot{border-top:1px solid var(--line);background:var(--card);color:var(--mut);font-size:14px;padding:22px 0}.foot p{margin:0;max-width:900px}
+.explore>*,.pair>*,.titlerow>*{min-width:0}h1,.sub{overflow-wrap:anywhere}
+@media (max-width:860px){.explore,.pair{grid-template-columns:1fr}.lastrun{display:none}.topbar{gap:16px;overflow-x:auto}
+.stats>div{border-right:0;border-bottom:1px solid var(--line)}.big{font-size:34px}.mini{grid-template-columns:repeat(2,1fr);row-gap:8px}
+.devices li,.cachebars li{grid-template-columns:110px 1fr 80px}.choice>span{width:auto}}
 """
 
 JS = """
-document.querySelectorAll('.panel .pills').forEach(function(group){
-  var panel=group.closest('.panel'),out=panel.querySelector('.membytes'),tok=panel.querySelector('.memtokens');
-  group.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
-    group.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
-    out.textContent=b.dataset.bytes;tok.textContent=b.dataset.tokens;});
-});
-(function(){var box=document.querySelector('.controls');if(!box)return;box.hidden=false;
-  var q=document.getElementById('q'),pills=box.querySelectorAll('.pill'),cards=document.querySelectorAll('.card'),
-      empty=document.querySelector('.empty'),filter='All';
-  function apply(){var t=q.value.trim().toLowerCase(),n=0;cards.forEach(function(c){
-      var ok=(filter==='All'||c.dataset.tags.split('|').indexOf(filter)>=0)&&(!t||c.dataset.search.indexOf(t)>=0);
-      c.hidden=!ok;if(ok)n++;});empty.hidden=n>0;}
-  q.addEventListener('input',apply);
-  pills.forEach(function(p){p.addEventListener('click',function(){filter=p.dataset.filter;
-    pills.forEach(function(x){x.setAttribute('aria-pressed',x===p?'true':'false')});apply();});});
+(function(){var root=document.documentElement,btn=document.querySelector('.themebtn');
+  function cur(){return root.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+  if(btn){btn.setAttribute('aria-pressed',cur()==='dark');btn.addEventListener('click',function(){
+    var t=cur()==='dark'?'light':'dark';root.dataset.theme=t;btn.setAttribute('aria-pressed',t==='dark');
+    try{localStorage.setItem('aw-theme',t)}catch(e){}});}
+})();
+(function(){var p=document.getElementById('fit');if(!p)return;var combos=JSON.parse(p.dataset.combos),ctx,prec;
+  function sel(attr){var b=p.querySelector('['+attr+'][aria-pressed=true]');return b.getAttribute(attr)}
+  function draw(){var c=combos[sel('data-ctx')+'-'+sel('data-prec')];['total','weights','cache'].forEach(function(k){
+      p.querySelector('[data-out='+k+']').textContent=c[k]});
+    p.querySelectorAll('.devices li').forEach(function(li,i){var d=c.devices[i];li.querySelector('.fill').style.width=d[0]+'%';
+      var v=li.querySelector('.verdict');v.textContent=d[1];v.className='verdict v-'+d[1].replace(' ','-')});}
+  p.querySelectorAll('.seg').forEach(function(g){g.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
+    g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});draw();});});
+})();
+(function(){var t=document.getElementById('onlydiff');if(!t)return;t.addEventListener('change',function(){
+  document.querySelectorAll('tr[data-diff="0"]').forEach(function(r){r.hidden=t.checked})});})();
+(function(){var f=document.getElementById('filters');if(!f)return;
+  var q=document.getElementById('q'),sort=document.getElementById('sort'),list=document.querySelector('.cards'),
+      cards=[].slice.call(list.children),rows=[].slice.call(document.querySelectorAll('.tableview tbody tr')),
+      shown=document.querySelector('.shown'),empty=document.querySelector('.empty'),now=new Date();
+  function vals(n){return [].slice.call(f.querySelectorAll('input[name='+n+']:checked')).map(function(x){return x.value})}
+  function ok(c){var d=c.dataset,des=vals('design'),lay=vals('layers'),siz=vals('size'),rel=f.querySelector('input[name=released]:checked').value;
+    var dm=(des.indexOf(d.design==='moe'?'moe':'dense')>=0)||(d.hybrid==='1'&&des.indexOf('hybrid')>=0);
+    var lm=!lay.length||lay.some(function(l){return d.layers.split(' ').indexOf(l)>=0});
+    var p=+d.params,sm=!siz.length||siz.some(function(s){return s==='s'?p<3e9:s==='m'?p>=3e9&&p<30e9:p>=30e9});
+    var age=(now-new Date(d.date))/864e5,rm=rel==='any'||(rel==='6m'?age<=183:d.date.slice(0,4)==String(now.getFullYear()));
+    var t=q.value.trim().toLowerCase();return dm&&lm&&sm&&rm&&(!t||d.search.indexOf(t)>=0)}
+  function apply(){var key=sort.value,n=0;cards.sort(function(a,b){var x=a.dataset,y=b.dataset;
+      return key==='big'?y.params-x.params:key==='small'?x.params-y.params:key==='name'?x.name.localeCompare(y.name):y.date.localeCompare(x.date)});
+    cards.forEach(function(c,i){list.appendChild(c);var m=ok(c);c.hidden=!m;if(rows[i]){}if(m)n++});
+    rows.forEach(function(r){var name=r.querySelector('a').getAttribute('href');var c=cards.filter(function(c){return c.querySelector('h3 a').getAttribute('href')===name})[0];r.hidden=c.hidden});
+    shown.textContent=n;empty.hidden=n>0}
+  f.addEventListener('change',apply);f.addEventListener('reset',function(){setTimeout(apply)});q.addEventListener('input',apply);sort.addEventListener('change',apply);
+  document.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(){var t=b.dataset.view==='table';
+    document.querySelectorAll('[data-view]').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+    list.hidden=t;document.querySelector('.tableview').hidden=!t;})});
 })();
 """
 
@@ -797,8 +1121,7 @@ def main():
     write_if_changed(site / "style.css", CSS.lstrip())
     write_if_changed(site / "site.js", JS.lstrip())
     write_if_changed(site / "index.html", home(published, held, seen))
-    pairs = []
-    expected = {"index.html"}
+    pairs, expected = [], {"index.html"}
     for repo, (stem, rec, pub) in published.items():
         write_if_changed(site / "models" / f"{stem}.html", model_page(stem, rec, pub, published))
         before = published_predecessor(rec, published)

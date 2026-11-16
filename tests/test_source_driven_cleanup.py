@@ -25,6 +25,7 @@ def test_gallery_discovers_unseen_record_and_watcher_sources(tmp_path, monkeypat
     rec = json.loads((ROOT / "data/models/LiquidAI__LFM3-1.7B.json").read_text())
     rec.update(id="new-publisher/UnseenArchitecture", source_files=["config.json", "README.md", "weights.safetensors"])
     rec.pop("predecessor", None)
+    rec["hub_metadata"] = {}  # the fixture is a fine-tune record; fine-tunes are out of scope on the site
     folder = tmp_path / "data/models"
     folder.mkdir(parents=True)
     (folder / "arbitrary-filename.json").write_text(json.dumps(rec))
@@ -33,7 +34,7 @@ def test_gallery_discovers_unseen_record_and_watcher_sources(tmp_path, monkeypat
     )
     module.main()
     page = (tmp_path / "site/index.html").read_text()
-    assert "Search 1 models" in page and "UnseenArchitecture" in page and "FutureModel" in page
+    assert '<span class="shown">1</span> models' in page and "UnseenArchitecture" in page and "FutureModel" in page
     assert "<unverified>" not in page and "&lt;unverified&gt;" not in page  # held: plain reason only
     model = (tmp_path / "site/models/arbitrary-filename.html").read_text()
     assert f"huggingface.co/new-publisher/UnseenArchitecture/tree/{rec['source_commit']}" in model
