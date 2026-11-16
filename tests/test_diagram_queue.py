@@ -127,6 +127,21 @@ def test_approved_crons_and_daily_job_makes_no_llm_calls():
     assert CONFIG["schedule"]["diagrams"]["max_calls_per_run"] == 15
 
 
+def test_diagram_run_keeps_outputs_and_ledger_before_tests():
+    # Run 43862589403 lost five passing diagrams: the test step failed before the PR step. Never again.
+    steps = yaml.safe_load((ROOT / ".github/workflows/diagrams.yml").read_text())["jobs"]["run"]["steps"]
+    names = [s.get("name") or s.get("uses") or s.get("run") for s in steps]
+    generate = next(i for i, s in enumerate(steps) if s.get("id") == "generate")
+    artifact = next(i for i, s in enumerate(steps) if "upload-artifact" in str(s.get("uses")))
+    pr = next(i for i, s in enumerate(steps) if "create-pull-request" in str(s.get("uses")))
+    tests = next(i for i, s in enumerate(steps) if "pytest" in str(s.get("run")))
+    assert generate < artifact < pr < tests, names
+    for i in (artifact, pr, tests):
+        assert steps[i]["if"].startswith("always()"), names[i]
+    paths = steps[artifact]["with"]["path"]
+    assert "data/gemini-requests.json" in paths and "data/generated-diagrams/" in paths
+
+
 def test_published_diagrams_are_never_redrawn(monkeypatch):
     # The real repository: Llama, Kimi and Nemotron have approved, published diagrams for their current specs.
     monkeypatch.setattr(queue, "published_for", lambda root, record: queue.select(record, root))
