@@ -53,7 +53,11 @@ def test_publish_refuses_failed_or_stale_diagrams(tmp_path):
 def test_site_labels_which_diagram_is_shown():
     gemini = (ROOT / "site/models/meta-llama__Llama-3.1-8B.html").read_text()
     code = (ROOT / "site/models/microsoft__phi-2.html").read_text()
-    assert "Drawn by Gemini from verified fields, passed" in gemini and 'src="../diagrams/' in gemini
+    assert (
+        "Drawn by Gemini from verified fields," in gemini
+        and "checks passed" in gemini
+        and 'src="../diagrams/' in gemini
+    )
     assert "Drawn by code from verified fields; no generated diagram has passed every check yet" in code
 
 
