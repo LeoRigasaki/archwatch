@@ -132,6 +132,7 @@ PLAIN = {
     "vision_hidden_size": "Vision encoder width",
     "vision_params": "Vision encoder parameters",
     "ngram_layer_ids": "Layers with n-gram memory",
+    "release_date": "Release date (model card)",
 }
 KEY_FACTS = (
     "params_total",
@@ -227,6 +228,14 @@ def show(field, v):
     if isinstance(v, int):
         return f"{v:,}"
     return str(v)
+
+
+def when(rec, pub):
+    """(label, ISO date) for display. A release date only when the model's own card states one; otherwise the
+    Hub creation time, labelled as such. Creation time is never called a release."""
+    if pub.get("release_date"):
+        return "released", pub["release_date"]
+    return "added to Hub", rec["hub_created_at"][:10]
 
 
 def card_status(c):
@@ -553,7 +562,7 @@ def model_card(stem, rec, pub, published, pubs):
         hybrid="1" if hybrid(pub) else "0",
         layers=" ".join(flags),
         params=int(pub["params_total"]),
-        date=rec["hub_created"][:10],
+        date=rec["hub_created_at"][:10],
         name=name.lower(),
         search=" ".join([rec["id"], pubs.get(org, org), design(pub), mix_text(pub), describe(pub)]).lower(),
     )
@@ -565,7 +574,7 @@ def model_card(stem, rec, pub, published, pubs):
         else ""
     )
     return f"""<li class="card" {attrs}><article aria-labelledby="h-{e(stem)}">
-<div class="cardhead"><span>{e(pubs.get(org, org))}</span><time datetime="{e(rec["hub_created"][:10])}">{e(date(rec["hub_created"]))}</time></div>
+<div class="cardhead"><span>{e(pubs.get(org, org))}</span><span>{e(when(rec, pub)[0])} <time datetime="{e(when(rec, pub)[1])}">{e(date(when(rec, pub)[1]))}</time></span></div>
 <h3 id="h-{e(stem)}"><a href="models/{e(stem)}.html">{e(name)}</a> <span class="tag">{e(design(pub))}</span></h3>
 <p class="line">{e(describe(pub))}</p>
 {cells(pub, "Layer order, layer 1 on the left: " + mix_text(pub))}<p class="mixcap">{e(mix_text(pub))}</p>
@@ -580,7 +589,7 @@ def table_row(stem, rec, pub, pubs):
     org, name = rec["id"].split("/")
     return (
         f'<tr><th scope=row><a href="models/{e(stem)}.html">{e(name)}</a><span class="detail">{e(pubs.get(org, org))} · '
-        f"{e(date(rec['hub_created']))}</span></th><td>{e(design(pub))}</td><td class=mono>{e(human(pub['params_total']))}</td>"
+        f"{e(when(rec, pub)[0])} {e(date(when(rec, pub)[1]))}</span></th><td>{e(design(pub))}</td><td class=mono>{e(human(pub['params_total']))}</td>"
         f"<td class=mono>{pub['num_layers']}</td><td class=mono>{e(tokens(pub['context_length']))}</td>"
         f"<td class=mono>{e(cache_value(pub)[0])}{'' if cache_value(pub)[1] == 'cache / token' else '<span class=detail>' + e(cache_value(pub)[1].replace('cache, ', '')) + '</span>'}</td><td>{cells(pub, mix_text(pub))}</td></tr>"
     )
@@ -588,11 +597,11 @@ def table_row(stem, rec, pub, pubs):
 
 def home(published, held, seen):
     pubs = settings()["publishers"]
-    order = sorted(published.values(), key=lambda x: (x[1]["hub_created"] or "", x[1]["id"]), reverse=True)
+    order = sorted(published.values(), key=lambda x: (x[1]["hub_created_at"] or "", x[1]["id"]), reverse=True)
     cards = "".join(model_card(s, r, p, published, pubs) for s, r, p in order)
     rows = "".join(table_row(s, r, p, pubs) for s, r, p in order)
     newest = "".join(
-        f'<li><span class="mono">{e(date(r["hub_created"], year=False))}</span> <a href="models/{e(s)}.html">'
+        f'<li><span class="mono">{e(date(r["hub_created_at"], year=False))}</span> <a href="models/{e(s)}.html">'
         f"{e(r['id'].split('/')[-1])}</a></li>"
         for s, r, _ in order[:3]
     )
@@ -626,13 +635,13 @@ def home(published, held, seen):
 <p class="lead">Read from each model's own files at a pinned commit. Every number is labelled with where it came from.</p>
 <div class="searchrow"><label class="sr" for="q">Search models</label>
 <input id="q" type="search" placeholder="Search a model, lab or idea: Kimi, Liquid, sliding window" autocomplete="off"></div></section>
-<section class="newbar" aria-label="Newest releases"><b>Newest</b><ul>{newest}</ul></section>
+<section class="newbar" aria-label="Newest on the Hub"><b>Newest on the Hub</b><ul>{newest}</ul></section>
 <div class="explore">
 <aside class="filters" aria-label="Filters"><form id="filters">
 <fieldset><legend>Design</legend><ul>{designs}</ul></fieldset>
 <fieldset><legend>Layer types inside</legend><ul>{layers}</ul></fieldset>
 <fieldset><legend>Size</legend><ul>{sizes}</ul></fieldset>
-<fieldset><legend>Released</legend><ul>
+<fieldset><legend>Added to Hub</legend><ul>
 <li><label><input type="radio" name="released" value="any" checked>Any time</label></li>
 <li><label><input type="radio" name="released" value="6m">Last 6 months</label></li>
 <li><label><input type="radio" name="released" value="year">This year</label></li></ul></fieldset>
@@ -674,18 +683,48 @@ def config_key(c):
     return f"{SOURCE_WORDS.get(src, src)}: {detail}"[:80]
 
 
-def fact_row(label, key, value, c):
+def source_url(rec, evidence):
+    """The file an evidence string was read from, at the record's pinned commit (None for computed values)."""
+    src, _, detail = evidence.partition(":")
+    blob = f"https://huggingface.co/{rec['id']}/blob/{rec['source_commit']}/"
+    if src == "config":
+        return blob + "config.json"
+    if src == "card":
+        return blob + "README.md"
+    if src == "code":
+        m = re.match(r"([\w./-]+\.py)(#L\d+)?", detail)
+        return blob + m.group(1) + (m.group(2) or "") if m else None
+    if src == "weights":
+        index = "model.safetensors.index.json"
+        if index in rec.get("source_files", []):
+            return blob + index
+        return f"https://huggingface.co/{rec['id']}/tree/{rec['source_commit']}"
+    return None
+
+
+def source_links(rec, c):
+    """Each source of a fact, linked to its file at the pinned commit (config key or code line where known)."""
+    links = {}
+    for x in c["candidates"]:
+        src, _, detail = x["evidence"].partition(":")
+        word = SOURCE_WORDS.get(src, src)
+        url = source_url(rec, x["evidence"])
+        if src == "code":
+            m = re.match(r"([\w./-]+\.py)(?:#L(\d+))?", detail)
+            word = f"{m.group(1)} line {m.group(2)}" if m and m.group(2) else (m.group(1) if m else word)
+        if word not in links:
+            links[word] = url
+    return ", ".join(f'<a href="{e(u)}">{e(w)}</a>' if u else e(w) for w, u in links.items())
+
+
+def fact_row(rec, label, key, value, c):
     status, note = card_status(c) if c else ("computed", None)
     word = STATUS_WORDS.get(status, status)
-    sources = (
-        ", ".join(dict.fromkeys(SOURCE_WORDS.get(x["evidence"].split(":")[0], "") for x in c["candidates"]))
-        if c
-        else "computed from the facts above"
-    )
+    sources = source_links(rec, c) if c else "computed from the facts above"
     extra = f'<span class="note">{e(note)}; recorded, not a gate</span>' if note else ""
     return (
         f'<tr><th scope=row>{e(label)}<span class="key">{e(key)}</span></th><td class="mono">{e(value)}</td>'
-        f'<td>{e(sources)}{extra}</td><td><span class="st st-{word.replace(" ", "-")}">{e(word)}</span></td></tr>'
+        f'<td>{sources}{extra}</td><td><span class="st st-{word.replace(" ", "-")}">{e(word)}</span></td></tr>'
     )
 
 
@@ -700,6 +739,7 @@ def facts(rec, pub, cache):
         shown.add(field)
         key_rows.append(
             fact_row(
+                rec,
                 label or PLAIN.get(field, field),
                 config_key(checks[field]),
                 value or show(field, pub[field]),
@@ -732,6 +772,7 @@ def facts(rec, pub, cache):
             continue
         rest.append(
             fact_row(
+                rec,
                 PLAIN.get(field, field.replace("_", " ").capitalize()),
                 config_key(checks[field]),
                 show(field, pub[field]),
@@ -888,7 +929,7 @@ def model_page(stem, rec, pub, published):
     )
     body = f"""<nav class="crumbs" aria-label="Breadcrumb"><a href="../index.html">Explore</a> / {e(pubs.get(org, org))}</nav>
 <div class="titlerow"><div><h1>{e(name)}</h1>
-<p class="sub"><a href="https://huggingface.co/{e(rec["id"])}">{e(rec["id"])}</a> · released {e(date(rec["hub_created"]))} ·
+<p class="sub"><a href="https://huggingface.co/{e(rec["id"])}">{e(rec["id"])}</a> · {e(when(rec, pub)[0])} {e(date(when(rec, pub)[1]))}{" (model card)" if pub.get("release_date") else ""} ·
 read at commit <a class="mono" href="https://huggingface.co/{e(rec["id"])}/tree/{e(commit)}">{e(commit[:10])}</a></p></div>
 <div class="actions"><span class="badge">{e(badge)}</span>{compare}</div></div>
 <nav class="tabs" aria-label="On this page">{tabs}</nav>
@@ -1021,7 +1062,7 @@ def model_data(stem, rec, pub, published, max_context):
         id=rec["id"],
         name=name,
         publisher=settings()["publishers"].get(org, org),
-        date=date(rec["hub_created"]),
+        date=f"{when(rec, pub)[0]} {date(when(rec, pub)[1])}",
         design=design(pub),
         hybrid=hybrid(pub),
         layers=pub["layer_types"],

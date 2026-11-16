@@ -91,7 +91,7 @@ def run(root, manifest, policy, *, batch=0, source=None):
             last_observed_commit=record["source_commit"],
             analyzed_commit=record["source_commit"],
             family=family(repo, policy),
-            created_at=record.get("hub_created"),
+            created_at=record.get("hub_created_at"),
             pool="core",
         )
         if eligible:
