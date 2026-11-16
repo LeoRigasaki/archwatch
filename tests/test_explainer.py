@@ -104,5 +104,8 @@ def test_stale_examples_are_detected_when_a_record_changes():
     assert set(stale) <= {"LiquidAI/LFM3-1.7B"}  # its predecessor record gained published fields in the audit
 
 
-def test_explainer_is_not_on_the_site_yet():
-    assert "explainer" not in (ROOT / "build_site.py").read_text()
+def test_site_shows_no_explainer_note_until_it_follows_the_change_filter():
+    # Saved notes still list sub-1% changes and weight-group bookkeeping, which the site leaves out.
+    note = json.loads((ROOT / "results/explainer/moonshotai__Kimi-K3.1-Pro.json").read_text())["text"]
+    for page in (ROOT / "site").rglob("*.html"):
+        assert note not in page.read_text()
