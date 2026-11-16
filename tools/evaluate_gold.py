@@ -19,7 +19,16 @@ def equal(expected, actual):
     return expected == actual
 
 
-def evaluate(gold_dir: Path, records_dir: Path):
+def as_convention(pub: dict, version: int) -> dict:
+    """Published values mapped back to an older counting convention (config/counting-conventions.yaml), so frozen
+    labels are compared like for like without editing them. Version 1 counted MTP modules in the total."""
+    out = dict(pub)
+    if version == 1 and "params_total" in out and out.get("params_mtp"):
+        out["params_total"] = out["params_total"] + out["params_mtp"]
+    return out
+
+
+def evaluate(gold_dir: Path, records_dir: Path, convention: int | None = None):
     fields = defaultdict(lambda: {"correct": 0, "total": 0, "missing": 0})
     models = []
     for path in sorted(gold_dir.glob("*.yaml")):
@@ -28,6 +37,8 @@ def evaluate(gold_dir: Path, records_dir: Path):
         record = json.loads(record_path.read_text()) if record_path.exists() else {}
         revision_ok = record.get("source_commit") == label["source_commit"]
         pub = record.get("published", {}) if revision_ok else {}
+        if convention is not None:
+            pub = as_convention(pub, convention)
         errors, correct = {}, 0
         for field, expected in label["expected"].items():
             exists = field in pub
@@ -101,8 +112,11 @@ def main():
     parser.add_argument("--gold", type=Path, default=ROOT / "evals/gold")
     parser.add_argument("--output", type=Path, default=ROOT / "results/gold-exact-match")
     parser.add_argument("--scope", help="Explicit evaluation cohort/protocol description for a separate report")
+    parser.add_argument("--convention", type=int, help="map records to this counting-convention version first")
     args = parser.parse_args()
-    report = evaluate(args.gold, args.records)
+    report = evaluate(args.gold, args.records, args.convention)
+    if args.convention is not None:
+        report["convention"] = args.convention
     if args.scope:
         report["scope"] = args.scope
     write_report(report, args.output)

@@ -1,6 +1,6 @@
 schema_version: 1
 as_of: '2026-11-14'
-baseline_code_commit: 5977d090797cad34f68645ae6eea47d3b9186716
+baseline_code_commit: 785cac02c20af15e14fbf8307b42fd1cf90a1eac
 selection_basis: Official Hub creation chronology, grouping release variants and verifying
   primary cards/config/safetensors; general language/multimodal foundations. No source
   payload execution.

@@ -4,11 +4,11 @@ The cohort is pinned in `config/newest-backfill.yaml` as of 14 November 2026. Of
 
 ## Frozen evaluation
 
-- Baseline code: merged PR #8, commit `5977d090797cad34f68645ae6eea47d3b9186716`.
-- Seven unseen models, 139 source-transcribed labels, frozen in commit `a0a3f88` **before the pipeline run**. First-run records/results were committed in `46c1585`, before fixes.
+- Baseline code: merged PR #8, commit `785cac02c20af15e14fbf8307b42fd1cf90a1eac`.
+- Seven unseen models, 139 source-transcribed labels, frozen in commit `9caeb74` **before the pipeline run**. First-run records/results were committed in `e33f8c7`, before fixes.
 - **First-run held-out exact match: 97/139 (69.8%).** The immutable report, per-field failures, source commits and gold hashes are in `results/newest-first-run/`.
 - Liquid LFM3 Base and Kimi-K3.1-Pro were already development cases. They are processed but excluded from held-out accuracy.
-- Meta access arrived during the run. Its 16-field primary-source label was entered afterward, before inspecting extracted values or changing code, and committed in `af7d814`. The separate late-access baseline is **11/16**. It is not retroactively added to the strictly pre-run-frozen cohort.
+- Meta access arrived during the run. Its 16-field primary-source label was entered afterward, before inspecting extracted values or changing code, and committed in `840b22d`. The separate late-access baseline is **11/16**. It is not retroactively added to the strictly pre-run-frozen cohort.
 - After fixes, adaptation is **138/139** on the seven-model set and **16/16** on late-access Meta. These are adaptation/regression scores, not fresh held-out accuracy. The original labels and results are preserved; all labels remain `human_reviewed: false`.
 
 ## What changed
