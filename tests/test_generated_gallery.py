@@ -35,7 +35,7 @@ def test_falls_back_when_svg_edited_spec_changed_or_missing(tmp_path):
     svg = root / f"diagrams/generated/{stem}.svg"
     svg.write_text(svg.read_text().replace("128K", "256K"))  # edited after review
     assert generated.select(rec, root) is None
-    assert generated.select(record("microsoft__phi-2"), root) is None  # never generated
+    assert generated.select(record("microsoft__phi-2"), root) is None  # no diagram files in this root
 
 
 def test_publish_refuses_failed_or_stale_diagrams(tmp_path):
@@ -50,15 +50,37 @@ def test_publish_refuses_failed_or_stale_diagrams(tmp_path):
         generated.publish(tmp_path, record("meta-llama__Llama-3.1-8B"), src / "v1.svg")  # v1 failed the brace rule
 
 
+def site_builder():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("site_for_diagram_labels", ROOT / "build_site.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_site_labels_which_diagram_is_shown():
-    gemini = (ROOT / "site/models/meta-llama__Llama-3.1-8B.html").read_text()
-    code = (ROOT / "site/models/microsoft__phi-2.html").read_text()
-    assert (
-        "Drawn by Gemini from verified fields," in gemini
-        and "checks passed" in gemini
-        and 'src="../diagrams/' in gemini
-    )
-    assert "Drawn by code from verified fields; no generated diagram has passed every check yet" in code
+    # Never a fixed model: which models have an approved diagram changes with every diagram run.
+    site = site_builder()
+    published, _, _ = site.inventory()
+    for stem, rec, _ in published.values():
+        page = (ROOT / "site/models" / f"{stem}.html").read_text()
+        if generated.select(rec):
+            assert "Drawn by Gemini from verified fields," in page and "checks passed" in page, stem
+            assert f'src="../diagrams/{stem}.svg"' in page, stem
+        else:
+            assert "Drawn by code from verified fields; no generated diagram has passed every check yet" in page, stem
+
+
+def test_code_drawn_label_when_no_generated_diagram_passes(monkeypatch):
+    # Fixture for the other branch, so it is covered even when every published model has a Gemini diagram.
+    site = site_builder()
+    published, _, _ = site.inventory()
+    stem, rec, pub = next(iter(published.values()))
+    monkeypatch.setattr(site.generated, "select", lambda record, root=None: None)
+    page = site.model_page(stem, rec, pub, published)
+    assert "Drawn by code from verified fields; no generated diagram has passed every check yet" in page
+    assert "<svg" in page and "../diagrams/" not in page
 
 
 def test_dense_models_show_all_active_parameters():

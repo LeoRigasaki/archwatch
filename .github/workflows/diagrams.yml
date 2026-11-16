@@ -26,14 +26,36 @@ jobs:
       - name: Plan (no calls)
         run: uv run --frozen python tools/diagram_queue.py --plan
       - name: Generate diagrams for changed architectures
+        id: generate
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: uv run --frozen python tools/diagram_queue.py
-      # The explainer step joins this job once the explainer is approved and built.
-      - run: uv run --frozen pytest -q
+      # Paid-for calls are kept no matter what happens next: the outputs and the call ledger are uploaded
+      # and committed to a needs-review PR BEFORE the test suite runs. A failing test marks the run red but
+      # never discards diagrams or leaves the ledger out of sync.
+      - name: Keep the outputs and the call ledger
+        if: always() && steps.generate.outcome != 'skipped'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: diagram-run-${{ github.run_id }}
+          path: |
+            data/gemini-requests.json
+            data/diagram-queue.json
+            data/generated-diagrams/
+            diagrams/generated/
+          if-no-files-found: warn
+          retention-days: 30
       - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
+        if: always() && steps.generate.outcome != 'skipped'
         with:
           branch: diagram-update
           title: "ArchWatch diagram run"
           labels: needs-review
-          body: Generated diagrams, code-check reviews and the queue state. Review the previews before merging.
+          body: |
+            Generated diagrams, code-check reviews, the queue state and the call ledger from run ${{ github.run_id }}.
+            Committed before the test suite runs, so the calls are never lost; check this PR's CI and review the
+            previews before merging.
+      # The explainer step joins this job once the explainer is approved and built.
+      - name: Test suite (after the outputs are safe)
+        if: always() && steps.generate.outcome != 'skipped'
+        run: uv run --frozen pytest -q

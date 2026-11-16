@@ -334,5 +334,60 @@
     "day": "2026-11-15",
     "model": "gemini-4-hydrogen",
     "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1794830402.0,
+    "day": "2026-11-16",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 43862589403,
+    "for": "deepseek-ai/DeepSeek-V2-Lite",
+    "outputs_lost": true,
+    "time_approximate": true,
+    "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1794830507.4,
+    "day": "2026-11-16",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 43862589403,
+    "for": "microsoft/phi-2",
+    "outputs_lost": true,
+    "time_approximate": true,
+    "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1794830612.8,
+    "day": "2026-11-16",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 43862589403,
+    "for": "mistralai/Mistral-7B-v0.1",
+    "outputs_lost": true,
+    "time_approximate": true,
+    "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1794830718.2,
+    "day": "2026-11-16",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 43862589403,
+    "for": "moonshotai/Kimi-K3",
+    "outputs_lost": true,
+    "time_approximate": true,
+    "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1794830823.6,
+    "day": "2026-11-16",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 43862589403,
+    "for": "zai-org/GLM-4-9B-0414",
+    "outputs_lost": true,
+    "time_approximate": true,
+    "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
   }
 ]
