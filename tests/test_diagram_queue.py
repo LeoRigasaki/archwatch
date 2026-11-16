@@ -116,10 +116,11 @@ def test_unsupported_specs_cost_no_call(tmp_path, monkeypatch):
     assert log == [] and "block_shapes" in summary["skipped"][0]["reason"]
 
 
-def test_crons_stay_disabled_and_daily_job_makes_no_llm_calls():
-    for name in ("daily.yml", "diagrams.yml"):
-        flow = yaml.safe_load((ROOT / ".github/workflows" / name).read_text())
-        assert "schedule" not in flow[True], name  # PyYAML reads the `on:` key as True
+def test_approved_crons_and_daily_job_makes_no_llm_calls():
+    daily = yaml.safe_load((ROOT / ".github/workflows/daily.yml").read_text())[True]  # PyYAML reads `on:` as True
+    diagrams = yaml.safe_load((ROOT / ".github/workflows/diagrams.yml").read_text())[True]
+    assert daily["schedule"] == [{"cron": "17 2 * * *"}]
+    assert diagrams["schedule"] == [{"cron": "37 3 * * 1,3,5"}]  # Monday, Wednesday, Friday
     daily = (ROOT / ".github/workflows/daily.yml").read_text()
     assert "GEMINI" not in daily and "diagram_queue" not in daily
     assert CONFIG["schedule"]["diagrams"]["max_models_per_run"] == 5

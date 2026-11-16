@@ -151,5 +151,7 @@ def test_speculative_decoding_heads_are_auxiliary_and_not_active():
     rec = json.loads(
         (Path(__file__).resolve().parents[1] / "data/models/mistralai__Mistral-Large-4-1T-A52B.json").read_text()
     )
-    # Card: "52 billion including embeddings and output layers".
-    assert rec["published"]["params_active"] == 52_354_527_520
+    # Card: "52 billion including embeddings and output layers". The fixed default excludes the input embedding
+    # (a row lookup) and keeps the output head; the speculative head is published separately as MTP.
+    assert rec["published"]["params_active"] == 51_079_459_104
+    assert rec["published"]["params_mtp"] == 2_099_969_024

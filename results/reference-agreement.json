@@ -49,7 +49,7 @@
       "agree": false,
       "our_evidence": "2 x 4 KV heads x 128 head_dim x 2 B x 6 layers",
       "cause": "definition",
-      "cause_why": "Ours is the growing cache per token (sliding-window and constant states excluded): 6 global layers x 4 KV heads x 128 x 2 (K, V) x 2 B = 12,288 B. The reference counts all 11 attention layers including the 5 sliding-window ones: 11 x 2,048 B = 22,528 B = 22 KiB. Both are arithmetic on the same config."
+      "cause_why": "Rule: default: full retention, every attention layer appends its KV per token (sliding-window layers not capped). Ours recomputed: 22,528. His: 22 KiB (accepted 22,016-23,040); gap after the rule 0.00%."
     },
     {
       "model": "LiquidAI/LFM3-1.7B",
@@ -109,21 +109,23 @@
       "model": "Qwen/Qwen3.8-Flash-Next",
       "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
       "field": "params_total",
-      "ours": 179999981424,
+      "ours": 177392830576,
       "theirs": "125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP",
-      "agree": true,
-      "our_evidence": null
+      "agree": false,
+      "our_evidence": "single source: weights:sum of tensor shapes, MTP modules reported separately",
+      "cause": "definition",
+      "cause_why": "Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 176,943,899,520. His: 125B core (accepted 176,400,000,000-183,600,000,000); gap after the rule 1.70%."
     },
     {
       "model": "Qwen/Qwen3.8-Flash-Next",
       "gallery_name": "Qwen3.8-Flash-Next 125B-A6B",
       "field": "params_active",
-      "ours": 58507240320,
+      "ours": 6671295360,
       "theirs": "125B core, 6B active (4.8% active); plus 51B n-gram embeddings and 4B MTP",
       "agree": false,
-      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
-      "cause": "definition",
-      "cause_why": "The card states \"125B with 6B activated, plus 51B n-gram embedding and 4B MTP\". Our active convention counts every non-expert weight, including the n-gram embedding tables and the MTP layer; the reference follows the card's 6B core figure."
+      "our_evidence": "single source: weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)",
+      "cause": "card_unreproducible",
+      "cause_why": "Checked: read 1,658 tensor headers; the shard index lists 1,658 in 131 shards (none missing); 3 scale/buffer tensors counted as metadata. Fixed rule: default: per-token count; unselected experts, MTP, lookup tables and the input embedding (row lookups) not active; output head counted (tied: shared matrix once, as the head) = 6,671,295,360; his accepted range 5,500,000,000-6,500,000,000."
     },
     {
       "model": "Qwen/Qwen3.8-Flash-Next",
@@ -165,23 +167,21 @@
       "model": "deepseek-ai/DeepSeek-V4.1-Flash",
       "gallery_name": "DeepSeek V4.1-Flash",
       "field": "params_total",
-      "ours": 763205315794,
+      "ours": 748979953264,
       "theirs": "552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone)",
-      "agree": false,
-      "our_evidence": "single source: weights:sum of tensor shapes",
-      "cause": "definition",
-      "cause_why": "The card states 552B backbone plus 196B Engram memory (748B). Ours is every stored tensor: 763.2B including 14.2B of MTP modules and a 0.4B vision tower; without those it is 748.6B, which matches."
+      "agree": true,
+      "our_evidence": null
     },
     {
       "model": "deepseek-ai/DeepSeek-V4.1-Flash",
       "gallery_name": "DeepSeek V4.1-Flash",
       "field": "params_active",
-      "ours": 213479777904,
+      "ours": 16204014704,
       "theirs": "552B backbone + 196B Engram; 8B active prefill, 16B active decode (2.9% of backbone)",
       "agree": false,
-      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
+      "our_evidence": "single source: weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)",
       "cause": "definition",
-      "cause_why": "The card states 8B active in prefill and 16B in decode. Our active convention counts all non-expert weights, including the 196B Engram memory that the card describes as sparsely accessed by lookup."
+      "cause_why": "Rule: default: per-token count; unselected experts, MTP, lookup tables and the input embedding (row lookups) not active; output head counted (tied: shared matrix once, as the head). Ours recomputed: 16,204,014,704. His: 8B (prefill) to 16B (decode) (accepted 7,840,000,000-16,320,000,000); gap after the rule 0.00%."
     },
     {
       "model": "deepseek-ai/DeepSeek-V4.1-Flash",
@@ -223,7 +223,7 @@
       "model": "mistralai/Mistral-Large-4-1T-A52B",
       "gallery_name": "Mistral Large 4",
       "field": "params_total",
-      "ours": 1053161553184,
+      "ours": 1051061584160,
       "theirs": "1T total, 52B active (5.2% active)",
       "agree": true,
       "our_evidence": null
@@ -232,10 +232,12 @@
       "model": "mistralai/Mistral-Large-4-1T-A52B",
       "gallery_name": "Mistral Large 4",
       "field": "params_active",
-      "ours": 52354527520,
+      "ours": 51079459104,
       "theirs": "1T total, 52B active (5.2% active)",
-      "agree": true,
-      "our_evidence": null
+      "agree": false,
+      "our_evidence": "single source: weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)",
+      "cause": "definition",
+      "cause_why": "Rule: default: per-token count; unselected experts, MTP, lookup tables and the input embedding (row lookups) not active; output head counted (tied: shared matrix once, as the head). Ours recomputed: 51,079,459,104. His: 52B (accepted 50,960,000,000-53,040,000,000); gap after the rule 1.77%."
     },
     {
       "model": "mistralai/Mistral-Large-4-1T-A52B",
@@ -426,7 +428,7 @@
       "agree": false,
       "our_evidence": "verified: config:num_hidden_layers; weights:highest layer index + 1",
       "cause": "definition",
-      "cause_why": "config.json lists 72 layer entries that alternate attention and MLP (16 input + 40 recurrent + 16 output), and the weights hold layer indices 0-71; our count is per operator. The reference counts attention+MLP blocks: 8 input + 20 recurrent + 8 output = 36, i.e. the same 72 operators."
+      "cause_why": "Rule: attention+MLP blocks: config num_hidden_layers (72 operator entries) / 2. Ours recomputed: 36. His: 8 input + 20 shared \u00d7 2 passes + 8 output (56 applications) (accepted 35-37). Ours: config.json num_hidden_layers = 72, layer_types alternate attention and MLP (n_input_layers 16 + n_recurrent_layers 40 + n_output_layers 16), weights hold layers 0-71 (at ee517dd388); one entry per operator. His: attention+MLP blocks, 8 + 20 + 8 = 36, the same 72 operators."
     },
     {
       "model": "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
@@ -441,23 +443,21 @@
       "model": "zai-org/GLM-5.2",
       "gallery_name": "GLM-5.2",
       "field": "params_total",
-      "ours": 753329940480,
+      "ours": 743377019904,
       "theirs": "744B total, 40B active (5.4% active)",
       "agree": false,
-      "our_evidence": "single source: weights:sum of tensor shapes",
-      "cause": "unresolved",
-      "cause_why": "Ours is the exact tensor-header sum (753.3B over 78 stored layers, indices 0-77; no separate MTP tensors). The reference's 744B is not stated in this repository's card or config, so the 9.3B gap (about one MoE layer) cannot be attributed from primary sources yet."
+      "our_evidence": "single source: weights:sum of tensor shapes, MTP modules reported separately",
+      "cause": "definition",
+      "cause_why": "Rule: default: all stored tensors minus MTP modules (reported separately) and minus vision tower and projector (text-only figure). Ours recomputed: 743,377,019,904. His: 744B total (accepted 729,120,000,000-758,880,000,000); gap after the rule 0.08%."
     },
     {
       "model": "zai-org/GLM-5.2",
       "gallery_name": "GLM-5.2",
       "field": "params_active",
-      "ours": 41841764352,
+      "ours": 40298947584,
       "theirs": "744B total, 40B active (5.4% active)",
-      "agree": false,
-      "our_evidence": "single source: weights:total - unselected routed experts (text model, all non-expert weights included)",
-      "cause": "definition",
-      "cause_why": "Ours (41.8B) includes the input embedding and output head (0.95B each); without them it is 39.9B, matching the reference's 40B within its rounding."
+      "agree": true,
+      "our_evidence": null
     },
     {
       "model": "zai-org/GLM-5.2",

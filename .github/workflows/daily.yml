@@ -1,10 +1,10 @@
 name: daily
 on:
   # Daily job: watcher + deterministic records only. It makes no LLM calls.
-  # Keep cron disabled until the owner explicitly approves it. A scheduled run uses
-  # mode "process"; diagrams run in the separate diagrams.yml (Mon/Wed/Fri).
-  # schedule:
-  #   - cron: "17 2 * * *"   # 07:17 Asia/Karachi
+  # Approved by the owner on 2026-11-15. A scheduled run uses mode "process";
+  # diagrams run in the separate diagrams.yml (Mon/Wed/Fri).
+  schedule:
+    - cron: "17 2 * * *"   # 07:17 Asia/Karachi
   workflow_dispatch:
     inputs:
       mode:

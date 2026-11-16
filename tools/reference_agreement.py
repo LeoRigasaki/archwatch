@@ -80,11 +80,20 @@ def parse_scale(text):
 
 
 def parse_layers(text):
-    """First clause only, without parentheticals: '45 sliding-window + 15 global' -> 60."""
+    """Decoder layers in the first clause: the leading count of each '+'-separated term.
+
+    '45 sliding-window + 15 global' -> 60; '4 GQA + 21 Mamba-2 + 17 FFN' -> 42 (the 2 in 'Mamba-2' is a name);
+    '80 GQA + 1 MTP layer' -> 80 (MTP predictors are not decoder layers); 'N shared x 2 passes' counts N.
+    """
     clause = re.sub(r"\([^)]*\)", "", str(text or "").split(";")[0])
-    clause = re.sub(r"[×x]\s*\d+\s*\w*", "", clause)  # 'N shared x 2 passes' counts N stored layers
-    numbers = [int(n) for n in re.findall(r"\b(\d+)\b", clause)]
-    return (sum(numbers), 0) if numbers else None
+    total, found = 0, False
+    for term in clause.split("+"):
+        if re.search(r"\bMTP\b", term):
+            continue
+        m = re.match(r"\s*(\d+)\b", term)
+        if m:
+            total, found = total + int(m.group(1)), True
+    return (total, 0) if found else None
 
 
 def parse_bytes(text):
@@ -94,6 +103,14 @@ def parse_bytes(text):
     number = m.group(1).replace(",", "")
     unit = BYTES[m.group(2)]
     return float(number) * unit, 0.5 * 10 ** -_decimals(number) * unit
+
+
+def same_k_shorthand(ours: int, theirs: float) -> bool:
+    """Unit normalisation: '128,000' and '1,000,000' are written shorthand for 128K = 131,072 and 1M = 2^20."""
+    for base, unit in ((1000, 1024), (1_000_000, 1024**2)):
+        if theirs % base == 0 and ours == theirs / base * unit:
+            return True
+    return False
 
 
 def decoder_kind(text):
@@ -151,9 +168,11 @@ LABEL = {
     "kv_cache_per_token_bf16": "growing cache per token (sliding-window and constant states excluded)",
 }
 CAUSES = {
-    "definition": "definition difference",
-    "error-ours": "real error (ArchWatch)",
-    "error-reference": "real error (reference)",
+    "definition": "definition difference (recomputed)",
+    "ours_wrong": "confirmed bug (ArchWatch)",
+    "card_unreproducible": "card figure not reproducible from the weights",
+    "his_wrong": "real error (reference)",
+    "name_rounding": "nominal size (model name or '~' figure; ours exact)",
     "unresolved": "unresolved",
 }
 
@@ -175,6 +194,8 @@ def compare(records: dict, gallery: dict) -> dict:
                 agree = mine[field] == value
             else:
                 agree = abs(float(mine[field]) - value) <= tol + 1e-9 * max(1.0, value)
+                if not agree and field == "context_length":
+                    agree = same_k_shorthand(int(mine[field]), value)
             rows.append(
                 dict(
                     model=repo,
@@ -197,12 +218,23 @@ def compare(records: dict, gallery: dict) -> dict:
     return dict(rows=rows, not_processed=missing)
 
 
-def attach_causes(result: dict, causes: dict) -> dict:
+def attach_causes(result: dict, records: dict, gallery: dict, causes: dict) -> dict:
+    """Same rule as the audit: a definition difference only if OUR number, under the fixed rule or an exclusion
+    the card states, lands in its accepted range (2% or its own rounding); anything else is ours to fix."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("reference_audit", ROOT / "tools/reference_audit.py")
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    by_repo = {(e.get("config") or {}).get("repo", ""): e for e in gallery.values()}
     for r in result["rows"]:
-        if not r["agree"]:
-            c = (causes.get(r["model"]) or {}).get(r["field"])
-            r["cause"] = c["cause"] if c else "unclassified"
-            r["cause_why"] = " ".join(c["why"].split()) if c else ""
+        if r["agree"]:
+            continue
+        parsed = theirs(by_repo[r["model"]]).get(r["field"])
+        manual = (causes.get(r["model"]) or {}).get(r["field"])
+        ours = r["ours"] if isinstance(r["ours"], (int, float)) else None
+        closed = audit.close(records[r["model"]], r["field"], str(r["theirs"]), parsed, manual, ours=ours)
+        r["cause"], r["cause_why"] = closed["group"], closed["evidence"]
     return result
 
 
@@ -245,8 +277,8 @@ def report(result: dict, config: dict) -> str:
             counts[r.get("cause", "unclassified")] = counts.get(r.get("cause", "unclassified"), 0) + 1
         lines.append(
             "Causes: " + ", ".join(f"{CAUSES.get(k, k)} {v}" for k, v in sorted(counts.items())) + ". "
-            "Each was checked against the model's own card, config and tensor headers "
-            "(config/reference-causes.yaml)."
+            "A definition difference is accepted only when ArchWatch's own number, under one fixed rule or an "
+            "exclusion the model card states, lands within 2% or the reference's own rounding (rule in each row)."
         )
         lines += ["", "| Model | Field | Ours | Theirs | Cause | Why | Our evidence |", "|---|---|---|---|---|---|---|"]
         for r in bad:
@@ -277,8 +309,8 @@ def main():
     records = {
         json.loads(p.read_text())["id"]: json.loads(p.read_text()) for p in (ROOT / "data/models").glob("*.json")
     }
-    causes = yaml.safe_load((ROOT / "config/reference-causes.yaml").read_text()) or {}
-    result = attach_causes(compare(records, gallery), causes)
+    causes = yaml.safe_load((ROOT / "config/reference-audit-causes.yaml").read_text()) or {}
+    result = attach_causes(compare(records, gallery), records, gallery, causes)
     out = ROOT / "results"
     (out / "reference-agreement.json").write_text(
         json.dumps(dict(reference=dict(repo=config["repo"], commit=config["commit"]), **result), indent=2) + "\n"

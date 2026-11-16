@@ -37,6 +37,9 @@ def model(repo, date, context=128000, sha="a" * 40):
                 candidates=[{"value": context, "evidence": "config:max_position_embeddings"}],
             )
     record["review_queue"] = [c for c in record["review_queue"] if c["field"] != "context_length"]
+    # Tests flip ffn_gated themselves; the synthetic fixture starts without it, whatever the donor publishes.
+    record["published"].pop("ffn_gated", None)
+    record["checks"] = [c for c in record["checks"] if c["field"] != "ffn_gated"]
     return record
 
 
@@ -273,10 +276,59 @@ def test_predecessor_excludes_other_org_family_newer_and_ambiguous_dates():
             dict(id="lab/Family4", family="family", created_at="2026-04-01T00:00:00Z"),
         ]
     }
-    assert watcher.predecessor(candidate, catalog)[0]["id"] == "lab/Family2"
+    sizes = {key: (1e9, False) for key in [*catalog, candidate["id"], "lab/Family2-alt"]}
+    assert watcher.predecessor(candidate, catalog, sizes)[0]["id"] == "lab/Family2"
     catalog["lab/Family2-alt"] = dict(id="lab/Family2-alt", family="family", created_at="2026-02-01T00:00:00Z")
-    assert watcher.predecessor(candidate, catalog)[0] is None
-    assert "Ambiguous" in watcher.predecessor(candidate, catalog)[1]
+    assert watcher.predecessor(candidate, catalog, sizes)[0] is None
+    assert "Ambiguous" in watcher.predecessor(candidate, catalog, sizes)[1]
+
+
+def test_predecessor_must_be_the_same_size_class():
+    candidate = dict(id="lab/Model3-1.7B", family="model", created_at="2026-03-01T00:00:00Z")
+    catalog = {
+        "lab/Model2-1.2B": dict(id="lab/Model2-1.2B", family="model", created_at="2026-01-01T00:00:00Z"),
+        "lab/Model2-24B-MoE": dict(id="lab/Model2-24B-MoE", family="model", created_at="2026-02-01T00:00:00Z"),
+        "lab/Model2-1B-MoE": dict(id="lab/Model2-1B-MoE", family="model", created_at="2026-02-15T00:00:00Z"),
+    }
+    sizes = {
+        candidate["id"]: (1.73e9, False),
+        "lab/Model2-1.2B": (1.17e9, False),
+        "lab/Model2-24B-MoE": (23.97e9, True),  # newer, but 14x larger and MoE
+        "lab/Model2-1B-MoE": (1.5e9, True),  # same size, other kind
+    }
+    assert watcher.predecessor(candidate, catalog, sizes)[0]["id"] == "lab/Model2-1.2B"
+    del sizes["lab/Model2-1.2B"]  # size unknown: cannot be a predecessor
+    pred, reason = watcher.predecessor(candidate, catalog, sizes)
+    assert pred is None and "size class" in reason
+
+
+def test_lfm2_5_24b_is_never_chosen_for_lfm3_1_7b():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    records = {
+        json.loads(p.read_text())["id"]: json.loads(p.read_text())
+        for p in (root / "data/models").glob("LiquidAI__*.json")
+    }
+    sizes = {key: watcher.size_class(rec) for key, rec in records.items()}
+    catalog = {
+        key: dict(
+            id=key,
+            family="lfm",
+            created_at=rec["hub_created"],
+            derived=bool(watcher.derivative_relation(rec.get("hub_metadata") or {})),
+        )
+        for key, rec in records.items()
+    }
+    pred, _ = watcher.predecessor(catalog["LiquidAI/LFM3-1.7B-Base"], catalog, sizes)
+    assert pred is None  # LFM2.5-1.2B's base model is not in the catalog; fine-tunes compare only with fine-tunes
+    pred, _ = watcher.predecessor(catalog["LiquidAI/LFM3-1.7B"], catalog, sizes)
+    assert pred["id"] == "LiquidAI/LFM2.5-1.2B-Instruct"
+    for target in ("LiquidAI/LFM3-1.7B-Base", "LiquidAI/LFM3-1.7B"):
+        pred, _ = watcher.predecessor(catalog[target], catalog, sizes)
+        assert pred is None or pred["id"] != "LiquidAI/LFM2.5-24B-A2B-Base"
+        assert (records[target].get("predecessor") or {}).get("id") != "LiquidAI/LFM2.5-24B-A2B-Base"
 
 
 def test_pool_budget_limits_processing_and_retains_unprocessed_candidates(tmp_path):

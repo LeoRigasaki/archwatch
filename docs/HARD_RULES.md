@@ -10,5 +10,6 @@
   labels. Never download or use its images.
 - Only ArchWatch's own approved diagrams may be used as house-style references, never third-party images.
 - One PR per task, CI green before merge, tests for every change.
-- The daily and Mon/Wed/Fri crons stay disabled until the owner approves them.
+- The daily (no LLM) and Mon/Wed/Fri diagram crons were approved by the owner on 2026-11-15. Generated
+  diagrams still reach the gallery only through a reviewed PR.
 - No Co-Authored-By trailers in commits.

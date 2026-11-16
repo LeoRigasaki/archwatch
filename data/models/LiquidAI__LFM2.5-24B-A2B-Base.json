@@ -38,7 +38,7 @@
    "zh"
   ]
  },
- "analyzed_at": "2026-11-15T09:55:24+00:00",
+ "analyzed_at": "2026-11-15T18:08:06+00:00",
  "facts": {
   "architecture_class": {
    "value": "Lfm2MoeForCausalLM",
@@ -235,6 +235,8 @@
   "counted_from_weights": {
    "total": 23971587712,
    "text_total": 23971587712,
+   "mtp_params": 0,
+   "headline_total": 23971587712,
    "by_component": {
     "moe_routed_experts": 22951231488,
     "short_conv_mixer": 503500800,
@@ -257,8 +259,10 @@
    "skipped_buffer_tensors": 0
   },
   "active": {
+   "active": 2454808192,
    "text_active": 2454808192,
    "text_active_without_embeddings": 2192664192,
+   "text_active_non_embedding": 2192664192,
    "with_vision": 2454808192
   }
  },
@@ -488,6 +492,23 @@
     {
      "value": true,
      "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": true,
+     "evidence": "weights:separate lm_head tensor present or absent"
     }
    ]
   },
@@ -770,7 +791,7 @@
    "candidates": [
     {
      "value": 23971587712,
-     "evidence": "weights:sum of tensor shapes"
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
     },
     {
      "value": 24000000000.0,
@@ -782,18 +803,31 @@
   {
    "field": "params_active",
    "value": 2454808192,
-   "status": "verified",
-   "confidence": 1.0,
+   "status": "single source",
+   "confidence": 0.7,
    "published": true,
    "candidates": [
     {
      "value": 2454808192,
-     "evidence": "weights:total - unselected routed experts (text model, all non-expert weights included)"
-    },
+     "evidence": "weights:total - unselected routed experts - MTP - lookup tables - input embedding (head counted)"
+    }
+   ],
+   "card_reference": {
+    "value": 2450000000.0,
+    "raw": "2.45B",
+    "agrees": true
+   }
+  },
+  {
+   "field": "params_active_non_embedding",
+   "value": 2192664192,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
     {
-     "value": 2450000000.0,
-     "evidence": "card:params_active",
-     "raw": "2.45B"
+     "value": 2192664192,
+     "evidence": "weights:active weights without input embedding and output head"
     }
    ]
   },
@@ -915,19 +949,6 @@
     {
      "value": "MoE",
      "evidence": "config:num_experts"
-    }
-   ]
-  },
-  {
-   "field": "tied_embeddings",
-   "value": true,
-   "status": "single source",
-   "confidence": 0.7,
-   "published": true,
-   "candidates": [
-    {
-     "value": true,
-     "evidence": "config:tie_word_embeddings"
     }
    ]
   },
@@ -1268,6 +1289,7 @@
   "head_dim": 64,
   "attention_type": "GQA",
   "ffn_gated": true,
+  "tied_embeddings": true,
   "moe_num_experts": 64,
   "moe_active_experts": 4,
   "moe_shared_experts": 0,
@@ -1322,6 +1344,7 @@
   "layer_index_base_in_config": 0,
   "params_total": 23971587712,
   "params_active": 2454808192,
+  "params_active_non_embedding": 2192664192,
   "model_type": "lfm2_moe",
   "layer_types": [
    "short_conv",
@@ -1366,7 +1389,6 @@
    "short_conv"
   ],
   "decoder_type": "MoE",
-  "tied_embeddings": true,
   "rope": {
    "rope_theta": 10000000.0,
    "rope_type": "default"
