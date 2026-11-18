@@ -9,6 +9,8 @@ Only fields with confidence >= 0.7 are published; conflicts are listed for a hum
 
 from __future__ import annotations
 
+from .concept_extract import FIELDS as CONCEPT_FIELDS
+
 PUBLISH_THRESHOLD = 0.7
 
 CARD_LAYER_NAMES = {
@@ -430,7 +432,7 @@ def verify(
         "attn_res_block_size",
     )
     checked = {r["field"] for r in out}
-    for field in rendering_fields:
+    for field in (*rendering_fields, *CONCEPT_FIELDS):
         if (field in V or field in cf) and field not in checked:
             out.append(check(field, [c(field), cd(field)]))
     if wcount:

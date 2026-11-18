@@ -4,14 +4,14 @@ As of **19 November 2026**. The dated sections under [History](#history) are kep
 
 ## Current state
 
-- **Site:** live at [archwatch.vercel.app](https://archwatch.vercel.app), deployed by Vercel on every merge to `main`, built offline from committed records (`site/` is not committed). 13 published models, an explore page with filters, publisher filter and a 2-3 model selection tray, one page per model (memory planner for device size and concurrent sequences, JSON and SVG downloads, source links pinned to the commit), a compare tool with CSV export, an evidence and coverage page, and an RSS feed of analyses.
+- **Site:** live at [archwatch.vercel.app](https://archwatch.vercel.app), deployed by Vercel on every merge to `main`, built offline from committed records (`site/` is not committed). 13 published models, an explore page with filters, publisher filter and a 2-3 model selection tray, one page per model (memory planner for device size and concurrent sequences, JSON and SVG downloads, source links pinned to the commit), a compare tool with CSV export, an evidence and coverage page, an RSS feed of analyses, and concept guides.
 - **Records:** 26 records, 28 tracked repositories. Seven newest architectures and two fine-tunes are held; fine-tunes are out of scope and not listed.
 - **Watcher:** daily GitHub Action (no LLM calls). Predecessors must share the family and size class (total within 2x, same dense/MoE kind, base with base).
 - **Diagrams:** Monday/Wednesday/Friday Gemini runs, at most 5 models and 15 calls, each checked by code. 5 published models show an approved Gemini diagram; the rest show a code-drawn one. Outputs and the call ledger are kept in a needs-review PR and an artifact before the tests run.
 - **Counting convention 2** (`config/counting-conventions.yaml`): total excludes MTP modules (published as `params_mtp`); active excludes unselected experts, MTP, lookup tables and the input embedding, keeps the output head.
 - **Dates:** `hub_created_at` is the Hub creation time; a release date is shown only when the model's own card states one.
 - **Explainer:** notes are checked field by field (each claim's before and after belong to that field); none is on the site yet.
-- **Tests:** 303 offline tests, including headless-browser checks that every page type loads without console errors, and a real-browser flow test.
+- **Tests:** 321 offline tests, including headless-browser checks that every page type loads without console errors, and a real-browser flow test.
 - **Frozen evidence:** `evals/frozen-evidence.json` holds SHA-256 hashes of the gold labels and the first-run results; a test checks them, so a shallow checkout still guards them.
 
 ## Evaluation
@@ -30,7 +30,7 @@ The gold labels are never edited; `tools/evaluate_gold.py --convention 1` maps r
 - [ ] Drawing and cache rules for the held architectures (compressed/sparse attention with hyper-connections, shared KV, chunked attention, block diffusion, recurrent layers).
 - [ ] Explainer notes on the site, regenerated under the change filter and the field-bound validator.
 - [x] An RSS feed of analyses.
-- [ ] Concept guides.
+- [x] 32 concept guides, matched to published models by rule ([how](docs/CONCEPTS.md)); each shows a draft label until reviewed.
 - [ ] Reading-mode toggle for standalone model pages.
 - [ ] Human-reviewed held-out evaluation set.
 - [ ] Typed schema; LLM code/report readers with citations; review issue queue; MCP server.

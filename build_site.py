@@ -22,7 +22,8 @@ from xml.etree import ElementTree as ET
 
 import yaml
 
-from archwatch import diagram, generated, pipeline
+from archwatch import concept_diagrams, diagram, generated, pipeline
+from archwatch import concepts as concept_data
 from archwatch.artifacts import write_if_changed
 from archwatch.explainer import diff_input, input_hash
 from archwatch.labels import KIND_LABELS
@@ -170,6 +171,51 @@ def e(x):
 
 def settings():
     return yaml.safe_load((CODE / "config/site.yaml").read_text())
+
+
+def concepts():
+    return concept_data.registry()
+
+
+def concept_keys(pub):
+    return [match["key"] for match in concept_data.from_values(pub)]
+
+
+def concept_links(pub, up="", limit=None, rec=None, stem=None):
+    guide = concepts()
+    matches = concept_data.for_record(rec) if rec is not None else concept_data.from_values(pub)
+    links = []
+    for match in matches[:limit]:
+        key = match["key"]
+        status = STATUS_WORDS.get(match.get("status"), "")
+        links.append(
+            f'<a href="{up}concepts/{key}.html" title="{e(match["scope"] + (" Evidence: " + status if status else ""))}">{e(guide[key]["short"])}</a>'
+        )
+    if limit is not None and len(matches) > limit and rec:
+        stem = stem or rec["id"].replace("/", "__")
+        links.append(f'<a href="{up}models/{e(stem)}.html#concept-evidence">+{len(matches) - limit} with evidence</a>')
+    return '<div class="concept-chips" aria-label="Related concepts">' + "".join(links) + "</div>"
+
+
+def concept_evidence(rec, stem):
+    guide = concepts()
+    entries = []
+    for match in concept_data.for_record(rec):
+        key = match["key"]
+        fields = []
+        for field in match["fields"]:
+            value = json.dumps(field["value"], ensure_ascii=False, sort_keys=True)
+            sources = ", ".join(
+                f'<a href="{e(source["url"])}">{e(source["claim"])}</a>' if source["url"] else e(source["claim"])
+                for source in field["sources"]
+            )
+            fields.append(
+                f'<tr><th scope="row">{e(PLAIN.get(field["field"], field["field"].replace("_", " ")))}</th><td><code>{e(value)}</code></td><td>{e(STATUS_WORDS.get(field["status"], field["status"]))}<br>{sources}</td></tr>'
+            )
+        entries.append(
+            f"""<details class="concept-proof" id="concept-{key}"><summary><a href="../concepts/{key}.html">{e(guide[key]["short"])}</a><span class="st st-{e(match["status"].replace(" ", "-"))}">{e(STATUS_WORDS.get(match["status"], match["status"]))}</span><span class="proof-hint">Inspect evidence ↓</span></summary><p>{e(match["scope"])}</p><div class="tablebox"><table><thead><tr><th scope="col">Supporting field</th><th scope="col">Published value</th><th scope="col">Status and pinned sources</th></tr></thead><tbody>{"".join(fields)}</tbody></table></div></details>"""
+        )
+    return f"""<section id="concept-evidence"><div class="sechead"><h2>Related concepts, with evidence</h2><a class="btn" download href="../data/concepts/{e(stem)}.json">Download concept evidence ↓</a></div><p class="sub">Each association follows a deterministic rule using published fields. The badge reflects the weakest supporting field. A calculation does not count as another independent source. Unlisted concepts are unknown or uncovered, not confirmed absent.</p>{"".join(entries)}<p class="hint">This versioned evidence accompanies the diagram. It adds no claims or wiring to the SVG above.</p></section>"""
 
 
 # ---------------------------------------------------------------- formatting
@@ -448,6 +494,7 @@ def frame(title, body, *, depth=0, active="", description=""):
         for key, href, text in (
             ("explore", f"{up}index.html", "Explore"),
             ("compare", f"{up}compare/index.html", "Compare"),
+            ("concepts", f"{up}concepts/index.html", "Concept guide"),
             ("review", f"{up}review/index.html", "Evidence"),
             ("github", repo, "GitHub ↗"),
         )
@@ -586,6 +633,7 @@ def model_card(stem, rec, pub, published, pubs):
                 design(pub),
                 mix_text(pub),
                 describe(pub),
+                *(concepts()[key]["title"] for key in concept_keys(pub)),
             ]
         ).lower(),
     )
@@ -594,6 +642,7 @@ def model_card(stem, rec, pub, published, pubs):
 <div class="cardhead"><span>{e(pubs.get(org, org))}</span><span>{e(when(rec, pub)[0])} <time datetime="{e(when(rec, pub)[1])}">{e(date(when(rec, pub)[1]))}</time></span></div>
 <h3 id="h-{e(stem)}"><a href="models/{e(stem)}.html">{e(name)}</a> <span class="tag">{e(design(pub))}</span></h3>
 <p class="line">{e(describe(pub))}</p>
+{concept_links(pub, limit=4, rec=rec, stem=stem)}
 {cells(pub, "Layer order, layer 1 on the left: " + mix_text(pub))}<p class="mixcap">{e(mix_text(pub))}</p>
 <dl class="mini"><div><dt>parameters</dt><dd>{e(human(pub["params_total"]))}</dd></div>
 <div><dt>layers</dt><dd>{pub["num_layers"]}</dd></div><div><dt>context</dt><dd>{e(tokens(pub["context_length"]))}</dd></div>
@@ -660,7 +709,7 @@ def home(published, held, seen):
     held_rows = "".join(f"<li><b>{e(repo.split('/')[-1])}</b><span>{e(r)}</span></li>" for repo, r in held.items())
     body = f"""<section class="hero homehero"><div><p class="eyebrow"><span class="status-dot"></span> Open model architecture observatory</p><h1>Understand the model.<br><em>Inspect the evidence.</em></h1>
 <p class="lead">Explore how open-weight models are built, compare their moving parts, and plan memory from facts you can trace to the source.</p>
-<div class="hero-links"><a class="btn primary" href="#collection">Explore the collection ↓</a><a href="compare/index.html">Compare models →</a></div>
+<div class="hero-links"><a class="btn primary" href="#collection">Explore the collection ↓</a><a href="concepts/index.html">Start with a concept →</a></div>
 <dl class="collection-stats"><div><dt>explorable models</dt><dd>{len(published):02d}</dd></div><div><dt>in review</dt><dd>{len(held):02d}</dd></div><div><dt>publishers tracked</dt><dd>{len({repo.split("/")[0] for repo in set(published) | set(held)}):02d}</dd></div></dl></div>{feature}</section>
 <div id="collection" class="collectionhead"><div><p class="eyebrow">The collection</p><h2>Find an architecture worth understanding.</h2></div><p class="hint">Published facts only. No weight downloads required.</p></div>
 <div class="searchrow"><label class="sr" for="q">Search models</label><span aria-hidden="true">⌕</span>
@@ -941,6 +990,7 @@ def model_page(stem, rec, pub, published):
             ("layers", "Layers"),
             ("diagram", "Diagram"),
             ("fit", "Memory planner"),
+            ("concept-evidence", "Concept evidence"),
             ("facts", "Facts and sources"),
         )
     )
@@ -952,7 +1002,7 @@ read at commit <a class="mono" href="https://huggingface.co/{e(rec["id"])}/tree/
 <nav class="tabs" aria-label="On this page">{tabs}</nav>
 <dl class="stats tiles">{t_html}</dl>
 <section id="short" aria-labelledby="short-h"><h2 id="short-h">In short</h2><p class="prose">{e(describe(pub))}</p>
-<p class="byline">Written by code from the published facts.</p></section>
+<p class="byline">Written by code from the published facts.</p><h3 class="concept-heading">Understand the mechanisms</h3>{concept_links(pub, "../", rec=rec)}</section>
 {changed_html}
 {layer_section(pub)}
 <section id="diagram" aria-labelledby="arch"><div class="sechead"><h2 id="arch">Diagram</h2><p class="hint">{e(art_label)}{art_link}</p></div>
@@ -960,6 +1010,7 @@ read at commit <a class="mono" href="https://huggingface.co/{e(rec["id"])}/tree/
 <div class="diagram-tools"><button class="btn" type="button" id="expand-diagram">Expand diagram ⤢</button><button class="btn" type="button" id="download-diagram" data-filename="{e(stem)}.svg">Download SVG ↓</button></div>
 <dialog id="diagram-dialog" aria-labelledby="diagram-dialog-title"><div class="dialogbar"><h2 id="diagram-dialog-title">{e(name)} architecture</h2><button class="btn" type="button" id="close-diagram">Close ×</button></div><div class="dialog-art"></div></dialog>
 {fit_planner(pub, cache)}
+{concept_evidence(rec, stem)}
 <section id="facts" aria-labelledby="facts-h"><h2 id="facts-h">Facts and where they come from</h2>
 <p class="sub">Verified means two independent files agree. <a download href="../data/models/{e(stem)}.json">Download published data + source links (JSON) ↓</a></p>{facts(rec, pub, cache)}</section>"""
     return frame(f"{name} architecture · ArchWatch", body, depth=1, active="explore", description=describe(pub))
@@ -1270,6 +1321,72 @@ def compare_tool(data, default=None):
 # ---------------------------------------------------------------- assets
 
 
+def lessons():
+    return yaml.safe_load((CODE / "config/concept-lessons.yaml").read_text())
+
+
+def teaching_sections(key, item, lesson):
+    symbols = "".join(
+        f"<div><dt>{e(symbol)}</dt><dd>{e(meaning)}</dd></div>" for symbol, meaning in lesson["symbols"].items()
+    )
+    steps = "".join(f"<li>{e(step)}</li>" for step in lesson["example"]["steps"])
+    pitfalls = "".join(f"<li>{e(pitfall)}</li>" for pitfall in lesson["pitfalls"])
+    related = "".join(f'<a href="{e(slug)}.html">{e(concepts()[slug]["short"])} →</a>' for slug in lesson["related"])
+    lab = ""
+    if key in {"mha", "gqa", "kv-cache", "sliding-window"}:
+        toy_heads = 8 if key == "mha" else 2
+        toy_retained = 512 if key == "sliding-window" else 4096
+        toy_bytes = 2 * 2 * toy_retained * toy_heads * 64 * 2
+        lab = f"""<section id="try-it" class="concept-lab attention-lab"><p class="eyebrow">Try the arithmetic</p><h2>Explore the cache trade-off</h2><p>This toy decoder has 8 query heads, equal key/value head widths of 64 and bf16 cache. All its layers follow the same selected window policy.</p><div class="lab-controls"><label>Context tokens<input name="toy-context" type="number" min="1" max="1048576" step="1" value="4096"></label><label>KV heads<select name="toy-kv"><option value="1">1 (MQA)</option><option value="2"{" selected" if key != "mha" else ""}>2 (GQA)</option><option value="4">4 (GQA)</option><option value="8"{" selected" if key == "mha" else ""}>8 (MHA)</option></select></label><label>Attention layers<input name="toy-layers" type="number" min="1" max="128" step="1" value="2"></label><label>Retention<select name="toy-window"><option value="full"{" selected" if key != "sliding-window" else ""}>Full history</option><option value="512"{" selected" if key == "sliding-window" else ""}>Window 512</option><option value="1024">Window 1,024</option></select></label></div><div class="lab-result" aria-live="polite"><b data-toy="type">{"MHA" if toy_heads == 8 else "GQA"}</b><strong data-toy="bytes">{e(size(toy_bytes))}</strong><span><span data-toy="retained">{toy_retained:,}</span> retained positions; full-history MHA baseline <span data-toy="baseline">16.00 MiB</span>.</span><code data-toy="formula">2 × 2 × {toy_retained} × {toy_heads} × 64 × 2 = {toy_bytes:,} bytes</code></div><p class="hint">Illustrative attention cache only. No weights, recurrent buffers or runtime overhead are included. No API calls.</p></section>"""
+    elif key == "rmsnorm":
+        lab = '<section id="try-it" class="concept-lab norm-lab"><p class="eyebrow">Try the arithmetic</p><h2>Normalize your own vector</h2><label>Vector components<input type="text" value="3, 4" aria-label="Vector components"></label><output aria-live="polite"></output><p class="hint">This is a toy calculation with learned scales set to 1, not a model output.</p></section>'
+    code = (
+        f'<details class="lesson-code"><summary>Minimal Python illustration</summary><p>This small example demonstrates the arithmetic, not a full model implementation.</p><pre><code>{e(lesson["code"])}</code></pre></details>'
+        if lesson.get("code")
+        else ""
+    )
+    return f"""<section id="why"><h2>Why this mechanism exists</h2><p>{e(lesson["why"])}</p></section><section id="mechanism"><h2>Follow the operation</h2><p>{e(item["mechanism"])}</p><figure class="lesson-figure">{concept_diagrams.render(key, lesson)}<figcaption>Original ArchWatch teaching schematic. <a download href="figures/{key}.svg">Download SVG ↓</a></figcaption></figure></section><section id="worked-example" class="worked-example"><p class="eyebrow">A worked example</p><h2>Make it concrete</h2><p class="toy-note">Illustrative values for learning; these are not a checkpoint's architecture facts.</p><p>{e(lesson["example"]["setup"])}</p><ol>{steps}</ol><p class="example-result">{e(lesson["example"]["result"])}</p></section><section id="equation"><h2>Equation and notation</h2><pre class="equation">{e(lesson["equation"])}</pre><dl class="notation">{symbols}</dl>{code}</section>{lab}<section id="memory"><h2>What it means for memory</h2><p>{e(item["memory"])}</p></section><section id="pitfalls"><h2>Where comparisons go wrong</h2><ul>{pitfalls}</ul><p class="lesson-takeaway">{e(lesson["takeaway"])}</p></section><section id="verify"><h2>How to verify it in a model</h2><p>{e(item["verify"])}</p></section><div class="related-lessons"><span class="eyebrow">Follow the connection</span>{related}</div>"""
+
+
+DRAFT = '<span class="draft" title="Not yet reviewed by the maintainer">draft</span>'
+
+
+def guide_pages(published):
+    guide = concepts()
+    lesson_data = lessons()
+    model_matches = {
+        stem: {hit["key"]: hit for hit in concept_data.for_record(rec)} for stem, rec, _ in published.values()
+    }
+    cards, pages = [], {}
+    for key, item in guide.items():
+        draft = "" if item["reviewed"] else DRAFT
+        matches = [(stem, rec, pub) for stem, rec, pub in published.values() if key in model_matches[stem]]
+        state = f"{len(matches)} published examples" if matches else "No qualified published example yet"
+        cards.append(
+            f'''<li data-concept="{e(" ".join([item["title"], item["short"], *item.get("aliases", [])]).lower())}" data-category="{e(item["category"])}"><a class="guidecard" href="{key}.html"><span class="eyebrow">{e(item["category"])}{draft}</span><h2>{e(item["title"])} <span>↗</span></h2><p>{e(item["summary"])}</p><span class="mono">{e(state)}</span></a></li>'''
+        )
+        models = "".join(
+            f'<li><a href="../models/{e(stem)}.html#concept-{key}"><b>{e(rec["id"].split("/")[-1])}</b><span>{e(model_matches[stem][key]["scope"])}</span><span>{e(STATUS_WORDS[model_matches[stem][key]["status"]])} · inspect supporting fields →</span></a></li>'
+            for stem, rec, pub in matches
+        )
+        criteria = json.dumps(item["rule"], sort_keys=True, indent=2)
+        body = f'''<nav class="crumbs" aria-label="Breadcrumb"><a href="../concepts/index.html">Concept guide</a> / {e(item["short"])}</nav>
+<div class="guidehero"><p class="eyebrow">{e(item["category"])} / Field guide</p><h1>{e(item["title"])}</h1>{draft and f'<p class="draft-note">{DRAFT} Not yet reviewed by the maintainer.</p>'}<p class="lead">{e(item["summary"])}</p><p class="byline">An original ArchWatch explanation. The rule below associates models from approved source fields; this guide never supplies model facts.</p></div>
+<nav class="lesson-nav" aria-label="Guide sections"><a href="#why">Motivation</a><a href="#worked-example">Worked example</a><a href="#equation">Equation</a><a href="#pitfalls">Pitfalls</a><a href="#verify">Verify</a><a href="#examples">Model evidence</a></nav>
+<div class="guide-columns lesson-columns"><article class="prose lesson-prose">{teaching_sections(key, item, lesson_data[key])}<p class="primary-source">Read the primary source ↗<br><a href="{e(item["source"]["url"])}">{e(item["source"]["title"])}</a></p><details class="concept-rule"><summary>Inspect the matching rule</summary><p>Scope: {e(item["scope"])}</p><pre>{e(criteria)}</pre><p>Additional semantic guards enforce scope, head relationships and nested operations. Every supporting field needs a current passing verifier decision. Missing fields never establish absence.</p></details></article>
+<aside class="panel lesson-examples" id="examples"><p class="eyebrow">Explore the idea in practice</p><h2>Published examples</h2><ul class="guide-models">{models or "<li>No qualified published example yet. This is a guide, not a claim that the supported models lack this mechanism.</li>"}</ul><p class="hint">A one-source association remains labelled. Held architectures are excluded. <a href="../review/index.html">Inspect the review queue →</a></p></aside></div>'''
+        pages[key + ".html"] = frame(
+            f"{item['title']} · ArchWatch guide", body, depth=1, active="concepts", description=item["summary"]
+        )
+    categories = "".join(
+        f'<option value="{e(category)}">{e(category)}</option>'
+        for category in sorted({item["category"] for item in guide.values()})
+    )
+    body = f"""<p class="eyebrow">The concept guide</p><h1>Follow the moving parts.</h1><p class="lead">{len(guide)} concepts and companion topics. Follow a mechanism from its explanation to a matching rule, then inspect the primary evidence in a published model.</p><p class="hint">Guides cover more mechanisms than the current model collection. An empty example list means not yet qualified, not absent.</p><div class="concept-filters"><label for="concept-search">Find a concept<input type="search" id="concept-search" placeholder="Try RoPE, MTP, normalization…"></label><label for="concept-category">Category<select id="concept-category"><option value="">All categories</option>{categories}</select></label></div><p class="hint" id="concept-count" role="status" aria-live="polite">{len(guide)} guides</p><ul class="guide-grid">{"".join(cards)}</ul><p id="concept-empty" hidden>No guide matches this search. Try a different name or category.</p><p><a download href="../data/concepts.json">Download the concept registry and rules ↓</a></p>"""
+    pages["index.html"] = frame("LLM architecture concept guide · ArchWatch", body, depth=1, active="concepts")
+    return pages
+
+
 def review_page(published, held, seen):
     counts = Counter()
     layers = Counter()
@@ -1296,7 +1413,7 @@ def review_page(published, held, seen):
 <div class="pair"><section class="panel"><h2>Where the evidence stands</h2><p class="hint">Field checks in published models. Counts describe evidence coverage, not accuracy.</p><ul class="evidence-bars">{evidence}</ul></section><section class="panel"><h2>Inside the collection</h2><p class="hint">Published decoder layers, counted once per model record. Related releases can share a design.</p><ul class="coverage-list">{mix}</ul></section></div>
 <section><h2>How a fact earns its label</h2><div class="method-grid"><article><span class="st st-verified">Verified</span><h3>Agreement across sources</h3><p>Two source types support the value. Follow their pinned links and inspect the evidence yourself.</p></article><article><span class="st st-one-source">One source</span><h3>Useful, with a limit</h3><p>A published value has one supporting source. It is labelled separately from cross-checked values.</p></article><article><span class="st st-computed">Computed</span><h3>Show the calculation</h3><p>Memory and derived values use published inputs. They are estimates under stated assumptions.</p></article></div></section>
 <section><h2>In the review queue</h2><p class="sub">Names and hold reasons only. Unresolved architecture values are excluded from model pages, comparisons and downloads.</p><div class="tablebox"><table><thead><tr><th scope="col">Repository</th><th scope="col">Why it is held</th><th scope="col">Watcher state</th></tr></thead><tbody>{pending or '<tr><td colspan="3">Nothing is held.</td></tr>'}</tbody></table></div></section>
-<section class="panel prose"><h2>Know the boundaries</h2><p>This collection covers supported primary model releases, not every model on the Hub. A newer release can remain in review while an older supported model is explorable. Fine-tunes and conversions are outside this gallery's architecture scope.</p><p>Header parameter counts measure stored tensors under the project's counting convention. Multi-token prediction modules may be reported separately. Memory estimates omit runtime allocations, quantization metadata and device-specific behavior.</p><p>Generated diagrams arrange published data and pass deterministic checks before selection. A checked diagram is still a representation, not independent verification of the source model.</p><a href="{e(settings()["repo_url"])}/tree/main/evals">Inspect gold labels and evaluation methodology ↗</a></section>'''
+<section class="panel prose"><h2>Know the boundaries</h2><p>This collection covers supported primary model releases, not every model on the Hub. A newer release can remain in review while an older supported model is explorable. Fine-tunes and conversions are outside this gallery's architecture scope.</p><p>Header parameter counts measure stored tensors under the project's counting convention. Multi-token prediction modules may be reported separately. Memory estimates omit runtime allocations, quantization metadata and device-specific behavior.</p><p>Concept guides explain mechanisms; they do not supply facts to the extractor. Generated diagrams arrange published data and pass deterministic checks before selection. A checked diagram is still a representation, not independent verification of the source model.</p><a href="{e(settings()["repo_url"])}/tree/main/evals">Inspect gold labels and evaluation methodology ↗</a></section>'''
     return frame("Evidence, review queue and coverage · ArchWatch", body, depth=1, active="review")
 
 
@@ -1316,6 +1433,7 @@ def published_export(rec, pub):
             if c["field"] in pub
         },
         "memory_assumptions": render_cache(pub).get("assumptions", []),
+        "concept_evidence": concept_data.evidence_spec(rec),
     }
 
 
@@ -1363,6 +1481,16 @@ def main():
     write_if_changed(site / "favicon.svg", (CODE / "web/favicon.svg").read_text())
     write_if_changed(site / "feed.xml", analysis_feed(published))
     write_if_changed(site / "index.html", home(published, held, seen))
+    write_if_changed(
+        site / "data/concepts.json",
+        json.dumps({"schema_version": "archwatch-concept-registry/1", "concepts": concepts()}, indent=2, sort_keys=True)
+        + "\n",
+    )
+    guides = guide_pages(published)
+    for name, content in guides.items():
+        write_if_changed(site / "concepts" / name, content)
+    for key, lesson in lessons().items():
+        write_if_changed(site / "concepts/figures" / f"{key}.svg", concept_diagrams.render(key, lesson))
     write_if_changed(site / "review/index.html", review_page(published, held, seen))
     data = compare_data(published)
     write_if_changed(site / "data" / "models.json", json.dumps(data, indent=1, sort_keys=True) + "\n")
@@ -1374,6 +1502,10 @@ def main():
             site / "data/models" / f"{stem}.json",
             json.dumps(published_export(rec, pub), indent=2, sort_keys=True) + "\n",
         )
+        write_if_changed(
+            site / "data/concepts" / f"{stem}.json",
+            json.dumps(concept_data.evidence_spec(rec), indent=2, sort_keys=True) + "\n",
+        )
         before = published_predecessor(rec, published)
         if before:
             write_if_changed(site / "compare" / f"{stem}.html", compare_tool(data, (before[0], stem)))
@@ -1382,13 +1514,14 @@ def main():
     write_if_changed(site / "compare" / "index.html", compare_tool(data))
     # pages of records that are no longer published are removed, so held numbers never stay online
     stems = {stem for stem, _, _ in published.values()}
-    for folder, keep in (("models", {f"{s}.html" for s in stems}), ("compare", expected)):
+    for folder, keep in (("models", {f"{s}.html" for s in stems}), ("compare", expected), ("concepts", set(guides))):
         for path in (site / folder).glob("*.html"):
             if path.name not in keep:
                 path.unlink()
-    for path in (site / "data/models").glob("*.json"):
-        if path.stem not in stems:
-            path.unlink()
+    for folder in ("models", "concepts"):
+        for path in (site / "data" / folder).glob("*.json"):
+            if path.stem not in stems:
+                path.unlink()
     approved = {f"{s}.svg" for s, rec, _ in published.values() if generated.select(rec)}
     for path in (site / "diagrams").glob("*.svg") if (site / "diagrams").exists() else []:
         if path.name not in approved:

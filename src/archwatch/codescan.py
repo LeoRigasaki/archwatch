@@ -10,6 +10,8 @@ from __future__ import annotations
 import ast
 import re
 
+from .concept_extract import code_facts
+
 
 def _src_line(src: str, lineno: int) -> str:
     return src.splitlines()[lineno - 1].strip()
@@ -68,6 +70,7 @@ def scan(files: dict[str, str]) -> dict:
             if m:
                 ln = src[: m.start()].count("\n") + 1
                 facts["sliding_window_applies_to"] = ("sliding_attention layers only", f"code:{fname}#L{ln}")
+    facts.update(code_facts(files))
     has_modeling = any(f.startswith("modeling_") for f in files)
     facts["modeling_code_in_repo"] = (has_modeling, "repo file list")
     return out

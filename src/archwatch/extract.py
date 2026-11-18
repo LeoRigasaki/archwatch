@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .concept_extract import config_facts
+
 Fact = tuple[Any, str]
 
 
@@ -385,4 +387,5 @@ def _extract(config: dict) -> dict[str, Fact]:
             "config:vision_config",
         )
         f["vision_hidden_size"] = (vc.get("vt_hidden_size") or vc.get("hidden_size"), "config:vision_config")
+    f.update(config_facts(config))
     return f
