@@ -57,36 +57,41 @@ mha:
 
     print(weights, output)'
 gqa:
-  why: During decoding, reading past keys and values can be expensive. Query heads can retain separate queries while
-    sharing fewer key/value projections. Sharing changes head organization without changing the number of decoder
-    layers.
-  equation: 'KV bytes = 2 × L × T × Hkv × d × b
+  why: 'During generation, attention is limited by how fast the cache can be read from memory, not by arithmetic. Multi-head
+    attention caches one key and one value per query head, and query heads can share them: the GQA paper reports quality close
+    to multi-head attention with far fewer key-value heads. GQA cuts the cache, and the memory traffic per token, by the group
+    size while keeping every query head.'
+  equation: 'Group size = Hq / Hkv
 
-    Sharing group size = Hq / Hkv
+    Cache bytes = 2 × L × T × Hkv × d × b
 
-    Equal-geometry cache ratio to MHA = Hkv / Hq'
+    Saving vs multi-head attention = Hq / Hkv'
   symbols:
-    L: Attention layers in this toy calculation.
-    T: Retained tokens per sequence.
     Hq / Hkv: Query heads / key-value heads.
-    d / b: Values per key or value head / bytes per value.
-    '2': One key and one value.
+    L, T: Attention layers and tokens.
+    d / b: Head width / bytes per cached value.
   example:
-    setup: Use 2 layers, 4,096 retained tokens, 8 query heads, head width 64 and bf16 storage (2 bytes per value).
-      Compare 8, 2 and 1 KV heads.
+    model: meta-llama/Llama-3.1-8B
+    compute: gqa
+    setup: '{model} has {hq} query heads and {kv} key-value heads in each of its {layers} layers, with head width {hd} and
+      a bf16 cache.'
     steps:
-    - With 8 KV heads, the cache is 2 × 2 × 4,096 × 8 × 64 × 2 = 16,777,216 bytes, or 16 MiB.
-    - With 2 KV heads, the same calculation gives 4 MiB. Each KV head is shared by 4 query heads.
-    - 'With 1 KV head, it gives 2 MiB: the MQA endpoint. The reduction comes from the retained KV representation,
-      not from quantizing the weights.'
-    result: The GQA example retains one quarter of the MHA cache under these equal-width assumptions. This is an
-      arithmetic example, not a quality or latency benchmark.
+    - Each key-value head serves {hq} / {kv} = {group} query heads.
+    - With {kv} key-value heads the cache is 2 × {kv} × {hd} × 2 B × {layers} = {gqa} per token.
+    - With one key-value head per query head it would be 2 × {hq} × {hd} × 2 B × {layers} = {mha} per token.
+    - At the full {ctx}-token context that is {gqa_full} instead of {mha_full}.
+    result: Sharing each key-value head across {group} query heads makes the cache {group}× smaller at every context length.
+    code: 'layers, kv_heads, head_dim, value_bytes = {layers}, {kv}, {hd}, 2
+
+      cache_per_token = 2 * kv_heads * head_dim * value_bytes * layers
+
+      print(cache_per_token / 1024, "KiB")  # {gqa}'
   pitfalls:
-  - Use the actual KV-head count, not the query-head count, in this cache formula.
-  - MLA stores a different representation; substituting its head counts into the GQA formula can be wrong.
-  - If key and value widths differ, replace the leading factor-of-two shortcut with their separate widths.
-  takeaway: GQA is especially useful to recognize when comparing long-context memory for otherwise similar dense
-    decoders.
+  - Putting num_attention_heads into the cache formula overstates the cache by the group size.
+  - 'GQA lowers the cost per token, not the growth: the cache still grows linearly with context.'
+  - MLA models also list key-value head counts, but they cache a latent vector; the GQA formula gives the wrong number for
+    them.
+  takeaway: The key-value head count, not the query head count, sets the cache.
   diagram:
   - Eight query heads
   - Two shared KV groups
@@ -96,37 +101,39 @@ gqa:
   - mha
   - mla
   - kv-cache
-  code: 'layers, tokens, kv_heads, head_width, value_bytes = 2, 4096, 2, 64, 2
-
-    cache_bytes = 2 * layers * tokens * kv_heads * head_width * value_bytes
-
-    print(cache_bytes / 2**20, "MiB")  # 4.0 MiB'
 kv-cache:
-  why: Autoregressive decoding repeatedly needs information from earlier positions. Retaining the appropriate state
-    avoids recomputing the whole prefix for every new token. The representation depends on the operator in each
-    layer.
-  equation: 'Persistent state = growing state + windowed state + recurrent state
+  why: Without a cache, every new token would re-run attention over the whole prefix, so generating n tokens would cost work
+    that grows with n². Caching each layer's keys and values turns that into one new key-value pair per layer per token. The
+    price is memory that grows linearly with the context and with every sequence served at the same time.
+  equation: 'Cache bytes = 2 × L × T × Hkv × d × b
 
-    Toy full-attention cache = 2 × L × T × Hkv × d × b
-
-    Planning total = shared weight storage + sequences × persistent state'
+    Planning total = weights + sequences × cache'
   symbols:
-    L, T: Layers and retained context tokens.
-    Hkv, d: KV heads and head width.
-    b: Cache bytes per value, independently of weight precision.
+    L: Attention layers.
+    T: Tokens in the context.
+    Hkv, d: Key-value heads and head width.
+    b: Bytes per cached value (2 for bf16), set separately from the weight precision.
+    '2': One key and one value.
   example:
-    setup: Suppose weights require 4 GiB and persistent state is 1 GiB per independent sequence.
+    model: Qwen/Qwen3-0.6B-Base
+    compute: kv_cache
+    setup: '{model} has {layers} full-attention layers, each with {kv} key-value heads of width {hd}, cached in bf16 (2 bytes
+      per value).'
     steps:
-    - One sequence has a theoretical weights-plus-state total of 5 GiB.
-    - Four sequences sharing one model copy require 4 + 4 × 1 = 8 GiB under this simple accounting.
-    - Actual allocation can add activations, quantization metadata, workspaces and fragmentation. Prefix sharing
-      or offloading can change the runtime result.
-    result: Weights are counted once in this example; sequence-specific state is counted four times.
+    - One layer stores 2 × {kv} × {hd} × 2 B = {per_layer} per token.
+    - All {layers} layers store {per_layer} × {layers} = {per_token} per token.
+    - At 8,192 tokens the cache holds {at_8k}; at the full {ctx}-token context it holds {at_full}.
+    - The bf16 weights are {params} parameters × 2 B = {weights}.
+    result: At full context, one sequence's cache is {ratio}× the size of the weights. For long contexts the cache, not the
+      weights, decides whether the model fits.
   pitfalls:
-  - Four-bit weights do not imply four-bit attention cache.
-  - Allocated cache capacity may exceed the mathematical retained-state minimum.
-  - Batch size and context length are independent inputs.
-  takeaway: Use the planner to reason about components, then validate the chosen runtime on the target device.
+  - 'Weight precision is not cache precision: a 4-bit checkpoint still writes a bf16 cache unless the runtime quantizes the
+    cache separately.'
+  - Use num_key_value_heads, not num_attention_heads. In a GQA model the query-head count overstates the cache by the group
+    size.
+  - 'Concurrent sequences multiply the cache but not the weights: four 32K-token conversations need four caches and one copy
+    of the weights.'
+  takeaway: Cache = cost per token × tokens × sequences. Check it against device memory as carefully as the weights.
   diagram:
   - Shared model weights
   - State for sequence A
@@ -137,31 +144,35 @@ kv-cache:
   - sliding-window
   - linear-attention
 sliding-window:
-  why: A local attention layer limits direct token visibility to a recent neighborhood. This bounds its retained
-    history, while global layers elsewhere in the model may continue to grow with context.
-  equation: 'Local retained tokens = min(T, W)
+  why: Full attention's cache and its work per token grow with the whole context. Most tokens depend mainly on nearby text,
+    so a local window keeps both bounded on long inputs. The trade is that the layer cannot directly see anything older than
+    W tokens.
+  equation: 'Retained tokens = min(T, W)
 
-    Local KV bytes = 2 × Llocal × min(T,W) × Hkv × d × b
+    Layer cache = 2 × min(T, W) × Hkv × d × b
 
-    Hybrid cache = local cache + global cache + other persistent state'
+    Hybrid cache = local layers + full layers'
   symbols:
-    W: Retained window under the stated implementation convention.
-    T: Processed context length.
-    Llocal: Number of local-attention layers.
+    W: Window size in tokens.
+    T: Tokens in the context.
+    Hkv, d, b: Key-value heads, head width, bytes per cached value.
   example:
-    setup: Compare an 8,192-token context with a 1,024-token window in one local layer. Use 2 KV heads, width 64
-      and bf16.
+    model: mistralai/Mistral-7B-v0.1
+    compute: sliding_window
+    setup: '{model} uses a {window}-token window in all {layers} layers, with {kv} key-value heads of width {hd} and a bf16
+      cache.'
     steps:
-    - Full retention would cost 2 × 8,192 × 2 × 64 × 2 = 4 MiB for that layer.
-    - Retaining 1,024 tokens costs 0.5 MiB. Extending the sequence further leaves this local term capped.
-    - A separate global layer with the same geometry still needs 4 MiB at this context. Add both terms rather than
-      capping the whole model.
-    result: For the two-layer local/global example, persistent attention cache is 4.5 MiB, not 1 MiB.
+    - Per token, the cache costs 2 × {kv} × {hd} × 2 B × {layers} = {per_token}.
+    - Up to {window} tokens it grows like full attention.
+    - After {window} tokens it stops at {per_token} × {window} = {cap}.
+    - At the full {ctx}-token context, full attention would hold {full}.
+    result: The window caps the cache at {cap}, {ratio}× less than full attention at {ctx} tokens.
   pitfalls:
-  - A sliding_window value does not establish which layers use it.
-  - Some runtimes allocate a larger static cache; the retained minimum and allocation are different.
-  - Confirm whether the implementation counts the current position inside its stated window.
-  takeaway: The per-layer local/global schedule matters as much as the window size.
+  - A sliding_window value does not say which layers use it; read the layer pattern.
+  - Below W tokens a window saves nothing, so compare models at contexts longer than W.
+  - Some runtimes reserve cache for the full context anyway; the window caps what the model needs, not what every runtime
+    allocates.
+  takeaway: The window size and which layers are local decide the cap.
   diagram:
   - Earlier positions
   - Recent visible window
@@ -171,28 +182,33 @@ sliding-window:
   - kv-cache
   - attention-budgeting
 mla:
-  why: Head sharing and latent compression solve related memory problems in different ways. MLA retains a compressed
-    representation that can be expanded or absorbed into attention projections according to the implementation.
-  equation: 'Toy MLA cache per token = (latent_width + positional_width) × bytes_per_value
+  why: GQA saves memory by sharing heads, which limits how many distinct keys and values a layer can use. MLA keeps many heads
+    but caches only a low-rank vector they are all rebuilt from, so the cache no longer scales with the head count. DeepSeek-V2
+    introduced it to cut the cache for long-context serving.
+  equation: 'Cache per token = L × (r + dR) × b
 
-    Model growing cache = tokens × Σ(per-layer retained width × precision)'
+    Expanded keys and values = L × H × (dk + dv) × b'
   symbols:
-    latent_width: Retained compressed KV representation, not the full expanded per-head projections.
-    positional_width: Any separately retained positional component.
+    r: Latent width (kv_lora_rank).
+    dR: Rotary key width (qk_rope_head_dim), cached once per token for all heads.
+    H, dk, dv: Attention heads, key head width, value head width.
+    L, b: Layers and bytes per cached value.
   example:
-    setup: Imagine a layer retaining a latent vector of width 8 plus a positional component of width 2, both bf16.
+    model: deepseek-ai/DeepSeek-V2-Lite
+    compute: mla
+    setup: '{model} has {layers} MLA layers with a {rank}-wide latent and a {rope}-wide rotary key, cached in bf16.'
     steps:
-    - The retained state is (8 + 2) × 2 = 20 bytes per token.
-    - For 100 tokens, that is 2,000 bytes for this layer before any additional indexer or runtime storage.
-    - The expanded query/value head geometry may be much larger. Counting those expanded projections as the cache
-      would describe a different implementation.
-    result: Cache accounting follows the stored representation. An extra sparse-attention indexer must be counted
-      separately when present.
+    - One layer stores ({rank} + {rope}) × 2 B = {per_layer} per token.
+    - All {layers} layers store {per_layer} × {layers} = {per_token_b} = {per_token} per token.
+    - Storing the expanded keys and values instead would take {heads} heads × ({dk} + {dv}) × 2 B × {layers} = {expanded}
+      per token.
+    result: 'MLA caches {per_token} per token instead of {expanded}: {ratio}× less.'
   pitfalls:
-  - The name MLA does not prove which compressed tensors the runtime retains.
-  - A model-specific NoPE flag can remove a positional component from one path; confirm the actual update code.
-  - Low query/KV head counts alone do not identify MLA.
-  takeaway: Inspect compression rank, positional components and cache-update code together.
+  - Putting MLA head counts into the GQA formula counts the expanded keys and values, which are never stored, and overstates
+    the cache.
+  - The rotary key is cached once per token, not once per head.
+  - A sparse-attention indexer (DSA) caches its own key per token on top of the latent.
+  takeaway: The cache depends on the latent width and the rotary width, not on the head count.
   diagram:
   - Hidden representation
   - Compressed KV latent
@@ -204,31 +220,33 @@ mla:
   - nope
   - kv-cache
 moe:
-  why: A sparse expert layer offers multiple feed-forward networks and chooses a subset for each token. The expert
-    selection is token-dependent; different tokens can follow different routes in the same layer.
-  equation: 'Expert output = Σ(selected expert weight × expert output)
+  why: 'In a dense model, quality grows with parameter count, but so does the compute for every token. MoE separates the two:
+    the model stores many experts and each token pays for only k of them. The costs are memory for every expert and keeping
+    the router balanced so experts are used evenly.'
+  equation: 'Stored = shared + N × expert
 
-    Toy stored parameters = shared parameters + N × expert parameters
+    Active per token = shared + k × expert
 
-    Toy active parameters = shared parameters + k × expert parameters'
+    Weight memory = stored × bytes per parameter'
   symbols:
-    N / k: Total routed experts / selected routed experts.
-    shared parameters: Always-used parameters in this simplified example; real conventions differ.
+    N / k: Routed experts / experts selected per token.
+    shared: 'Parameters every token uses: attention, embeddings, shared experts.'
   example:
-    setup: Consider 8 experts with 100 parameters each, 20 always-used parameters, and 2 selected experts per token.
-      Ignore router parameters in this toy count.
+    model: deepseek-ai/DeepSeek-V2-Lite
+    compute: moe
+    setup: '{model} has {experts} routed experts and {shared} shared experts in each MoE layer, and the router picks {k} routed
+      experts per token.'
     steps:
-    - The stored total is 20 + 8 × 100 = 820 parameters.
-    - The active total for one token is 20 + 2 × 100 = 220 parameters.
-    - All 820 parameters still need storage or an explicit offloading/distribution strategy. Selecting two experts
-      does not turn the stored model into a 220-parameter file.
-    result: Sparse activation changes per-token work. It does not automatically reduce full weight storage to the
-      active count.
+    - Each token uses {k} of {experts} routed experts ({routed_share}%), plus the {shared} shared experts.
+    - 'Its record counts {total} stored parameters and {active} active per token: {active_share}% of the weights.'
+    - In bf16, all {total} parameters take {weights}; the active ones alone would take {active_weights}.
+    result: Each token costs about as much compute as a {active}-parameter dense model, but the whole {weights} must be in
+      memory.
   pitfalls:
-  - Shared experts are additional always-used paths, not extra routed selections.
-  - Expert routing scores and FFN activation functions are different operations.
-  - Active-parameter conventions can include or exclude embeddings and prediction modules; compare like for like.
-  takeaway: Always read stored and active parameter counts together with the counting convention.
+  - 'Active parameters are not a memory estimate: every expert has to be loaded.'
+  - Shared experts run for every token, in addition to the k routed ones.
+  - Active-parameter counts depend on the convention (embeddings, MTP modules); compare counts made the same way.
+  takeaway: Memory follows total parameters; compute per token follows active parameters.
   diagram:
   - Token representation
   - Router selects two experts
@@ -239,30 +257,35 @@ moe:
   - silu
   - mtp
 linear-attention:
-  why: Recurrent attention mechanisms summarize prior processing in a structured state. The update rule determines
-    what information is retained and how a token reads from that state.
-  equation: 'State update: Sₜ = update(Sₜ₋₁, tokenₜ)
+  why: 'Full attention compares each token with every earlier one, so its cache and its work per token grow with context.
+    A linear-attention layer folds the history into a fixed-size state, so a token costs the same at position 100 or 1,000,000.
+    The trade is recall: a fixed state cannot keep every detail, which is why models mix in some full-attention layers.'
+  equation: 'Sₜ = update(Sₜ₋₁, kₜ, vₜ)
 
-    Output: yₜ = read(Sₜ, tokenₜ)
+    yₜ = qₜ · Sₜ
 
-    Toy matrix-state storage = heads × key_width × value_width × state_bytes'
+    State bytes = heads × dk × dv × b_state'
   symbols:
-    S: Persistent recurrent state.
-    update / read: Family-specific functions, not interchangeable algorithms.
+    S: State matrix per head, dk × dv.
+    update: How the token is written in; a delta rule also decays and corrects old content.
+    b_state: Bytes per state value; usually 4 (fp32).
   example:
-    setup: Take 2 heads with a 4 × 4 state matrix per head, stored in fp32.
+    model: moonshotai/Kimi-K3
+    compute: linear_attention
+    setup: '{model} has {linear} KDA linear-attention layers and {full} MLA layers. Each KDA layer has {heads} heads with
+      a {width} × {width} state.'
     steps:
-    - The matrices require 2 × 4 × 4 × 4 = 128 bytes.
-    - That matrix-state term remains 128 bytes as the token count grows. Convolution buffers or other update state
-      may add storage.
-    - If the decoder also includes full-attention layers, their growing cache must be added; the whole hybrid model
-      is not constant-memory.
-    result: Fixed-size recurrent state and growing token cache can coexist in the same architecture.
+    - One KDA layer's state is {heads} × {width} × {width} × 4 B = {state}, plus {conv} of convolution history ({taps} past
+      inputs of q, k and v).
+    - All {linear} KDA layers hold {fixed}, the same at any context length.
+    - The {full} MLA layers grow by {mla_layer} × {full} = {grows} per token, {grows_full} at the full {ctx}-token context.
+    - If the {linear} linear layers were MLA layers too, they would add {avoided} at that context.
+    result: The linear layers cost a fixed {fixed}; only the {full} MLA layers grow with the context.
   pitfalls:
-  - A linear_attention config string does not identify the exact recurrent update.
-  - KDA and Gated DeltaNet are distinct named designs.
-  - The state can use fp32 even when weights and attention cache use lower precision.
-  takeaway: Qualify the actual state dimensions, precision and update before choosing a formula.
+  - The state is usually fp32 even when weights and cache are bf16, so count it at 4 bytes.
+  - 'A hybrid model is not constant-memory: its full or MLA layers keep growing.'
+  - Short convolutions on q, k and v keep a few past inputs; add them to the state.
+  takeaway: Linear layers cost a fixed state; the remaining full layers set the growth.
   diagram:
   - Previous recurrent state
   - Token-dependent update

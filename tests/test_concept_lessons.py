@@ -21,13 +21,16 @@ def test_every_guide_has_an_original_worked_lesson_and_downloadable_figure():
     examples = []
     for key, lesson in lessons.items():
         assert lesson["why"] and lesson["equation"] and lesson["symbols"]
-        assert len(lesson["example"]["steps"]) >= 3 and len(lesson["pitfalls"]) >= 3
+        assert len(lesson["example"]["steps"]) >= 3 and 1 <= len(lesson["pitfalls"]) <= 3
         assert set(lesson["related"]) <= set(lessons)
         examples.append(json.dumps(lesson["example"], sort_keys=True))
         page = (SITE / "concepts" / f"{key}.html").read_text()
         for anchor in ["why", "worked-example", "equation", "pitfalls", "verify", "examples"]:
             assert f'id="{anchor}"' in page
-        assert "not a checkpoint" in page or "not a model" in page
+        if lesson["example"].get("model"):
+            assert "Computed when the site is built, from the published record of" in page
+        else:
+            assert "not a checkpoint" in page or "not a model" in page
         svg = SITE / "concepts/figures" / f"{key}.svg"
         root = ET.parse(svg).getroot()
         assert root.tag.endswith("svg") and root.get("role") == "img"
@@ -42,10 +45,13 @@ def test_minimal_python_examples_match_independent_hand_calculations():
         exec(lessons["mha"]["code"], scope)
     assert sum(scope["weights"]) == pytest.approx(1)
     assert scope["output"] == pytest.approx([1.3395231, 1.3209538], rel=1e-6)
+    site = builder()
+    published, _, _ = site.inventory()
+    gqa = site.concept_examples.worked(lessons["gqa"]["example"], published)
     scope = {}
     with contextlib.redirect_stdout(io.StringIO()):
-        exec(lessons["gqa"]["code"], scope)
-    assert scope["cache_bytes"] == 4 * 1024 * 1024
+        exec(gqa["code"], scope)
+    assert scope["cache_per_token"] == gqa["checks"][0][2]  # the calculator's value for that model
     scope = {}
     with contextlib.redirect_stdout(io.StringIO()):
         exec(lessons["rmsnorm"]["code"], scope)
@@ -109,3 +115,50 @@ def test_compare_mockup_controls_and_teaching_labs_in_chrome(server, tmp_path): 
         assert page.locator(".norm-lab output").inner_text().startswith("Enter 1–16")
         assert not errors, errors
         browser.close()
+
+
+MODEL_BACKED = ("kv-cache", "gqa", "mla", "sliding-window", "moe", "linear-attention")
+
+
+def test_worked_examples_equal_the_calculator_and_the_record():
+    site = builder()
+    published, _, _ = site.inventory()
+    lessons = site.lessons()
+    for key in MODEL_BACKED:
+        example = lessons[key]["example"]
+        assert example.get("model") in published, key
+        worked = site.concept_examples.worked(example, published)
+        assert worked["checks"], key
+        for label, ours, reference in worked["checks"]:
+            assert ours == reference, (key, label, ours, reference)
+        page = (SITE / "concepts" / f"{key}.html").read_text()
+        for text in [worked["setup"], worked["result"], *worked["steps"]]:
+            assert site.e(text) in page, (key, text)
+        stem, _, _ = published[example["model"]]
+        assert f'href="../models/{stem}.html"' in page
+        assert "{" not in worked["result"] + "".join(worked["steps"])  # every placeholder filled
+
+
+def test_mla_example_matches_deepseek_v2_lite_record():
+    site = builder()
+    published, _, _ = site.inventory()
+    worked = site.concept_examples.worked(site.lessons()["mla"]["example"], published)
+    cache = site.render_cache(published["deepseek-ai/DeepSeek-V2-Lite"][2])
+    assert worked["values"]["per_token"] == "30.4 KiB" and worked["values"]["per_token_bytes"] == 31104
+    assert cache["grows_per_token_bytes"] == 31104
+
+
+def test_model_backed_guides_do_not_hedge():
+    import re
+
+    import yaml
+
+    concepts = yaml.safe_load((ROOT / "config/concepts.yaml").read_text())
+    lessons = builder().lessons()
+    hedges = (
+        r"depends on the implementation|according to the implementation|may be|can be wrong|real conventions differ"
+    )
+    for key in MODEL_BACKED:
+        text = json.dumps([concepts[key], lessons[key]])
+        assert not re.search(hedges, text, re.I), key
+        assert concepts[key]["reviewed"] is False

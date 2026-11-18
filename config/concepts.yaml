@@ -31,13 +31,14 @@ gqa:
   title: Grouped-query attention
   short: GQA
   category: Attention
-  summary: Several query heads share a smaller set of key and value heads, reducing the cache retained during decoding.
-  mechanism: Query heads are divided into groups. Heads in one group share keys and values while retaining separate
-    queries. MQA is the endpoint with one key-value head.
-  memory: For otherwise equal dimensions and precision, fewer key-value heads mean less cache per token. That does
-    not establish a particular model's quality or runtime speed.
-  verify: Read num_attention_heads, num_key_value_heads and head_dim from the pinned config. Check projection tensor
-    shapes and any custom implementation before treating the counts as verified.
+  summary: Groups of query heads share one key-value head, so each token caches fewer keys and values.
+  mechanism: Multi-head attention has one key-value head per query head. GQA keeps every query head but gives each group of
+    Hq / Hkv query heads a single shared key head and value head. Queries in a group still attend differently; they read the
+    same keys and values. Multi-query attention (MQA) is the limit with one key-value head for all queries.
+  memory: The cache shrinks by the group size Hq / Hkv. The key and value projections shrink by the same factor, so the weights
+    get slightly smaller too. Compute per token barely changes.
+  verify: Compare num_attention_heads with num_key_value_heads in config.json, and check that the k_proj and v_proj weights
+    are Hkv × head_dim wide.
   flow:
   - Many query heads
   - Shared key-value groups
@@ -61,14 +62,15 @@ moe:
   title: Mixture of experts
   short: MoE
   category: Feed-forward
-  summary: A router selects a subset of feed-forward experts for each token. Total stored parameters and active
-    parameters measure different things.
-  mechanism: Instead of one feed-forward network, a layer offers multiple experts. A router chooses which routed
-    experts process the token. Some designs also include shared experts.
-  memory: Sparse activation reduces the parameters used for a token, but the full expert pool still needs storage
-    unless the runtime offloads it. Active parameters are not a weight-memory estimate.
-  verify: Check the expert count, experts selected per token, shared experts, expert dimensions and dense-layer
-    exceptions. Confirm router and expert tensor shapes against those claims.
+  summary: A feed-forward layer is split into many experts, and a router sends each token to a few of them, so a token uses
+    only part of the stored parameters.
+  mechanism: Instead of one large feed-forward network, the layer holds N experts. A small router scores them for each token
+    and keeps the top k. The token passes through those k experts, plus any shared experts that every token uses, and their
+    outputs are summed, weighted by the router scores. Attention layers are unchanged.
+  memory: Every expert has to be in memory, or offloaded, because the next token can pick any of them. Weight memory follows
+    the total parameters; compute per token follows the active parameters.
+  verify: Read the number of routed experts, experts per token and shared experts in config.json, and count the expert tensors
+    in the weight headers.
   flow:
   - Token
   - Router selects experts
@@ -92,14 +94,17 @@ mla:
   title: Multi-head latent attention
   short: MLA
   category: Attention
-  summary: Keys and values are represented through a compressed latent state rather than caching a separate full-width
-    pair for every attention head.
-  mechanism: The attention module compresses key-value information into a latent representation. Position-encoding
-    components can require a separate cached part; the exact layout depends on the implementation.
-  memory: An MLA cache estimate needs the latent width and any additional cached position-encoding width. Reusing
-    a GQA formula would count a different representation.
-  verify: Inspect kv_lora_rank, position-encoding dimensions and the actual cache update in modeling code. Sparse-attention
-    index keys may add storage beyond the MLA latent.
+  summary: Each layer caches one compressed vector per token instead of a key and a value for every head, and rebuilds the
+    per-head keys and values from it when attending.
+  mechanism: A down-projection compresses the token's hidden state into a latent vector of width kv_lora_rank, and that vector
+    is what the layer caches. At attention time, up-projections expand it into per-head keys and values, or are folded into
+    the query and output projections so the expanded keys and values are never materialized. Rotary position encoding cannot
+    pass through the compression, so each token also caches one small rotary key, qk_rope_head_dim wide and shared by all
+    heads.
+  memory: 'Cache per token per layer = (kv_lora_rank + qk_rope_head_dim) × bytes per value, whatever the number of heads.
+    The saving costs compute: extra projection weights and matrix multiplies at every step.'
+  verify: Read kv_lora_rank and qk_rope_head_dim in config.json and find the compressed kv_a_proj tensor in the weight headers.
+    If the model also has a sparse-attention indexer, its keys are cached as well and must be added.
   flow:
   - Token representations
   - Compressed key-value latent
@@ -127,14 +132,14 @@ sliding-window:
   title: Sliding-window attention
   short: Sliding window
   category: Attention
-  summary: A layer attends to a recent token window. Its retained attention cache can stop growing when that window
-    is full.
-  mechanism: Each layer limits direct attention to a moving neighborhood of recent tokens. A hybrid model can mix
-    these layers with global-attention layers.
-  memory: Count only the retained window for local layers, plus the growing cache of any global layers. Actual runtimes
-    may allocate or retain more than the theoretical minimum.
-  verify: Read sliding_window and the per-layer pattern. Do not assume every layer is local because a window value
-    appears in the config.
+  summary: A layer attends only to the last W tokens, so its cache stops growing once it holds W tokens.
+  mechanism: 'Each query sees the W most recent positions instead of the whole prefix. The layer''s cache works as a ring
+    buffer: when token W + 1 arrives, the oldest entry is overwritten. Older text still reaches the current token indirectly,
+    through earlier layers that saw it inside their own windows.'
+  memory: Per layer, cache = per-token cost × min(T, W). Below W tokens it costs exactly as much as full attention; past W
+    it stays flat. In a model that mixes sliding and full layers, the full layers keep growing.
+  verify: Read sliding_window in config.json together with the per-layer pattern (layer_types or a sliding-window pattern).
+    A window value in the config does not mean every layer uses it.
   flow:
   - Earlier context
   - Recent retained window
@@ -159,14 +164,16 @@ linear-attention:
   title: Linear attention and recurrent state
   short: Linear attention
   category: Persistent state
-  summary: Some attention mechanisms summarize history in a recurrent state instead of retaining a full token-by-token
-    key-value cache.
-  mechanism: Linear-attention families use different update rules to accumulate information in a state. A delta-rule
-    design such as KDA should not be treated as interchangeable with every other linear-attention implementation.
-  memory: Persistent state can remain fixed in size as context grows. Hybrid models still have growing cache from
-    their full-attention layers. State precision and convolution buffers also matter.
-  verify: Confirm the layer pattern, state dimensions, convolution buffers and update rule from primary config and
-    code. Head counts alone do not establish an appropriate state formula.
+  summary: The layer replaces the growing key-value cache with a fixed-size state matrix that it updates at every token.
+  mechanism: Each head keeps a state matrix of key width × value width. For each token the layer writes the new key and value
+    into that state and reads its output by multiplying the query with it; nothing is stored per token. Delta-rule variants
+    such as KDA decay old content channel by channel and overwrite the entry for the current key instead of only adding to
+    it, which keeps the state from filling up with stale information.
+  memory: State per head = key width × value width × bytes, usually fp32, and the same at any context length. Small convolutions
+    on q, k and v keep a few past inputs as well. Hybrid models keep some full-attention or MLA layers, and their cache still
+    grows.
+  verify: Read the linear-attention head count, head width and convolution kernel in config.json, and the layer pattern to
+    see which layers are linear.
   flow:
   - Previous state and token
   - Recurrent state update
@@ -284,14 +291,17 @@ kv-cache:
   title: The key-value cache
   short: KV cache
   category: Memory planning
-  summary: Decoding reuses attention keys and values from earlier tokens. This state is separate from model weights
-    and from temporary runtime allocations.
-  mechanism: After processing a token, an autoregressive attention layer retains information needed by later tokens.
-    Different mechanisms retain full keys and values, a local window, a compressed latent or a recurrent state.
-  memory: The planner adds weight storage to persistent state for the selected context and number of sequences.
-    Quantization metadata, activations, kernels, offloading and device allocation can change actual usage.
-  verify: Identify each layer type and its stored representation before applying a formula. Weight precision and
-    cache precision are separate settings; a four-bit weight estimate does not imply a four-bit cache.
+  summary: While a model generates text, each attention layer keeps the keys and values of every earlier token so it never
+    recomputes them. That store is the KV cache, and it grows by one entry per layer for every token.
+  mechanism: 'For each new token, an attention layer computes one key and one value per key-value head, appends them to its
+    cache and attends over everything stored so far. Token 1,000 reads 999 cached entries per layer instead of re-running
+    the first 999 tokens. Other layer types store less: a sliding-window layer keeps the last W tokens, an MLA layer keeps
+    one compressed vector and a linear-attention layer keeps a fixed-size state.'
+  memory: 'Cache per token = 2 × key-value heads × head width × bytes per value × attention layers. Multiply by the context
+    length and by the number of sequences served at once. The cache is separate from the weights: 4-bit weights still write
+    a 16-bit cache unless the runtime quantizes the cache too.'
+  verify: Read num_key_value_heads, head_dim and num_hidden_layers from config.json. Then check the layer pattern for layers
+    that keep a window or a fixed state instead of a full cache.
   flow:
   - Model weights
   - Persistent decoding state

@@ -22,7 +22,7 @@ from xml.etree import ElementTree as ET
 
 import yaml
 
-from archwatch import concept_diagrams, diagram, generated, pipeline
+from archwatch import concept_diagrams, concept_examples, diagram, generated, pipeline
 from archwatch import concepts as concept_data
 from archwatch.artifacts import write_if_changed
 from archwatch.explainer import diff_input, input_hash
@@ -1325,11 +1325,45 @@ def lessons():
     return yaml.safe_load((CODE / "config/concept-lessons.yaml").read_text())
 
 
-def teaching_sections(key, item, lesson):
+def worked_example(lesson, published):
+    """A model-backed example is computed from the record at build time; otherwise the lesson's toy example."""
+    example = lesson["example"]
+    if not example.get("model"):
+        note = "Illustrative values for learning; these are not a checkpoint's architecture facts."
+        return (
+            f'<p class="toy-note">{e(note)}</p>',
+            example["setup"],
+            example["steps"],
+            example["result"],
+            lesson.get("code"),
+        )
+    if example["model"] not in published:  # held or removed: never show numbers from an unpublished record
+        name = example["model"].split("/")[-1]
+        return (
+            f'<p class="toy-note">This example is computed from {e(name)}, which is not published at the moment.</p>',
+            "",
+            [],
+            "",
+            None,
+        )
+    w = concept_examples.worked(example, published)
+    inputs = ", ".join(
+        f"<code>{e(name)}</code> = {e(json.dumps(value) if isinstance(value, dict) else value)} ({e(STATUS_WORDS[status])})"
+        for name, value, status in w["fields"]
+    )
+    note = (
+        f'<p class="toy-note">Computed when the site is built, from the published record of <a href="../models/{e(w["stem"])}.html">{e(w["values"]["model"])}</a> '
+        f'at commit <span class="mono">{e(w["commit"][:10])}</span>. Inputs: {inputs}. The same numbers appear in that model\'s memory planner.</p>'
+    )
+    return note, w["setup"], w["steps"], w["result"], w["code"]
+
+
+def teaching_sections(key, item, lesson, published):
+    note, setup, example_steps, result, code_text = worked_example(lesson, published)
     symbols = "".join(
         f"<div><dt>{e(symbol)}</dt><dd>{e(meaning)}</dd></div>" for symbol, meaning in lesson["symbols"].items()
     )
-    steps = "".join(f"<li>{e(step)}</li>" for step in lesson["example"]["steps"])
+    steps = "".join(f"<li>{e(step)}</li>" for step in example_steps)
     pitfalls = "".join(f"<li>{e(pitfall)}</li>" for pitfall in lesson["pitfalls"])
     related = "".join(f'<a href="{e(slug)}.html">{e(concepts()[slug]["short"])} →</a>' for slug in lesson["related"])
     lab = ""
@@ -1341,11 +1375,11 @@ def teaching_sections(key, item, lesson):
     elif key == "rmsnorm":
         lab = '<section id="try-it" class="concept-lab norm-lab"><p class="eyebrow">Try the arithmetic</p><h2>Normalize your own vector</h2><label>Vector components<input type="text" value="3, 4" aria-label="Vector components"></label><output aria-live="polite"></output><p class="hint">This is a toy calculation with learned scales set to 1, not a model output.</p></section>'
     code = (
-        f'<details class="lesson-code"><summary>Minimal Python illustration</summary><p>This small example demonstrates the arithmetic, not a full model implementation.</p><pre><code>{e(lesson["code"])}</code></pre></details>'
-        if lesson.get("code")
+        f'<details class="lesson-code"><summary>Minimal Python illustration</summary><p>This small example demonstrates the arithmetic, not a full model implementation.</p><pre><code>{e(code_text)}</code></pre></details>'
+        if code_text
         else ""
     )
-    return f"""<section id="why"><h2>Why this mechanism exists</h2><p>{e(lesson["why"])}</p></section><section id="mechanism"><h2>Follow the operation</h2><p>{e(item["mechanism"])}</p><figure class="lesson-figure">{concept_diagrams.render(key, lesson)}<figcaption>Original ArchWatch teaching schematic. <a download href="figures/{key}.svg">Download SVG ↓</a></figcaption></figure></section><section id="worked-example" class="worked-example"><p class="eyebrow">A worked example</p><h2>Make it concrete</h2><p class="toy-note">Illustrative values for learning; these are not a checkpoint's architecture facts.</p><p>{e(lesson["example"]["setup"])}</p><ol>{steps}</ol><p class="example-result">{e(lesson["example"]["result"])}</p></section><section id="equation"><h2>Equation and notation</h2><pre class="equation">{e(lesson["equation"])}</pre><dl class="notation">{symbols}</dl>{code}</section>{lab}<section id="memory"><h2>What it means for memory</h2><p>{e(item["memory"])}</p></section><section id="pitfalls"><h2>Where comparisons go wrong</h2><ul>{pitfalls}</ul><p class="lesson-takeaway">{e(lesson["takeaway"])}</p></section><section id="verify"><h2>How to verify it in a model</h2><p>{e(item["verify"])}</p></section><div class="related-lessons"><span class="eyebrow">Follow the connection</span>{related}</div>"""
+    return f"""<section id="why"><h2>Why this mechanism exists</h2><p>{e(lesson["why"])}</p></section><section id="mechanism"><h2>Follow the operation</h2><p>{e(item["mechanism"])}</p><figure class="lesson-figure">{concept_diagrams.render(key, lesson)}<figcaption>Original ArchWatch teaching schematic. <a download href="figures/{key}.svg">Download SVG ↓</a></figcaption></figure></section><section id="worked-example" class="worked-example"><p class="eyebrow">A worked example</p><h2>Make it concrete</h2>{note}<p>{e(setup)}</p><ol>{steps}</ol><p class="example-result">{e(result)}</p></section><section id="equation"><h2>Equation and notation</h2><pre class="equation">{e(lesson["equation"])}</pre><dl class="notation">{symbols}</dl>{code}</section>{lab}<section id="memory"><h2>What it means for memory</h2><p>{e(item["memory"])}</p></section><section id="pitfalls"><h2>Where comparisons go wrong</h2><ul>{pitfalls}</ul><p class="lesson-takeaway">{e(lesson["takeaway"])}</p></section><section id="verify"><h2>How to verify it in a model</h2><p>{e(item["verify"])}</p></section><div class="related-lessons"><span class="eyebrow">Follow the connection</span>{related}</div>"""
 
 
 DRAFT = '<span class="draft" title="Not yet reviewed by the maintainer">draft</span>'
@@ -1373,7 +1407,7 @@ def guide_pages(published):
         body = f'''<nav class="crumbs" aria-label="Breadcrumb"><a href="../concepts/index.html">Concept guide</a> / {e(item["short"])}</nav>
 <div class="guidehero"><p class="eyebrow">{e(item["category"])} / Field guide</p><h1>{e(item["title"])}</h1>{draft and f'<p class="draft-note">{DRAFT} Not yet reviewed by the maintainer.</p>'}<p class="lead">{e(item["summary"])}</p><p class="byline">An original ArchWatch explanation. The rule below associates models from approved source fields; this guide never supplies model facts.</p></div>
 <nav class="lesson-nav" aria-label="Guide sections"><a href="#why">Motivation</a><a href="#worked-example">Worked example</a><a href="#equation">Equation</a><a href="#pitfalls">Pitfalls</a><a href="#verify">Verify</a><a href="#examples">Model evidence</a></nav>
-<div class="guide-columns lesson-columns"><article class="prose lesson-prose">{teaching_sections(key, item, lesson_data[key])}<p class="primary-source">Read the primary source ↗<br><a href="{e(item["source"]["url"])}">{e(item["source"]["title"])}</a></p><details class="concept-rule"><summary>Inspect the matching rule</summary><p>Scope: {e(item["scope"])}</p><pre>{e(criteria)}</pre><p>Additional semantic guards enforce scope, head relationships and nested operations. Every supporting field needs a current passing verifier decision. Missing fields never establish absence.</p></details></article>
+<div class="guide-columns lesson-columns"><article class="prose lesson-prose">{teaching_sections(key, item, lesson_data[key], published)}<p class="primary-source">Read the primary source ↗<br><a href="{e(item["source"]["url"])}">{e(item["source"]["title"])}</a></p><details class="concept-rule"><summary>Inspect the matching rule</summary><p>Scope: {e(item["scope"])}</p><pre>{e(criteria)}</pre><p>Additional semantic guards enforce scope, head relationships and nested operations. Every supporting field needs a current passing verifier decision. Missing fields never establish absence.</p></details></article>
 <aside class="panel lesson-examples" id="examples"><p class="eyebrow">Explore the idea in practice</p><h2>Published examples</h2><ul class="guide-models">{models or "<li>No qualified published example yet. This is a guide, not a claim that the supported models lack this mechanism.</li>"}</ul><p class="hint">A one-source association remains labelled. Held architectures are excluded. <a href="../review/index.html">Inspect the review queue →</a></p></aside></div>'''
         pages[key + ".html"] = frame(
             f"{item['title']} · ArchWatch guide", body, depth=1, active="concepts", description=item["summary"]
