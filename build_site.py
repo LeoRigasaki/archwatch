@@ -1353,7 +1353,7 @@ def worked_example(lesson, published):
     )
     note = (
         f'<p class="toy-note">Computed when the site is built, from the published record of <a href="../models/{e(w["stem"])}.html">{e(w["values"]["model"])}</a> '
-        f'at commit <span class="mono">{e(w["commit"][:10])}</span>. Inputs: {inputs}. The same numbers appear in that model\'s memory planner.</p>'
+        f'at commit <span class="mono">{e(w["commit"][:10])}</span>. Inputs: {inputs}. The model page shows the same values.</p>'
     )
     return note, w["setup"], w["steps"], w["result"], w["code"]
 
