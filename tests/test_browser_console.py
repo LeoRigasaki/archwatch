@@ -97,3 +97,39 @@ def test_page_loads_without_console_or_page_errors(name, server, tmp_path):
         assert (
             len(context) == 1 and context[0].count(" tokens") == 0 and context[0].count(",") >= 2
         )  # one sentence, all models
+
+
+HARNESS = """<!doctype html><meta charset="utf-8"><pre id="out"></pre>
+<iframe id="f" src="/index.html" style="width:1280px;height:800px"></iframe>
+<script>
+document.getElementById('f').addEventListener('load', function () {
+  setTimeout(function () {
+    var d = document.getElementById('f').contentDocument, sel = d.getElementById('sort'), out = {};
+    ['small', 'big', 'name', 'new'].forEach(function (key) {
+      sel.value = key; sel.dispatchEvent(new Event('change'));
+      var names = function (q) { return [].map.call(d.querySelectorAll(q), function (a) { return a.textContent; }); };
+      out[key] = {cards: names('.cards > li:not([hidden]) h3 a'), table: names('.tableview tbody tr:not([hidden]) th a')};
+    });
+    document.getElementById('out').textContent = JSON.stringify(out);
+  }, 500);
+});
+</script>"""
+
+
+def test_table_view_follows_the_sort_control(server, tmp_path):
+    import html
+    import json
+    import re
+
+    harness = SITE / "_sort_harness.html"
+    harness.write_text(HARNESS)
+    try:
+        dom, console = load(server + "/_sort_harness.html", tmp_path)
+    finally:
+        harness.unlink()
+    assert not console, console
+    result = json.loads(html.unescape(re.search(r'<pre id="out">(.*?)</pre>', dom, re.S).group(1)))
+    for key, order in result.items():
+        assert order["cards"] and order["table"] == order["cards"], key
+    assert result["small"]["table"] == list(reversed(result["big"]["table"]))
+    assert result["name"]["table"] == sorted(result["name"]["table"], key=str.lower)

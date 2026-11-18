@@ -1,65 +1,39 @@
-# ArchWatch progress checklist
+# ArchWatch progress
 
-As of **14 November 2026**, after the watcher and source-driven cleanup merges, manual discovery acceptance and the ten-publisher backfill. This checklist describes verified implementation and remaining acceptance; the original day numbers are planning milestones.
+As of **16 November 2026**. The dated sections under [History](#history) are kept as they were written.
 
-## Implemented and validated
+## Current state
 
-- [x] Prototype integrated into `src/archwatch/`, tests into `tests/`, four JSON records and two successor YAML records into `data/models/`.
-- [x] Config extractor: nested text configs, hybrid/dense/MoE and latent MoE, MLA/DSA/KDA, layer lists and one-based indexing.
-- [x] LFM effective FFN normalization: explicit auto-adjust rule converts 12,288 to 8,192; agrees with released tensors; regression cases added.
-- [x] Weight counting: exact supported-format shape totals, components, scale exclusion and active-count conventions.
-- [x] AST scanner with file/line evidence; downloaded code is never executed.
-- [x] Cache calculator with GQA, sliding window, short-conv, MLA, DSA and KDA rules and hand-math tests.
-- [x] Verifier with explicit verified/single-source/conflict states and conflict withholding.
-- [x] Published-only SVG/site inputs; a verified weight-kind layer pattern is required. Missing required inputs and unsupported site cache rules are rejected.
-- [x] Site cache estimates and field comparisons recomputed from published values; raw facts, raw parameter counts and stored cache/diff artifacts cannot override them.
-- [x] Field and tensor-group predecessor diffs; exact **178,526,208-parameter** DSA-indexer addition retained.
-- [x] Two-model local site and standalone SVG outputs rebuilt. Imported PNGs remain historical previews.
-- [x] Metadata refreshed once per analysis; later reads use the same commit and revision-specific cache. Two-run/new-commit regression added.
-- [x] Header reads reject full-body range responses and oversized headers.
-- [x] uv lockfile, Python 3.12 pin, ruff, pre-commit and offline PR CI configured.
-- [x] Source ZIP exporter excludes environments, runtime caches, egg-info and private references, including accidentally tracked runtime files.
-- [x] **116 offline tests pass**, including publication boundaries, family layouts, normalization, predecessor artifact consistency, refresh, packaging, AST, independent labels and hand-math formulas.
-- [x] Fresh primary-source run reproduces all four commits and parameter totals. Of the original 81 checks, only the corrected LFM FFN verdict changes.
-- [x] GitHub repository configured at `LeoRigasaki/archwatch`.
-- [x] Foundations merged in [PR #1](https://github.com/LeoRigasaki/archwatch/pull/1) after [CI passed](https://github.com/LeoRigasaki/archwatch/actions/runs/43489941541) on its exact head commit; main CI also passed.
-- [x] `needs-review` and `auto-merge` labels created; repository setting permits Actions to open PRs. Actual auto-merge remains disabled.
-- [x] The [manual workflow](https://github.com/LeoRigasaki/archwatch/actions/runs/43490777972) succeeded from merged main: four records analyzed, 38 tests passed, zero review fields and [update PR #3](https://github.com/LeoRigasaki/archwatch/pull/3) opened with `auto-merge`. That no-op PR was subsequently closed without merging; see the correction below.
-- [x] The initial run exposed duplicate Git auth headers; [compatibility PR #2](https://github.com/LeoRigasaki/archwatch/pull/2) passed CI and merged before the successful rerun.
-- [x] Watcher branch rebased onto no-op correction main `a232073`; bounded discovery/analysis implementation and tests added.
-- [x] Acceptance evidence and four-record equality checks recorded in [github-workflow-acceptance.json](results/github-workflow-acceptance.json).
-- [x] Progress/result paths remain relative; research reference remains ignored.
+- **Site:** live at [archwatch.vercel.app](https://archwatch.vercel.app), deployed by Vercel on every merge to `main`, built offline from committed records (`site/` is not committed). 13 published models, an explore page with filters, one page per model, and a compare tool for 2-3 models with shareable links.
+- **Records:** 26 records, 28 tracked repositories. Seven newest architectures and two fine-tunes are held; fine-tunes are out of scope and not listed.
+- **Watcher:** daily GitHub Action (no LLM calls). Predecessors must share the family and size class (total within 2x, same dense/MoE kind, base with base).
+- **Diagrams:** Monday/Wednesday/Friday Gemini runs, at most 5 models and 15 calls, each checked by code. 5 published models show an approved Gemini diagram; the rest show a code-drawn one. Outputs and the call ledger are kept in a needs-review PR and an artifact before the tests run.
+- **Counting convention 2** (`config/counting-conventions.yaml`): total excludes MTP modules (published as `params_mtp`); active excludes unselected experts, MTP, lookup tables and the input embedding, keeps the output head.
+- **Dates:** `hub_created_at` is the Hub creation time; a release date is shown only when the model's own card states one.
+- **Explainer:** notes are checked field by field (each claim's before and after belong to that field); none is on the site yet.
+- **Tests:** 289 offline tests, including headless-browser checks that every page type loads without console errors.
 
-## Decisions recorded, implementation still open
+## Evaluation
 
-- [x] Preferred publishers: DeepSeek, Alibaba/Qwen, Mistral, Liquid AI, NVIDIA, Google, Meta, Microsoft, Moonshot and Z.ai.
-- [x] Keep an outside-discovery route for emerging models, with architecture novelty and source readiness checked before diagram generation.
-- [x] Proposed generator: Gemini 4 Hydrogen, with Gemini 3.8 Flash as an explicit free fallback. Account quotas are transcribed from the supplied screenshots.
-- [x] Proposed weekly batch: at most five changed architectures, initially three preferred-lab slots and two outside slots; no regeneration for unchanged specifications.
-- [x] Codex recommended as optional reviewer; explanations available for any pair on demand, predecessor pairs in automated batches.
-- [x] Discovery/analysis selection implemented and live-tested.
-- [ ] Provider generation/review policies, route comparison and weekly queue remain unimplemented.
+| Set | Score | What it is |
+|---|---:|---|
+| Development gold (10 models) | 144/144 | Adaptation score on labels frozen before family fixes |
+| Newest held-out, first run (7 models) | 97/139 (69.8%) | The held-out result; frozen in `results/newest-first-run/` |
+| Same labels, current records as published (convention 2) | 134/139 | 4 misses are MTP modules now reported separately; 1 is DiffusionGemma's held total |
+| Same labels, current records mapped to convention 1 | 138/139 | Like for like with the labels (total = published total + MTP) |
 
-## Still open
+The gold labels are never edited; `tools/evaluate_gold.py --convention 1` maps records back to the labels' convention. Reports: [convention 2](results/heldout-current-v2.md), [convention 1](results/heldout-current-v1.md). No label is human-reviewed, and the held-out 30-model evaluation and the 95% target remain open.
 
-- [x] Watcher: ten core publishers, global trending/recent discovery, Hub/config/safetensors admission, verified architecture dedupe, bounded retries, retained work and `data/seen.json`.
-- [x] Same-org family predecessor selection with explicit date/catalog evidence and ambiguity handling; both existing live pairs reproduced.
-- [x] Manual workflow modes `fixed`, `discover` and `process`; default remains the fixed smoke test and cron stays disabled.
-- [ ] Typed/Pydantic schema and broader family/config acceptance coverage.
-- [x] Ten development gold labels manually transcribed from primary sources, frozen before family fixes; per-field published exact match reported. Every label is explicitly `human_reviewed: false`.
-- [ ] Human review and unseen 30-model evaluation; calculator/citation metrics and the **95% held-out config-field target** remain unmeasured.
-- [ ] Gemini validated spec-to-SVG generation/repair loop and response caching; provider quota controls.
-- [ ] LLM code reader with structured output and source-line citations.
-- [ ] Report finder/retrieval, report agent, page citations and citation validator.
-- [ ] LangGraph orchestration and Langfuse traces.
-- [ ] GitHub review issue queue and recorded human decisions.
-- [ ] Diff-constrained explanations; family/predecessor selection v1 is implemented, with broader historical coverage still open.
-- [ ] Controlled scheduled publishing/merging; cron remains disabled until explicit user approval.
-- [ ] MCP server (`search_models`, `get_model`, `compare`) and client tests.
-- [ ] Full collection/filter/compare UI, own RSS, final model pages and production deployment.
-- [ ] **50+ model backfill**, independent evaluation results and demo recording.
+## Open work
 
-The refresh workflow supports a default fixed-list smoke test plus explicit manual discovery/processing modes. Its cron remains disabled; neither a labeled PR nor zero conflicts constitutes automatic merge authorization.
+- [ ] Drawing and cache rules for the held architectures (compressed/sparse attention with hyper-connections, shared KV, chunked attention, block diffusion, recurrent layers).
+- [ ] Explainer notes on the site, regenerated under the change filter and the field-bound validator.
+- [ ] Plain-language mode, concept pages and an RSS feed.
+- [ ] Human-reviewed held-out evaluation set.
+- [ ] Typed schema; LLM code/report readers with citations; review issue queue; MCP server.
+
+<a id="history"></a>
+# History
 
 ## Milestone map
 
@@ -138,7 +112,7 @@ The implementation amendments approved on 14 November are recorded in [NEXT_STEP
 - [x] Processed all ten primary releases in `config/backfill.yaml` in two bounded batches of five. Each resolved on the Hub with pinned config, card and safetensors headers; all ten meet the publication gate with no review fields. No weight payloads or modeling code were executed.
 - [x] Added tested rules for Mistral all-layer SWA; Gemma periodic/global pattern and post-norms; Phi parallel ungated FFN; GLM fused gate/up; Nemotron-H standalone Mamba-2/MLP/attention blocks; DeepSeek expert names; LFM static SiLU; Qwen/Meta FFN gates; Kimi packed gate evidence.
 - [x] Added Mamba-2 mathematical cache-state bounds and separate standalone/parallel diagrams. These estimates do not claim runtime/kernel qualification.
-- [x] Ten manually entered primary-source gold labels committed before family fixes (`fad28a0`), with pinned links and shape samples. Assistant curation is explicit; no label claims human review.
+- [x] Ten manually entered primary-source gold labels committed before family fixes (`0fa673f`), with pinned links and shape samples. Assistant curation is explicit; no label claims human review.
 - [x] Development exact match improved from **117/144 to 144/144** published fields, reported per field and per model in [results/gold-exact-match.md](results/gold-exact-match.md). Missing/held records are failures, not dropped cases. This is not held-out accuracy.
 - [x] Existing approved Hugging Face login supports gated Meta/Google sources. Authorization is stripped across hosts/downgrades; bounded range/header checks remain enforced and tested.
 - [x] Added explicit `--reprocess` for unchanged source commits after schema/rule changes. Ordinary repeat backfill reports all ten unchanged; **39 artifact byte streams and mtimes remain identical**, including seen state/site.

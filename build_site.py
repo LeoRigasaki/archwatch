@@ -1409,7 +1409,9 @@ JS = """
   function apply(){var key=sort.value,n=0;cards.sort(function(a,b){var x=a.dataset,y=b.dataset;
       return key==='big'?y.params-x.params:key==='small'?x.params-y.params:key==='name'?x.name.localeCompare(y.name):y.date.localeCompare(x.date)});
     cards.forEach(function(c,i){list.appendChild(c);var m=ok(c);c.hidden=!m;if(rows[i]){}if(m)n++});
-    rows.forEach(function(r){var name=r.querySelector('a').getAttribute('href');var c=cards.filter(function(c){return c.querySelector('h3 a').getAttribute('href')===name})[0];r.hidden=c.hidden});
+    var body=document.querySelector('.tableview tbody'),byHref={};
+    rows.forEach(function(r){byHref[r.querySelector('a').getAttribute('href')]=r});
+    cards.forEach(function(c){var r=byHref[c.querySelector('h3 a').getAttribute('href')];if(r){r.hidden=c.hidden;body.appendChild(r)}});
     shown.textContent=n;empty.hidden=n>0}
   f.addEventListener('change',apply);f.addEventListener('reset',function(){setTimeout(apply)});q.addEventListener('input',apply);sort.addEventListener('change',apply);
   document.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(){var t=b.dataset.view==='table';
