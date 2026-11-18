@@ -1325,11 +1325,16 @@ def lessons():
     return yaml.safe_load((CODE / "config/concept-lessons.yaml").read_text())
 
 
-def worked_example(lesson, published):
+def input_value(value):
+    text = json.dumps(value, sort_keys=True) if isinstance(value, (dict, list, bool)) else str(value)
+    return text if len(text) <= 80 else "see the model page"
+
+
+def worked_example(lesson, published, title):
     """A model-backed example is computed from the record at build time; otherwise the lesson's toy example."""
     example = lesson["example"]
     if not example.get("model"):
-        note = "Illustrative values for learning; these are not a checkpoint's architecture facts."
+        note = f"No published model uses {title.lower() if title[1:2].islower() else title} yet, so this example uses toy numbers."
         return (
             f'<p class="toy-note">{e(note)}</p>',
             example["setup"],
@@ -1348,7 +1353,7 @@ def worked_example(lesson, published):
         )
     w = concept_examples.worked(example, published)
     inputs = ", ".join(
-        f"<code>{e(name)}</code> = {e(json.dumps(value) if isinstance(value, dict) else value)} ({e(STATUS_WORDS[status])})"
+        f"<code>{e(name)}</code> = {e(input_value(value))} ({e(STATUS_WORDS[status])})"
         for name, value, status in w["fields"]
     )
     note = (
@@ -1358,22 +1363,83 @@ def worked_example(lesson, published):
     return note, w["setup"], w["steps"], w["result"], w["code"]
 
 
+ATTENTION_LABS = {"mha", "gqa", "kv-cache", "sliding-window"}
+TOY_LAB = dict(model="toy decoder", layers=2, hq=8, kv=2, hd=64, context=4096, window=512)
+
+
+def lab_bytes(preset, windowed):
+    retained = min(preset["context"], preset["window"]) if windowed and preset.get("window") else preset["context"]
+    return retained, 2 * preset["layers"] * retained * preset["kv"] * preset["hd"] * 2
+
+
+def concept_lab(key, lesson, published):
+    """Calculators start from the worked example's model; toy values are a labelled reset option."""
+    example = lesson["example"]
+    model = published.get(example.get("model"))
+    if key in ATTENTION_LABS:
+        toy = dict(TOY_LAB, kv=8 if key == "mha" else 2)
+        start = toy
+        if model:
+            start = {k: v for k, v in concept_examples.lab_preset(model[1]).items() if k != "bytes"}
+        windowed = key == "sliding-window" and bool(start.get("window"))
+        retained, nbytes = lab_bytes(start, windowed)
+        baseline = 2 * start["layers"] * start["context"] * start["hq"] * start["hd"] * 2
+        kind = "MHA" if start["kv"] == start["hq"] else "MQA" if start["kv"] == 1 else "GQA"
+        source = (
+            f"Starts from {e(start['model'])}'s published values: {start['hq']} query heads, head width {start['hd']}, bf16 cache."
+            if model
+            else "No published model uses this yet, so the calculator starts from toy values."
+        )
+        presets = json.dumps({"model": start, "toy": toy, "windowed": windowed}, sort_keys=True)
+        buttons = (
+            f'<div class="lab-presets"><button type="button" class="btn" data-preset="model">Use {e(start["model"])} values</button>'
+            f'<button type="button" class="btn" data-preset="toy">Reset to toy values</button></div>'
+            if model
+            else ""
+        )
+        return (
+            f"""<section id="try-it" class="concept-lab attention-lab" data-presets='{e(presets)}'><p class="eyebrow">Try the arithmetic</p><h2>Explore the cache trade-off</h2>"""
+            f"""<p data-lab="source">{source}</p>{buttons}<div class="lab-controls">"""
+            f"""<label>Context tokens<input name="toy-context" type="number" min="1" max="1048576" step="1" value="{start["context"]}"></label>"""
+            f"""<label>KV heads<select name="toy-kv"><option value="{start["kv"]}" selected>{start["kv"]}</option></select></label>"""
+            f"""<label>Attention layers<input name="toy-layers" type="number" min="1" max="256" step="1" value="{start["layers"]}"></label>"""
+            f"""<label>Retention<select name="toy-window"><option value="full"{"" if windowed else " selected"}>Full history</option>"""
+            + (
+                f"""<option value="{start["window"]}"{" selected" if windowed else ""}>Window {start["window"]:,}</option>"""
+                if start.get("window")
+                else ""
+            )
+            + f"""</select></label></div>"""
+            f"""<div class="lab-result" aria-live="polite"><b data-toy="type">{kind}</b><strong data-toy="bytes">{e(lab_size(nbytes))}</strong>"""
+            f"""<span><span data-toy="retained">{retained:,}</span> retained positions; full-history MHA baseline <span data-toy="baseline">{e(lab_size(baseline))}</span>.</span>"""
+            f"""<code data-toy="formula">2 × {start["layers"]} × {retained} × {start["kv"]} × {start["hd"]} × 2 = {nbytes:,} bytes</code></div>"""
+            f"""<p class="hint" data-lab="toy-note"{"" if not model else " hidden"}>Toy values: 8 query heads of width 64. They are not any model's facts.</p>"""
+            f"""<p class="hint">Attention cache only: no weights, recurrent state or runtime overhead.</p></section>"""
+        )
+    if key == "rmsnorm":
+        width = ""
+        if model:
+            width = f" {e(model[1]['id'].split('/')[-1])} normalizes {render_values(model[1])['hidden_size']:,} values per token in every norm; its activations are not published, so try a short vector of your own."
+        return f'<section id="try-it" class="concept-lab norm-lab"><p class="eyebrow">Try the arithmetic</p><h2>Normalize your own vector</h2><p>{width.strip() or "Try a short vector of your own."}</p><label>Vector components<input type="text" value="3, 4" aria-label="Vector components"></label><output aria-live="polite"></output><p class="hint">Toy vector, learned scales set to 1.</p></section>'
+    return ""
+
+
+def lab_size(n):
+    for unit, power in (("GiB", 30), ("MiB", 20), ("KiB", 10)):
+        if n >= 2**power:
+            return f"{n / 2**power:.2f} {unit}"
+    return f"{n} B"
+
+
 def teaching_sections(key, item, lesson, published):
-    note, setup, example_steps, result, code_text = worked_example(lesson, published)
+    note, setup, example_steps, result, code_text = worked_example(lesson, published, item["title"])
     symbols = "".join(
         f"<div><dt>{e(symbol)}</dt><dd>{e(meaning)}</dd></div>" for symbol, meaning in lesson["symbols"].items()
     )
     steps = "".join(f"<li>{e(step)}</li>" for step in example_steps)
     pitfalls = "".join(f"<li>{e(pitfall)}</li>" for pitfall in lesson["pitfalls"])
     related = "".join(f'<a href="{e(slug)}.html">{e(concepts()[slug]["short"])} →</a>' for slug in lesson["related"])
-    lab = ""
-    if key in {"mha", "gqa", "kv-cache", "sliding-window"}:
-        toy_heads = 8 if key == "mha" else 2
-        toy_retained = 512 if key == "sliding-window" else 4096
-        toy_bytes = 2 * 2 * toy_retained * toy_heads * 64 * 2
-        lab = f"""<section id="try-it" class="concept-lab attention-lab"><p class="eyebrow">Try the arithmetic</p><h2>Explore the cache trade-off</h2><p>This toy decoder has 8 query heads, equal key/value head widths of 64 and bf16 cache. All its layers follow the same selected window policy.</p><div class="lab-controls"><label>Context tokens<input name="toy-context" type="number" min="1" max="1048576" step="1" value="4096"></label><label>KV heads<select name="toy-kv"><option value="1">1 (MQA)</option><option value="2"{" selected" if key != "mha" else ""}>2 (GQA)</option><option value="4">4 (GQA)</option><option value="8"{" selected" if key == "mha" else ""}>8 (MHA)</option></select></label><label>Attention layers<input name="toy-layers" type="number" min="1" max="128" step="1" value="2"></label><label>Retention<select name="toy-window"><option value="full"{" selected" if key != "sliding-window" else ""}>Full history</option><option value="512"{" selected" if key == "sliding-window" else ""}>Window 512</option><option value="1024">Window 1,024</option></select></label></div><div class="lab-result" aria-live="polite"><b data-toy="type">{"MHA" if toy_heads == 8 else "GQA"}</b><strong data-toy="bytes">{e(size(toy_bytes))}</strong><span><span data-toy="retained">{toy_retained:,}</span> retained positions; full-history MHA baseline <span data-toy="baseline">16.00 MiB</span>.</span><code data-toy="formula">2 × 2 × {toy_retained} × {toy_heads} × 64 × 2 = {toy_bytes:,} bytes</code></div><p class="hint">Illustrative attention cache only. No weights, recurrent buffers or runtime overhead are included. No API calls.</p></section>"""
-    elif key == "rmsnorm":
-        lab = '<section id="try-it" class="concept-lab norm-lab"><p class="eyebrow">Try the arithmetic</p><h2>Normalize your own vector</h2><label>Vector components<input type="text" value="3, 4" aria-label="Vector components"></label><output aria-live="polite"></output><p class="hint">This is a toy calculation with learned scales set to 1, not a model output.</p></section>'
+    lab = concept_lab(key, lesson, published)
     code = (
         f'<details class="lesson-code"><summary>Minimal Python illustration</summary><p>This small example demonstrates the arithmetic, not a full model implementation.</p><pre><code>{e(code_text)}</code></pre></details>'
         if code_text

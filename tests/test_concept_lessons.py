@@ -3,6 +3,7 @@
 import contextlib
 import io
 import json
+import re
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -30,7 +31,7 @@ def test_every_guide_has_an_original_worked_lesson_and_downloadable_figure():
         if lesson["example"].get("model"):
             assert "Computed when the site is built, from the published record of" in page
         else:
-            assert "not a checkpoint" in page or "not a model" in page
+            assert "yet, so this example uses toy numbers." in page
         svg = SITE / "concepts/figures" / f"{key}.svg"
         root = ET.parse(svg).getroot()
         assert root.tag.endswith("svg") and root.get("role") == "img"
@@ -99,6 +100,10 @@ def test_compare_mockup_controls_and_teaching_labs_in_chrome(server, tmp_path): 
         page.set_viewport_size({"width": 390, "height": 844})
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         page.goto(server + "/concepts/gqa.html")
+        assert page.locator("[data-toy=bytes]").inner_text() == "16.00 GiB"  # Llama-3.1-8B at 131,072 tokens
+        assert page.locator("[data-toy=type]").inner_text() == "GQA"
+        page.get_by_role("button", name="Reset to toy values").click()
+        assert page.locator("[data-lab=toy-note]").is_visible()
         assert page.locator("[data-toy=bytes]").inner_text() == "4.00 MiB"
         page.locator("[name=toy-context]").fill("32768")
         assert page.locator("[data-toy=bytes]").inner_text() == "32.00 MiB"
@@ -108,6 +113,11 @@ def test_compare_mockup_controls_and_teaching_labs_in_chrome(server, tmp_path): 
         assert page.locator("[data-toy=bytes]").inner_text() == "2.00 MiB"
         page.locator("[name=toy-kv]").select_option("2")
         assert page.locator("[data-toy=bytes]").inner_text() == "512.00 KiB"
+        page.get_by_role("button", name="Use Llama-3.1-8B values").click()
+        assert page.locator("[data-toy=bytes]").inner_text() == "16.00 GiB"
+        assert not page.locator("[data-lab=toy-note]").is_visible()
+        page.goto(server + "/concepts/sliding-window.html")
+        assert page.locator("[data-toy=bytes]").inner_text() == "512.00 MiB"  # Mistral-7B capped by its window
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         page.goto(server + "/concepts/rmsnorm.html")
         assert "0.8485, 1.1314" in page.locator(".norm-lab output").inner_text()
@@ -117,16 +127,42 @@ def test_compare_mockup_controls_and_teaching_labs_in_chrome(server, tmp_path): 
         browser.close()
 
 
-MODEL_BACKED = ("kv-cache", "gqa", "mla", "sliding-window", "moe", "linear-attention")
+HEDGES = (
+    r"\b(may|might|could|perhaps|possibly)\b|depends on the implementation|according to the implementation"
+    r"|implementation-specific|model-specific|not necessarily|real conventions differ|can be wrong"
+)
+
+
+def published_hits():
+    from archwatch import concepts
+
+    published, _, _ = builder().inventory()
+    hits = {}
+    for _, rec, _ in published.values():
+        for match in concepts.for_record(rec):
+            hits.setdefault(match["key"], set()).add(rec["id"])
+    return published, hits
+
+
+def test_a_guide_uses_a_real_model_exactly_when_a_published_model_has_the_concept():
+    published, hits = published_hits()
+    for key, lesson in builder().lessons().items():
+        model = lesson["example"].get("model")
+        if key in hits:
+            assert model in hits[key], (key, model)  # the example model is one the guide lists
+        else:
+            assert model is None, key
 
 
 def test_worked_examples_equal_the_calculator_and_the_record():
     site = builder()
-    published, _, _ = site.inventory()
-    lessons = site.lessons()
-    for key in MODEL_BACKED:
-        example = lessons[key]["example"]
-        assert example.get("model") in published, key
+    published, _ = published_hits()
+    backed = 0
+    for key, lesson in site.lessons().items():
+        example = lesson["example"]
+        if not example.get("model"):
+            continue
+        backed += 1
         worked = site.concept_examples.worked(example, published)
         assert worked["checks"], key
         for label, ours, reference in worked["checks"]:
@@ -136,7 +172,8 @@ def test_worked_examples_equal_the_calculator_and_the_record():
             assert site.e(text) in page, (key, text)
         stem, _, _ = published[example["model"]]
         assert f'href="../models/{stem}.html"' in page
-        assert "{" not in worked["result"] + "".join(worked["steps"])  # every placeholder filled
+        assert "{" not in worked["result"] + "".join(worked["steps"])
+    assert backed == 20
 
 
 def test_mla_example_matches_deepseek_v2_lite_record():
@@ -148,17 +185,38 @@ def test_mla_example_matches_deepseek_v2_lite_record():
     assert cache["grows_per_token_bytes"] == 31104
 
 
-def test_model_backed_guides_do_not_hedge():
+def test_calculators_start_from_the_worked_example_model():
+    import html
     import re
 
+    site = builder()
+    published, _, _ = site.inventory()
+    for key in sorted(site.ATTENTION_LABS):
+        model = site.lessons()[key]["example"]["model"]
+        values = published[model][2]
+        cache = site.render_cache(values)
+        page = (SITE / "concepts" / f"{key}.html").read_text()
+        presets = json.loads(html.unescape(re.search(r"data-presets='([^']+)'", page).group(1)))
+        start = presets["model"]
+        assert start["model"] == model.split("/")[-1]
+        _, nbytes = site.lab_bytes(start, presets["windowed"])
+        expected = (
+            cache["constant_bytes"]
+            if presets["windowed"]
+            else cache["grows_per_token_bytes"] * values["context_length"]
+        )
+        assert nbytes == expected, key
+        assert presets["toy"]["model"] == "toy decoder" and "Reset to toy values" in page
+
+
+def test_pitfalls_are_specific_and_no_guide_hedges():
     import yaml
 
     concepts = yaml.safe_load((ROOT / "config/concepts.yaml").read_text())
     lessons = builder().lessons()
-    hedges = (
-        r"depends on the implementation|according to the implementation|may be|can be wrong|real conventions differ"
-    )
-    for key in MODEL_BACKED:
-        text = json.dumps([concepts[key], lessons[key]])
-        assert not re.search(hedges, text, re.I), key
+    assert set(concepts) == set(lessons) and len(concepts) == 32
+    for key in concepts:
+        assert 1 <= len(lessons[key]["pitfalls"]) <= 3, key
+        text = json.dumps([concepts[key], lessons[key]], ensure_ascii=False)
+        assert not re.search(HEDGES, text, re.I), (key, re.search(HEDGES, text, re.I).group(0))
         assert concepts[key]["reviewed"] is False

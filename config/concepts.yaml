@@ -6,13 +6,15 @@ mha:
   title: Multi-head attention
   short: MHA
   category: Attention
-  summary: Each query head has its own key and value heads. It is a useful baseline for understanding cache costs.
-  mechanism: A token produces queries, keys and values. Queries attend to earlier keys and use their matching values
-    to combine information. Several heads perform this operation in parallel.
-  memory: During autoregressive decoding, full attention retains keys and values for earlier tokens. Its cache grows
-    with sequence length, head count and head width.
-  verify: Compare num_attention_heads with num_key_value_heads. Equal counts support MHA; inspect implementation
-    evidence as well when a model uses custom attention.
+  summary: Every query head has its own key head and value head. It is the baseline that the other attention layouts save
+    memory against.
+  mechanism: Each head projects the token into its own query, key and value, scores the query against the keys of every visible
+    token, turns the scores into weights with softmax and takes the weighted sum of the values. The heads run in parallel
+    on different projections; their outputs are concatenated and projected back to the model width.
+  memory: 'Each head caches its own key and value, so the cache per token is 2 × heads × head width × bytes × layers: the
+    largest of any layout with the same heads.'
+  verify: num_key_value_heads equals num_attention_heads in config.json, and k_proj and v_proj in the weight headers are as
+    wide as q_proj.
   flow:
   - Token representations
   - Separate query / key / value heads
@@ -199,14 +201,14 @@ sparse-attention:
   title: Sparse attention
   short: Sparse attention
   category: Attention
-  summary: A token attends to a selected subset of positions. Selection cost and retained cache are separate from
-    the number of positions attended to.
-  mechanism: A sparse-attention system selects positions using a fixed pattern or a learned indexer. The main attention
-    operation then works on the selected positions.
-  memory: A small attention budget does not imply that only those tokens are cached. An indexer can retain its own
-    keys in addition to the main attention cache.
-  verify: Inspect selection policy, top-k, indexer dimensions and cache updates. Read the primary implementation
-    to distinguish sparsity in computation from compression in storage.
+  summary: Each query attends to a selected subset of earlier positions instead of all of them, which caps the attention work
+    per token. Every position stays cached so later queries can select it.
+  mechanism: 'A selector picks which cached positions a query uses: a fixed pattern such as local blocks, or a learned scorer
+    such as DeepSeek sparse attention. The main attention then runs softmax over only those positions, so the work per token
+    is set by the selection budget k, not by the context length.'
+  memory: 'The cache does not shrink: any position can be selected later, so all are kept. A learned selector caches its own
+    small key per token on top.'
+  verify: Find the selection rule and budget in config.json (for example index_topk) and the selector in the modelling code.
   flow:
   - Cached positions
   - Position selector
@@ -231,14 +233,14 @@ mamba2:
   title: Mamba-2 state-space layers
   short: Mamba-2
   category: Persistent state
-  summary: A state-space layer updates a recurrent state as it processes the sequence. Hybrid decoders combine it
-    with attention or other operators.
-  mechanism: Mamba-2 uses a structured state-space formulation. Its state and convolution buffers summarize prior
-    processing; a hybrid model's attention layers retain their own separate caches.
-  memory: Include recurrent state and convolution buffers at their actual precision. ArchWatch's supported rule
-    uses a stated mathematical bound, not a measurement of a runtime's allocation.
-  verify: Check state size, head size, groups, convolution channels, precision and the block schedule. A standalone
-    Mamba block and a parallel attention/Mamba block need different graph rules.
+  summary: A state-space layer folds the sequence into a fixed-size state, updated once per token, instead of caching keys
+    and values.
+  mechanism: Each head keeps a state of head width × state size. For every token the layer decays the state by a factor computed
+    from the input, adds the token's contribution and reads the output from the state. A short causal convolution before the
+    update mixes the last few inputs. Nothing grows with the context.
+  memory: State per layer = heads × head width × state size × bytes, plus the convolution's past inputs. Hybrid models add
+    the cache of their attention layers.
+  verify: Read the head count, head dimension, state size, convolution kernel and the layer pattern in config.json.
   flow:
   - Input and previous state
   - State-space update
@@ -260,14 +262,14 @@ short-convolution:
   title: Short convolution
   short: Short conv
   category: Persistent state
-  summary: A short convolution mixes a small recent history. Its persistent decoding buffer is bounded by its width
-    and kernel size.
-  mechanism: A convolution processes recent token representations with a short kernel. Gated designs add input-dependent
-    modulation. The complete model can combine convolution and attention layers.
-  memory: A convolution buffer is fixed-size state. It must be added to attention caches, rather than described
-    as growing key-value memory for every token.
-  verify: Read kernel width, channel width and the code that updates the buffer. A runtime may retain kernel minus
-    one positions rather than a full kernel-sized buffer.
+  summary: Each channel is filtered over the last few tokens with a small learned kernel, so the layer needs a few past inputs,
+    never a growing cache.
+  mechanism: A depthwise convolution gives every channel its own kernel of K weights and combines the current input with the
+    previous K − 1. In Liquid's LFM models an input projection produces the signal and two gates; the gated signal is convolved,
+    gated again and projected back to the model width.
+  memory: State per layer = channels × (K − 1) past inputs × bytes, the same at any context length.
+  verify: Read the kernel size (conv_L_cache in LFM configs) and the layer pattern in config.json, and the conv weight shape
+    [channels, 1, K] in the weight headers.
   flow:
   - Recent token buffer
   - Gated convolution
@@ -328,13 +330,14 @@ rmsnorm:
   title: Root mean square normalization
   short: RMSNorm
   category: Normalization
-  summary: Rescale a representation by its root mean square, without subtracting its mean.
-  mechanism: The operator normalizes the magnitude of a vector and can apply learned scaling. Its placement in a
-    decoder is a separate property.
-  memory: Normalization changes computation and temporary state; it does not establish a different attention-cache
-    layout.
-  verify: Require an explicit normalization declaration or the mathematical operation wired into a used decoder
-    module. An epsilon key alone is insufficient.
+  summary: Divide a vector by its root mean square and multiply by learned scales. Unlike LayerNorm, it does not subtract
+    the mean.
+  mechanism: For each token the layer squares every component, takes the mean, adds a small ε, takes the square root and divides
+    the vector by it. Each component is then multiplied by its own learned scale. Decoders apply it before each attention
+    and feed-forward block; sandwich designs also apply it after.
+  memory: Each norm stores one scale per channel and adds no cache.
+  verify: Find the RMSNorm class in the modelling code and check that it computes mean(x²) without subtracting the mean. The
+    weight headers show one [hidden] scale tensor per norm.
   flow:
   - Input representation
   - Inverse root mean square
@@ -353,11 +356,11 @@ qk-norm:
   title: Query-key normalization
   short: QK-Norm
   category: Normalization
-  summary: Normalize queries and keys within the attention path.
-  mechanism: QK normalization acts before attention scores are formed. Implementations can differ in normalization
-    equation, axis and learned scaling.
-  memory: This tag alone does not change the cache formula or establish lower runtime memory.
-  verify: Inspect Q/K norm modules, their placement and tensor evidence. Keep the specific norm variant separate.
+  summary: Normalize each head's query and key before they are multiplied, so attention scores cannot blow up.
+  mechanism: After the query and key projections, each head's query and key pass through a norm with a learned scale of head
+    width; one scale vector serves every head. The rotary position is applied next, and the scores are computed as usual.
+  memory: Two small scale vectors per layer and no change to the cache.
+  verify: Find q_norm and k_norm tensors of shape [head_dim] in the weight headers and the place where the code applies them.
   flow:
   - Query and key projections
   - Normalize queries and keys
@@ -377,13 +380,14 @@ rope:
   title: Rotary position embeddings
   short: RoPE
   category: Position encoding
-  summary: Encode token positions by rotating pairs of query and key features.
-  mechanism: Rotations make attention position-dependent. A model can rotate only part of a head or use different
-    settings on different attention paths.
-  memory: Rotary encoding is not itself a cache-compression method. Scaling settings do not establish measured long-context
-    quality.
-  verify: Read the active path, rotary fraction and scaling metadata. Do not assume a global setting applies to
-    every layer.
+  summary: Encode position by rotating pairs of query and key channels by an angle proportional to the token's position, so
+    attention scores depend on the distance between tokens.
+  mechanism: 'Each head''s channels are split into pairs. Pair i is rotated by position × θᵢ, with θᵢ = base^(−2i/d): the
+    first pairs turn fast and the last ones very slowly. Rotating both query and key and taking their dot product leaves only
+    the difference of the two angles, so the score depends on relative position. Keys are cached after rotation.'
+  memory: 'No parameters and no extra cache: the rotation is computed from the position.'
+  verify: Read rope_theta (the base), rope_scaling and partial_rotary_factor in config.json, and check which layers apply
+    it.
   flow:
   - Query and key features
   - Position-dependent rotations
@@ -403,11 +407,13 @@ silu:
   title: SiLU activation
   short: SiLU
   category: Feed-forward
-  summary: A smooth activation that multiplies its input by a sigmoid of that input.
-  mechanism: SiLU can be used inside a feed-forward path. Whether it participates in a gated FFN is a separate fact.
-  memory: The activation name alone supplies no weight or cache reduction.
-  verify: Match the published activation exactly. SiTU and GELU variants are different operations; retain component
-    scope.
+  summary: SiLU(x) = x × sigmoid(x), a smooth activation, most often used inside gated feed-forward networks (SwiGLU).
+  mechanism: In a SwiGLU feed-forward network the token goes through two parallel projections, gate and up. SiLU is applied
+    to the gate, the result is multiplied element-wise with up, and a down projection maps it back to the model width. The
+    gate decides, channel by channel, how much of the up signal passes.
+  memory: A gated network has three weight matrices per layer instead of two; the activation adds no cache.
+  verify: hidden_act in config.json names the activation; gate_proj, up_proj and down_proj in the weight headers show the
+    gated layout.
   flow:
   - Input
   - Sigmoid-modulated activation
@@ -429,12 +435,13 @@ nope:
   title: Position-free attention paths
   short: NoPE
   category: Position encoding
-  summary: An attention path can operate without explicit positional encoding.
-  mechanism: NoPE is a scoped design choice. A hybrid architecture may use it in one path and position encoding
-    in another.
-  memory: NoPE does not determine cache size; the retained key/value or latent representation still matters.
-  verify: Require an explicit enabled path flag or implementation evidence. Missing RoPE metadata is unknown, not
-    proof of NoPE.
+  summary: Some attention layers use no positional encoding at all; order reaches them through other layers.
+  mechanism: A NoPE attention layer computes scores from content only, with no rotation and no position embedding. The causal
+    mask still hides future tokens. In hybrid models the order-aware layers (recurrent or convolutional) write position information
+    into the hidden states that the NoPE layers read.
+  memory: 'Dropping the rotation changes no cache size: the layer still caches its keys or latent.'
+  verify: Look for an explicit flag (such as use_nope) or the missing rotary call in the code path. A missing rope setting
+    means unknown, not NoPE.
   flow:
   - Query and key features
   - No positional transform on this path
@@ -460,11 +467,14 @@ gated-attention:
   title: Gated attention outputs
   short: Gated Attention
   category: Attention
-  summary: A learned gate modulates the output of an attention operation.
-  mechanism: Output gating is different from an FFN activation gate, an expert router, or a gate used inside a recurrent
-    update.
-  memory: A gate adds its own projections and operations. It does not by itself compress cached history.
-  verify: Confirm the attention-output gate and its input, shape and multiplication point in code and weights.
+  summary: A learned gate multiplies the attention output channel by channel before the output projection, so the layer can
+    switch off what it does not need.
+  mechanism: From the token's hidden state the layer computes a gate vector as wide as the attention output. After attention,
+    each output channel is multiplied by its gate value, and the result goes into the output projection. The gate comes from
+    the current token, not from the attended positions.
+  memory: One extra projection per attention layer and no change to the cache.
+  verify: Find the gate projection (g_proj or gate_proj in the attention block) whose output width equals the attention output
+    width, and the multiplication before o_proj in the code.
   flow:
   - Attention output
   - Learned output gate
@@ -483,11 +493,13 @@ hybrid-attention:
   title: Hybrid attention and recurrent mixers
   short: Hybrid Attention
   category: Persistent state
-  summary: Combine attention with linear, recurrent, convolutional or state-space mixers in one decoder.
-  mechanism: This guide uses an explicit ArchWatch definition. Mixing local and global softmax attention alone does
-    not satisfy it.
-  memory: Add growing or windowed attention cache to the fixed or recurrent state of the other mixers.
-  verify: Inspect the full layer schedule. Count each decoder layer once and keep nested operations separate.
+  summary: A decoder mixes attention layers with layers that keep a fixed-size state (convolution, linear attention or state-space),
+    so only the attention layers' cache grows.
+  mechanism: The layer pattern decides which mixer each layer uses. Fixed-state layers handle local or compressed context
+    cheaply, and a minority of attention layers keep a full cache for exact long-range lookups. ArchWatch counts a model as
+    hybrid only when attention is mixed with a non-attention mixer; mixing local and global attention does not count.
+  memory: Cache = attention layers × cache per layer × tokens + the fixed state of the other layers.
+  verify: Read the per-layer pattern (layer_types or a block pattern) in config.json and count each layer type.
   flow:
   - Published layer schedule
   - Attention and recurrent mixers
@@ -506,12 +518,14 @@ dsa:
   title: DeepSeek sparse attention
   short: DSA
   category: Attention
-  summary: An indexer selects positions for a DeepSeek-style sparse attention path.
-  mechanism: The selector and the main attention operation have separate roles. Generic sparse attention is a broader
-    category.
-  memory: A selection budget does not establish how much history is retained. Include index keys when the cache
-    rules require them.
-  verify: Require an identified DSA/indexed-MLA path and its token budget. Do not label every top-k setting DSA.
+  summary: DeepSeek sparse attention adds a small indexer that scores every cached position and passes the top k to the main
+    MLA attention.
+  mechanism: For each new token, the indexer computes a few narrow query heads and compares them with a narrow index key cached
+    for every earlier position. The k highest-scoring positions go to the main MLA attention, which runs only over them. The
+    indexer is cheap because its keys are narrow and it has few heads.
+  memory: Each DSA layer caches the MLA latent and rotary key plus one index key per token.
+  verify: Read index_topk, index_n_heads and index_head_dim in config.json, and find the indexer tensors (wk, weights_proj)
+    in the weight headers.
   flow:
   - Indexer scores positions
   - Select positions
@@ -537,14 +551,14 @@ attention-residuals:
   title: Attention residual connections
   short: Attention Residuals
   category: Residual connections
-  summary: Learn how earlier representations contribute through depth instead of accumulating every residual with
-    a fixed weight.
-  mechanism: Attention residuals select among preceding representations. Block variants group layers to reduce the
-    aggregation burden.
-  memory: Depth-wise aggregation and token-wise attention are different operations. A block-size setting does not
-    establish a runtime allocation.
-  verify: Check the residual block setting and the aggregation implementation. A generic residual-stream multiplier
-    is insufficient.
+  summary: Instead of adding every earlier layer's output with weight one, a layer takes a learned weighted mix of earlier
+    representations.
+  mechanism: 'A standard residual stream is a running sum: every layer adds its output and passes the total on. With attention
+    residuals, a layer scores earlier representations with a learned vector, turns the scores into weights with softmax and
+    uses the weighted sum as its input. The block variant groups layers into blocks, so a layer weighs a few block outputs
+    instead of every earlier layer.'
+  memory: One scoring vector and one norm per mixing point; no token cache.
+  verify: Read attn_res_block_size in config.json and find the res_proj and res_norm tensors in each layer.
   flow:
   - Earlier block representations
   - Depth-wise weighted aggregation
@@ -564,13 +578,14 @@ latent-moe:
   title: Latent expert computation
   short: LatentMoE
   category: Feed-forward
-  summary: A routed expert path operates through a lower-dimensional latent representation.
-  mechanism: The expert pool and latent projection describe different parts of the path. Preserve shared experts
-    and dense exceptions separately.
-  memory: Latent width affects expert computation and projections. Active expert parameters are not total weight
-    storage.
-  verify: Require a positive expert latent width together with routed experts; inspect the corresponding projection
-    tensors.
+  summary: 'Routed experts work at a narrower latent width: the token is projected down once, every selected expert runs at
+    that width, and the result is projected back.'
+  mechanism: Before routing, a shared down-projection maps the hidden state to the latent width. Each selected expert's gate,
+    up and down matrices run at the latent width instead of the full width, and a shared up-projection maps the combined result
+    back. The two projections are paid once per layer, not once per expert.
+  memory: Each expert's matrices shrink by hidden width ÷ latent width; with hundreds of experts that is most of the model.
+  verify: Read the expert latent width in config.json and find the shared down and up projections next to the router in the
+    weight headers.
   flow:
   - Hidden representation
   - Expert latent projection
@@ -594,12 +609,14 @@ mtp:
   title: Multi-token prediction modules
   short: MTP
   category: Prediction modules
-  summary: Additional prediction modules train or predict beyond the immediate next token.
-  mechanism: Training use and shipped module tensors are separate facts. Count released modules independently from
-    the main decoder.
-  memory: Keep MTP parameters separate under the counting convention. Do not automatically add them to every inference
-    estimate.
-  verify: Require a positive module count or parameter total. A key explicitly set to zero is not an enabled module.
+  summary: Extra output modules predict the token after next, in addition to the next token.
+  mechanism: An MTP module takes the decoder's final hidden state at a position, combines it with the embedding of the next
+    token, runs one more transformer block and predicts the token two positions ahead. DeepSeek-V3 trains with one such module
+    and can use it at inference to draft a second token for speculative decoding.
+  memory: MTP modules are stored weights. ArchWatch counts them separately from the decoder (params_mtp); they are needed
+    at inference only when the runtime uses them to draft tokens.
+  verify: Read the MTP setting (num_nextn_predict_layers in DeepSeek configs) in config.json and look for the module's tensors
+    in the weight headers. A value of zero means no module.
   flow:
   - Decoder representations
   - Additional prediction modules
@@ -622,10 +639,12 @@ kv-sharing:
   title: Key-value cache sharing across layers
   short: KV Sharing
   category: Persistent state
-  summary: Multiple attention layers can reuse a key-value representation produced by another layer.
-  mechanism: The source-layer mapping defines reuse. Sharing index selections is a different mechanism.
-  memory: Cache accounting requires the actual producer/consumer schedule; a shared-layer count alone is insufficient.
-  verify: Inspect a complete source mapping and runtime cache updates before qualifying memory or graph rules.
+  summary: Some layers reuse the keys and values computed by another layer instead of caching their own, so only the producer
+    layers add to the cache.
+  mechanism: Each consumer layer is mapped to a source layer. During decoding, only source layers compute and cache keys and
+    values; consumers attend with their own queries over the source layer's cache.
+  memory: Cache = unique producer layers × cache per layer. The saving equals the share of layers that are consumers.
+  verify: Read the full per-layer source mapping in config.json; a count of shared layers is not enough.
   flow:
   - Producer layer
   - Shared key-value representation
@@ -647,12 +666,12 @@ looped-transformer:
   title: Looped transformer blocks
   short: Looped Transformer
   category: Decoder structure
-  summary: Reuse a block of transformer layers across multiple recurrent passes.
-  mechanism: Parameter sharing through depth differs from storing separate layers for every pass. Cache behavior
-    depends on the recurrence design.
-  memory: Do not multiply stored parameters by pass count. Verify whether cache is shared or separate across passes.
-  verify: Require an explicit recurrent generation type and more than one pass, then inspect the shared-layer and
-    cache schedule.
+  summary: A block of layers runs several times in a row with the same weights, giving more depth without more parameters.
+  mechanism: The input passes through a few unshared layers, then a shared block is applied N times, each pass feeding the
+    next, then the output layers.
+  memory: Weights are stored once; compute grows with the number of passes. Whether each pass keeps its own attention cache
+    is set by the design and must be read from the code.
+  verify: Read the number of recurrent passes and which layers belong to the shared block in config.json.
   flow:
   - Input layers
   - Repeated shared block
@@ -675,10 +694,11 @@ qwen-sparse-attention:
   title: Qwen sparse attention
   short: Qwen Sparse Attention
   category: Attention
-  summary: A family-specific sparse attention path with its own selection and grouping rules.
-  mechanism: Keep its indexer separate from recurrent layers.
-  memory: Its cache needs a qualified family-specific rule.
-  verify: Require the explicit layer kind; generic sparse or linear labels are insufficient.
+  summary: Qwen's sparse attention layer, which selects groups of positions with its own indexer.
+  mechanism: The layer scores groups of positions, keeps the best-scoring groups and runs attention over the positions inside
+    them. The group size and selection rule come from the Qwen model files.
+  memory: ArchWatch has no checked cache rule for this layer yet, so models that use it stay in review.
+  verify: Require the explicit layer type in config.json; a generic sparse or linear flag does not qualify.
   flow:
   - Indexer
   - Selected groups
@@ -699,10 +719,11 @@ ple:
   title: Per-layer embeddings
   short: PLE
   category: Embeddings
-  summary: Inject an additional embedding representation at designated layers.
-  mechanism: Keep the layer schedule and embedding width.
-  memory: Additional embeddings are distinct from the main vocabulary table.
-  verify: Require dedicated PLE settings; do not substitute n-gram memory.
+  summary: Extra embedding tables give designated decoder layers their own token embeddings, not only the input layer.
+  mechanism: Besides the main embedding, the model looks up a per-layer embedding for each token and combines it with the
+    hidden state at designated layers. The combination rule and table shapes come from the model code.
+  memory: Per-layer embedding tables are stored weights; they add no cache.
+  verify: Read the PLE settings (width and layer IDs) in config.json and the table tensors in the weight headers.
   flow:
   - Embedding path
   - Designated layer
@@ -722,13 +743,13 @@ csa-hca:
   title: Compressed sparse and heavily compressed attention
   short: CSA/HCA
   category: Attention
-  summary: Two compression-and-attention variants used in the DeepSeek-V4 architecture.
-  mechanism: CSA combines compressed representations with sparse selection. HCA uses stronger compression with dense
-    attention over the compressed representation.
-  memory: Compression ratios, windows and retained representations need separate accounting. A ratio is not a complete
-    cache rule.
-  verify: Require explicit variant labels or a qualified family adapter. Preserve per-layer compression and selection
-    schedules.
+  summary: 'DeepSeek-V4''s two compressed attention variants: CSA compresses the sequence and attends to selected compressed
+    positions; HCA compresses harder and attends to all of them.'
+  mechanism: Both first compress groups of positions into fewer entries. CSA then selects a subset of the compressed entries
+    for each query, like sparse attention. HCA compresses more aggressively and attends densely over everything that remains.
+  memory: The cache holds compressed entries, so it grows by one entry per compression group, not per token. Windows and selector
+    state add their own terms.
+  verify: Read each layer's variant, compression ratio and selection settings from the model files.
   flow:
   - Sequence representations
   - Variant-specific compression
@@ -749,13 +770,12 @@ mhc:
   title: Manifold-constrained hyper-connections
   short: mHC
   category: Residual connections
-  summary: Constrain the mixing of multiple residual streams to a structured manifold.
-  mechanism: mHC adds constraints to hyper-connections. Multiple residual streams alone do not establish this constrained
-    mechanism.
-  memory: Residual-stream storage is separate from attention cache. Keep the active stream count and mixing implementation
-    explicit.
-  verify: Require an explicit mechanism declaration or operation-level proof. A generic multiplier or an unexplained
-    Sinkhorn setting alone is insufficient.
+  summary: Several residual streams run in parallel and are mixed by a matrix constrained to be doubly stochastic, so mixing
+    redistributes the signal but never amplifies it.
+  mechanism: Hyper-connections widen the residual stream into several parallel streams that layers read from and write to.
+    mHC projects the stream-mixing matrix onto doubly stochastic matrices (rows and columns sum to one) with Sinkhorn iterations.
+  memory: 'The extra streams are activations, not cache: they add work per token but no stored history.'
+  verify: Require the explicit mechanism in the model files; a stream multiplier or a Sinkhorn setting alone does not qualify.
   flow:
   - Residual streams
   - Constrained mixing
@@ -775,12 +795,11 @@ index-sharing:
   title: Shared attention index selections
   short: IndexShare
   category: Attention
-  summary: Reuse position-selection work across attention layers.
-  mechanism: The shared object is the index selection, not necessarily the key-value cache. Some configs declare
-    shared modes without naming every producer.
-  memory: Index reuse can reduce repeated selection work; it does not prove a particular cache reduction.
-  verify: Read the per-layer modes or complete source mapping. Do not expand a short anchor list without verified
-    semantics.
+  summary: Several attention layers reuse one layer's position selection instead of each running its own selector.
+  mechanism: A producer layer runs the indexer and picks positions; consumer layers attend over the same positions with their
+    own queries, keys and values. The keys and values are not shared.
+  memory: 'Sharing selections saves indexer work, not cache: each layer still caches its own keys and values.'
+  verify: Read the per-layer modes or the full source mapping in config.json.
   flow:
   - Index producer
   - Shared selections
@@ -800,10 +819,11 @@ gated-residuals:
   title: Gated residual streams
   short: Gated Residuals
   category: Residual connections
-  summary: Control contributions to residual streams with learned gates.
-  mechanism: Read and write gates have distinct roles.
-  memory: Stream count alone supplies no memory formula.
-  verify: Require an explicit residual mechanism; attention gates and generic hyper-connection counts are insufficient.
+  summary: Learned gates control how much each layer reads from and writes to the residual streams.
+  mechanism: A read gate weights the streams a layer takes as input; a write gate scales the layer's output before it is added
+    back. Both are learned.
+  memory: Gates add a few parameters and no cache.
+  verify: Require the explicit residual mechanism in the model files; attention-output gates and stream counts do not qualify.
   flow:
   - Residual input
   - Read/write gates
@@ -822,11 +842,12 @@ attention-budgeting:
   title: Layer-wise attention budgeting
   short: Attention Budgeting
   category: Attention
-  summary: Allocate different attention capacity to different layers or attention paths.
-  mechanism: A local/global design can choose different query-head counts for those paths. The budget refers to
-    architecture allocation, not an API request allowance.
-  memory: 'Compute and cache depend on each path: query-head allocation alone does not determine retained KV bytes.'
-  verify: Require explicit per-layer head allocation and path semantics. A generic top-k selector is not sufficient.
+  summary: Different layers get different numbers of query heads, for example fewer in local layers and more in global ones.
+  mechanism: The model sets a query-head count per layer or per attention type, so local and global layers can have different
+    counts.
+  memory: Query heads set compute; the cache is set by key-value heads and retained tokens, so fewer query heads alone do
+    not shrink it.
+  verify: Read the per-layer head counts and attention types from the model files.
   flow:
   - Layer/path schedule
   - Attention capacity allocation
@@ -846,13 +867,13 @@ cca:
   title: Compressed convolutional attention
   short: CCA
   category: Attention
-  summary: Perform attention on compressed query, key and value representations.
-  mechanism: CCA keeps the attention operation inside a shared latent space. The design also uses convolutional
-    mixing of query/key latents. Its grouped-query variant combines compression with head sharing.
-  memory: Cache accounting requires the retained latent widths and convolution state. No CCA runtime or cache
-    formula is qualified by this guide.
-  verify: Require an explicit mechanism identifier and inspect the primary report and implementation before adding
-    graph or memory rules.
+  summary: Attention runs on compressed queries, keys and values in a shared latent space, with a convolution mixing the compressed
+    queries and keys.
+  mechanism: The layer projects queries, keys and values into a narrower latent width, mixes the compressed queries and keys
+    with a short convolution and computes attention at that width. A grouped-query variant also shares key-value heads.
+  memory: The cache holds the compressed keys and values; the convolution adds a few past inputs. ArchWatch has no checked
+    CCA cache rule yet.
+  verify: Require an explicit CCA identifier and read the primary report and code before applying any rule.
   flow:
   - Compress query/key/value representations
   - Convolutional latent mixing
@@ -871,12 +892,12 @@ polynorm:
   title: Polynomial activation in expert paths
   short: PolyNorm
   category: Feed-forward
-  summary: A learned polynomial operation used in Motif feed-forward expert paths.
-  mechanism: The documented expert-specific variant learns coefficients per expert and replaces a SiLU gate. It
-    is distinct from decoder RMSNorm.
-  memory: Retain coefficient tensors and expert scope when counting parameters; the name alone supplies no cache
-    rule.
-  verify: Require the exact activation declaration and verify the polynomial variant in primary code.
+  summary: Motif's feed-forward experts replace the SiLU gate with a learned polynomial, with coefficients learned separately
+    by each expert.
+  mechanism: Instead of SiLU(gate x), the expert applies a polynomial of its input whose coefficients are learned parameters.
+    Each expert learns its own coefficients.
+  memory: The coefficients add a few parameters per expert and no cache.
+  verify: Require the exact activation name in the model files and check the polynomial in the code.
   flow:
   - Expert input
   - Learned polynomial operation
