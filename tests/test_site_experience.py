@@ -1,4 +1,4 @@
-"""Public downloads, the feed and real user flows retain the publication boundary."""
+"""Public downloads, guide membership and real user flows retain the publication boundary."""
 
 import json
 from pathlib import Path
@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
 
 
-def test_downloads_use_only_published_models():
+def test_guide_membership_and_downloads_use_only_published_models():
     site = builder()
     published, held, _ = site.inventory()
     exports = {p.stem: json.loads(p.read_text()) for p in (SITE / "data/models").glob("*.json")}
@@ -24,8 +24,14 @@ def test_downloads_use_only_published_models():
         assert "facts" not in data and "candidates" not in json.dumps(data)
         for evidence in data["evidence"].values():
             assert all(rec["source_commit"] in url for url in evidence["sources"])
+        for key in site.concept_keys(pub):
+            guide = (SITE / "concepts" / (key + ".html")).read_text()
+            assert f"../models/{stem}.html" in guide
     for repo in held:
         assert repo.replace("/", "__") not in exports
+    gqa = (SITE / "concepts/gqa.html").read_text()
+    assert "DeepSeek-V2-Lite.html" not in gqa  # MLA is not GQA despite having head counts
+    assert "DeepSeek-V2-Lite.html" in (SITE / "concepts/mla.html").read_text()
 
 
 def test_feed_uses_analysis_times_and_contains_only_published_models():
@@ -107,7 +113,27 @@ def test_real_browser_selection_mobile_controls_planner_and_downloads(server, tm
         svg_path = tmp_path / "diagram.svg"
         download.value.save_as(svg_path)
         assert ET.parse(svg_path).getroot().tag.endswith("svg")
-        page.goto(server + "/review/index.html")
+        for path in ["/concepts/index.html", "/concepts/gqa.html", "/review/index.html"]:
+            page.goto(server + path)
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), path
+        page.goto(server + "/concepts/index.html")
+        page.locator("#concept-search").fill("RMSNorm")
+        assert page.locator(".guide-grid>li:visible").count() == 1
+        page.locator("#concept-search").fill("")
+        page.locator("#concept-category").select_option("Residual connections")
+        assert page.locator(".guide-grid>li:visible").count() == 3
+        page.goto(server + "/models/LiquidAI__LFM3-1.7B-Base.html#concept-evidence")
+        page.locator("#concept-rmsnorm .proof-hint").click()
+        assert page.locator("#concept-rmsnorm").evaluate("el => el.open")
+        assert page.locator('#concept-rmsnorm a[href*="modeling_lfm3.py#L65"]').count() == 2
+        with page.expect_download() as download:
+            page.get_by_role("link", name="Download concept evidence").click()
+        payload = tmp_path / "concept-evidence.json"
+        download.value.save_as(payload)
+        evidence = json.loads(payload.read_text())
+        assert evidence["schema_version"] == "archwatch-concept-evidence/1"
+        rms = next(hit for hit in evidence["concepts"] if hit["key"] == "rmsnorm")
+        assert rms["status"] == "single source" and "decoder" in rms["scope"].lower()
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         assert not errors, errors
         browser.close()

@@ -175,6 +175,20 @@ published:
       - 2048
       norm.weight:
       - 2048
+  normalization_modules:
+  - kind: RMSNorm
+    scope: decoder
+    module: DeepseekV2DecoderLayer.input_layernorm
+    implementation: DeepseekV2RMSNorm
+    formula_line: 107
+    call_line: 1216
+  - kind: RMSNorm
+    scope: decoder
+    module: DeepseekV2DecoderLayer.post_attention_layernorm
+    implementation: DeepseekV2RMSNorm
+    formula_line: 107
+    call_line: 1219
+  normalization_type: RMSNorm
 review_queue: []
 unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,

@@ -1,0 +1,1076 @@
+# Original educational examples; toy values are separate from model records.
+mha:
+  why: One attention head gives each token one weighted mix of the context. Several heads with separate projections let a
+    layer pull different information from different positions at once, at the same total width. The cost is a key and a value
+    cached for every head and every token.
+  equation: 'Q = XWq; K = XWk; V = XWv
+
+    A = softmax(QKᵀ / √d + causal_mask)
+
+    Head output = AV
+
+    MHA output = concatenate(head outputs) Wo'
+  symbols:
+    X: Token representations.
+    d: Key width of one head.
+    A: Attention weights over the visible positions.
+    causal_mask: Hides future positions.
+  example:
+    model: microsoft/phi-2
+    compute: mha
+    setup: '{model} has {layers} layers, each with {hq} query heads and {kv} key-value heads of width {hd}, cached at 2 bytes
+      per value.'
+    steps:
+    - One layer stores 2 × {kv} × {hd} × 2 B = {per_layer} per token.
+    - All {layers} layers store {per_token} per token.
+    - At its full {ctx}-token context that is {at_full} per sequence.
+    - Sharing each key-value head across 4 query heads (GQA) would cut it to {shared4} per token.
+    result: 'Multi-head attention caches a key and a value for every head: {per_token} per token, the most any layout with
+      {hq} heads of width {hd} costs.'
+  pitfalls:
+  - The attention weight matrix is computed and discarded at each step; the cache holds only keys and values.
+  - Equal head counts in config.json mean MHA only if the k_proj and v_proj shapes match q_proj.
+  - The causal mask limits which positions a query sees; it carries no position information.
+  takeaway: 'MHA is the full-cost baseline: 2 × heads × head width per layer per token.'
+  diagram:
+  - Token representations
+  - Four parallel attention heads
+  - Concatenate outputs
+  - Output projection
+  related:
+  - gqa
+  - kv-cache
+  - rope
+  code: 'from math import exp, sqrt
+
+    q = (1, 0)
+
+    keys = [(1, 0), (0, 1)]
+
+    values = [(2, 0), (0, 4)]
+
+    logits = [sum(a*b for a,b in zip(q,k)) / sqrt(2) for k in keys]
+
+    weights = [exp(x) / sum(exp(y) for y in logits) for x in logits]
+
+    output = [sum(w*v[j] for w,v in zip(weights,values)) for j in range(2)]
+
+    print(weights, output)'
+gqa:
+  why: 'During generation, attention is limited by how fast the cache can be read from memory, not by arithmetic. Multi-head
+    attention caches one key and one value per query head, and query heads can share them: the GQA paper reports quality close
+    to multi-head attention with far fewer key-value heads. GQA cuts the cache, and the memory traffic per token, by the group
+    size while keeping every query head.'
+  equation: 'Group size = Hq / Hkv
+
+    Cache bytes = 2 × L × T × Hkv × d × b
+
+    Saving vs multi-head attention = Hq / Hkv'
+  symbols:
+    Hq / Hkv: Query heads / key-value heads.
+    L, T: Attention layers and tokens.
+    d / b: Head width / bytes per cached value.
+  example:
+    model: meta-llama/Llama-3.1-8B
+    compute: gqa
+    setup: '{model} has {hq} query heads and {kv} key-value heads in each of its {layers} layers, with head width {hd} and
+      a bf16 cache.'
+    steps:
+    - Each key-value head serves {hq} / {kv} = {group} query heads.
+    - With {kv} key-value heads the cache is 2 × {kv} × {hd} × 2 B × {layers} = {gqa} per token.
+    - With one key-value head per query head it would be 2 × {hq} × {hd} × 2 B × {layers} = {mha} per token.
+    - At the full {ctx}-token context that is {gqa_full} instead of {mha_full}.
+    result: Sharing each key-value head across {group} query heads makes the cache {group}× smaller at every context length.
+    code: 'layers, kv_heads, head_dim, value_bytes = {layers}, {kv}, {hd}, 2
+
+      cache_per_token = 2 * kv_heads * head_dim * value_bytes * layers
+
+      print(cache_per_token / 1024, "KiB")  # {gqa}'
+  pitfalls:
+  - Putting num_attention_heads into the cache formula overstates the cache by the group size.
+  - 'GQA lowers the cost per token, not the growth: the cache still grows linearly with context.'
+  - MLA models also list key-value head counts, but they cache a latent vector; the GQA formula gives the wrong number for
+    them.
+  takeaway: The key-value head count, not the query head count, sets the cache.
+  diagram:
+  - Eight query heads
+  - Two shared KV groups
+  - Attend separately
+  - Combine head outputs
+  related:
+  - mha
+  - mla
+  - kv-cache
+kv-cache:
+  why: Without a cache, every new token would re-run attention over the whole prefix, so generating n tokens would cost work
+    that grows with n². Caching each layer's keys and values turns that into one new key-value pair per layer per token. The
+    price is memory that grows linearly with the context and with every sequence served at the same time.
+  equation: 'Cache bytes = 2 × L × T × Hkv × d × b
+
+    Planning total = weights + sequences × cache'
+  symbols:
+    L: Attention layers.
+    T: Tokens in the context.
+    Hkv, d: Key-value heads and head width.
+    b: Bytes per cached value (2 for bf16), set separately from the weight precision.
+    '2': One key and one value.
+  example:
+    model: Qwen/Qwen3-0.6B-Base
+    compute: kv_cache
+    setup: '{model} has {layers} full-attention layers, each with {kv} key-value heads of width {hd}, cached in bf16 (2 bytes
+      per value).'
+    steps:
+    - One layer stores 2 × {kv} × {hd} × 2 B = {per_layer} per token.
+    - All {layers} layers store {per_layer} × {layers} = {per_token} per token.
+    - At 8,192 tokens the cache holds {at_8k}; at the full {ctx}-token context it holds {at_full}.
+    - The bf16 weights are {params} parameters × 2 B = {weights}.
+    result: At full context, one sequence's cache is {ratio}× the size of the weights. For long contexts the cache, not the
+      weights, decides whether the model fits.
+  pitfalls:
+  - 'Weight precision is not cache precision: a 4-bit checkpoint still writes a bf16 cache unless the runtime quantizes the
+    cache separately.'
+  - Use num_key_value_heads, not num_attention_heads. In a GQA model the query-head count overstates the cache by the group
+    size.
+  - 'Concurrent sequences multiply the cache but not the weights: four 32K-token conversations need four caches and one copy
+    of the weights.'
+  takeaway: Cache = cost per token × tokens × sequences. Check it against device memory as carefully as the weights.
+  diagram:
+  - Shared model weights
+  - State for sequence A
+  - State for sequence B
+  - Runtime allocations
+  related:
+  - gqa
+  - sliding-window
+  - linear-attention
+sliding-window:
+  why: Full attention's cache and its work per token grow with the whole context. Most tokens depend mainly on nearby text,
+    so a local window keeps both bounded on long inputs. The trade is that the layer cannot directly see anything older than
+    W tokens.
+  equation: 'Retained tokens = min(T, W)
+
+    Layer cache = 2 × min(T, W) × Hkv × d × b
+
+    Hybrid cache = local layers + full layers'
+  symbols:
+    W: Window size in tokens.
+    T: Tokens in the context.
+    Hkv, d, b: Key-value heads, head width, bytes per cached value.
+  example:
+    model: mistralai/Mistral-7B-v0.1
+    compute: sliding_window
+    setup: '{model} uses a {window}-token window in all {layers} layers, with {kv} key-value heads of width {hd} and a bf16
+      cache.'
+    steps:
+    - Per token, the cache costs 2 × {kv} × {hd} × 2 B × {layers} = {per_token}.
+    - Up to {window} tokens it grows like full attention.
+    - After {window} tokens it stops at {per_token} × {window} = {cap}.
+    - At the full {ctx}-token context, full attention would hold {full}.
+    result: The window caps the cache at {cap}, {ratio}× less than full attention at {ctx} tokens.
+  pitfalls:
+  - A sliding_window value does not say which layers use it; read the layer pattern.
+  - Below W tokens a window saves nothing, so compare models at contexts longer than W.
+  - Some runtimes reserve cache for the full context anyway; the window caps what the model needs, not what every runtime
+    allocates.
+  takeaway: The window size and which layers are local decide the cap.
+  diagram:
+  - Earlier positions
+  - Recent visible window
+  - Current query
+  related:
+  - gqa
+  - kv-cache
+  - attention-budgeting
+mla:
+  why: GQA saves memory by sharing heads, which limits how many distinct keys and values a layer can use. MLA keeps many heads
+    but caches only a low-rank vector they are all rebuilt from, so the cache no longer scales with the head count. DeepSeek-V2
+    introduced it to cut the cache for long-context serving.
+  equation: 'Cache per token = L × (r + dR) × b
+
+    Expanded keys and values = L × H × (dk + dv) × b'
+  symbols:
+    r: Latent width (kv_lora_rank).
+    dR: Rotary key width (qk_rope_head_dim), cached once per token for all heads.
+    H, dk, dv: Attention heads, key head width, value head width.
+    L, b: Layers and bytes per cached value.
+  example:
+    model: deepseek-ai/DeepSeek-V2-Lite
+    compute: mla
+    setup: '{model} has {layers} MLA layers with a {rank}-wide latent and a {rope}-wide rotary key, cached in bf16.'
+    steps:
+    - One layer stores ({rank} + {rope}) × 2 B = {per_layer} per token.
+    - All {layers} layers store {per_layer} × {layers} = {per_token_b} = {per_token} per token.
+    - Storing the expanded keys and values instead would take {heads} heads × ({dk} + {dv}) × 2 B × {layers} = {expanded}
+      per token.
+    result: 'MLA caches {per_token} per token instead of {expanded}: {ratio}× less.'
+  pitfalls:
+  - Putting MLA head counts into the GQA formula counts the expanded keys and values, which are never stored, and overstates
+    the cache.
+  - The rotary key is cached once per token, not once per head.
+  - A sparse-attention indexer (DSA) caches its own key per token on top of the latent.
+  takeaway: The cache depends on the latent width and the rotary width, not on the head count.
+  diagram:
+  - Hidden representation
+  - Compressed KV latent
+  - Attention computation
+  - Output representation
+  related:
+  - gqa
+  - dsa
+  - nope
+  - kv-cache
+moe:
+  why: 'In a dense model, quality grows with parameter count, but so does the compute for every token. MoE separates the two:
+    the model stores many experts and each token pays for only k of them. The costs are memory for every expert and keeping
+    the router balanced so experts are used evenly.'
+  equation: 'Stored = shared + N × expert
+
+    Active per token = shared + k × expert
+
+    Weight memory = stored × bytes per parameter'
+  symbols:
+    N / k: Routed experts / experts selected per token.
+    shared: 'Parameters every token uses: attention, embeddings, shared experts.'
+  example:
+    model: deepseek-ai/DeepSeek-V2-Lite
+    compute: moe
+    setup: '{model} has {experts} routed experts and {shared} shared experts in each MoE layer, and the router picks {k} routed
+      experts per token.'
+    steps:
+    - Each token uses {k} of {experts} routed experts ({routed_share}%), plus the {shared} shared experts.
+    - 'Its record counts {total} stored parameters and {active} active per token: {active_share}% of the weights.'
+    - In bf16, all {total} parameters take {weights}; the active ones alone would take {active_weights}.
+    result: Each token costs about as much compute as a {active}-parameter dense model, but the whole {weights} must be in
+      memory.
+  pitfalls:
+  - 'Active parameters are not a memory estimate: every expert has to be loaded.'
+  - Shared experts run for every token, in addition to the k routed ones.
+  - Active-parameter counts depend on the convention (embeddings, MTP modules); compare counts made the same way.
+  takeaway: Memory follows total parameters; compute per token follows active parameters.
+  diagram:
+  - Token representation
+  - Router selects two experts
+  - Selected expert outputs
+  - Weighted combination
+  related:
+  - latent-moe
+  - silu
+  - mtp
+linear-attention:
+  why: 'Full attention compares each token with every earlier one, so its cache and its work per token grow with context.
+    A linear-attention layer folds the history into a fixed-size state, so a token costs the same at position 100 or 1,000,000.
+    The trade is recall: a fixed state cannot keep every detail, which is why models mix in some full-attention layers.'
+  equation: 'Sₜ = update(Sₜ₋₁, kₜ, vₜ)
+
+    yₜ = qₜ · Sₜ
+
+    State bytes = heads × dk × dv × b_state'
+  symbols:
+    S: State matrix per head, dk × dv.
+    update: How the token is written in; a delta rule also decays and corrects old content.
+    b_state: Bytes per state value; usually 4 (fp32).
+  example:
+    model: moonshotai/Kimi-K3
+    compute: linear_attention
+    setup: '{model} has {linear} KDA linear-attention layers and {full} MLA layers. Each KDA layer has {heads} heads with
+      a {width} × {width} state.'
+    steps:
+    - One KDA layer's state is {heads} × {width} × {width} × 4 B = {state}, plus {conv} of convolution history ({taps} past
+      inputs of q, k and v).
+    - All {linear} KDA layers hold {fixed}, the same at any context length.
+    - The {full} MLA layers grow by {mla_layer} × {full} = {grows} per token, {grows_full} at the full {ctx}-token context.
+    - If the {linear} linear layers were MLA layers too, they would add {avoided} at that context.
+    result: The linear layers cost a fixed {fixed}; only the {full} MLA layers grow with the context.
+  pitfalls:
+  - The state is usually fp32 even when weights and cache are bf16, so count it at 4 bytes.
+  - 'A hybrid model is not constant-memory: its full or MLA layers keep growing.'
+  - Short convolutions on q, k and v keep a few past inputs; add them to the state.
+  takeaway: Linear layers cost a fixed state; the remaining full layers set the growth.
+  diagram:
+  - Previous recurrent state
+  - Token-dependent update
+  - Next state
+  - Read output
+  related:
+  - hybrid-attention
+  - short-convolution
+  - mamba2
+sparse-attention:
+  why: Full attention reads every cached position for every new token, so the work per token grows with the context. Most
+    of the softmax weight lands on a few positions. Attending to the top k keeps the work per token bounded while every earlier
+    token stays reachable.
+  equation: 'Work per query ∝ k, not T
+
+    Output = softmax attention over the k selected positions
+
+    Cache still holds all T positions'
+  symbols:
+    k: Positions each query attends to.
+    T: Positions in the cache.
+  example:
+    model: moonshotai/Kimi-K3.1-Pro
+    compute: sparse_attention
+    setup: '{model} has {layers} sparse attention layers. Each query attends to {topk} selected positions.'
+    steps:
+    - 'At its full {ctx}-token context, a query reads {topk} positions: {share_full}% of the cache.'
+    - At 8,192 tokens the same budget covers {share_8k}% of the positions.
+    - 'The cache still keeps every position: {grows} per token, {grows_full} at full context.'
+    result: Sparse attention caps the work per token at {topk} positions; it does not shrink the {grows_full} cache.
+  pitfalls:
+  - A small top-k does not mean only k positions are cached.
+  - Below k tokens, sparse attention attends to everything and saves nothing.
+  - A sliding window is also sparse but drops old positions; a learned selector keeps them reachable.
+  takeaway: Sparse attention saves compute, not cache.
+  diagram:
+  - Retained positions
+  - Select a subset
+  - Attention over selected positions
+  related:
+  - dsa
+  - qwen-sparse-attention
+  - sliding-window
+mamba2:
+  why: Attention costs more memory with every token it caches. A state-space layer keeps a fixed-size summary, so each token
+    costs the same at any position, and Mamba-2's formulation lets training run as large matrix multiplications. A fixed state
+    cannot recall every detail, so hybrid models keep a few attention layers.
+  equation: 'hₜ = aₜ · hₜ₋₁ + Bₜ xₜ
+
+    yₜ = Cₜ · hₜ
+
+    State bytes = heads × head_dim × state_size × 4'
+  symbols:
+    h: State per head.
+    aₜ: Decay computed from the input.
+    Bₜ, Cₜ: Input-dependent write and read projections.
+  example:
+    model: nvidia/Nemotron-H-8B-Base-8K
+    compute: mamba2
+    setup: '{model} has {blocks} Mamba-2 layers, {attn} attention layers and {mlp} MLP layers. Each Mamba-2 layer has {heads}
+      heads of width {dim} with state size {n}.'
+    steps:
+    - One layer's state is {heads} × {dim} × {n} × 4 B = {state}, plus {conv} of convolution history ({channels} channels
+      × {kernel} taps × 2 B).
+    - All {blocks} Mamba-2 layers hold {fixed}, the same at any context length.
+    - The {attn} attention layers cache {grows} per token, {grows_full} at the full {ctx}-token context.
+    result: The Mamba-2 layers cost a fixed {fixed}; only the {attn} attention layers grow with the context.
+  pitfalls:
+  - ArchWatch counts the state at 4 bytes (fp32); a runtime that keeps it in bf16 needs half.
+  - MLP layers in a hybrid schedule keep no state; do not count them as Mamba-2 or attention.
+  - 'A hybrid is not constant-memory: add the attention layers'' cache.'
+  takeaway: Mamba-2 layers cost a fixed state; the attention layers set the growth.
+  diagram:
+  - Token and previous state
+  - State-space update
+  - Output and next state
+  related:
+  - linear-attention
+  - hybrid-attention
+  - kv-cache
+short-convolution:
+  why: Much of the context a token needs is local. A short convolution mixes the last few tokens at a cost that never grows
+    and is cheaper per token than attention. Models pair it with a few attention layers for long-range lookups.
+  equation: 'yₜ = Σᵢ wᵢ xₜ₋ᵢ, for i = 0 … K − 1
+
+    State = channels × (K − 1) × b'
+  symbols:
+    K: Kernel size in tokens.
+    w: One learned kernel per channel.
+    b: Bytes per stored value.
+  example:
+    model: LiquidAI/LFM3-1.7B-Base
+    compute: short_convolution
+    setup: '{model} has {layers} short-convolution layers. Each filters {hidden} channels with a {kernel}-tap kernel.'
+    steps:
+    - 'Each channel has its own {kernel} weights: {hidden} × {kernel} = {weights} weights per layer.'
+    - To produce the next output, a layer needs the previous {past} inputs of each channel.
+    - 'ArchWatch counts all {kernel} positions: {hidden} × {kernel} × 2 B = {state} per layer, {fixed} for the {layers} layers
+      ({strict} counting only the {past} past inputs).'
+    result: The convolution state is {fixed} at any context length.
+  pitfalls:
+  - A convolution inside another layer (as in KDA) belongs to that layer's state; it is not an extra layer.
+  - 'The layer needs K − 1 past inputs, not K: the current token arrives with the step.'
+  - The kernel size says nothing about gating; read the layer's projections.
+  takeaway: A short convolution costs a few past inputs per channel, fixed for any context.
+  diagram:
+  - Recent token history
+  - Short convolution
+  - Updated buffer and output
+  related:
+  - linear-attention
+  - hybrid-attention
+  - kv-cache
+rmsnorm:
+  why: Without normalization, activation sizes drift across dozens of layers and training becomes unstable. RMSNorm fixes
+    the scale with one statistic and skips LayerNorm's mean subtraction and bias; the RMSNorm paper reports comparable quality
+    at lower cost.
+  equation: 'RMS(x) = √(mean(x²) + ε)
+
+    yᵢ = γᵢ × xᵢ / RMS(x)'
+  symbols:
+    ε: Small constant that avoids division by zero.
+    γ: Learned scale per channel.
+    mean(x²): Mean of the squared components, not the variance.
+  example:
+    model: LiquidAI/LFM3-1.7B-Base
+    compute: rmsnorm
+    setup: '{model} normalizes {hidden}-wide vectors with RMSNorm. Each of its {layers} layers has {count} norms, plus {final}
+      outside the layers.'
+    steps:
+    - Each norm stores {hidden} learned scales.
+    - '{count} × {layers} + {final} = {norms} norms store {norms} × {hidden} = {total} scales.'
+    - That is {share}% of the model's parameters.
+    - 'Not included: q_norm and k_norm in its {qk_layers} attention layers (2 × {hd} × {qk_layers} = {qk} scales). The record counts them with attention because they act inside each head, and the QK-norm guide covers them; with them the total is {with_qk}.'
+    result: Decoder normalization costs {total} parameters ({with_qk} with the q/k norms) and no cache; its job is stable training, not size.
+  pitfalls:
+  - Sandwich normalization is about placement (before and after a block), not a different equation.
+  - Query and key norms inside attention are separate from the decoder norms.
+  - An ε value in config.json does not show which normalization the code uses.
+  takeaway: RMSNorm rescales each token's vector by one statistic; read the code to confirm it.
+  diagram:
+  - Input vector
+  - Divide by its RMS
+  - Multiply by learned scales
+  related:
+  - qk-norm
+  - attention-residuals
+  code: 'from math import sqrt
+
+    x = [3.0, 4.0]
+
+    epsilon = 1e-6
+
+    rms = sqrt(sum(v*v for v in x) / len(x) + epsilon)
+
+    print([v/rms for v in x])  # learned scales are 1'
+qk-norm:
+  why: 'Attention scores are dot products: if queries or keys grow, the scores grow and softmax collapses onto one position,
+    which destabilizes training. Normalizing queries and keys bounds the scores, which lets models train stably at higher
+    learning rates.'
+  equation: 'q̂ = norm(q), k̂ = norm(k) for each head
+
+    Score = q̂ · k̂ / √d'
+  symbols:
+    q̂, k̂: Normalized query and key of one head.
+    d: Head width.
+  example:
+    model: Qwen/Qwen3-0.6B-Base
+    compute: qk_norm
+    setup: '{model} applies QK-norm in all {layers} layers, with {hq} query heads and {kv} key-value heads of width {hd}.'
+    steps:
+    - q_norm and k_norm each hold {hd} learned scales, one per channel of a head.
+    - 'The same scales serve every head: {hq} query heads share q_norm and {kv} key heads share k_norm.'
+    - Per layer that is 2 × {hd} = {per_layer} parameters, {total} across {layers} layers.
+    result: QK-norm costs {total} parameters and leaves the cache unchanged.
+  pitfalls:
+  - q_norm and k_norm tensors do not show whether the norm is RMS or L2; read the code.
+  - QK-norm does not mean the decoder norms are RMSNorm.
+  - Check whether rotary position is applied before or after the norm.
+  takeaway: QK-norm bounds attention scores for a few hundred parameters per layer.
+  diagram:
+  - Query and key vectors
+  - Normalize each vector
+  - Scaled attention score
+  related:
+  - rmsnorm
+  - mha
+  - gqa
+rope:
+  why: 'Attention by itself ignores order: shuffling the context gives the same scores. RoPE adds position without learned
+    embeddings and makes the scores depend on relative distance.'
+  equation: 'R(θ)[x, y] = [x cosθ − y sinθ, x sinθ + y cosθ]
+
+    θᵢ = base^(−2i/d) per position
+
+    (R(θ₁)q)ᵀ(R(θ₂)k) = qᵀR(θ₂ − θ₁)k'
+  symbols:
+    θ: Rotation angle of one channel pair.
+    base: rope_theta in config.json.
+    d: Rotated head width.
+  example:
+    model: Qwen/Qwen3-0.6B-Base
+    compute: rope
+    setup: '{model} uses RoPE with base {theta} on heads of width {hd}.'
+    steps:
+    - Each head has {hd} / 2 = {pairs} rotating pairs.
+    - 'The fastest pair turns 1 radian per token: a full turn every {fastest} tokens.'
+    - The slowest pair turns once every 2π × {theta}^({exponent}) ≈ {slowest} tokens.
+    result: Across its whole {ctx}-token context, the slowest pair turns {turn}% of a circle, so it never repeats an angle.
+  pitfalls:
+  - A rope_theta value does not show which layers rotate; some hybrid models skip RoPE in some layers.
+  - rope_scaling changes the frequencies for long context; include it before comparing bases.
+  - partial_rotary_factor rotates only part of each head.
+  takeaway: The base sets how slowly the last pairs turn; the scaling and rotary fraction change it.
+  diagram:
+  - Query and key pairs
+  - Rotate by position × θ
+  - Score depends on distance
+  related:
+  - nope
+  - gqa
+  - mla
+silu:
+  why: A feed-forward network needs a nonlinearity. SiLU is smooth and passes small negative values instead of cutting them
+    to zero, and the GLU-variants paper found gated feed-forward networks of this kind better than ReLU or GELU ones, at the
+    cost of a third weight matrix.
+  equation: 'SiLU(x) = x × sigmoid(x)
+
+    FFN(x) = down(SiLU(gate x) ⊙ up x)'
+  symbols:
+    ⊙: Element-wise product.
+    gate, up, down: The three weight matrices of a gated feed-forward network.
+  example:
+    model: meta-llama/Llama-3.1-8B
+    compute: silu
+    setup: '{model} uses a SiLU-gated feed-forward network in all {layers} layers: width {hidden}, inner width {inter}.'
+    steps:
+    - 'SiLU(−1) = −0.269, SiLU(0) = 0 and SiLU(1) = 0.731: negative inputs are damped, not cut to zero.'
+    - 'Each layer holds gate, up and down matrices: 3 × {hidden} × {inter} = {per_layer} weights.'
+    - All {layers} layers hold {total} feed-forward weights, {share}% of the model.
+    result: The SiLU-gated feed-forward networks hold {share}% of the parameters; the activation itself adds none.
+  pitfalls:
+  - SiTU-GLU and GELU are different activations; match the exact name.
+  - A model can use SiLU in one component (such as a Mamba layer) and another activation in its feed-forward network.
+  - A gated network has three matrices; counting two understates it by a third.
+  takeaway: SiLU is the activation; SwiGLU is the three-matrix layer built around it.
+  diagram:
+  - Scalar input
+  - Sigmoid modulation
+  - Nonlinear output
+  related:
+  - moe
+  - latent-moe
+nope:
+  why: Rotary encoding ties attention to fixed frequencies, which makes extending the context beyond the training length harder.
+    Letting some layers attend by content alone, while recurrent layers track order, removes those frequencies from the layers
+    that look furthest back.
+  equation: 'score(i, j) = qᵢᵀkⱼ / √d, with no position term
+
+    The causal mask still hides j > i'
+  symbols:
+    i, j: Query position and key position.
+  example:
+    model: moonshotai/Kimi-K3
+    compute: nope
+    setup: '{model} has {mla_layers} MLA layers with NoPE and {linear} KDA linear-attention layers.'
+    steps:
+    - Its MLA layers apply no rotation (mla_use_nope is true).
+    - 'The compressed projection still outputs {rank} + {rope} = {width} values per token: the latent plus a {rope}-wide key
+      part.'
+    - Each MLA layer caches ({rank} + {rope}) × 2 B = {per_layer} per token, {per_token} across the {mla_layers} layers, the
+      same as with rotation.
+    - Order reaches the MLA layers through the {linear} KDA layers, whose recurrent state reads tokens in sequence.
+    result: 'NoPE removes the rotation, not the storage: the cache stays {per_token} per token.'
+  pitfalls:
+  - A missing rope setting means unknown, not NoPE.
+  - NoPE in some layers does not make the model position-blind.
+  - If both versions of a model already state NoPE, there is no RoPE-to-NoPE change to report.
+  takeaway: NoPE is a per-layer choice; check which layers skip the rotation.
+  diagram:
+  - Content-derived Q and K
+  - No explicit position transform
+  - Causal attention still applies
+  related:
+  - rope
+  - mla
+  - dsa
+gated-attention:
+  why: Softmax makes attention weights sum to one, so a head has to attend somewhere even when nothing is relevant, and models
+    compensate by piling weight on the first token. A gate after attention lets the layer scale the output down instead; the
+    gated-attention paper reports more stable training and fewer of these attention sinks.
+  equation: 'Output = o_proj(g ⊙ attention(q, K, V))
+
+    g = sigmoid(W_g h) in the gated-attention paper'
+  symbols:
+    ⊙: Element-wise product.
+    h: Hidden state of the current token.
+    W_g: Gate projection.
+  example:
+    model: moonshotai/Kimi-K3
+    compute: gated_attention
+    setup: '{model} gates the output of its {layers} MLA layers. Each has {heads} heads with value width {dv}.'
+    steps:
+    - The attention output is {heads} × {dv} = {width} channels wide.
+    - 'g_proj maps the {hidden}-wide hidden state to {width} gate values: {width} × {hidden} = {per_layer} weights per layer.'
+    - Across the {layers} MLA layers that is {total} weights.
+    result: 'The gate costs {total} weights and no cache: one gate value per output channel.'
+  pitfalls:
+  - A gate_proj in the feed-forward network (SwiGLU) is a different gate.
+  - A recurrent layer's decay gate belongs to its state update, not to output gating.
+  - 'Check the gate width: one value per head and one per channel are different designs.'
+  takeaway: Output gating scales what attention returns; it does not change what is cached.
+  diagram:
+  - Attention output
+  - Gate from the current token
+  - Channel-wise product
+  related:
+  - gqa
+  - linear-attention
+  - gated-residuals
+hybrid-attention:
+  why: Attention caches grow with every token; fixed-state mixers do not, but they recall less. Keeping attention in only
+    some layers cuts the cache in proportion and keeps exact retrieval available.
+  equation: Cache = L_attn × c × T + Σ fixed state
+  symbols:
+    L_attn: Attention layers.
+    c: Cache per attention layer per token.
+    T: Tokens in the context.
+  example:
+    model: LiquidAI/LFM2.5-24B-A2B-Base
+    compute: hybrid_attention
+    setup: '{model} has {total} layers: {attn} attention layers and {conv_layers} short-convolution layers.'
+    steps:
+    - Each attention layer caches {per_layer} per token, so {attn} layers cache {grows} per token.
+    - If all {total} layers were attention, the cache would be {everywhere} per token.
+    - At the full {ctx}-token context that is {grows_full} instead of {everywhere_full}.
+    - The {conv_layers} convolution layers add a fixed {conv}.
+    result: With attention in {attn} of {total} layers, the cache at full context is {grows_full} instead of {everywhere_full}.
+  pitfalls:
+  - Mixing local and global attention is not hybrid in this guide's sense.
+  - Count every layer once; a convolution inside a linear-attention layer is not an extra layer.
+  - The fixed-state layers still use memory; add their state.
+  takeaway: In a hybrid, only the attention layers' share of the cache grows.
+  diagram:
+  - Recurrent mixer
+  - Attention mixer
+  - Recurrent mixer
+  - Combined persistent state
+  related:
+  - linear-attention
+  - mamba2
+  - kv-cache
+dsa:
+  why: Choosing positions needs a score for every cached position, and full attention scores for all of them would cost as
+    much as full attention. DSA scores with a separate lightweight indexer instead, then spends full attention only on the
+    k positions it picks.
+  equation: 'Scores = indexer(q, k_index) over all cached positions
+
+    Selected = top-k(Scores)
+
+    Output = MLA attention over Selected
+
+    Cache per layer per token = (r + dR + d_index) × b'
+  symbols:
+    r, dR: MLA latent width and rotary key width.
+    d_index: Width of the cached index key.
+    k: Positions passed to the main attention.
+  example:
+    model: moonshotai/Kimi-K3.1-Pro
+    compute: dsa
+    setup: '{model} has {layers} DSA layers. The indexer has {heads} heads of width {idx} and passes the top {topk} positions
+      to MLA.'
+    steps:
+    - Each DSA layer caches ({rank} + {rope} + {idx}) × 2 B = {per_layer} per token.
+    - All {layers} layers cache {per_token} per token.
+    - 'The index key is {index_part} of that: {index_share}% on top of the MLA latent and rotary key.'
+    result: The indexer adds {index_part} of cache per token and limits the main attention to {topk} positions.
+  pitfalls:
+  - The index key is cached in addition to the MLA latent; count both.
+  - Top-k expert routing in MoE layers is a different mechanism.
+  - The indexer's head count and width differ from the main attention's; read them separately.
+  takeaway: DSA is a cheap scorer over every position plus MLA over the top k.
+  diagram:
+  - Index keys for all positions
+  - Select the top k
+  - MLA attention over the k
+  related:
+  - sparse-attention
+  - mla
+  - index-sharing
+attention-residuals:
+  why: In a plain residual stream every output is added with weight one, so early representations get diluted as depth grows
+    and a layer cannot choose which earlier layer to read. Learned weights across depth let each layer read what it needs.
+  equation: 'Input = Σᵢ αᵢ hᵢ
+
+    α = softmax(w · norm(hᵢ))'
+  symbols:
+    hᵢ: Earlier layer or block outputs, not token keys.
+    w: Learned scoring vector (res_proj).
+    α: Weights that sum to one.
+  example:
+    model: moonshotai/Kimi-K3
+    compute: attention_residuals
+    setup: '{model} uses attention residuals with block size {block} across its {layers} layers.'
+    steps:
+    - Before its attention and before its feed-forward network, each layer has a scoring vector (res_proj, 1 × {hidden}) and
+      a norm ({hidden} scales).
+    - That is {per_layer} parameters per layer.
+    - The {layers} layers plus one more pair at the output hold {total} parameters.
+    result: Learned depth mixing costs {total} parameters and no cache.
+  pitfalls:
+  - A residual multiplier or scaling factor is not attention residuals.
+  - This mixes representations across depth, not across tokens; it adds no KV cache.
+  - The block size groups layers; it is not an attention window.
+  takeaway: Attention residuals let each layer choose its input from earlier layers.
+  diagram:
+  - Earlier block outputs
+  - Learned depth weights
+  - Weighted mix as input
+  related:
+  - mhc
+  - gated-residuals
+  - rmsnorm
+latent-moe:
+  why: In a model with hundreds of experts, the expert weights dominate the parameter count. Running experts at a narrower
+    width shrinks every one of them, and two shared projections per layer are a small price for that.
+  equation: 'Expert = 3 × latent × intermediate (gated)
+
+    Shared projections = 2 × hidden × latent per layer
+
+    Routed total = experts × MoE layers × expert'
+  symbols:
+    latent: Width the experts work at.
+    intermediate: Inner width of one expert.
+  example:
+    model: moonshotai/Kimi-K3
+    compute: latent_moe
+    setup: '{model} has {experts} routed experts in each of {layers} MoE layers. The experts run at width {latent} instead
+      of {hidden}, with inner width {inter}.'
+    steps:
+    - One gated expert holds 3 × {latent} × {inter} = {per_expert} weights; at full width it would hold {full_width}.
+    - All routed experts hold {experts} × {layers} × {per_expert} = {total} weights.
+    - The shared down and up projections cost {projection} weights per layer, paid once for all {experts} experts.
+    result: 'Running experts at width {latent} makes each one {ratio}× smaller: {total} routed weights instead of {full_total}.'
+  pitfalls:
+  - Active expert parameters are not total storage.
+  - The shared down and up projections belong to the layer, not to each expert.
+  - A low-rank tensor elsewhere in the model (as in MLA) is not a latent expert path.
+  takeaway: A latent width shrinks every expert; the projections are paid once per layer.
+  diagram:
+  - Hidden state
+  - Down to the latent width
+  - Experts at latent width
+  - Back to hidden width
+  related:
+  - moe
+  - silu
+mtp:
+  why: Predicting further ahead gives the model more training signal from each sequence. At inference, a drafted extra token
+    that matches the real next token saves a full decoding step.
+  equation: 'Ordinary target at position t: token t + 1
+
+    MTP target: token t + 2
+
+    Stored total = decoder + MTP modules, counted separately'
+  symbols:
+    t: A sequence position.
+    module: An extra prediction block, not another decoder layer.
+  example:
+    setup: Take a 10-layer decoder with one MTP module of 5 parameter units.
+    steps:
+    - The decoder still has 10 layers; the module is not an eleventh layer.
+    - 'Report the module''s 5 units separately: the stored total is the decoder plus 5.'
+    - A config that sets the module count to 0 ships no module.
+    result: The MTP module is its own number, next to the decoder total.
+  pitfalls:
+  - A training report can describe MTP that the released checkpoint does not include; check the weights.
+  - 'Count MTP parameters once: either inside the total or separately, never both.'
+  - Module presence does not show that a runtime uses it for drafting.
+  takeaway: Report shipped MTP modules separately from the decoder.
+  diagram:
+  - Decoder representation
+  - Next-token head
+  - Additional future-token head
+  related:
+  - moe
+  - kv-cache
+kv-sharing:
+  why: The cache grows with layers × tokens. Letting several layers read one cache cuts its size in proportion to the layers
+    that share it.
+  equation: 'Producers = unique(source_layer of every layer)
+
+    Cache = Σ cache of each producer'
+  symbols:
+    source_layer: The layer whose keys and values a layer reads; keep the index convention of the config.
+  example:
+    setup: Take four attention layers with source mapping [0, 1, 1, 3], where each producer caches 1 MiB.
+    steps:
+    - Layers 0, 1 and 3 are producers.
+    - Layer 2 reads layer 1's cache, leaving three producer caches.
+    - The total is 3 MiB instead of four separate 1 MiB caches.
+    result: The mapping, not the word 'shared', sets the saving.
+  pitfalls:
+  - Sharing index selections is not sharing keys and values.
+  - Tying a layer's key and value projections is a different property.
+  - Do not build a full mapping from a few listed producers.
+  takeaway: Count unique producer layers to size a shared cache.
+  diagram:
+  - Producer layer 1
+  - Shared KV representation
+  - Consumers 1 and 2
+  related:
+  - index-sharing
+  - kv-cache
+looped-transformer:
+  why: Depth helps a model compose steps, but every extra layer costs memory for its weights. Reusing a block buys depth with
+    compute instead of parameters.
+  equation: 'Stored block parameters = layers × parameters per layer
+
+    Layer applications = layers × passes'
+  symbols:
+    passes: How many times the shared block runs; it does not multiply stored weights.
+  example:
+    setup: Take a shared block of three layers with 100 parameter units each, applied twice.
+    steps:
+    - The block stores 300 parameter units.
+    - It performs six layer applications across the two passes.
+    - Input and output layers are stored separately and run once.
+    result: Stored depth is 3 layers; computed depth is 6.
+  pitfalls:
+  - Do not count shared weights once per pass.
+  - The pass count does not say how past tokens are cached.
+  - Generating token after token is not looping; a loop repeats layers within one token's step.
+  takeaway: Stored depth, computed depth and cache policy are three separate facts.
+  diagram:
+  - Input layers
+  - 'Shared block: pass 1'
+  - 'Same block: pass 2'
+  - Output layers
+  related:
+  - kv-cache
+  - hybrid-attention
+qwen-sparse-attention:
+  why: 'Scoring groups instead of single positions makes selection cheaper: one score covers several tokens.'
+  equation: 'Selected groups = top-k(group scores)
+
+    Attended positions = positions inside the selected groups'
+  symbols:
+    group: The unit the indexer selects; it holds several positions.
+  example:
+    setup: Take two selected groups of four positions each.
+    steps:
+    - The selector returns two groups, not two tokens.
+    - Attention reads the eight positions inside them.
+    - A budget of k groups means k × group size positions.
+    result: Top-k means nothing until you know what one selected unit holds.
+  pitfalls:
+  - Do not apply the DSA rule just because both use an indexer.
+  - A generic linear-attention flag does not indicate this layer.
+  - Group settings alone do not give a cache formula.
+  takeaway: Know the selected unit before converting top-k into positions.
+  diagram:
+  - Family indexer
+  - Selected groups
+  - Main attention
+  related:
+  - sparse-attention
+  - dsa
+ple:
+  why: Giving deeper layers direct access to the token's identity spends parameters on cheap lookups instead of compute.
+  equation: h′ₗ = combineₗ(hₗ, embeddingₗ[token])
+  symbols:
+    l: A designated layer; keep the config's index base.
+    combine: The model's own rule for merging the lookup.
+  example:
+    setup: A config lists PLE layer IDs [2, 5] with width 4.
+    steps:
+    - Two layers receive an extra embedding.
+    - If the IDs count from zero, they are the 3rd and 6th layers; counting from one, the 2nd and 5th.
+    - 'Width 4 alone does not give the parameter count: the vocabulary size and table layout are needed too.'
+    result: Keep the listed layers and their index base; count parameters from the weight headers.
+  pitfalls:
+  - A list of n-gram memory layers is not PLE.
+  - Do not assume the lookup is simply added to the hidden state.
+  - Keep the config's index base when naming layers.
+  takeaway: PLE is a schedule of extra lookups; the weights give its size.
+  diagram:
+  - Additional embedding path
+  - Designated decoder depth
+  - Combined with the hidden state
+  related:
+  - rope
+  - moe
+csa-hca:
+  why: Attention cost grows with the number of entries it reads and caches. Compressing the sequence cuts both, and the two
+    variants trade selection work against compression strength.
+  equation: 'Compressed entries = positions ÷ compression ratio
+
+    CSA: attend to selected compressed entries
+
+    HCA: attend to all compressed entries'
+  symbols:
+    compression ratio: Positions merged into one entry.
+  example:
+    setup: Start with 16 positions. Compare compression by 4 with selection of 2 entries, against compression by 8 with dense
+      attention.
+    steps:
+    - The first path makes 4 compressed entries and selects 2.
+    - The second makes 2 compressed entries and attends to both.
+    - Both attend to 2 entries, but they store 4 and 2 entries.
+    result: The number of attended entries does not tell you the cache size.
+  pitfalls:
+  - Do not label any compression ratio CSA or HCA without the model's own variant label.
+  - Compressing width (as in MLA) and compressing sequence length are different.
+  - Add local windows and selector state when the layer has them.
+  takeaway: Track compression, selection and storage separately.
+  diagram:
+  - Sequence positions
+  - Compression schedule
+  - Sparse or dense compressed attention
+  related:
+  - mla
+  - dsa
+  - kv-cache
+mhc:
+  why: Unconstrained mixing of several residual streams can amplify the signal through depth and destabilize training. Keeping
+    the mixing doubly stochastic preserves the total and keeps training stable.
+  equation: 'M rows sum to 1; M columns sum to 1
+
+    y = Mx'
+  symbols:
+    M: Stream-mixing matrix; the example values are toy numbers.
+  example:
+    setup: Mix two streams x = (2, 6) with M = [[0.8, 0.2], [0.2, 0.8]].
+    steps:
+    - The first output is 0.8 × 2 + 0.2 × 6 = 2.8.
+    - The second is 0.2 × 2 + 0.8 × 6 = 5.2.
+    - 'The total stays 8: the matrix moves signal between streams without adding any.'
+    result: A doubly stochastic mix keeps the total of the streams unchanged.
+  pitfalls:
+  - hc_mult alone does not show mHC.
+  - A Sinkhorn setting counts only when it constrains the active residual mixing.
+  - Residual streams are not the attention KV cache.
+  takeaway: mHC is constrained stream mixing; check that the constraint is applied.
+  diagram:
+  - Two residual streams
+  - Constrained mixing matrix
+  - Mixed streams 2.8 and 5.2
+  related:
+  - attention-residuals
+  - gated-residuals
+index-sharing:
+  why: Running an indexer in every layer repeats similar work. Reusing a selection across neighbouring layers cuts that work.
+  equation: 'Selection for a consumer layer = selection of its producer
+
+    Each layer keeps its own keys and values'
+  symbols:
+    producer: Layer that computes the selection.
+    consumer: Layer that reuses it.
+  example:
+    setup: One producer selects positions [1, 4]. Two attention layers reuse that selection.
+    steps:
+    - Both consumers attend over positions 1 and 4.
+    - Each reads its own keys and values at those positions.
+    - The indexer runs once instead of twice; the cache is unchanged.
+    result: Shared selection halves the indexer work here and leaves the cache as it was.
+  pitfalls:
+  - A shared-mode flag does not name its producer.
+  - Index sharing does not mean KV sharing.
+  - Keep the listed schedule; do not assume a repeating pattern.
+  takeaway: Name what is shared before claiming a saving.
+  diagram:
+  - Indexer producer
+  - Selection [1,4]
+  - Two attention consumers
+  related:
+  - kv-sharing
+  - dsa
+gated-residuals:
+  why: Fixed residual additions treat every layer's output the same. Gates let the model decide, per layer, how much each
+    update counts.
+  equation: 'Read: h = r₁s₁ + r₂s₂
+
+    Write: s′ = s + w × f(h)'
+  symbols:
+    r, w: Read and write gates.
+    s: Residual streams.
+    f: The layer's block.
+  example:
+    setup: Read two streams, 2 and 6, with gates 0.2 and 0.8.
+    steps:
+    - The read result is 0.2 × 2 + 0.8 × 6 = 5.2.
+    - The layer outputs 4, and a write gate of 0.5 adds 2 to the stream.
+    - Without gates the layer would read 8 and add 4.
+    result: Gates change how much a layer reads and writes, not the number of layers.
+  pitfalls:
+  - An attention-output gate is not a gated residual.
+  - A hyper-connection stream count does not give read and write rules.
+  - Do not assume mHC's constraint for an unconstrained gated design.
+  takeaway: Check read gates, write gates and stream mixing separately.
+  diagram:
+  - Residual streams
+  - Read/write gates
+  - Updated streams
+  related:
+  - gated-attention
+  - mhc
+attention-budgeting:
+  why: Not every layer needs the same attention capacity. Spending heads where long-range attention happens and saving them
+    in local layers cuts compute.
+  equation: 'Query heads total = Σ heads per layer
+
+    Cache depends on key-value heads and retained tokens'
+  symbols:
+    budget: The query-head count assigned to a layer.
+  example:
+    setup: Take four layers with query heads [2, 8, 8, 8]; every layer keeps 2 key-value heads of the same width.
+    steps:
+    - The query heads total 26, against 32 with eight in every layer.
+    - All four layers still cache 2 key-value heads, so the cache is unchanged.
+    - If the 2-head layer is local, its cache is also capped by its window.
+    result: Fewer query heads cut compute; they do not shrink the cache.
+  pitfalls:
+  - An index_topk setting is a different kind of budget.
+  - Do not flatten a per-layer head list into one number.
+  - A head budget does not predict measured speed.
+  takeaway: Compare query heads, key-value heads and windows side by side.
+  diagram:
+  - Local/global schedule
+  - Per-layer query-head allocation
+  - Per-path attention work
+  related:
+  - sliding-window
+  - gqa
+cca:
+  why: Attention at full width costs compute and cache in proportion to the width. Working in a compressed latent space cuts
+    both.
+  equation: 'Compressed projections: Qc, Kc, Vc
+
+    Cache = T × (key latent + value latent) × b'
+  symbols:
+    T: Cached positions.
+    b: Bytes per value.
+  example:
+    setup: Take four positions with key and value latent widths of 2 each, stored at 2 bytes.
+    steps:
+    - The cached latents take 4 × (2 + 2) × 2 = 32 bytes.
+    - The score matrix still relates 4 positions to 4 positions; compression changes the width, not the position count.
+    - The convolution adds its few past inputs on top.
+    result: CCA compresses the width of attention, not the length of the sequence.
+  pitfalls:
+  - CCA is not another name for causal attention.
+  - Do not apply the MLA cache rule without checking what CCA stores.
+  - A toy calculation does not establish a model's real cache formula.
+  takeaway: Read latent widths, the convolution and head sharing together.
+  diagram:
+  - Compress Q/K/V
+  - Convolutional latent mixing
+  - Attention in latent space
+  related:
+  - mla
+  - gqa
+  - short-convolution
+polynorm:
+  why: A fixed activation gives every expert the same nonlinearity. Learned coefficients let each expert shape its own response.
+  equation: 'Toy polynomial: P(x) = a₀ + a₁x + a₂x²'
+  symbols:
+    a₀, a₁, a₂: Toy coefficients; the real degree and normalization come from Motif's code.
+  example:
+    setup: Choose a₀ = 0, a₁ = 1, a₂ = 0.5 and input x = 2.
+    steps:
+    - The linear term is 1 × 2 = 2.
+    - The quadratic term is 0.5 × 2² = 2, so P(2) = 4.
+    - Another expert with a₂ = 0 would output 2 for the same input.
+    result: Each expert's coefficients give it its own nonlinearity.
+  pitfalls:
+  - PolyNorm is not SiLU.
+  - The word 'norm' in the name does not make it RMSNorm.
+  - The polynomial's degree comes from the code, not the name.
+  takeaway: PolyNorm is a learned, per-expert activation.
+  diagram:
+  - Expert input
+  - Learned polynomial operation
+  - Expert output
+  related:
+  - silu
+  - moe
+  - rmsnorm
