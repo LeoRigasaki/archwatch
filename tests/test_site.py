@@ -144,12 +144,12 @@ def test_pages_have_basic_accessible_markup():
 def test_style_matches_the_brief():
     css = (SITE / "style.css").read_text()
     for token in (
-        "#F7F7F5",
-        "#111418",
-        "#0B6E66",
-        "Space Grotesk",
+        "#f5f2e9",
+        "#141d1a",
+        "#1f6552",
+        "Bricolage Grotesque",
         "IBM Plex Mono",
-        "Inter",
+        "Manrope",
         "prefers-color-scheme:dark",
     ):
         assert token in css
@@ -159,7 +159,7 @@ def test_style_matches_the_brief():
 
 def test_site_settings_hold_no_numbers_for_models():
     config = yaml.safe_load((ROOT / "config/site.yaml").read_text())
-    assert set(config) == {"repo_url", "publishers", "memory_contexts", "layer_colors"}
+    assert set(config) == {"repo_url", "site_url", "publishers", "memory_contexts", "layer_colors"}
 
 
 def test_vercel_builds_the_site_from_committed_records():

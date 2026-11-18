@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def record():
-    return json.loads((ROOT / "data/models/LiquidAI__LFM3-1.7B.json").read_text())
+    rec = json.loads((ROOT / "data/models/LiquidAI__LFM3-1.7B.json").read_text())
+    rec["hub_metadata"] = {}  # neutral publication fixture; derivative admission has separate coverage
+    return rec
 
 
 def builder():

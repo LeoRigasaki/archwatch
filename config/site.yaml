@@ -1,5 +1,6 @@
 # Static site settings. Display names only; every number on the site comes from published records.
 repo_url: https://github.com/LeoRigasaki/archwatch
+site_url: https://archwatch.vercel.app
 publishers:
   moonshotai: Moonshot AI
   LiquidAI: Liquid AI

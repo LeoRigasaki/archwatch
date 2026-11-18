@@ -25,6 +25,9 @@ def test_card_release_dates_are_explicit_dates_only():
     assert parse_release_date("November 2026") is None and parse_release_date("Q4 2026") is None
     assert parse_card("| Release date | November 2, 2026 |\n")["release_date"]["value"] == "2026-11-02"
     assert "release_date" not in parse_card("| Release date | soon |\n")
+    for invalid in ("2026-99-99", "February 29, 2025", "31 April 2026", "0 Nov 2026"):
+        assert parse_release_date(invalid) is None
+    assert parse_release_date("February 29, 2024") == "2024-02-29"
 
 
 def test_hub_creation_time_is_stored_apart_and_never_called_a_release():
@@ -63,3 +66,11 @@ def test_every_source_links_to_its_file_at_the_pinned_commit():
     lfm = (SITE / "models/LiquidAI__LFM3-1.7B-Base.html").read_text()
     assert re.search(r'blob/[0-9a-f]{40}/modeling_lfm3\.py#L\d+">modeling_lfm3\.py line \d+</a>', lfm)
     assert site.source_url({"id": "o/m", "source_commit": "c" * 40, "source_files": []}, "derived:x") is None
+
+
+def test_single_file_weights_link_to_the_pinned_file():
+    site = builder()
+    rec = dict(id="lab/model", source_commit="a" * 40, source_files=["config.json", "model.safetensors"])
+    assert (
+        site.source_url(rec, "weights:header") == f"https://huggingface.co/lab/model/blob/{'a' * 40}/model.safetensors"
+    )

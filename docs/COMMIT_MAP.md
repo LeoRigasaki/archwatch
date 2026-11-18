@@ -9,7 +9,7 @@ translates them. Living documents were updated to the new hashes.
 | `5977d090797cad34f68645ae6eea47d3b9186716` | `785cac02c20af15e14fbf8307b42fd1cf90a1eac` | newest-backfill baseline code (merge of PR #8) |
 | `a0a3f88d07d2bfd2274b976118b0a4629f9a48db` | `9caeb747d517e7a72a3d7a3866cdf6ac11ff54ee` | newest-release held-out labels frozen |
 | `46c15850a0057a9c953770e01c526331fb7ba190` | `e33f8c747aa454da451510f00aebbc6691b367cf` | newest-release first-run records and results |
-| `af7d814970231a472438d4159b2d33a5788fc582` | `840b22d20bce3ad3ac0502ff11e3905eec29dd3c` | newest-release adaptation |
+| `af7d814970231a472438d4159b2d33a5788fc582` | `840b22d20bce3ad3ac0502ff11e3905eec29dd3c` | separate late-access Meta baseline frozen before fixes |
 | `fad28a00f557e431c33ba96e963cfb80a118130c` | `0fa673f99d6c42ddee8adc860f39714532b1aa05` | ten development gold labels frozen |
 | `63767a7732b09c0636fb86b3d0bb603cd70edc3c` | `5bbc1d08bedf40e83aef8e2583ba56daf2f8e1b4` | cited in `results/github-workflow-acceptance.json` |
 | `a10f153a705bdcdadf355f1ceba0de828e31c263` | `dc5bd784e418d22b1898b141fff4b7a31df45b65` | cited in `results/github-workflow-acceptance.json` |
