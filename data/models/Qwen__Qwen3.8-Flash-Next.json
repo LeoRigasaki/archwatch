@@ -1,7 +1,7 @@
 {
  "id": "Qwen/Qwen3.8-Flash-Next",
  "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa",
- "hub_created": "2026-08-24T08:24:59+00:00",
+ "hub_created_at": "2026-08-24T08:24:59+00:00",
  "license": "qwen-community-1.0",
  "hub_metadata": {
   "base_model": null,
@@ -209,6 +209,15 @@
   "vision_hidden_size": {
    "value": 1152,
    "evidence": "config:vision_config"
+  },
+  "per_layer_embeddings": {
+   "value": {
+    "width": 2560,
+    "source_layer_ids": [
+     2
+    ]
+   },
+   "evidence": "config:text_config.ple_embed_dim/ple_layer_ids"
   }
  },
  "config_coverage": {
@@ -235,6 +244,8 @@
    "text_config.num_experts_per_tok",
    "text_config.num_hidden_layers",
    "text_config.num_key_value_heads",
+   "text_config.ple_embed_dim",
+   "text_config.ple_layer_ids",
    "text_config.rope_parameters.mrope_interleaved",
    "text_config.rope_parameters.mrope_section",
    "text_config.rope_parameters.partial_rotary_factor",
@@ -275,8 +286,6 @@
    "text_config.pad_token_id",
    "text_config.partial_rotary_factor",
    "text_config.ple_conv_kernel_size",
-   "text_config.ple_embed_dim",
-   "text_config.ple_layer_ids",
    "text_config.rms_norm_eps",
    "text_config.router_aux_loss_coef",
    "text_config.shared_expert_intermediate_size",
@@ -1447,6 +1456,29 @@
      "evidence": "weights:tensor header inventory"
     }
    ]
+  },
+  {
+   "field": "per_layer_embeddings",
+   "value": {
+    "width": 2560,
+    "source_layer_ids": [
+     2
+    ]
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "width": 2560,
+      "source_layer_ids": [
+       2
+      ]
+     },
+     "evidence": "config:text_config.ple_embed_dim/ple_layer_ids"
+    }
+   ]
   }
  ],
  "published": {
@@ -1616,12 +1648,18 @@
    "tensor_count": 1658,
    "skipped_scale_tensors": 0,
    "skipped_buffer_tensors": 3
+  },
+  "per_layer_embeddings": {
+   "width": 2560,
+   "source_layer_ids": [
+    2
+   ]
   }
  },
  "review_queue": [],
  "unchecked_notes": [
   "No modeling_*.py in the repo: mechanism details (layer internals, residual scheme, activation) are read from config, card and tensor names only, not from code.",
-  "Config keys not consumed by the extractor (including metadata/defaults): image_token_id, language_model_only, text_config.attention_bias, text_config.attention_dropout, text_config.bos_token_id, text_config.eos_token_id, text_config.full_attention_interval, text_config.hc_lowrank, text_config.heads_per_ngram, text_config.indexer_budget, text_config.indexer_compress_ratio, text_config.indexer_head_dim, text_config.indexer_kv_heads, text_config.indexer_n_heads, text_config.initializer_range, text_config.make_ngram_vocab_size_divisible_by, text_config.mamba_ssm_dtype, text_config.mtp.hybrid, text_config.mtp.layer_types, text_config.mtp.mtp_use_hidden_state_from_layer, text_config.mtp.num_hidden_layers, text_config.mtp.rope_theta, text_config.mtp_use_dedicated_embeddings, text_config.ngram_size, text_config.ngram_vocab_size_base, text_config.output_gate_type, text_config.output_router_logits, text_config.pad_token_id, text_config.partial_rotary_factor, text_config.ple_conv_kernel_size, text_config.ple_embed_dim, text_config.ple_layer_ids, text_config.rms_norm_eps, text_config.router_aux_loss_coef, text_config.shared_expert_intermediate_size, text_config.split_ngram_parts, text_config.tie_word_embeddings, text_config.use_cache, transformers_version, video_token_id, vision_config.deepstack_visual_indexes, vision_config.depth, vision_config.hidden_act, vision_config.in_channels, vision_config.initializer_range, vision_config.intermediate_size, vision_config.model_type, vision_config.num_heads, vision_config.num_position_embeddings, vision_config.out_hidden_size, vision_config.patch_size, vision_config.spatial_merge_size, vision_config.temporal_patch_size, vision_end_token_id, vision_start_token_id"
+  "Config keys not consumed by the extractor (including metadata/defaults): image_token_id, language_model_only, text_config.attention_bias, text_config.attention_dropout, text_config.bos_token_id, text_config.eos_token_id, text_config.full_attention_interval, text_config.hc_lowrank, text_config.heads_per_ngram, text_config.indexer_budget, text_config.indexer_compress_ratio, text_config.indexer_head_dim, text_config.indexer_kv_heads, text_config.indexer_n_heads, text_config.initializer_range, text_config.make_ngram_vocab_size_divisible_by, text_config.mamba_ssm_dtype, text_config.mtp.hybrid, text_config.mtp.layer_types, text_config.mtp.mtp_use_hidden_state_from_layer, text_config.mtp.num_hidden_layers, text_config.mtp.rope_theta, text_config.mtp_use_dedicated_embeddings, text_config.ngram_size, text_config.ngram_vocab_size_base, text_config.output_gate_type, text_config.output_router_logits, text_config.pad_token_id, text_config.partial_rotary_factor, text_config.ple_conv_kernel_size, text_config.rms_norm_eps, text_config.router_aux_loss_coef, text_config.shared_expert_intermediate_size, text_config.split_ngram_parts, text_config.tie_word_embeddings, text_config.use_cache, transformers_version, video_token_id, vision_config.deepstack_visual_indexes, vision_config.depth, vision_config.hidden_act, vision_config.in_channels, vision_config.initializer_range, vision_config.intermediate_size, vision_config.model_type, vision_config.num_heads, vision_config.num_position_embeddings, vision_config.out_hidden_size, vision_config.patch_size, vision_config.spatial_merge_size, vision_config.temporal_patch_size, vision_end_token_id, vision_start_token_id"
  ],
  "weight_layer_kinds": [
   "linear_delta",

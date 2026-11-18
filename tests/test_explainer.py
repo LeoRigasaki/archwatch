@@ -109,3 +109,42 @@ def test_site_shows_no_explainer_note_until_it_follows_the_change_filter():
     note = json.loads((ROOT / "results/explainer/moonshotai__Kimi-K3.1-Pro.json").read_text())["text"]
     for page in (ROOT / "site").rglob("*.html"):
         assert note not in page.read_text()
+
+
+def test_each_claim_is_checked_as_field_before_and_after_together():
+    data = dict(
+        predecessor="Old",
+        successor="New",
+        changes=[
+            dict(what="attention heads", before="32", after="16", direction="down", exact=[32, 16]),
+            dict(what="number of layers", before="16", after="24", direction="up", exact=[16, 24]),
+        ],
+        weights="no weight groups added; none removed.",
+        exact_values=[16, 24, 32],
+    )
+    wrong = check("Attention heads went down from 32 to 24.", data, max_words=99)
+    assert not wrong["passed"] and any("attention heads" in p for p in wrong["problems"])  # 24 is the layers' value
+    assert check("Attention heads went down from 32 to 16.", data, max_words=99)["passed"]
+    assert check(
+        "Attention heads went down from 32 to 16, and the number of layers went up from 16 to 24.", data, max_words=99
+    )["passed"]
+    assert not check("The number of layers went up from 16 to 32.", data, max_words=99)["passed"]
+    both = "Attention heads went down from 32 to 16 and the number of layers went up from 16 to 24."
+    assert check(both, data, max_words=99)["passed"]
+    for text in (
+        "Attention heads went down from 16 to 32.",
+        "Attention heads decreased by 32.",
+        "The number of layers went up from 24 to 16.",
+        "Query heads went down from 16 to 32.",
+    ):
+        assert not check(text, data, max_words=99)["passed"], text
+    assert check("Attention heads decreased by 16.", data, max_words=99)["passed"]
+
+
+def test_delta_direction_cannot_reverse_the_field_change():
+    data = diff_input(record("LiquidAI__LFM3-1.7B"))
+    result = check("Attention heads increased by 16.", data, max_words=200)
+    assert not result["passed"] and any("direction contradicts" in p for p in result["problems"])
+    for text in ("Attention heads 16 to 32.", "Attention heads 16 → 32."):
+        result = check(text, data, max_words=200)
+        assert not result["passed"] and any("before/after" in p for p in result["problems"])

@@ -1,0 +1,848 @@
+# Educational definitions and deterministic rules; never a source of model facts.
+mha:
+  title: Multi-head attention
+  short: MHA
+  category: Attention
+  summary: Each query head has its own key and value heads. It is a useful baseline for understanding cache costs.
+  mechanism: A token produces queries, keys and values. Queries attend to earlier keys and use their matching values
+    to combine information. Several heads perform this operation in parallel.
+  memory: During autoregressive decoding, full attention retains keys and values for earlier tokens. Its cache grows
+    with sequence length, head count and head width.
+  verify: Compare num_attention_heads with num_key_value_heads. Equal counts support MHA; inspect implementation
+    evidence as well when a model uses custom attention.
+  flow:
+  - Token representations
+  - Separate query / key / value heads
+  - Attend and combine
+  source:
+    title: Attention Is All You Need
+    url: https://arxiv.org/abs/1706.03762
+  rule:
+    field: attention_type
+    equals: MHA
+  scope: Attention heads in the decoder.
+  aliases: []
+  catalog: requested
+gqa:
+  title: Grouped-query attention
+  short: GQA
+  category: Attention
+  summary: Several query heads share a smaller set of key and value heads, reducing the cache retained during decoding.
+  mechanism: Query heads are divided into groups. Heads in one group share keys and values while retaining separate
+    queries. MQA is the endpoint with one key-value head.
+  memory: For otherwise equal dimensions and precision, fewer key-value heads mean less cache per token. That does
+    not establish a particular model's quality or runtime speed.
+  verify: Read num_attention_heads, num_key_value_heads and head_dim from the pinned config. Check projection tensor
+    shapes and any custom implementation before treating the counts as verified.
+  flow:
+  - Many query heads
+  - Shared key-value groups
+  - Attend and combine
+  source:
+    title: GQA paper
+    url: https://arxiv.org/abs/2305.13245
+  rule:
+    field: attention_type
+    one_of:
+    - GQA
+    - MQA
+  scope: Grouped query/key-value heads in the decoder.
+  aliases:
+  - MQA
+  - Grouped query attention
+  - Multi-query attention
+  catalog: requested
+moe:
+  title: Mixture of experts
+  short: MoE
+  category: Feed-forward
+  summary: A router selects a subset of feed-forward experts for each token. Total stored parameters and active
+    parameters measure different things.
+  mechanism: Instead of one feed-forward network, a layer offers multiple experts. A router chooses which routed
+    experts process the token. Some designs also include shared experts.
+  memory: Sparse activation reduces the parameters used for a token, but the full expert pool still needs storage
+    unless the runtime offloads it. Active parameters are not a weight-memory estimate.
+  verify: Check the expert count, experts selected per token, shared experts, expert dimensions and dense-layer
+    exceptions. Confirm router and expert tensor shapes against those claims.
+  flow:
+  - Token
+  - Router selects experts
+  - Selected experts and shared path
+  - Combine outputs
+  source:
+    title: Switch Transformers
+    url: https://arxiv.org/abs/2101.03961
+  rule:
+    all:
+    - field: moe_num_experts
+      positive: true
+    - field: moe_active_experts
+      positive: true
+  scope: Routed feed-forward experts.
+  aliases:
+  - Mixture of experts
+  catalog: requested
+mla:
+  title: Multi-head latent attention
+  short: MLA
+  category: Attention
+  summary: Keys and values are represented through a compressed latent state rather than caching a separate full-width
+    pair for every attention head.
+  mechanism: The attention module compresses key-value information into a latent representation. Position-encoding
+    components can require a separate cached part; the exact layout depends on the implementation.
+  memory: An MLA cache estimate needs the latent width and any additional cached position-encoding width. Reusing
+    a GQA formula would count a different representation.
+  verify: Inspect kv_lora_rank, position-encoding dimensions and the actual cache update in modeling code. Sparse-attention
+    index keys may add storage beyond the MLA latent.
+  flow:
+  - Token representations
+  - Compressed key-value latent
+  - Attention output
+  source:
+    title: DeepSeek-V2 report
+    url: https://arxiv.org/abs/2405.04434
+  rule:
+    all:
+    - field: mla_kv_lora_rank
+      positive: true
+    - any:
+      - field: layer_type_counts.full_attention_mla
+        positive: true
+      - field: layer_type_counts.gated_dsa_mla
+        positive: true
+      - field: layer_type_counts.indexed_mla
+        positive: true
+  scope: Latent key-value attention paths.
+  aliases:
+  - Multi-head Latent Attention
+  catalog: requested
+sliding-window:
+  title: Sliding-window attention
+  short: Sliding window
+  category: Attention
+  summary: A layer attends to a recent token window. Its retained attention cache can stop growing when that window
+    is full.
+  mechanism: Each layer limits direct attention to a moving neighborhood of recent tokens. A hybrid model can mix
+    these layers with global-attention layers.
+  memory: Count only the retained window for local layers, plus the growing cache of any global layers. Actual runtimes
+    may allocate or retain more than the theoretical minimum.
+  verify: Read sliding_window and the per-layer pattern. Do not assume every layer is local because a window value
+    appears in the config.
+  flow:
+  - Earlier context
+  - Recent retained window
+  - Current token
+  source:
+    title: Mistral 7B report
+    url: https://arxiv.org/abs/2310.06825
+  rule:
+    all:
+    - any:
+      - field: layer_type_counts.sliding_attention
+        positive: true
+    - field: sliding_window
+      positive: true
+  scope: Only the published sliding-attention layers.
+  aliases:
+  - SWA
+  - Sliding Window Attention
+  catalog: requested
+linear-attention:
+  title: Linear attention and recurrent state
+  short: Linear attention
+  category: Persistent state
+  summary: Some attention mechanisms summarize history in a recurrent state instead of retaining a full token-by-token
+    key-value cache.
+  mechanism: Linear-attention families use different update rules to accumulate information in a state. A delta-rule
+    design such as KDA should not be treated as interchangeable with every other linear-attention implementation.
+  memory: Persistent state can remain fixed in size as context grows. Hybrid models still have growing cache from
+    their full-attention layers. State precision and convolution buffers also matter.
+  verify: Confirm the layer pattern, state dimensions, convolution buffers and update rule from primary config and
+    code. Head counts alone do not establish an appropriate state formula.
+  flow:
+  - Previous state and token
+  - Recurrent state update
+  - New state and output
+  source:
+    title: Transformers are RNNs
+    url: https://arxiv.org/abs/2006.16236
+  rule:
+    any:
+    - field: layer_type_counts.kda_linear
+      positive: true
+    - field: layer_type_counts.linear_attention
+      positive: true
+    - field: layer_type_counts.gated_delta_net
+      positive: true
+  scope: Linear/recurrent attention paths; the update rule remains family-specific.
+  aliases:
+  - KDA
+  - Kimi Delta Attention
+  catalog: companion
+sparse-attention:
+  title: Sparse attention
+  short: Sparse attention
+  category: Attention
+  summary: A token attends to a selected subset of positions. Selection cost and retained cache are separate from
+    the number of positions attended to.
+  mechanism: A sparse-attention system selects positions using a fixed pattern or a learned indexer. The main attention
+    operation then works on the selected positions.
+  memory: A small attention budget does not imply that only those tokens are cached. An indexer can retain its own
+    keys in addition to the main attention cache.
+  verify: Inspect selection policy, top-k, indexer dimensions and cache updates. Read the primary implementation
+    to distinguish sparsity in computation from compression in storage.
+  flow:
+  - Cached positions
+  - Position selector
+  - Attention over selected positions
+  source:
+    title: DeepSeek-V3.2 experimental base model card
+    url: https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp-Base
+  rule:
+    any:
+    - field: layer_type_counts.gated_dsa_mla
+      positive: true
+    - field: layer_type_counts.indexed_mla
+      positive: true
+    - field: layer_type_counts.qwen_sparse_attention
+      positive: true
+  scope: Published sparse/indexed attention paths.
+  aliases:
+  - Sparse attention
+  catalog: companion
+mamba2:
+  title: Mamba-2 state-space layers
+  short: Mamba-2
+  category: Persistent state
+  summary: A state-space layer updates a recurrent state as it processes the sequence. Hybrid decoders combine it
+    with attention or other operators.
+  mechanism: Mamba-2 uses a structured state-space formulation. Its state and convolution buffers summarize prior
+    processing; a hybrid model's attention layers retain their own separate caches.
+  memory: Include recurrent state and convolution buffers at their actual precision. ArchWatch's supported rule
+    uses a stated mathematical bound, not a measurement of a runtime's allocation.
+  verify: Check state size, head size, groups, convolution channels, precision and the block schedule. A standalone
+    Mamba block and a parallel attention/Mamba block need different graph rules.
+  flow:
+  - Input and previous state
+  - State-space update
+  - Output and next state
+  source:
+    title: Transformers are SSMs
+    url: https://arxiv.org/abs/2405.21060
+  rule:
+    any:
+    - field: layer_type_counts.mamba2
+      positive: true
+  scope: Mamba-2 mixer layers.
+  aliases:
+  - Mamba-2
+  - SSD
+  catalog: companion
+short-convolution:
+  title: Short convolution
+  short: Short conv
+  category: Persistent state
+  summary: A short convolution mixes a small recent history. Its persistent decoding buffer is bounded by its width
+    and kernel size.
+  mechanism: A convolution processes recent token representations with a short kernel. Gated designs add input-dependent
+    modulation. The complete model can combine convolution and attention layers.
+  memory: A convolution buffer is fixed-size state. It must be added to attention caches, rather than described
+    as growing key-value memory for every token.
+  verify: Read kernel width, channel width and the code that updates the buffer. A runtime may retain kernel minus
+    one positions rather than a full kernel-sized buffer.
+  flow:
+  - Recent token buffer
+  - Gated convolution
+  - Output and updated buffer
+  source:
+    title: Liquid AI primary model files
+    url: https://huggingface.co/LiquidAI/LFM3-1.7B-Base
+  rule:
+    any:
+    - field: layer_type_counts.short_conv
+      positive: true
+    - field: layer_type_counts.kda_linear
+      positive: true
+  scope: Short-convolution operation, with its nesting recorded.
+  aliases:
+  - ShortConv
+  - Short convolution
+  catalog: requested
+kv-cache:
+  title: The key-value cache
+  short: KV cache
+  category: Memory planning
+  summary: Decoding reuses attention keys and values from earlier tokens. This state is separate from model weights
+    and from temporary runtime allocations.
+  mechanism: After processing a token, an autoregressive attention layer retains information needed by later tokens.
+    Different mechanisms retain full keys and values, a local window, a compressed latent or a recurrent state.
+  memory: The planner adds weight storage to persistent state for the selected context and number of sequences.
+    Quantization metadata, activations, kernels, offloading and device allocation can change actual usage.
+  verify: Identify each layer type and its stored representation before applying a formula. Weight precision and
+    cache precision are separate settings; a four-bit weight estimate does not imply a four-bit cache.
+  flow:
+  - Model weights
+  - Persistent decoding state
+  - Runtime and device overhead
+  source:
+    title: Hugging Face cache documentation
+    url: https://huggingface.co/docs/transformers/kv_cache
+  rule:
+    any:
+    - field: layer_type_counts.full_attention
+      positive: true
+    - field: layer_type_counts.sliding_attention
+      positive: true
+    - field: layer_type_counts.full_attention_mla
+      positive: true
+    - field: layer_type_counts.gated_dsa_mla
+      positive: true
+  scope: Attention cache and any companion persistent state.
+  aliases:
+  - Key-value cache
+  catalog: companion
+rmsnorm:
+  title: Root mean square normalization
+  short: RMSNorm
+  category: Normalization
+  summary: Rescale a representation by its root mean square, without subtracting its mean.
+  mechanism: The operator normalizes the magnitude of a vector and can apply learned scaling. Its placement in a
+    decoder is a separate property.
+  memory: Normalization changes computation and temporary state; it does not establish a different attention-cache
+    layout.
+  verify: Require an explicit normalization declaration or the mathematical operation wired into a used decoder
+    module. An epsilon key alone is insufficient.
+  flow:
+  - Input representation
+  - Inverse root mean square
+  - Rescale representation
+  source:
+    title: RMSNorm paper
+    url: https://arxiv.org/abs/1910.07467
+  rule:
+    field: normalization_type
+    equals: RMSNorm
+  scope: Decoder normalization modules.
+  aliases: []
+  catalog: requested
+qk-norm:
+  title: Query-key normalization
+  short: QK-Norm
+  category: Normalization
+  summary: Normalize queries and keys within the attention path.
+  mechanism: QK normalization acts before attention scores are formed. Implementations can differ in normalization
+    equation, axis and learned scaling.
+  memory: This tag alone does not change the cache formula or establish lower runtime memory.
+  verify: Inspect Q/K norm modules, their placement and tensor evidence. Keep the specific norm variant separate.
+  flow:
+  - Query and key projections
+  - Normalize queries and keys
+  - Form attention scores
+  source:
+    title: QK normalization paper
+    url: https://arxiv.org/abs/2010.04245
+  rule:
+    field: qk_norm
+    equals: true
+  scope: Query/key normalization; the norm equation is not implied.
+  aliases:
+  - QKNorm
+  catalog: requested
+rope:
+  title: Rotary position embeddings
+  short: RoPE
+  category: Position encoding
+  summary: Encode token positions by rotating pairs of query and key features.
+  mechanism: Rotations make attention position-dependent. A model can rotate only part of a head or use different
+    settings on different attention paths.
+  memory: Rotary encoding is not itself a cache-compression method. Scaling settings do not establish measured long-context
+    quality.
+  verify: Read the active path, rotary fraction and scaling metadata. Do not assume a global setting applies to
+    every layer.
+  flow:
+  - Query and key features
+  - Position-dependent rotations
+  - Position-aware attention
+  source:
+    title: RoFormer paper
+    url: https://arxiv.org/abs/2104.09864
+  rule:
+    field: rope
+    nonempty: true
+  scope: Configured rotary position encoding.
+  aliases:
+  - Rotary position embedding
+  catalog: requested
+silu:
+  title: SiLU activation
+  short: SiLU
+  category: Feed-forward
+  summary: A smooth activation that multiplies its input by a sigmoid of that input.
+  mechanism: SiLU can be used inside a feed-forward path. Whether it participates in a gated FFN is a separate fact.
+  memory: The activation name alone supplies no weight or cache reduction.
+  verify: Match the published activation exactly. SiTU and GELU variants are different operations; retain component
+    scope.
+  flow:
+  - Input
+  - Sigmoid-modulated activation
+  - Feed-forward output
+  source:
+    title: SiLU paper
+    url: https://arxiv.org/abs/1702.03118
+  rule:
+    field: activation
+    one_of:
+    - silu
+    - swish
+  scope: Feed-forward activation.
+  aliases:
+  - Swish
+  catalog: requested
+nope:
+  title: Position-free attention paths
+  short: NoPE
+  category: Position encoding
+  summary: An attention path can operate without explicit positional encoding.
+  mechanism: NoPE is a scoped design choice. A hybrid architecture may use it in one path and position encoding
+    in another.
+  memory: NoPE does not determine cache size; the retained key/value or latent representation still matters.
+  verify: Require an explicit enabled path flag or implementation evidence. Missing RoPE metadata is unknown, not
+    proof of NoPE.
+  flow:
+  - Query and key features
+  - No positional transform on this path
+  - Attention
+  source:
+    title: Kimi primary model files
+    url: https://huggingface.co/moonshotai/Kimi-K3.1-Pro
+  rule:
+    all:
+    - field: mla_use_nope
+      equals: true
+    - any:
+      - field: layer_type_counts.full_attention_mla
+        positive: true
+      - field: layer_type_counts.gated_dsa_mla
+        positive: true
+  scope: MLA paths explicitly configured without position encoding.
+  aliases:
+  - No positional encoding
+  catalog: requested
+gated-attention:
+  title: Gated attention outputs
+  short: Gated Attention
+  category: Attention
+  summary: A learned gate modulates the output of an attention operation.
+  mechanism: Output gating is different from an FFN activation gate, an expert router, or a gate used inside a recurrent
+    update.
+  memory: A gate adds its own projections and operations. It does not by itself compress cached history.
+  verify: Confirm the attention-output gate and its input, shape and multiplication point in code and weights.
+  flow:
+  - Attention output
+  - Learned output gate
+  - Modulated output
+  source:
+    title: Gated attention paper
+    url: https://arxiv.org/abs/2505.06708
+  rule:
+    field: attention_output_gate
+    equals: true
+  scope: Attention-output gating only.
+  aliases: []
+  catalog: requested
+hybrid-attention:
+  title: Hybrid attention and recurrent mixers
+  short: Hybrid Attention
+  category: Persistent state
+  summary: Combine attention with linear, recurrent, convolutional or state-space mixers in one decoder.
+  mechanism: This guide uses an explicit ArchWatch definition. Mixing local and global softmax attention alone does
+    not satisfy it.
+  memory: Add growing or windowed attention cache to the fixed or recurrent state of the other mixers.
+  verify: Inspect the full layer schedule. Count each decoder layer once and keep nested operations separate.
+  flow:
+  - Published layer schedule
+  - Attention and recurrent mixers
+  - Combined decoder
+  source:
+    title: Kimi Linear report
+    url: https://arxiv.org/abs/2510.26692
+  rule:
+    field: layer_type_counts
+    nonempty: true
+  scope: Attention plus non-attention decoder mixer paths.
+  aliases: []
+  catalog: requested
+dsa:
+  title: DeepSeek sparse attention
+  short: DSA
+  category: Attention
+  summary: An indexer selects positions for a DeepSeek-style sparse attention path.
+  mechanism: The selector and the main attention operation have separate roles. Generic sparse attention is a broader
+    category.
+  memory: A selection budget does not establish how much history is retained. Include index keys when the cache
+    rules require them.
+  verify: Require an identified DSA/indexed-MLA path and its token budget. Do not label every top-k setting DSA.
+  flow:
+  - Indexer scores positions
+  - Select positions
+  - Sparse attention
+  source:
+    title: DeepSeek-V3.2 experimental card
+    url: https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp-Base
+  rule:
+    all:
+    - any:
+      - field: layer_type_counts.gated_dsa_mla
+        positive: true
+      - field: layer_type_counts.indexed_mla
+        positive: true
+    - field: dsa_index_topk
+      positive: true
+  scope: Identified DSA/indexed-MLA paths.
+  aliases:
+  - DeepSeek Sparse Attention
+  catalog: requested
+attention-residuals:
+  title: Attention residual connections
+  short: Attention Residuals
+  category: Residual connections
+  summary: Learn how earlier representations contribute through depth instead of accumulating every residual with
+    a fixed weight.
+  mechanism: Attention residuals select among preceding representations. Block variants group layers to reduce the
+    aggregation burden.
+  memory: Depth-wise aggregation and token-wise attention are different operations. A block-size setting does not
+    establish a runtime allocation.
+  verify: Check the residual block setting and the aggregation implementation. A generic residual-stream multiplier
+    is insufficient.
+  flow:
+  - Earlier block representations
+  - Depth-wise weighted aggregation
+  - Next block input
+  source:
+    title: Attention Residuals paper
+    url: https://arxiv.org/abs/2603.15031
+  rule:
+    field: attn_res_block_size
+    positive: true
+  scope: Configured block attention-residual aggregation.
+  aliases:
+  - AttnRes
+  catalog: requested
+latent-moe:
+  title: Latent expert computation
+  short: LatentMoE
+  category: Feed-forward
+  summary: A routed expert path operates through a lower-dimensional latent representation.
+  mechanism: The expert pool and latent projection describe different parts of the path. Preserve shared experts
+    and dense exceptions separately.
+  memory: Latent width affects expert computation and projections. Active expert parameters are not total weight
+    storage.
+  verify: Require a positive expert latent width together with routed experts; inspect the corresponding projection
+    tensors.
+  flow:
+  - Hidden representation
+  - Expert latent projection
+  - Routed expert computation
+  - Return to hidden width
+  source:
+    title: Kimi primary model files
+    url: https://huggingface.co/moonshotai/Kimi-K3.1-Pro
+  rule:
+    all:
+    - field: moe_latent_dim
+      positive: true
+    - field: moe_num_experts
+      positive: true
+  scope: Latent path of the routed experts.
+  aliases:
+  - Latent MoE
+  catalog: requested
+mtp:
+  title: Multi-token prediction modules
+  short: MTP
+  category: Prediction modules
+  summary: Additional prediction modules train or predict beyond the immediate next token.
+  mechanism: Training use and shipped module tensors are separate facts. Count released modules independently from
+    the main decoder.
+  memory: Keep MTP parameters separate under the counting convention. Do not automatically add them to every inference
+    estimate.
+  verify: Require a positive module count or parameter total. A key explicitly set to zero is not an enabled module.
+  flow:
+  - Decoder representations
+  - Additional prediction modules
+  - Future-token targets
+  source:
+    title: DeepSeek-V3 report
+    url: https://arxiv.org/abs/2412.19437
+  rule:
+    any:
+    - field: num_mtp_layers
+      positive: true
+    - field: params_mtp
+      positive: true
+  scope: Configured or shipped MTP modules, as specified by the evidence.
+  aliases:
+  - Multi-token prediction
+  catalog: requested
+kv-sharing:
+  title: Key-value cache sharing across layers
+  short: KV Sharing
+  category: Persistent state
+  summary: Multiple attention layers can reuse a key-value representation produced by another layer.
+  mechanism: The source-layer mapping defines reuse. Sharing index selections is a different mechanism.
+  memory: Cache accounting requires the actual producer/consumer schedule; a shared-layer count alone is insufficient.
+  verify: Inspect a complete source mapping and runtime cache updates before qualifying memory or graph rules.
+  flow:
+  - Producer layer
+  - Shared key-value representation
+  - Consumer layers
+  source:
+    title: Mistral primary model files
+    url: https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B
+  rule:
+    any:
+    - field: shared_kv_layers
+      positive: true
+    - field: kv_sharing
+      nonempty: true
+  scope: Cross-layer key/value reuse, not within-layer key/value tying.
+  aliases: []
+  catalog: requested
+looped-transformer:
+  title: Looped transformer blocks
+  short: Looped Transformer
+  category: Decoder structure
+  summary: Reuse a block of transformer layers across multiple recurrent passes.
+  mechanism: Parameter sharing through depth differs from storing separate layers for every pass. Cache behavior
+    depends on the recurrence design.
+  memory: Do not multiply stored parameters by pass count. Verify whether cache is shared or separate across passes.
+  verify: Require an explicit recurrent generation type and more than one pass, then inspect the shared-layer and
+    cache schedule.
+  flow:
+  - Input layers
+  - Repeated shared block
+  - Output layers
+  source:
+    title: Dory primary model files
+    url: https://huggingface.co/nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16
+  rule:
+    all:
+    - field: generation_type
+      equals: latent_recurrent
+    - field: recurrent_loops
+      greater_than: 1
+  scope: Repeated shared decoder block.
+  aliases:
+  - Recurrent transformer
+  catalog: requested
+qwen-sparse-attention:
+  title: Qwen sparse attention
+  short: Qwen Sparse Attention
+  category: Attention
+  summary: A family-specific sparse attention path with its own selection and grouping rules.
+  mechanism: Keep its indexer separate from recurrent layers.
+  memory: Its cache needs a qualified family-specific rule.
+  verify: Require the explicit layer kind; generic sparse or linear labels are insufficient.
+  flow:
+  - Indexer
+  - Selected groups
+  - Attention
+  source:
+    title: Qwen primary model card
+    url: https://huggingface.co/Qwen/Qwen3.8-Flash-Next
+  rule:
+    any:
+    - field: layer_type_counts.qwen_sparse_attention
+      positive: true
+  scope: Explicit Qwen sparse-attention layers.
+  aliases:
+  - QSA
+  catalog: requested
+ple:
+  title: Per-layer embeddings
+  short: PLE
+  category: Embeddings
+  summary: Inject an additional embedding representation at designated layers.
+  mechanism: Keep the layer schedule and embedding width.
+  memory: Additional embeddings are distinct from the main vocabulary table.
+  verify: Require dedicated PLE settings; do not substitute n-gram memory.
+  flow:
+  - Embedding path
+  - Designated layer
+  - Decoder stream
+  source:
+    title: Qwen primary model files
+    url: https://huggingface.co/Qwen/Qwen3.8-Flash-Next
+  rule:
+    field: per_layer_embeddings
+    nonempty: true
+  scope: Dedicated configured per-layer embedding path.
+  aliases:
+  - Per-layer embedding
+  catalog: requested
+csa-hca:
+  title: Compressed sparse and heavily compressed attention
+  short: CSA/HCA
+  category: Attention
+  summary: Two compression-and-attention variants used in the DeepSeek-V4 architecture.
+  mechanism: CSA combines compressed representations with sparse selection. HCA uses stronger compression with dense
+    attention over the compressed representation.
+  memory: Compression ratios, windows and retained representations need separate accounting. A ratio is not a complete
+    cache rule.
+  verify: Require explicit variant labels or a qualified family adapter. Preserve per-layer compression and selection
+    schedules.
+  flow:
+  - Sequence representations
+  - Variant-specific compression
+  - Sparse or dense attention
+  source:
+    title: DeepSeek-V4 model card
+    url: https://fe-static.deepseek.com/chat/transparency/deepseek-V4-model-card-EN.pdf
+  rule:
+    field: compressed_attention_types
+    nonempty: true
+  scope: Explicit compressed-attention variant schedule.
+  aliases:
+  - CSA
+  - HCA
+  catalog: requested
+mhc:
+  title: Manifold-constrained hyper-connections
+  short: mHC
+  category: Residual connections
+  summary: Constrain the mixing of multiple residual streams to a structured manifold.
+  mechanism: mHC adds constraints to hyper-connections. Multiple residual streams alone do not establish this constrained
+    mechanism.
+  memory: Residual-stream storage is separate from attention cache. Keep the active stream count and mixing implementation
+    explicit.
+  verify: Require an explicit mechanism declaration or operation-level proof. A generic multiplier or an unexplained
+    Sinkhorn setting alone is insufficient.
+  flow:
+  - Residual streams
+  - Constrained mixing
+  - Next representations
+  source:
+    title: mHC paper
+    url: https://arxiv.org/abs/2512.24880
+  rule:
+    field: residual_mechanism
+    equals: mhc
+  scope: Explicit manifold-constrained residual mechanism.
+  aliases:
+  - Manifold-constrained hyper-connections
+  catalog: requested
+index-sharing:
+  title: Shared attention index selections
+  short: IndexShare
+  category: Attention
+  summary: Reuse position-selection work across attention layers.
+  mechanism: The shared object is the index selection, not necessarily the key-value cache. Some configs declare
+    shared modes without naming every producer.
+  memory: Index reuse can reduce repeated selection work; it does not prove a particular cache reduction.
+  verify: Read the per-layer modes or complete source mapping. Do not expand a short anchor list without verified
+    semantics.
+  flow:
+  - Index producer
+  - Shared selections
+  - Attention consumers
+  source:
+    title: Mistral primary model files
+    url: https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B
+  rule:
+    field: index_sharing
+    nonempty: true
+  scope: Configured index reuse; unknown producer mappings remain unknown.
+  aliases:
+  - Index sharing
+  catalog: requested
+gated-residuals:
+  title: Gated residual streams
+  short: Gated Residuals
+  category: Residual connections
+  summary: Control contributions to residual streams with learned gates.
+  mechanism: Read and write gates have distinct roles.
+  memory: Stream count alone supplies no memory formula.
+  verify: Require an explicit residual mechanism; attention gates and generic hyper-connection counts are insufficient.
+  flow:
+  - Residual input
+  - Read/write gates
+  - Updated streams
+  source:
+    title: Qwen primary model card
+    url: https://huggingface.co/Qwen/Qwen3.8-Flash-Next
+  rule:
+    field: residual_mechanism
+    equals: gated_residual
+  scope: Explicit gated residual read/write mechanism.
+  aliases: []
+  catalog: requested
+attention-budgeting:
+  title: Layer-wise attention budgeting
+  short: Attention Budgeting
+  category: Attention
+  summary: Allocate different attention capacity to different layers or attention paths.
+  mechanism: A local/global design can choose different query-head counts for those paths. The budget refers to
+    architecture allocation, not an API request allowance.
+  memory: 'Compute and cache depend on each path: query-head allocation alone does not determine retained KV bytes.'
+  verify: Require explicit per-layer head allocation and path semantics. A generic top-k selector is not sufficient.
+  flow:
+  - Layer/path schedule
+  - Attention capacity allocation
+  - Per-path operations
+  source:
+    title: Laguna technical report
+    url: https://poolside.ai/assets/laguna/laguna-m1-xs2-technical-report.pdf
+  rule:
+    field: attention_budget
+    nonempty: true
+  scope: Explicit variable attention-head allocation.
+  aliases:
+  - Layer-wise attention budgeting
+  catalog: requested
+cca:
+  title: Compressed convolutional attention
+  short: CCA
+  category: Attention
+  summary: Perform attention on compressed query, key and value representations.
+  mechanism: CCA keeps the attention operation inside a shared latent space. The design also uses convolutional
+    mixing of query/key latents. Its grouped-query variant combines compression with head sharing.
+  memory: Cache accounting requires the retained latent widths and convolution state. No CCA runtime or cache
+    formula is qualified by this guide.
+  verify: Require an explicit mechanism identifier and inspect the primary report and implementation before adding
+    graph or memory rules.
+  flow:
+  - Compress query/key/value representations
+  - Convolutional latent mixing
+  - Attention in latent space
+  source:
+    title: Compressed Convolutional Attention paper
+    url: https://arxiv.org/abs/2510.04476
+  rule:
+    field: attention_mechanism
+    equals: cca
+  scope: Explicit CCA mechanism; detailed topology requires qualification.
+  aliases: []
+  catalog: requested
+polynorm:
+  title: Polynomial activation in expert paths
+  short: PolyNorm
+  category: Feed-forward
+  summary: A learned polynomial operation used in Motif feed-forward expert paths.
+  mechanism: The documented expert-specific variant learns coefficients per expert and replaces a SiLU gate. It
+    is distinct from decoder RMSNorm.
+  memory: Retain coefficient tensors and expert scope when counting parameters; the name alone supplies no cache
+    rule.
+  verify: Require the exact activation declaration and verify the polynomial variant in primary code.
+  flow:
+  - Expert input
+  - Learned polynomial operation
+  - Expert output
+  source:
+    title: Motif-3 primary model card
+    url: https://huggingface.co/Motif-Technologies/Motif-3
+  rule:
+    field: activation
+    equals: polynorm
+  scope: Explicit feed-forward PolyNorm activation.
+  aliases: []
+  catalog: requested

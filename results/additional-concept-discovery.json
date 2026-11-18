@@ -1,0 +1,1181 @@
+{
+  "candidates": [
+    {
+      "category": "published_signals",
+      "concept": "Multi-query attention (MQA)",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "derived:num_key_value_heads(1) vs num_attention_heads(4)"
+              ],
+              "field": "attention_type",
+              "source_links": [],
+              "status": "single source",
+              "value": "MQA"
+            },
+            {
+              "evidence": [
+                "config:num_attention_heads"
+              ],
+              "field": "num_attention_heads",
+              "source_links": [
+                "https://huggingface.co/google/gemma-3-1b-pt/blob/fcf18a2a879aab110ca39f8bffbccd5d49d8eb29/config.json"
+              ],
+              "status": "single source",
+              "value": 4
+            },
+            {
+              "evidence": [
+                "config:num_key_value_heads"
+              ],
+              "field": "num_kv_heads",
+              "source_links": [
+                "https://huggingface.co/google/gemma-3-1b-pt/blob/fcf18a2a879aab110ca39f8bffbccd5d49d8eb29/config.json"
+              ],
+              "status": "single source",
+              "value": 1
+            }
+          ],
+          "id": "google/gemma-3-1b-pt",
+          "model_state": "published",
+          "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29"
+        }
+      ],
+      "qualification": "A subtype of grouped-query attention with one KV head. Already explained in the GQA guide, but deserves an explicit subtype in model evidence.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Mamba-2 / structured state-space duality",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:hybrid_override_pattern"
+              ],
+              "field": "layer_type_counts",
+              "source_links": [
+                "https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "full_attention": 4,
+                "mamba2": 24,
+                "mlp": 24
+              }
+            },
+            {
+              "evidence": [
+                "config:ssm_state_size"
+              ],
+              "field": "mamba_state_size",
+              "source_links": [
+                "https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/config.json"
+              ],
+              "status": "single source",
+              "value": 128
+            },
+            {
+              "evidence": [
+                "config:mamba_head_dim"
+              ],
+              "field": "mamba_head_dim",
+              "source_links": [
+                "https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/config.json"
+              ],
+              "status": "single source",
+              "value": 64
+            }
+          ],
+          "id": "nvidia/Nemotron-H-8B-Base-8K",
+          "model_state": "published",
+          "source_commit": "94ea861e008c2dfced3e8e1302094024077aa04e"
+        }
+      ],
+      "qualification": "Already has an ArchWatch guide; absent from the supplied 28-name inventory. Keep Mamba state separate from attention KV cache.",
+      "reference": "https://arxiv.org/abs/2405.21060"
+    },
+    {
+      "category": "published_signals",
+      "concept": "Kimi Delta Attention (KDA)",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.linear_attn_config",
+                "card:layer_composition"
+              ],
+              "field": "layer_type_counts",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/README.md",
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+              ],
+              "status": "verified",
+              "value": {
+                "gated_dsa_mla": 24,
+                "kda_linear": 69
+              }
+            },
+            {
+              "evidence": [
+                "config:text_config.linear_attn_config.num_heads"
+              ],
+              "field": "linear_attn_num_heads",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+              ],
+              "status": "single source",
+              "value": 96
+            },
+            {
+              "evidence": [
+                "config:text_config.linear_attn_config.short_conv_kernel_size"
+              ],
+              "field": "linear_attn_conv_kernel",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+              ],
+              "status": "single source",
+              "value": 4
+            }
+          ],
+          "id": "moonshotai/Kimi-K3.1-Pro",
+          "model_state": "published",
+          "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e"
+        }
+      ],
+      "qualification": "A named linear-attention subtype, not a synonym for all hybrid attention. Already represented in diagrams; currently explained under the broader linear-attention guide.",
+      "reference": "https://arxiv.org/abs/2510.26692"
+    },
+    {
+      "category": "published_signals",
+      "concept": "SwiGLU / SiLU-gated feed-forward networks",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:hidden_act"
+              ],
+              "field": "activation",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3-0.6B-Base/blob/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/config.json"
+              ],
+              "status": "single source",
+              "value": "silu"
+            },
+            {
+              "evidence": [
+                "weights:FFN gate/up/down tensor layout"
+              ],
+              "field": "ffn_gated",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3-0.6B-Base/blob/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/model.safetensors"
+              ],
+              "status": "single source",
+              "value": true
+            }
+          ],
+          "id": "Qwen/Qwen3-0.6B-Base",
+          "model_state": "published",
+          "source_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+        }
+      ],
+      "qualification": "Derived candidate from the activation and gated tensor layout. Verify multiplication order and active implementation before giving a canonical operation label.",
+      "reference": "https://arxiv.org/abs/2002.05202"
+    },
+    {
+      "category": "published_signals",
+      "concept": "GEGLU-family / GELU-gated feed-forward networks",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:hidden_activation"
+              ],
+              "field": "activation",
+              "source_links": [
+                "https://huggingface.co/google/gemma-3-1b-pt/blob/fcf18a2a879aab110ca39f8bffbccd5d49d8eb29/config.json"
+              ],
+              "status": "single source",
+              "value": "gelu_pytorch_tanh"
+            },
+            {
+              "evidence": [
+                "weights:FFN gate/up/down tensor layout"
+              ],
+              "field": "ffn_gated",
+              "source_links": [
+                "https://huggingface.co/google/gemma-3-1b-pt/blob/fcf18a2a879aab110ca39f8bffbccd5d49d8eb29/model.safetensors"
+              ],
+              "status": "single source",
+              "value": true
+            }
+          ],
+          "id": "google/gemma-3-1b-pt",
+          "model_state": "published",
+          "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29"
+        }
+      ],
+      "qualification": "GELU-family activation plus gated FFN layout is a useful derived lead; retain the tanh approximation variant and verify implementation.",
+      "reference": "https://arxiv.org/abs/2002.05202"
+    },
+    {
+      "category": "published_signals",
+      "concept": "SiTU-GLU",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.hidden_act",
+                "card:activation"
+              ],
+              "field": "activation",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/README.md",
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+              ],
+              "status": "verified",
+              "value": "situ"
+            },
+            {
+              "evidence": [
+                "card:activation"
+              ],
+              "field": "activation_card_name",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/README.md"
+              ],
+              "status": "single source",
+              "value": "SiTU-GLU"
+            },
+            {
+              "evidence": [
+                "weights:FFN gate/up/down tensor layout"
+              ],
+              "field": "ffn_gated",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/model.safetensors.index.json"
+              ],
+              "status": "single source",
+              "value": true
+            }
+          ],
+          "id": "moonshotai/Kimi-K3.1-Pro",
+          "model_state": "published",
+          "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e"
+        }
+      ],
+      "qualification": "The card names SiTU-GLU. This must not be relabelled SiLU/SwiGLU.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "GELU activation variants",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:hidden_act"
+              ],
+              "field": "activation",
+              "source_links": [
+                "https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/config.json"
+              ],
+              "status": "single source",
+              "value": "gelu_new"
+            },
+            {
+              "evidence": [
+                "weights:FFN gate/up/down tensor layout"
+              ],
+              "field": "ffn_gated",
+              "source_links": [
+                "https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/model.safetensors.index.json"
+              ],
+              "status": "single source",
+              "value": false
+            }
+          ],
+          "id": "microsoft/phi-2",
+          "model_state": "published",
+          "source_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0"
+        },
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:hidden_activation"
+              ],
+              "field": "activation",
+              "source_links": [
+                "https://huggingface.co/google/gemma-3-1b-pt/blob/fcf18a2a879aab110ca39f8bffbccd5d49d8eb29/config.json"
+              ],
+              "status": "single source",
+              "value": "gelu_pytorch_tanh"
+            }
+          ],
+          "id": "google/gemma-3-1b-pt",
+          "model_state": "published",
+          "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29"
+        }
+      ],
+      "qualification": "Phi uses gelu_new while Gemma uses gelu_pytorch_tanh. Activation family, approximation and FFN gating are separate properties.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Squared ReLU (ReLU2)",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:mlp_hidden_act"
+              ],
+              "field": "activation",
+              "source_links": [
+                "https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/config.json"
+              ],
+              "status": "single source",
+              "value": "relu2"
+            },
+            {
+              "evidence": [
+                "config:mamba_hidden_act"
+              ],
+              "field": "mamba_activation",
+              "source_links": [
+                "https://huggingface.co/nvidia/Nemotron-H-8B-Base-8K/blob/94ea861e008c2dfced3e8e1302094024077aa04e/config.json"
+              ],
+              "status": "single source",
+              "value": "silu"
+            }
+          ],
+          "id": "nvidia/Nemotron-H-8B-Base-8K",
+          "model_state": "published",
+          "source_commit": "94ea861e008c2dfced3e8e1302094024077aa04e"
+        }
+      ],
+      "qualification": "The FFN says relu2 while the Mamba component says silu. Scope the tag to the component, not every activation in the model.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Sandwich normalization",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:use_sandwich_norm",
+                "weights:post-mixer/post-FFN norm tensors"
+              ],
+              "field": "sandwich_norm",
+              "source_links": [
+                "https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/config.json",
+                "https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/model.safetensors"
+              ],
+              "status": "verified",
+              "value": true
+            }
+          ],
+          "id": "LiquidAI/LFM3-1.7B-Base",
+          "model_state": "published",
+          "source_commit": "7bca5038823c0d0f14efe06439109354a10e014c"
+        },
+        {
+          "fields": [
+            {
+              "evidence": [
+                "weights:post-mixer/post-FFN norm tensors"
+              ],
+              "field": "sandwich_norm",
+              "source_links": [
+                "https://huggingface.co/google/gemma-3-1b-pt/blob/fcf18a2a879aab110ca39f8bffbccd5d49d8eb29/model.safetensors"
+              ],
+              "status": "single source",
+              "value": true
+            }
+          ],
+          "id": "google/gemma-3-1b-pt",
+          "model_state": "published",
+          "source_commit": "fcf18a2a879aab110ca39f8bffbccd5d49d8eb29"
+        }
+      ],
+      "qualification": "Normalization placement is already represented. It does not establish the normalization equation or imply RMSNorm by itself.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Parallel attention and MLP residual block",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "derived:PhiDecoderLayer parallel attention/MLP residual rule (Transformers v4.37.0)"
+              ],
+              "field": "block_layout",
+              "source_links": [],
+              "status": "single source",
+              "value": "parallel"
+            }
+          ],
+          "id": "microsoft/phi-2",
+          "model_state": "published",
+          "source_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0"
+        }
+      ],
+      "qualification": "Already represented as parallel. It is different from serial decoder sublayers and from running layers on parallel hardware.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Tied input/output embeddings",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:tie_word_embeddings"
+              ],
+              "field": "tied_embeddings",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3-0.6B-Base/blob/da87bfb608c14b7cf20ba1ce41287e8de496c0cd/config.json"
+              ],
+              "status": "single source",
+              "value": true
+            }
+          ],
+          "id": "Qwen/Qwen3-0.6B-Base",
+          "model_state": "published",
+          "source_commit": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+        }
+      ],
+      "qualification": "A storage/parameter-sharing property supported by existing checks; distinguish it from sharing embeddings between MTP and decoder modules.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Shared MoE experts",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:n_shared_experts"
+              ],
+              "field": "moe_shared_experts",
+              "source_links": [
+                "https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite/blob/604d5664dddd88a0433dbae533b7fe9472482de0/config.json"
+              ],
+              "status": "single source",
+              "value": 2
+            },
+            {
+              "evidence": [
+                "weights:shared expert gate rows"
+              ],
+              "field": "moe_shared_expert_intermediate",
+              "source_links": [
+                "https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite/blob/604d5664dddd88a0433dbae533b7fe9472482de0/model.safetensors.index.json"
+              ],
+              "status": "single source",
+              "value": 2816
+            }
+          ],
+          "id": "deepseek-ai/DeepSeek-V2-Lite",
+          "model_state": "published",
+          "source_commit": "604d5664dddd88a0433dbae533b7fe9472482de0"
+        },
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.num_shared_experts",
+                "card:moe_shared_experts"
+              ],
+              "field": "moe_shared_experts",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/README.md",
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+              ],
+              "status": "verified",
+              "value": 2
+            }
+          ],
+          "id": "moonshotai/Kimi-K3.1-Pro",
+          "model_state": "published",
+          "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e"
+        }
+      ],
+      "qualification": "A useful subtype of MoE. Shared experts are separate from top-k routed experts and latent expert projections.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Sigmoid expert routing",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.moe_router_activation_func"
+              ],
+              "field": "moe_router",
+              "source_links": [
+                "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+              ],
+              "status": "single source",
+              "value": "sigmoid"
+            }
+          ],
+          "id": "moonshotai/Kimi-K3.1-Pro",
+          "model_state": "published",
+          "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e"
+        }
+      ],
+      "qualification": "The router scoring function is not the attention gate or FFN activation. Normalization/top-k order still needs separate evidence.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "Partial rotary embeddings",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+              ],
+              "field": "rope",
+              "source_links": [
+                "https://huggingface.co/microsoft/phi-2/blob/810d367871c1d460086d9f82db8696f2e0a0fcd0/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "partial_rotary_factor": 0.4,
+                "rope_theta": 10000.0
+              }
+            }
+          ],
+          "id": "microsoft/phi-2",
+          "model_state": "published",
+          "source_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0"
+        },
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:rope_parameters"
+              ],
+              "field": "rope",
+              "source_links": [
+                "https://huggingface.co/LiquidAI/LFM3-1.7B-Base/blob/7bca5038823c0d0f14efe06439109354a10e014c/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "full_attention": {
+                  "partial_rotary_factor": 0.5,
+                  "rope_theta": 1000000.0,
+                  "rope_type": "default"
+                },
+                "sliding_attention": {
+                  "rope_theta": 10000,
+                  "rope_type": "default"
+                }
+              }
+            }
+          ],
+          "id": "LiquidAI/LFM3-1.7B-Base",
+          "model_state": "published",
+          "source_commit": "7bca5038823c0d0f14efe06439109354a10e014c"
+        }
+      ],
+      "qualification": "Record the fraction and attention path. Do not assume a local path uses the same fraction as a global path.",
+      "reference": null
+    },
+    {
+      "category": "published_signals",
+      "concept": "YaRN context extension",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+              ],
+              "field": "rope",
+              "source_links": [
+                "https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite/blob/604d5664dddd88a0433dbae533b7fe9472482de0/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "rope_theta": 10000,
+                "scaling": {
+                  "beta_fast": 32,
+                  "beta_slow": 1,
+                  "factor": 40,
+                  "mscale": 0.707,
+                  "mscale_all_dim": 0.707,
+                  "original_max_position_embeddings": 4096,
+                  "type": "yarn"
+                }
+              }
+            }
+          ],
+          "id": "deepseek-ai/DeepSeek-V2-Lite",
+          "model_state": "published",
+          "source_commit": "604d5664dddd88a0433dbae533b7fe9472482de0"
+        }
+      ],
+      "qualification": "Existing RoPE metadata identifies the extension type and settings; this is not measured long-context quality.",
+      "reference": "https://arxiv.org/abs/2309.00071"
+    },
+    {
+      "category": "published_signals",
+      "concept": "Llama-3 frequency-dependent RoPE scaling",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:rope_theta/rope_scaling/partial_rotary_factor/rope_local_base_freq (present keys)"
+              ],
+              "field": "rope",
+              "source_links": [
+                "https://huggingface.co/meta-llama/Llama-3.1-8B/blob/d04e592bb4f6aa9cfee91e2e20afa771667e1d4b/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "rope_theta": 500000.0,
+                "scaling": {
+                  "factor": 8.0,
+                  "high_freq_factor": 4.0,
+                  "low_freq_factor": 1.0,
+                  "original_max_position_embeddings": 8192,
+                  "rope_type": "llama3"
+                }
+              }
+            }
+          ],
+          "id": "meta-llama/Llama-3.1-8B",
+          "model_state": "published",
+          "source_commit": "d04e592bb4f6aa9cfee91e2e20afa771667e1d4b"
+        }
+      ],
+      "qualification": "Existing scaling metadata has the llama3 type and frequency factors. Treat it as a RoPE subtype, not another attention operator.",
+      "reference": null
+    },
+    {
+      "category": "held_signals",
+      "concept": "Gated DeltaNet",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.layer_types"
+              ],
+              "field": "layer_type_counts",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/812d96e10a0dd82b69d749e68693698cf6c36daa/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "gated_delta_net": 36,
+                "qwen_sparse_attention": 12
+              }
+            },
+            {
+              "evidence": [
+                "config:text_config.linear_num_key_heads"
+              ],
+              "field": "linear_num_key_heads",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/812d96e10a0dd82b69d749e68693698cf6c36daa/config.json"
+              ],
+              "status": "single source",
+              "value": 16
+            },
+            {
+              "evidence": [
+                "config:text_config.linear_num_value_heads"
+              ],
+              "field": "linear_num_value_heads",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/812d96e10a0dd82b69d749e68693698cf6c36daa/config.json"
+              ],
+              "status": "single source",
+              "value": 48
+            }
+          ],
+          "id": "Qwen/Qwen3.8-Flash-Next",
+          "model_state": "held",
+          "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa"
+        }
+      ],
+      "qualification": "Explicitly named in the pinned card and represented in a held architecture. Do not infer it from every linear_attention string.",
+      "reference": "https://arxiv.org/abs/2412.06464"
+    },
+    {
+      "category": "held_signals",
+      "concept": "Engram / hashed n-gram conditional memory",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.engram_layer_ids"
+              ],
+              "field": "ngram_layer_ids",
+              "source_links": [
+                "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017/blob/08c8657f02291e11b6f6b63e0e16014f8e748518/config.json"
+              ],
+              "status": "single source",
+              "value": [
+                1,
+                14
+              ]
+            }
+          ],
+          "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+          "model_state": "held",
+          "source_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518"
+        },
+        {
+          "config_fields": [
+            {
+              "path": "text_config.engram_max_ngram_size",
+              "value": 4
+            },
+            {
+              "path": "text_config.engram_head_dim",
+              "value": 256
+            },
+            {
+              "path": "text_config.engram_vocab_size",
+              "value": 16000000
+            }
+          ],
+          "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+          "model_state": "held",
+          "source_commit": "08c8657f02291e11b6f6b63e0e16014f8e748518",
+          "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017/blob/08c8657f02291e11b6f6b63e0e16014f8e748518/config.json"
+        }
+      ],
+      "qualification": "Layer IDs are extracted; memory addressing and module semantics still need qualification. Distinct from PLE and from no_repeat_ngram generation settings.",
+      "reference": "https://arxiv.org/abs/2601.07372"
+    },
+    {
+      "category": "held_signals",
+      "concept": "Block/discrete text diffusion",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:model_type (DiffusionGemma architecture)"
+              ],
+              "field": "generation_type",
+              "source_links": [
+                "https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/config.json"
+              ],
+              "status": "single source",
+              "value": "block_diffusion"
+            },
+            {
+              "evidence": [
+                "config:canvas_length"
+              ],
+              "field": "canvas_length",
+              "source_links": [
+                "https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/config.json"
+              ],
+              "status": "single source",
+              "value": 256
+            }
+          ],
+          "id": "google/diffusiongemma-26B-A4B-it",
+          "model_state": "held",
+          "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b"
+        }
+      ],
+      "qualification": "A different generation scheme, not a second attention type. Decoder/cache rules remain held.",
+      "reference": "https://ai.google.dev/gemma/docs/diffusiongemma"
+    },
+    {
+      "category": "held_signals",
+      "concept": "Interleaved multimodal RoPE (M-RoPE)",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.rope_parameters"
+              ],
+              "field": "rope",
+              "source_links": [
+                "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/812d96e10a0dd82b69d749e68693698cf6c36daa/config.json"
+              ],
+              "status": "single source",
+              "value": {
+                "mrope_interleaved": true,
+                "mrope_section": [
+                  11,
+                  11,
+                  10
+                ],
+                "partial_rotary_factor": 0.25,
+                "rope_theta": 10000000,
+                "rope_type": "default"
+              }
+            }
+          ],
+          "id": "Qwen/Qwen3.8-Flash-Next",
+          "model_state": "held",
+          "source_commit": "812d96e10a0dd82b69d749e68693698cf6c36daa"
+        }
+      ],
+      "qualification": "The metadata contains mrope_interleaved and section widths. Verify spatial/temporal coordinate semantics in code before a multimodal graph.",
+      "reference": null
+    },
+    {
+      "category": "held_signals",
+      "concept": "Different local/global attention head geometry",
+      "examples": [
+        {
+          "fields": [
+            {
+              "evidence": [
+                "config:text_config.head_dim"
+              ],
+              "field": "head_dim",
+              "source_links": [
+                "https://huggingface.co/google/gemma-4-26B-A4B/blob/24548b62aa021d562695c04aaf7758a1ea47990b/config.json"
+              ],
+              "status": "single source",
+              "value": 256
+            },
+            {
+              "evidence": [
+                "config:text_config.global_head_dim"
+              ],
+              "field": "global_head_dim",
+              "source_links": [
+                "https://huggingface.co/google/gemma-4-26B-A4B/blob/24548b62aa021d562695c04aaf7758a1ea47990b/config.json"
+              ],
+              "status": "single source",
+              "value": 512
+            },
+            {
+              "evidence": [
+                "config:text_config.num_key_value_heads"
+              ],
+              "field": "num_kv_heads",
+              "source_links": [
+                "https://huggingface.co/google/gemma-4-26B-A4B/blob/24548b62aa021d562695c04aaf7758a1ea47990b/config.json"
+              ],
+              "status": "single source",
+              "value": 8
+            },
+            {
+              "evidence": [
+                "config:text_config.num_global_key_value_heads"
+              ],
+              "field": "num_global_kv_heads",
+              "source_links": [
+                "https://huggingface.co/google/gemma-4-26B-A4B/blob/24548b62aa021d562695c04aaf7758a1ea47990b/config.json"
+              ],
+              "status": "single source",
+              "value": 2
+            }
+          ],
+          "id": "google/gemma-4-26B-A4B",
+          "model_state": "held",
+          "source_commit": "24548b62aa021d562695c04aaf7758a1ea47990b"
+        }
+      ],
+      "qualification": "A structural property affecting cache formulas, nested under the local/global attention concepts rather than counted as a new attention algorithm.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Vision patch merging / visual token compression",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "vision_config.mm_projector_type",
+              "value": "patchmergerv2"
+            },
+            {
+              "path": "vision_config.merge_kernel_size",
+              "value": [
+                2,
+                2
+              ]
+            },
+            {
+              "path": "vision_config.merge_type",
+              "value": "sd2_tpool"
+            }
+          ],
+          "id": "moonshotai/Kimi-K3.1-Pro",
+          "model_state": "published",
+          "source_commit": "d9e99b0792a5e93b78ea9bea62a68167e36ddd9e",
+          "source_url": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/d9e99b0792a5e93b78ea9bea62a68167e36ddd9e/config.json"
+        }
+      ],
+      "qualification": "Source names patchmergerv2 and a merge kernel. Extract and validate projector/token transformations; current decoder diagrams do not qualify this path.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Learned attention sinks",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "add_swa_attention_sink_bias",
+              "value": true
+            },
+            {
+              "path": "add_full_attention_sink_bias",
+              "value": false
+            }
+          ],
+          "id": "XiaomiMiMo/MiMo-V2-Flash",
+          "model_state": "cache_only",
+          "source_commit": "8b60b288e8325b7890fcdfe32bbb1d172c591a2d",
+          "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2-Flash/blob/8b60b288e8325b7890fcdfe32bbb1d172c591a2d/config.json"
+        }
+      ],
+      "qualification": "Pinned modeling_mimo_v2_flash.py lines 113 and 335-337 show sink use/creation. Learned softmax-denominator sink biases are different from retaining initial cached sink tokens.",
+      "reference": "https://cdn.openai.com/pdf/419b6906-9da6-406c-a19d-1bb078ac7637/oai_gpt-oss_model_card.pdf"
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Chunked attention",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "text_config.attention_chunk_size",
+              "value": 8192
+            }
+          ],
+          "id": "meta-llama/Llama-4-Maverick-17B-128E",
+          "model_state": "held",
+          "source_commit": "10751cb97a4d7c90f7ed89196b98eb8220cfa1c2",
+          "source_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E/blob/10751cb97a4d7c90f7ed89196b98eb8220cfa1c2/config.json"
+        },
+        {
+          "config_fields": [
+            {
+              "path": "attention_chunk_size",
+              "value": 128
+            }
+          ],
+          "id": "XiaomiMiMo/MiMo-V2-Flash",
+          "model_state": "cache_only",
+          "source_commit": "8b60b288e8325b7890fcdfe32bbb1d172c591a2d",
+          "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2-Flash/blob/8b60b288e8325b7890fcdfe32bbb1d172c591a2d/config.json"
+        }
+      ],
+      "qualification": "Verify mask/chunk boundary semantics. A generic chunk_size used by a recurrent kernel is not sufficient.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Attention/output logit softcapping",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "attn_logit_softcapping",
+              "value": 30.0
+            },
+            {
+              "path": "final_logit_softcapping",
+              "value": 50
+            }
+          ],
+          "id": "xai-org/grok-2",
+          "model_state": "cache_only",
+          "source_commit": "daf4395a80ad177386cfe39641b64fc12b1d70ed",
+          "source_url": "https://huggingface.co/xai-org/grok-2/blob/daf4395a80ad177386cfe39641b64fc12b1d70ed/config.json"
+        },
+        {
+          "config_fields": [
+            {
+              "path": "text_config.final_logit_softcapping",
+              "value": 30.0
+            }
+          ],
+          "id": "google/diffusiongemma-26B-A4B-it",
+          "model_state": "held",
+          "source_commit": "f7f5b7f5fa82ffc52addd066915886d497f5517b",
+          "source_url": "https://huggingface.co/google/diffusiongemma-26B-A4B-it/blob/f7f5b7f5fa82ffc52addd066915886d497f5517b/config.json"
+        }
+      ],
+      "qualification": "Separate attention logits from vocabulary/output logits, and require a positive enabled cap. Gemma-3-1b has null caps and must not receive this tag.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Clamped / bounded SwiGLU variants",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "swiglu_limit",
+              "value": 7.0
+            }
+          ],
+          "id": "openai/gpt-oss-20b",
+          "model_state": "cache_only",
+          "source_commit": "6cee5e81ee83917806bbde320786a8fb61efebee",
+          "source_url": "https://huggingface.co/openai/gpt-oss-20b/blob/6cee5e81ee83917806bbde320786a8fb61efebee/config.json"
+        }
+      ],
+      "qualification": "Inspect the exact activation, clamping and residual operation; a generic silu activation field cannot describe this variant.",
+      "reference": "https://cdn.openai.com/pdf/419b6906-9da6-406c-a19d-1bb078ac7637/oai_gpt-oss_model_card.pdf"
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Group-limited expert routing",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "n_group",
+              "value": 8
+            },
+            {
+              "path": "topk_group",
+              "value": 4
+            },
+            {
+              "path": "topk_method",
+              "value": "noaux_tc"
+            }
+          ],
+          "id": "deepseek-ai/DeepSeek-V3",
+          "model_state": "cache_only",
+          "source_commit": "e815299b0bcbac849fa540c768ef21845365c9eb",
+          "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json"
+        }
+      ],
+      "qualification": "The example has eight groups and selects four. A group count of one or a generic use_grouped_topk flag alone does not establish nontrivial group restriction.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Bias-corrected expert routing",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "topk_method",
+              "value": "noaux_tc"
+            },
+            {
+              "path": "scoring_func",
+              "value": "sigmoid"
+            }
+          ],
+          "id": "deepseek-ai/DeepSeek-V3",
+          "model_state": "cache_only",
+          "source_commit": "e815299b0bcbac849fa540c768ef21845365c9eb",
+          "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V3/blob/e815299b0bcbac849fa540c768ef21845365c9eb/config.json"
+        }
+      ],
+      "qualification": "Follow noaux_tc to e_score_correction_bias and the selection path in modeling_deepseek.py. This is a lead; do not infer a complete training/load-balancing method from the config string.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Embedding / residual rescaling",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "embedding_multiplier",
+              "value": 12.0
+            },
+            {
+              "path": "residual_multiplier",
+              "value": 0.175
+            },
+            {
+              "path": "attention_multiplier",
+              "value": 0.0078125
+            }
+          ],
+          "id": "ibm-granite/granite-4.1-30b",
+          "model_state": "cache_only",
+          "source_commit": "4fae6278f7132abf5e971f9de49ebbad09c54cce",
+          "source_url": "https://huggingface.co/ibm-granite/granite-4.1-30b/blob/4fae6278f7132abf5e971f9de49ebbad09c54cce/config.json"
+        }
+      ],
+      "qualification": "Explicit scaling is a structural/numerical property. Do not label it muP or a named training parameterization without the primary definition.",
+      "reference": null
+    },
+    {
+      "category": "raw_primary_leads",
+      "concept": "Matrix-memory LSTM (mLSTM / xLSTM)",
+      "examples": [
+        {
+          "config_fields": [
+            {
+              "path": "mlstm_round_up_to_multiple_of",
+              "value": 64
+            },
+            {
+              "path": "chunkwise_kernel",
+              "value": "chunkwise--triton_xl_chunk"
+            }
+          ],
+          "id": "NX-AI/xLSTM-7b",
+          "model_state": "cache_only",
+          "source_commit": "9dc507bd0939cf372a4a4f667335651d8e49dddb",
+          "source_url": "https://huggingface.co/NX-AI/xLSTM-7b/blob/9dc507bd0939cf372a4a4f667335651d8e49dddb/config.json"
+        }
+      ],
+      "qualification": "Inspect the official xLSTM implementation to establish its recurrent cell. Different from a looped Transformer and from an SSM.",
+      "reference": "https://arxiv.org/abs/2405.04517"
+    }
+  ],
+  "date": "2026-11-17",
+  "exclusions": [
+    "Generation settings such as temperature, top_k, no_repeat_ngram_size and do_sample are not architecture concepts.",
+    "A null/zero/disabled setting is not a positive concept match.",
+    "FP8/NVFP4/MXFP4 are storage/numerics concepts; keep them separate from operator topology.",
+    "A config clue alone is not cross-source verification.",
+    "No new model assignments, facts, extraction rules or diagram qualifications were published."
+  ],
+  "scope": {
+    "cache_only_revisions": "cached repo-info sha; not a fresh latest-release check",
+    "cached_repositories_are_not_admitted_models": true,
+    "held_repositories": 13,
+    "primary_records": 24,
+    "published_models": 13,
+    "raw_cached_config_repositories": 159,
+    "record_revisions": "pinned source_commit",
+    "scope_note": "Additional named mechanisms, subtypes and structural properties beyond the supplied 28-name list. Not 30 independent new algorithms. Mamba-2 already has a guide; MQA and KDA are partly explained under existing guides."
+  },
+  "summary": {
+    "held_signals": 5,
+    "published_signals": 16,
+    "raw_primary_leads": 9
+  }
+}

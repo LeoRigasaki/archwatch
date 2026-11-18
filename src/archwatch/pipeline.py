@@ -119,7 +119,7 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
     return {
         "id": repo,
         "source_commit": info["sha"],
-        "hub_created": info["created_at"],
+        "hub_created_at": info["created_at"],
         "license": info.get("license_name") or info.get("license"),
         "hub_metadata": {k: info.get(k) for k in ("base_model", "base_model_relation", "tags")},
         "analyzed_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),

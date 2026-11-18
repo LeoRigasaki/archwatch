@@ -1,0 +1,18 @@
+# Versioned parameter-counting conventions. Gold labels are frozen under the version that was current when
+# they were written and are never edited; an evaluation maps a record back to the label's version instead.
+current: 2
+versions:
+  1:
+    adopted: 2026-11-13
+    params_total: all stored tensors, including vision, auxiliary and MTP modules
+    params_active: per-token count; convention chosen to match the card
+  2:
+    adopted: 2026-11-16
+    params_total: all stored tensors except multi-token-prediction modules, which are published separately as params_mtp
+    params_active: per-token count; unselected experts, MTP, lookup tables and the input embedding excluded; output head counted
+    to_version_1:
+      params_total: params_total + params_mtp   # exact: both are published
+gold_sets:
+  evals/gold: 1
+  evals/heldout/newest-2026-11-14: 1
+  evals/heldout/late-access-2026-11-14: 1

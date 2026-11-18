@@ -279,8 +279,92 @@ def _sentences(text: str) -> list[str]:
     return [s for s in re.split(r"(?<=[.;])\s+", text) if s.strip()]
 
 
+def _clause_numbers_ok(clause_nums: set[str], change: dict) -> bool:
+    """Every number in a clause about one field must be that field's own before or after value."""
+    own = {_canonical(n) for n in _numbers(f"{change['before']} {change['after']}")}
+    exact = [e for e in change.get("exact", []) if isinstance(e, (int, float))]
+    if len(exact) == 2:  # the change itself ('rose by 178,526,208') is a claim about this field too
+        delta = abs(exact[1] - exact[0])
+        own.add(_canonical(str(delta)))
+        exact = exact + [delta]
+    for n in clause_nums:
+        if n in own:
+            continue
+        if any(_rounds_from(n, unit, exact) for unit in UNIT):
+            continue
+        return False
+    return True
+
+
+CLAIM_NUMBER = r"\d+(?:\.\d+)?\s*(?:KB|MB|K|M|B|T)?\b"
+CLAIM_ALIASES = {
+    "number of layers": ("number of layers", "layers"),
+    "attention heads": ("attention heads", "query heads"),
+    "key-value heads": ("key-value heads", "kv heads"),
+    "growing cache per token": ("growing cache per token", "cache per token"),
+}
+
+
+def _matches_exact_claim(token: str, expected: float) -> bool:
+    match = re.fullmatch(r"(\d+(?:\.\d+)?)\s*(KB|MB|K|M|B|T)?", token.strip())
+    if not match:
+        return False
+    number, unit = match.groups()
+    return _rounds_from(number, unit, [expected]) if unit else float(number) == expected
+
+
+def _claim_role_problems(clause: str, change: dict) -> list[str]:
+    """Bind an ordered transition and its delta to one scalar field, including the stated unit."""
+    exact = change.get("exact", [])
+    if len(exact) != 2 or any(isinstance(v, bool) or not isinstance(v, (int, float)) for v in exact):
+        return []
+    before, after = exact
+    problems = []
+    transition = re.search(rf"(?:\bfrom\s+)?({CLAIM_NUMBER})\s*(?:\bto\b|→|->)\s*({CLAIM_NUMBER})", clause)
+    if transition and not (_matches_exact_claim(transition[1], before) and _matches_exact_claim(transition[2], after)):
+        problems.append(f"{change['what']}: before/after values are reversed or do not match the field")
+    delta = re.search(rf"\bby\s+({CLAIM_NUMBER})", clause)
+    if delta and not _matches_exact_claim(delta[1], abs(after - before)):
+        problems.append(f"{change['what']}: stated delta does not match this field's change")
+    if transition or delta:
+        wording = clause
+        for alias in CLAIM_ALIASES.get(change["what"], (change["what"],)):
+            wording = re.sub(re.escape(alias), "", wording, flags=re.I)
+        up, down = bool(UP.search(wording)), bool(DOWN.search(wording))
+        if (up and not down and after < before) or (down and not up and after > before):
+            problems.append(f"{change['what']}: direction contradicts this field's change")
+    return problems
+
+
+def field_claim_problems(text: str, data: dict) -> list[str]:
+    """Check each claim as field + before + after together: a clause naming a changed field may only carry that
+    field's own values ('attention heads 32 to 24' is rejected even if 24 is another field's value)."""
+    problems = []
+    text = re.sub(r"(?<=\d),(?=\d{3}(?!\d))", "", text)
+    for sentence in _sentences(text):
+        for clause in re.split(r",(?!\d)|;|\band\b|\bwhile\b|\bwhereas\b", sentence):
+            low = clause.lower()
+            matches = [
+                (len(alias), index, c)
+                for index, c in enumerate(data["changes"])
+                for alias in CLAIM_ALIASES.get(c["what"], (c["what"].lower(),))
+                if re.search(rf"\b{re.escape(alias)}\b", low)
+            ]
+            if not matches:
+                continue
+            change = max(matches, key=lambda item: (item[0], -item[1]))[2]
+            nums = {_canonical(n) for n in _numbers(clause)}
+            if nums and not _clause_numbers_ok(nums, change):
+                problems.append(
+                    f'{change["what"]}: "{clause.strip()}" does not match {change["before"]} to {change["after"]}'
+                )
+            problems += _claim_role_problems(clause, change)
+    return problems
+
+
 def check(text: str, data: dict, *, max_words: int) -> dict:
     problems = [f"number {n} does not match any value in the diff" for n in unverified_numbers(text, data)]
+    problems += field_claim_problems(text, data)
     problems += [
         f'claim word "{w}" is outside the diff' for w in sorted({m.group(0).lower() for m in BANNED.finditer(text)})
     ]

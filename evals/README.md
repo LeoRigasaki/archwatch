@@ -1,6 +1,6 @@
 # Primary-source development labels
 
-`gold/` contains one manually transcribed YAML label for each of the ten core publishers in `config/backfill.yaml`. Each label pins its config, model card, weight files and representative header shapes to the source commit. Labels were committed before the family fixes, in commit `fad28a0`; they were not generated from `data/models`, extractor results or calculator output.
+`gold/` contains one manually transcribed YAML label for each of the ten core publishers in `config/backfill.yaml`. Each label pins its config, model card, weight files and representative header shapes to the source commit. Labels were committed before the family fixes, in commit `0fa673f`; they were not generated from `data/models`, extractor results or calculator output.
 
 The assistant inspected the primary configs/cards and raw safetensors header shapes, then entered expected values explicitly. Parameter totals use an independent shape sum, excluding scales and unpacking the supported four-bit tensors. This is assistant manual curation, **not owner/human review**: every label has `human_reviewed: false`. A reviewer should confirm each expectation and the scope notes against those links before accepting it as a trusted benchmark.
 

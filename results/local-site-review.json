@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-18",
+  "branch": "main",
+  "head": "e7bb20b49b586dbc844be69fe754811c0a31ce5d",
+  "published_models": 13,
+  "held_models": 13,
+  "html_pages": 50,
+  "concept_guides": 32,
+  "local_links_checked": 1231,
+  "missing_local_links": [],
+  "repeat_build_bytes_and_mtimes_identical": true,
+  "frozen_evidence_changed": false,
+  "validation": {
+    "pytest": "318 passed",
+    "ruff": "passed",
+    "browser_viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "first_mobile_card_y_px": 764,
+    "horizontal_overflow": false,
+    "provider_calls": 0
+  },
+  "original_published_values_unchanged": true,
+  "optional_concept_enrichment": "results/concept-implementation.json"
+}

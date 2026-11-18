@@ -1,6 +1,7 @@
 """The compare tool: data written from published values only, shareable URL state, chart numbers = calculator."""
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -41,6 +42,9 @@ def test_json_holds_published_values_only():
             assert shown == site.display(field, pub[field])
         assert m["layers"] == pub["layer_types"] and m["counts"] == pub["layer_type_counts"]
         assert m["params"]["total"] == pub["params_total"] and m["context"] == pub["context_length"]
+        if set(pub["layer_types"]) & site.MLA_KINDS:
+            assert "KV latent width" in m["derived"]["attention"][0]
+            assert "key-value)" not in m["derived"]["attention"][0]
         for field in in_review:
             assert field not in m["fields"]
 
@@ -111,7 +115,7 @@ def test_pair_pages_are_prefilled_and_the_tool_works_without_js_as_a_list():
         assert f'data-a="{s["a"]}" data-b="{s["b"]}"' in page
     index = (SITE / "compare/index.html").read_text()
     assert "<noscript>" in index and f'href="../compare/{preds[0]["b"]}.html"' in index
-    assert 'src="../compare.js"' in index
+    assert re.search(r'src="\.\./compare\.js\?v=[0-9a-f]{12}"', index)
     js = (SITE / "compare.js").read_text()
     assert "http" not in js.replace("http://www.w3.org/2000/svg", "")  # no external requests from the tool
     whys = {s["why"] for s in d["suggested"]}

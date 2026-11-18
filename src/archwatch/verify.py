@@ -9,6 +9,8 @@ Only fields with confidence >= 0.7 are published; conflicts are listed for a hum
 
 from __future__ import annotations
 
+from .concept_extract import FIELDS as CONCEPT_FIELDS
+
 PUBLISH_THRESHOLD = 0.7
 
 CARD_LAYER_NAMES = {
@@ -367,6 +369,8 @@ def verify(
                 [w(active["text_active_non_embedding"], "active weights without input embedding and output head")],
             )
         )
+    if "release_date" in card:  # only a date the model's own card states; Hub creation time is stored apart
+        out.append(check("release_date", [k("release_date")]))
     if "vision_params" in card:
         out.append(
             check(
@@ -428,7 +432,7 @@ def verify(
         "attn_res_block_size",
     )
     checked = {r["field"] for r in out}
-    for field in rendering_fields:
+    for field in (*rendering_fields, *CONCEPT_FIELDS):
         if (field in V or field in cf) and field not in checked:
             out.append(check(field, [c(field), cd(field)]))
     if wcount:

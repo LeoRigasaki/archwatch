@@ -1,7 +1,7 @@
 {
  "id": "deepseek-ai/DeepSeek-V2-Lite",
  "source_commit": "604d5664dddd88a0433dbae533b7fe9472482de0",
- "hub_created": "2024-05-15T05:31:53+00:00",
+ "hub_created_at": "2024-05-15T05:31:53+00:00",
  "license": "deepseek",
  "hub_metadata": {
   "base_model": null,
@@ -441,6 +441,31 @@
    "modeling_code_in_repo": {
     "value": true,
     "evidence": "repo file list"
+   },
+   "normalization_modules": {
+    "value": [
+     {
+      "kind": "RMSNorm",
+      "scope": "decoder",
+      "module": "DeepseekV2DecoderLayer.input_layernorm",
+      "implementation": "DeepseekV2RMSNorm",
+      "formula_line": 107,
+      "call_line": 1216
+     },
+     {
+      "kind": "RMSNorm",
+      "scope": "decoder",
+      "module": "DeepseekV2DecoderLayer.post_attention_layernorm",
+      "implementation": "DeepseekV2RMSNorm",
+      "formula_line": 107,
+      "call_line": 1219
+     }
+    ],
+    "evidence": "code:modeling_deepseek.py#L107"
+   },
+   "normalization_type": {
+    "value": "RMSNorm",
+    "evidence": "code:modeling_deepseek.py#L107"
    }
   }
  },
@@ -1320,6 +1345,66 @@
      "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
     }
    ]
+  },
+  {
+   "field": "normalization_modules",
+   "value": [
+    {
+     "kind": "RMSNorm",
+     "scope": "decoder",
+     "module": "DeepseekV2DecoderLayer.input_layernorm",
+     "implementation": "DeepseekV2RMSNorm",
+     "formula_line": 107,
+     "call_line": 1216
+    },
+    {
+     "kind": "RMSNorm",
+     "scope": "decoder",
+     "module": "DeepseekV2DecoderLayer.post_attention_layernorm",
+     "implementation": "DeepseekV2RMSNorm",
+     "formula_line": 107,
+     "call_line": 1219
+    }
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      {
+       "kind": "RMSNorm",
+       "scope": "decoder",
+       "module": "DeepseekV2DecoderLayer.input_layernorm",
+       "implementation": "DeepseekV2RMSNorm",
+       "formula_line": 107,
+       "call_line": 1216
+      },
+      {
+       "kind": "RMSNorm",
+       "scope": "decoder",
+       "module": "DeepseekV2DecoderLayer.post_attention_layernorm",
+       "implementation": "DeepseekV2RMSNorm",
+       "formula_line": 107,
+       "call_line": 1219
+      }
+     ],
+     "evidence": "code:modeling_deepseek.py#L107"
+    }
+   ]
+  },
+  {
+   "field": "normalization_type",
+   "value": "RMSNorm",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "RMSNorm",
+     "evidence": "code:modeling_deepseek.py#L107"
+    }
+   ]
   }
  ],
  "published": {
@@ -1535,7 +1620,26 @@
      2048
     ]
    }
-  }
+  },
+  "normalization_modules": [
+   {
+    "kind": "RMSNorm",
+    "scope": "decoder",
+    "module": "DeepseekV2DecoderLayer.input_layernorm",
+    "implementation": "DeepseekV2RMSNorm",
+    "formula_line": 107,
+    "call_line": 1216
+   },
+   {
+    "kind": "RMSNorm",
+    "scope": "decoder",
+    "module": "DeepseekV2DecoderLayer.post_attention_layernorm",
+    "implementation": "DeepseekV2RMSNorm",
+    "formula_line": 107,
+    "call_line": 1219
+   }
+  ],
+  "normalization_type": "RMSNorm"
  },
  "review_queue": [],
  "unchecked_notes": [

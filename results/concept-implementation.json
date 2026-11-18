@@ -1,0 +1,294 @@
+{
+  "date": "2026-11-18",
+  "branch": "main",
+  "head": "e7bb20b49b586dbc844be69fe754811c0a31ce5d",
+  "registry_concepts": 32,
+  "requested_concepts": 28,
+  "published_models": 13,
+  "held_models": 13,
+  "requested_with_published_matches": [
+    "attention-residuals",
+    "dsa",
+    "gated-attention",
+    "gqa",
+    "hybrid-attention",
+    "latent-moe",
+    "mha",
+    "mla",
+    "moe",
+    "nope",
+    "qk-norm",
+    "rmsnorm",
+    "rope",
+    "short-convolution",
+    "silu",
+    "sliding-window"
+  ],
+  "requested_with_held_matches_only": [
+    "index-sharing",
+    "kv-sharing",
+    "looped-transformer",
+    "mtp",
+    "ple",
+    "qwen-sparse-attention"
+  ],
+  "requested_without_qualified_record_matches": [
+    "attention-budgeting",
+    "cca",
+    "csa-hca",
+    "gated-residuals",
+    "mhc",
+    "polynorm"
+  ],
+  "per_model": {
+    "LiquidAI/LFM2.5-24B-A2B-Base": {
+      "concepts": [
+        "gqa",
+        "moe",
+        "short-convolution",
+        "kv-cache",
+        "rope",
+        "hybrid-attention"
+      ],
+      "evidence_statuses": {
+        "single source": 6
+      }
+    },
+    "LiquidAI/LFM3-1.7B-Base": {
+      "concepts": [
+        "gqa",
+        "sliding-window",
+        "short-convolution",
+        "kv-cache",
+        "rmsnorm",
+        "qk-norm",
+        "rope",
+        "silu",
+        "gated-attention",
+        "hybrid-attention"
+      ],
+      "evidence_statuses": {
+        "single source": 5,
+        "verified": 5
+      }
+    },
+    "Qwen/Qwen3-0.6B-Base": {
+      "concepts": [
+        "gqa",
+        "kv-cache",
+        "qk-norm",
+        "rope",
+        "silu"
+      ],
+      "evidence_statuses": {
+        "single source": 5
+      }
+    },
+    "deepseek-ai/DeepSeek-V2-Lite": {
+      "concepts": [
+        "moe",
+        "mla",
+        "kv-cache",
+        "rmsnorm",
+        "rope",
+        "silu"
+      ],
+      "evidence_statuses": {
+        "single source": 6
+      }
+    },
+    "google/gemma-3-1b-pt": {
+      "concepts": [
+        "gqa",
+        "sliding-window",
+        "kv-cache",
+        "qk-norm",
+        "rope"
+      ],
+      "evidence_statuses": {
+        "single source": 5
+      }
+    },
+    "meta-llama/Llama-3.1-8B": {
+      "concepts": [
+        "gqa",
+        "kv-cache",
+        "rope",
+        "silu"
+      ],
+      "evidence_statuses": {
+        "single source": 4
+      }
+    },
+    "microsoft/Mage-VL": {
+      "concepts": [
+        "gqa",
+        "kv-cache",
+        "qk-norm",
+        "rope",
+        "silu"
+      ],
+      "evidence_statuses": {
+        "single source": 5
+      }
+    },
+    "microsoft/phi-2": {
+      "concepts": [
+        "mha",
+        "kv-cache",
+        "rope"
+      ],
+      "evidence_statuses": {
+        "single source": 3
+      }
+    },
+    "mistralai/Mistral-7B-v0.1": {
+      "concepts": [
+        "gqa",
+        "sliding-window",
+        "kv-cache",
+        "rope",
+        "silu"
+      ],
+      "evidence_statuses": {
+        "single source": 5
+      }
+    },
+    "moonshotai/Kimi-K3": {
+      "concepts": [
+        "moe",
+        "mla",
+        "linear-attention",
+        "short-convolution",
+        "kv-cache",
+        "nope",
+        "gated-attention",
+        "hybrid-attention",
+        "attention-residuals",
+        "latent-moe"
+      ],
+      "evidence_statuses": {
+        "verified": 6,
+        "single source": 4
+      }
+    },
+    "moonshotai/Kimi-K3.1-Pro": {
+      "concepts": [
+        "moe",
+        "mla",
+        "linear-attention",
+        "sparse-attention",
+        "short-convolution",
+        "kv-cache",
+        "nope",
+        "gated-attention",
+        "hybrid-attention",
+        "dsa",
+        "attention-residuals",
+        "latent-moe"
+      ],
+      "evidence_statuses": {
+        "verified": 8,
+        "single source": 4
+      }
+    },
+    "nvidia/Nemotron-H-8B-Base-8K": {
+      "concepts": [
+        "gqa",
+        "mamba2",
+        "kv-cache",
+        "hybrid-attention"
+      ],
+      "evidence_statuses": {
+        "single source": 4
+      }
+    },
+    "zai-org/GLM-4-9B-0414": {
+      "concepts": [
+        "gqa",
+        "kv-cache",
+        "rope",
+        "silu"
+      ],
+      "evidence_statuses": {
+        "single source": 4
+      }
+    }
+  },
+  "optional_fields_added": {
+    "LiquidAI/LFM3-1.7B-Base": [
+      "normalization_modules",
+      "normalization_type"
+    ],
+    "Qwen/Qwen3.8-Flash-Next": [
+      "per_layer_embeddings"
+    ],
+    "zai-org/GLM-5.2": [
+      "index_sharing"
+    ],
+    "deepseek-ai/DeepSeek-V2-Lite": [
+      "normalization_modules",
+      "normalization_type"
+    ],
+    "mistralai/Mistral-Large-4-1T-A52B": [
+      "index_sharing",
+      "kv_sharing"
+    ]
+  },
+  "original_published_values_unchanged": true,
+  "frozen_evidence_and_generated_svgs_unchanged": true,
+  "approved_generated_diagrams": 5,
+  "worked_lessons": 32,
+  "original_teaching_svgs": 32,
+  "interactive_labs": 5,
+  "python_illustrations": 3,
+  "lesson_word_counts": {
+    "attention-budgeting": 359,
+    "attention-residuals": 338,
+    "cca": 409,
+    "csa-hca": 358,
+    "dsa": 371,
+    "gated-attention": 343,
+    "gated-residuals": 329,
+    "gqa": 652,
+    "hybrid-attention": 365,
+    "index-sharing": 346,
+    "kv-cache": 558,
+    "kv-sharing": 353,
+    "latent-moe": 395,
+    "linear-attention": 426,
+    "looped-transformer": 356,
+    "mamba2": 397,
+    "mha": 632,
+    "mhc": 352,
+    "mla": 438,
+    "moe": 454,
+    "mtp": 375,
+    "nope": 401,
+    "ple": 319,
+    "polynorm": 333,
+    "qk-norm": 366,
+    "qwen-sparse-attention": 309,
+    "rmsnorm": 438,
+    "rope": 341,
+    "short-convolution": 425,
+    "silu": 298,
+    "sliding-window": 540,
+    "sparse-attention": 403
+  },
+  "html_pages": 50,
+  "local_links_checked": 1231,
+  "missing_local_links": [],
+  "repeat_build_bytes_and_mtimes_identical": true,
+  "provider_generation_calls": 0,
+  "validation": {
+    "pytest": "318 passed",
+    "ruff": "passed",
+    "javascript_syntax": "passed",
+    "git_whitespace": "passed",
+    "chrome_compare_and_labs": "passed",
+    "desktop_viewport": "1440x1100",
+    "mobile_viewport": "390x844",
+    "horizontal_overflow_in_checked_pages": false
+  }
+}

@@ -1,6 +1,6 @@
 id: deepseek-ai/DeepSeek-V2-Lite
 source_commit: 604d5664dddd88a0433dbae533b7fe9472482de0
-hub_created: '2024-05-15T05:31:53+00:00'
+hub_created_at: '2024-05-15T05:31:53+00:00'
 license: deepseek
 analyzed_at: '2026-11-15T18:08:06+00:00'
 published:
@@ -175,6 +175,20 @@ published:
       - 2048
       norm.weight:
       - 2048
+  normalization_modules:
+  - kind: RMSNorm
+    scope: decoder
+    module: DeepseekV2DecoderLayer.input_layernorm
+    implementation: DeepseekV2RMSNorm
+    formula_line: 107
+    call_line: 1216
+  - kind: RMSNorm
+    scope: decoder
+    module: DeepseekV2DecoderLayer.post_attention_layernorm
+    implementation: DeepseekV2RMSNorm
+    formula_line: 107
+    call_line: 1219
+  normalization_type: RMSNorm
 review_queue: []
 unchecked_notes:
 - 'Config keys not consumed by the extractor (including metadata/defaults): attention_bias,
