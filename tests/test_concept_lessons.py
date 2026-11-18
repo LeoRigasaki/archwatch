@@ -220,3 +220,32 @@ def test_pitfalls_are_specific_and_no_guide_hedges():
         text = json.dumps([concepts[key], lessons[key]], ensure_ascii=False)
         assert not re.search(HEDGES, text, re.I), (key, re.search(HEDGES, text, re.I).group(0))
         assert concepts[key]["reviewed"] is False
+
+
+def test_rmsnorm_count_states_why_qk_norms_are_excluded():
+    from archwatch import weights
+
+    site = builder()
+    published, _, _ = site.inventory()
+    worked = site.concept_examples.worked(site.lessons()["rmsnorm"]["example"], published)
+    checks = {label: (ours, ref) for label, ours, ref in worked["checks"]}
+    assert checks["decoder norm parameters"] == (198_656, 198_656)
+    assert checks["q/k norm parameters, counted with attention"] == (2_816, 2_816)  # 2 x 128 x 11 attention layers
+    # the record files q_norm/k_norm under attention, so the decoder-norm count leaves them out on purpose
+    assert weights._component("model.layers.2.self_attn.q_norm.weight") == "attention_or_linear_mixer"
+    assert weights._component("model.layers.2.operator_norm.weight") == "norms"
+    assert any(step.startswith("Not included: q_norm and k_norm") and "201,472" in step for step in worked["steps"])
+
+
+def test_concept_index_lists_published_guides_first_and_tags_the_rest():
+    import re
+
+    _, hits = published_hits()
+    index = (SITE / "concepts/index.html").read_text()
+    cards = re.findall(r'<li data-published="(\d)".*?href="([^"]+)\.html".*?</li>', index)
+    flags = [flag for flag, _ in cards]
+    assert len(cards) == 32 and flags == sorted(flags, reverse=True) and flags.count("1") == 20
+    for flag, key in cards:
+        card = index.split(f'href="{key}.html"')[1].split("</li>")[0]
+        assert (key in hits) == (flag == "1"), key
+        assert ("no published model yet" in card) == (key not in hits), key

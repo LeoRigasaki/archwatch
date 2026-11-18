@@ -1461,9 +1461,17 @@ def guide_pages(published):
     for key, item in guide.items():
         draft = "" if item["reviewed"] else DRAFT
         matches = [(stem, rec, pub) for stem, rec, pub in published.values() if key in model_matches[stem]]
-        state = f"{len(matches)} published examples" if matches else "No qualified published example yet"
+        state = (
+            f'<span class="mono">{len(matches)} published example{"s" if len(matches) != 1 else ""}</span>'
+            if matches
+            else '<span class="nopub-tag">no published model yet</span>'
+        )
         cards.append(
-            f'''<li data-concept="{e(" ".join([item["title"], item["short"], *item.get("aliases", [])]).lower())}" data-category="{e(item["category"])}"><a class="guidecard" href="{key}.html"><span class="eyebrow">{e(item["category"])}{draft}</span><h2>{e(item["title"])} <span>↗</span></h2><p>{e(item["summary"])}</p><span class="mono">{e(state)}</span></a></li>'''
+            (
+                not matches,
+                len(cards),
+                f'''<li data-published="{"1" if matches else "0"}" data-concept="{e(" ".join([item["title"], item["short"], *item.get("aliases", [])]).lower())}" data-category="{e(item["category"])}"><a class="guidecard" href="{key}.html"><span class="eyebrow">{e(item["category"])}{draft}</span><h2>{e(item["title"])} <span>↗</span></h2><p>{e(item["summary"])}</p>{state}</a></li>''',
+            )
         )
         models = "".join(
             f'<li><a href="../models/{e(stem)}.html#concept-{key}"><b>{e(rec["id"].split("/")[-1])}</b><span>{e(model_matches[stem][key]["scope"])}</span><span>{e(STATUS_WORDS[model_matches[stem][key]["status"]])} · inspect supporting fields →</span></a></li>'
@@ -1482,7 +1490,7 @@ def guide_pages(published):
         f'<option value="{e(category)}">{e(category)}</option>'
         for category in sorted({item["category"] for item in guide.values()})
     )
-    body = f"""<p class="eyebrow">The concept guide</p><h1>Follow the moving parts.</h1><p class="lead">{len(guide)} concepts and companion topics. Follow a mechanism from its explanation to a matching rule, then inspect the primary evidence in a published model.</p><p class="hint">Guides cover more mechanisms than the current model collection. An empty example list means not yet qualified, not absent.</p><div class="concept-filters"><label for="concept-search">Find a concept<input type="search" id="concept-search" placeholder="Try RoPE, MTP, normalization…"></label><label for="concept-category">Category<select id="concept-category"><option value="">All categories</option>{categories}</select></label></div><p class="hint" id="concept-count" role="status" aria-live="polite">{len(guide)} guides</p><ul class="guide-grid">{"".join(cards)}</ul><p id="concept-empty" hidden>No guide matches this search. Try a different name or category.</p><p><a download href="../data/concepts.json">Download the concept registry and rules ↓</a></p>"""
+    body = f"""<p class="eyebrow">The concept guide</p><h1>Follow the moving parts.</h1><p class="lead">{len(guide)} concepts and companion topics. Follow a mechanism from its explanation to a matching rule, then inspect the primary evidence in a published model.</p><p class="hint">Guides cover more mechanisms than the current model collection. An empty example list means not yet qualified, not absent.</p><div class="concept-filters"><label for="concept-search">Find a concept<input type="search" id="concept-search" placeholder="Try RoPE, MTP, normalization…"></label><label for="concept-category">Category<select id="concept-category"><option value="">All categories</option>{categories}</select></label></div><p class="hint" id="concept-count" role="status" aria-live="polite">{len(guide)} guides</p><ul class="guide-grid">{"".join(card for _, _, card in sorted(cards))}</ul><p id="concept-empty" hidden>No guide matches this search. Try a different name or category.</p><p><a download href="../data/concepts.json">Download the concept registry and rules ↓</a></p>"""
     pages["index.html"] = frame("LLM architecture concept guide · ArchWatch", body, depth=1, active="concepts")
     return pages
 

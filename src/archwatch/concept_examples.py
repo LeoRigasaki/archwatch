@@ -447,7 +447,16 @@ def hybrid_attention(record):
 def rmsnorm(record):
     v, used = approved(
         record,
-        ["normalization_type", "hidden_size", "num_layers", "params_total", "block_shapes", "parameter_components"],
+        [
+            "normalization_type",
+            "hidden_size",
+            "head_dim",
+            "num_layers",
+            "layer_type_counts",
+            "params_total",
+            "block_shapes",
+            "parameter_components",
+        ],
     )
     hidden = v["hidden_size"]
     per_layer = {}
@@ -462,6 +471,15 @@ def rmsnorm(record):
         1 for t, shape in v["block_shapes"]["globals"].items() if t.endswith("norm.weight") and shape == [hidden]
     )
     total = (count * layers + final) * hidden
+    qk, qk_layers = 0, 0
+    for group in v["block_shapes"]["mixers"].values():
+        inside = [
+            shape for t, shape in group["tensors"].items() if t.startswith("self_attn") and t.endswith("norm.weight")
+        ]
+        if inside:
+            qk += group["layers"] * sum(_prod(shape) for shape in inside)
+            qk_layers += group["layers"]
+    attention_layers = sum(n for kind, n in v["layer_type_counts"].items() if "attention" in kind)
     out = dict(
         hidden=f"{hidden:,}",
         count=count,
@@ -470,8 +488,13 @@ def rmsnorm(record):
         norms=count * layers + final,
         total=f"{total:,}",
         share=f"{100 * total / v['params_total']:.3f}",
+        qk=f"{qk:,}",
+        qk_layers=qk_layers,
+        hd=v["head_dim"],
+        with_qk=f"{total + qk:,}",
     )
-    checks = [("norm parameters", total, v["parameter_components"]["norms"])]
+    checks = [("decoder norm parameters", total, v["parameter_components"]["norms"])]
+    checks.append(("q/k norm parameters, counted with attention", qk, 2 * v["head_dim"] * attention_layers))
     return out, used, checks
 
 

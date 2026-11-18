@@ -419,7 +419,8 @@ rmsnorm:
     - Each norm stores {hidden} learned scales.
     - '{count} × {layers} + {final} = {norms} norms store {norms} × {hidden} = {total} scales.'
     - That is {share}% of the model's parameters.
-    result: Normalization costs {total} parameters and no cache; its job is stable training, not size.
+    - 'Not included: q_norm and k_norm in its {qk_layers} attention layers (2 × {hd} × {qk_layers} = {qk} scales). The record counts them with attention because they act inside each head, and the QK-norm guide covers them; with them the total is {with_qk}.'
+    result: Decoder normalization costs {total} parameters ({with_qk} with the q/k norms) and no cache; its job is stable training, not size.
   pitfalls:
   - Sandwich normalization is about placement (before and after a block), not a different equation.
   - Query and key norms inside attention are separate from the decoder norms.

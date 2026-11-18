@@ -142,3 +142,4 @@ h1,h2,h3,.brand{font-family:"Bricolage Grotesque",system-ui,sans-serif}h1{font-s
 .compare-fields thead th{position:static}.compare-model #clear-c{font-size:11px;align-self:flex-start;margin-top:10px}#selection-error:empty{display:none}#selection-error:not(:empty){margin:-4px 0 18px;color:var(--warnfg)}
 .draft{display:inline-block;margin-left:8px;padding:1px 6px;border:1px solid var(--line);border-radius:3px;font:500 10px/1.5 "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);vertical-align:middle}.draft-note{margin:6px 0 14px;font-size:13px;color:var(--mut)}.draft-note .draft{margin:0 8px 0 0}
 .lab-presets{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.nopub-tag{align-self:flex-start;font:500 10px/1.5 "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);border:1px dashed var(--mut);border-radius:3px;padding:2px 7px}
