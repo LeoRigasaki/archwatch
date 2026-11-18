@@ -45,7 +45,56 @@ LABELS = {
     "quantization": "quantization",
     "modality": "modality",
     "license": "license",
+    "release date": "release_date",
+    "released": "release_date",
+    "release": "release_date",
+    "date released": "release_date",
 }
+MONTHS = {
+    m: i
+    for i, m in enumerate(
+        [
+            "january",
+            "february",
+            "march",
+            "april",
+            "may",
+            "june",
+            "july",
+            "august",
+            "september",
+            "october",
+            "november",
+            "december",
+        ],
+        1,
+    )
+}
+
+
+def parse_release_date(raw: str) -> str | None:
+    """An explicit date stated by the model's own card: '2026-11-02', 'November 2, 2026' or '2 November 2026'
+    -> ISO date. Anything vaguer (a month, a quarter) is not a release date."""
+    text = raw.strip().lower().replace(",", " ")
+    m = re.search(r"\b(20\d\d)-(\d\d)-(\d\d)\b", text)
+    if m:
+        return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+    words = text.split()
+    for i, w in enumerate(words):
+        month = MONTHS.get(w) or MONTHS.get(
+            next((k for k in MONTHS if len(w) >= 3 and k.startswith(w.rstrip("."))), "")
+        )
+        if not month:
+            continue
+        before, after = words[i - 1] if i else "", words[i + 1] if i + 1 < len(words) else ""
+        after2 = words[i + 2] if i + 2 < len(words) else ""
+        if before.isdigit() and after.isdigit() and len(after) == 4:
+            return f"{after}-{month:02d}-{int(before):02d}"
+        if after.isdigit() and len(after) <= 2 and after2.isdigit() and len(after2) == 4:
+            return f"{after2}-{month:02d}-{int(after):02d}"
+    return None
+
+
 SUFFIX = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
 
 
@@ -105,6 +154,12 @@ def parse_card(readme: str) -> dict:
             continue
         raw = _clean(raw)
         entry = {"raw": raw}
+        if key == "release_date":
+            date = parse_release_date(raw)
+            if date:
+                entry["value"] = date
+                out[key] = entry
+            continue
         num = parse_number(raw)
         if num and key not in (
             "layer_composition",

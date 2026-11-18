@@ -330,7 +330,7 @@ def run(
         catalog[repo] = {
             "id": repo,
             "source_commit": record["source_commit"],
-            "created_at": record.get("hub_created"),
+            "created_at": record.get("hub_created_at"),
             "family": family(repo, policy),
             "derived": bool(derivative_relation(record.get("hub_metadata") or {})),
         }
@@ -341,7 +341,7 @@ def run(
                 "last_successful_commit": record["source_commit"],
                 "status": "recorded",
                 "family": family(repo, policy),
-                "created_at": record.get("hub_created"),
+                "created_at": record.get("hub_created_at"),
                 "pool": "core"
                 if repo.split("/")[0].casefold() in {o.casefold() for o in policy["core_publishers"]}
                 else "outside",

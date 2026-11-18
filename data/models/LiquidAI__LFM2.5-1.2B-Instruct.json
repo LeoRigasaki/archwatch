@@ -1,7 +1,7 @@
 {
  "id": "LiquidAI/LFM2.5-1.2B-Instruct",
  "source_commit": "b9d816ab510f9a28dca37cb182e9da8b0226e13c",
- "hub_created": "2026-01-06T00:28:46+00:00",
+ "hub_created_at": "2026-01-06T00:28:46+00:00",
  "license": "lfm1.0",
  "hub_metadata": {
   "base_model": "LiquidAI/LFM2.5-1.2B-Base",

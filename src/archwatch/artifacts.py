@@ -33,7 +33,7 @@ def save_record(record: dict, directory: Path, *, with_yaml: bool = False, diagr
     else:
         write_if_changed(path, json.dumps(record, indent=1, default=str))
     if with_yaml:
-        slim = {k: record[k] for k in ("id", "source_commit", "hub_created", "license", "analyzed_at", "published")}
+        slim = {k: record[k] for k in ("id", "source_commit", "hub_created_at", "license", "analyzed_at", "published")}
         slim["review_queue"] = [{"field": r["field"], "candidates": r["candidates"]} for r in record["review_queue"]]
         slim["unchecked_notes"] = record["unchecked_notes"]
         target = directory / (name + ".yaml")

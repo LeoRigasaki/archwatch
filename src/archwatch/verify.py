@@ -367,6 +367,8 @@ def verify(
                 [w(active["text_active_non_embedding"], "active weights without input embedding and output head")],
             )
         )
+    if "release_date" in card:  # only a date the model's own card states; Hub creation time is stored apart
+        out.append(check("release_date", [k("release_date")]))
     if "vision_params" in card:
         out.append(
             check(

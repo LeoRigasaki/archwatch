@@ -23,7 +23,7 @@ def policy():
 def model(repo, date, context=128000, sha="a" * 40):
     record = copy.deepcopy(BASE)
     record.pop("hub_metadata", None)  # Synthetic repositories have their own provenance.
-    record.update(id=repo, source_commit=sha, hub_created=date, analyzed_at="2026-01-01T00:00:00+00:00")
+    record.update(id=repo, source_commit=sha, hub_created_at=date, analyzed_at="2026-01-01T00:00:00+00:00")
     record["published"]["context_length"] = context
     record["facts"]["context_length"]["value"] = context
     for check in record["checks"]:
@@ -51,7 +51,7 @@ class Source:
         self.infos = {
             r["id"]: {
                 "sha": r["source_commit"],
-                "created_at": r["hub_created"],
+                "created_at": r["hub_created_at"],
                 "files": ["config.json", "model.safetensors"],
                 "pipeline_tag": "text-generation",
                 "downloads": 10000,
@@ -316,7 +316,7 @@ def test_lfm2_5_24b_is_never_chosen_for_lfm3_1_7b():
         key: dict(
             id=key,
             family="lfm",
-            created_at=rec["hub_created"],
+            created_at=rec["hub_created_at"],
             derived=bool(watcher.derivative_relation(rec.get("hub_metadata") or {})),
         )
         for key, rec in records.items()
