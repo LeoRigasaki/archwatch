@@ -55,3 +55,12 @@ def test_gold_labels_are_unchanged_since_they_were_frozen():
     assert out.returncode == 0 and out.stdout.strip() == ""
     touched = subprocess.run(["git", "log", "--format=%H", "--", labels], capture_output=True, text=True, cwd=ROOT)
     assert touched.stdout.split() == [added[-1]]  # no commit ever edited a label after it was frozen
+
+
+def test_frozen_labels_and_first_run_evidence_match_content_manifest():
+    import hashlib
+
+    manifest = json.loads((ROOT / "evals/frozen-evidence.json").read_text())["sha256"]
+    assert any(name.startswith("results/newest-first-run/records/") for name in manifest)
+    for name, expected in manifest.items():
+        assert hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, name

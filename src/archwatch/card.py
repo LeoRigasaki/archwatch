@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import html
 import re
+from datetime import date
 
 LABELS = {
     "total parameters": "params_total",
@@ -75,10 +76,17 @@ MONTHS = {
 def parse_release_date(raw: str) -> str | None:
     """An explicit date stated by the model's own card: '2026-11-02', 'November 2, 2026' or '2 November 2026'
     -> ISO date. Anything vaguer (a month, a quarter) is not a release date."""
+
+    def calendar_date(year, month, day):
+        try:
+            return date(int(year), int(month), int(day)).isoformat()
+        except (ValueError, TypeError):
+            return None
+
     text = raw.strip().lower().replace(",", " ")
     m = re.search(r"\b(20\d\d)-(\d\d)-(\d\d)\b", text)
     if m:
-        return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+        return calendar_date(*m.groups())
     words = text.split()
     for i, w in enumerate(words):
         month = MONTHS.get(w) or MONTHS.get(
@@ -89,9 +97,9 @@ def parse_release_date(raw: str) -> str | None:
         before, after = words[i - 1] if i else "", words[i + 1] if i + 1 < len(words) else ""
         after2 = words[i + 2] if i + 2 < len(words) else ""
         if before.isdigit() and after.isdigit() and len(after) == 4:
-            return f"{after}-{month:02d}-{int(before):02d}"
+            return calendar_date(after, month, before)
         if after.isdigit() and len(after) <= 2 and after2.isdigit() and len(after2) == 4:
-            return f"{after2}-{month:02d}-{int(after):02d}"
+            return calendar_date(after2, month, after)
     return None
 
 
