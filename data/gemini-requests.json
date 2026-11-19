@@ -389,5 +389,623 @@
     "outputs_lost": true,
     "time_approximate": true,
     "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1795101899.1210299,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Motif-Technologies/Motif-3-Base",
+    "prompt_sha256": "73abfb4ef46973cc50c8d71007ee51c4edf8b1cbcb854c3cda4d35e06e50fd5f",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102102.0738728,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "eb05df0052c8d732ae61032249b43552b5b907e82bd82a04e7331237d33013da",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102225.5497642,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "NX-AI/xLSTM-7b",
+    "prompt_sha256": "21783a169f3011a7f7e0adc5ee9213105f58f706048c962c8677e07eea73d2ab",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102324.789267,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Motif-Technologies/Motif-3-Base",
+    "prompt_sha256": "c0e2803be2e40791bbbd7951278c4588e5e297ed01b3e76b7edb3dd5102a0153",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102339.7944582,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "4f8f62985c2c79a5c76eaf7d33d217dde4e22c348d9da99c6326da2186c70670",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102479.0446222,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "NX-AI/xLSTM-7b",
+    "prompt_sha256": "316b3f4374549f5d51a70b4f96f03bace5122bdcf04ee632da8b4862c2a097cd",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102645.132757,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Motif-Technologies/Motif-3-Base",
+    "prompt_sha256": "5cbff030c7ae9aadf8be3fa969062d327ab1be740511fe67b1b4064d02da95a7",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102752.1353338,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "b4db2d282b23cbf7fe77dac261646a39232ca721cfde10d70fc69373f8ff53e2",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102961.7099361,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "NX-AI/xLSTM-7b",
+    "prompt_sha256": "80957162384d2dcf86a33e6f9bb38a5288c46160557e2c935904a3e6720656b6",
+    "run_id": "local"
+  },
+  {
+    "time": 1795103050.387379,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "b4db2d282b23cbf7fe77dac261646a39232ca721cfde10d70fc69373f8ff53e2",
+    "run_id": "local"
+  },
+  {
+    "time": 1795104734.036066,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meta-llama/Llama-3.1-8B",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "7e1e5289c21ad305556fa9808fc66d5054c0c82f0f4037437ccb94791990537e",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795104869.614963,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Qwen/Qwen3-0.6B-Base",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "a291cd3947036e2fabe8aa81d85b53102317a42f8e9d02d81012045ce5696e9b",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795105070.9933581,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "deepseek-ai/DeepSeek-V2-Lite",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "493a4a139345fc4cdc9bdfb58494e6e3ef1524b5c8118cf809c8ab10ada19d10",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795105153.058201,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "LiquidAI/LFM3-1.7B-Base",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "b48a8904be336d37563224482f8968339723aa8d1705d86580dcaf6a969df6a4",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795105219.815261,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "nvidia/Nemotron-H-8B-Base-8K",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "bb5bba3165388441ec538a6336f8e6ff1308a22f8925ba2734c2dfdc7ee28510",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795105335.20139,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "repo": "meta-llama/Llama-3.1-8B",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "7e1e5289c21ad305556fa9808fc66d5054c0c82f0f4037437ccb94791990537e",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795105472.617646,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "repo": "Qwen/Qwen3-0.6B-Base",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "a291cd3947036e2fabe8aa81d85b53102317a42f8e9d02d81012045ce5696e9b",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795105613.873302,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "repo": "deepseek-ai/DeepSeek-V2-Lite",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "493a4a139345fc4cdc9bdfb58494e6e3ef1524b5c8118cf809c8ab10ada19d10",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795106358.797854,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "repo": "LiquidAI/LFM3-1.7B-Base",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "b48a8904be336d37563224482f8968339723aa8d1705d86580dcaf6a969df6a4",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795107053.054442,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "repo": "nvidia/Nemotron-H-8B-Base-8K",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "bb5bba3165388441ec538a6336f8e6ff1308a22f8925ba2734c2dfdc7ee28510",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795108010.5822122,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Qwen/Qwen3-0.6B-Base",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "a291cd3947036e2fabe8aa81d85b53102317a42f8e9d02d81012045ce5696e9b",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795108179.92644,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "repo": "meta-llama/Llama-3.1-8B",
+    "prompt_version": "code_reader_v1",
+    "prompt_sha256": "7e1e5289c21ad305556fa9808fc66d5054c0c82f0f4037437ccb94791990537e",
+    "purpose": "eval",
+    "run_id": "local"
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.8-flash",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
+  },
+  {
+    "time": 1795109607.776769,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "untracked_retry": true,
+    "time_approximate": true,
+    "note": "SDK automatic retry, sent but never reserved; count taken from the AI Studio rate-limit dashboard (flash 20/20, flash-lite 46/500 on 2026-11-19). Retries are now disabled."
   }
 ]
