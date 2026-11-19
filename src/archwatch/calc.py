@@ -25,14 +25,14 @@ def cache_model(v: dict) -> dict:
     rows, assumptions = [], ["cache values stored in bf16 (2 bytes) unless noted"]
 
     for kind, n in sorted(counts.items()):
-        if kind == "mlp":
+        if kind in ("mlp", "moe"):
             rows.append(
                 {
                     "layer_type": kind,
                     "layers": n,
                     "grows_per_token_bytes": 0,
                     "constant_bytes": 0,
-                    "formula": "standalone MLP: no persistent decoding state",
+                    "formula": f"standalone {'MoE' if kind == 'moe' else 'MLP'} block: no persistent decoding state",
                 }
             )
         elif kind == "mamba2":

@@ -1,0 +1,466 @@
+{
+ "README.md": {
+  "sha256": "2e751d64dc5cc49f9fe2ab3ba675721c9e4934b0c255ec9a0a39c75e3ca10e4c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/README.md"
+ },
+ "config.json": {
+  "sha256": "0c939f324c8910f5ebdafbe2a56d7e4e074c50042a3b4f26326bf71a3fe33929",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/config.json"
+ },
+ "model-00001-of-00113.json": {
+  "sha256": "beb211f4779caeb6b8b863d4e27ffbdc66105da10db4aef9c138fcf49fb11d07",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00001-of-00113.json"
+ },
+ "model-00002-of-00113.json": {
+  "sha256": "984c81aff46c676bb1158f2c9630d7a96563b8053634caa74c7667f2b2e410c5",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00002-of-00113.json"
+ },
+ "model-00003-of-00113.json": {
+  "sha256": "85c76ed1123f3a7d288d77e2b22f9df393de9d0da525aec76535a72c1b517ec2",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00003-of-00113.json"
+ },
+ "model-00004-of-00113.json": {
+  "sha256": "923f73e66a5cb4e4312a241c07cb6ce07ad16227f0ee6586afd488e582f25c08",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00004-of-00113.json"
+ },
+ "model-00005-of-00113.json": {
+  "sha256": "89cfa793608249e0c118db4f1422df82d9eeb219dc8d147f1ef9683a9fdddce6",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00005-of-00113.json"
+ },
+ "model-00006-of-00113.json": {
+  "sha256": "b5e3b0d91586a658a2d6b311221e3df93bb8e1edf731c4f53fb273974ecea084",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00006-of-00113.json"
+ },
+ "model-00007-of-00113.json": {
+  "sha256": "d63b789f31030429ae67bba1c026f06316b630552b4cba1e17bd4dd42e47d289",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00007-of-00113.json"
+ },
+ "model-00008-of-00113.json": {
+  "sha256": "09f1eb0dcf92ba1789c4fded60f5d5cf870dc8ff4251ef8763b31e439853fcb1",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00008-of-00113.json"
+ },
+ "model-00009-of-00113.json": {
+  "sha256": "ffb7e733eda1575bf39a0c5f9d8fe024f392b490554ec4d68f2b1ad7b6de2a33",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00009-of-00113.json"
+ },
+ "model-00010-of-00113.json": {
+  "sha256": "ee526251a5ab58b7ff1eff15f21c03af726b4914cb4094a10f3fc40d69234e09",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00010-of-00113.json"
+ },
+ "model-00011-of-00113.json": {
+  "sha256": "f81e98973d0811174bb54598e5388d529b34e3f08bf67941cd213431fcb61a13",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00011-of-00113.json"
+ },
+ "model-00012-of-00113.json": {
+  "sha256": "9878a7fbb3c4fe61411f974f5e2412403a7a556e20387a3e0a1e5417a77acd49",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00012-of-00113.json"
+ },
+ "model-00013-of-00113.json": {
+  "sha256": "c85dbb66b6cd907a49e2f3116f1e238596794af6b3757fab9c9526e800631e1f",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00013-of-00113.json"
+ },
+ "model-00014-of-00113.json": {
+  "sha256": "6553ec65111a7dd1b05176170c20f661e3a151ea82284be05c5891980a3ef1b8",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00014-of-00113.json"
+ },
+ "model-00015-of-00113.json": {
+  "sha256": "18c04d51d8d043bfbe32aef82db6014f5cd298423d540b64cdb1be0e20668002",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00015-of-00113.json"
+ },
+ "model-00016-of-00113.json": {
+  "sha256": "24ae327f97c70ba40d4d53f3ec73b7cc3c23963bd74eed42fcf609203b900f72",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00016-of-00113.json"
+ },
+ "model-00017-of-00113.json": {
+  "sha256": "32fa65f84e1de93675f89c3c8bbbac23fdb1e4c315b25cb47e10be256f0751ea",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00017-of-00113.json"
+ },
+ "model-00018-of-00113.json": {
+  "sha256": "56eff88779e3dbc259559c7b21d9c2dd828ade67a215c79e397fd394df4f05ed",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00018-of-00113.json"
+ },
+ "model-00019-of-00113.json": {
+  "sha256": "f5db9e191d3bc53d1515cb2247ae45f6e1ddd78e7f5cb7b49a598551edeed31c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00019-of-00113.json"
+ },
+ "model-00020-of-00113.json": {
+  "sha256": "f28b6fc52e39bab4cb3f1d5920fee84b9013a18b52e63a16d583261c9425d46d",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00020-of-00113.json"
+ },
+ "model-00021-of-00113.json": {
+  "sha256": "3bfd336deba2494a5464a0124f841ccf934e9e0ebb193dd0c541502175389a13",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00021-of-00113.json"
+ },
+ "model-00022-of-00113.json": {
+  "sha256": "abbad63d41d07af19045371706f10fc3079646e02cb1f96e17e52655bd098aed",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00022-of-00113.json"
+ },
+ "model-00023-of-00113.json": {
+  "sha256": "c7d866e86014d1294d75a1d8d9aaa8b358b1f405c87a356f8963d01ddd4a15a2",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00023-of-00113.json"
+ },
+ "model-00024-of-00113.json": {
+  "sha256": "e0e2c405232a63f6a771cc74b44ac72efba689d4def12dee4e1a075d526473e8",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00024-of-00113.json"
+ },
+ "model-00025-of-00113.json": {
+  "sha256": "7afd837be604788d6f5715f1100215e1f38462d32032ec788eb0e1d2eb3b1a20",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00025-of-00113.json"
+ },
+ "model-00026-of-00113.json": {
+  "sha256": "90aca183a045e423c2c3dc88045cec64af305ef2987b89c86b9456141a9bb029",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00026-of-00113.json"
+ },
+ "model-00027-of-00113.json": {
+  "sha256": "4ee6025789bce72a0e7c988b302f12762e1bd877f149b0b94be6c4651baaa16e",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00027-of-00113.json"
+ },
+ "model-00028-of-00113.json": {
+  "sha256": "79a1345d4bb6aebcc4b110464974a8e97179c11d1c5f61b82f89672ba9aab6d9",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00028-of-00113.json"
+ },
+ "model-00029-of-00113.json": {
+  "sha256": "9fb7ac1d65d39de5a7d0c7c8e75151e52a2f66fb9823f4f21617c71f59da56f3",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00029-of-00113.json"
+ },
+ "model-00030-of-00113.json": {
+  "sha256": "b7abf6778031ce0cf74190fc50c379b459a61e4d8dca935f82c0e234890596d0",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00030-of-00113.json"
+ },
+ "model-00031-of-00113.json": {
+  "sha256": "e6f4712e5b86ec55f7f5458c1a9067e555798c57110973cc3f04218cd60cff49",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00031-of-00113.json"
+ },
+ "model-00032-of-00113.json": {
+  "sha256": "04ff49ab4a08a705b60bc090607a2752384dfe87c34721f408a62b2a4c3286b7",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00032-of-00113.json"
+ },
+ "model-00033-of-00113.json": {
+  "sha256": "32435b3b96b9b4a8e629317c1f448d240a6716eff8870b30745af500d0050f3a",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00033-of-00113.json"
+ },
+ "model-00034-of-00113.json": {
+  "sha256": "8476986f423960a38d5487fde41bf4154ba2bc58379c63f4e9c0d63455b9f946",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00034-of-00113.json"
+ },
+ "model-00035-of-00113.json": {
+  "sha256": "834c80d5fd54966de42cd343a9bccaf2115c1ad9aed8443bff719bf39a5a430c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00035-of-00113.json"
+ },
+ "model-00036-of-00113.json": {
+  "sha256": "530257f0f486fdc01231f0cfe96bafbbf17e83db4eec4f0b79f01a0293e28701",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00036-of-00113.json"
+ },
+ "model-00037-of-00113.json": {
+  "sha256": "a7bbe7a500af56705f958f36bac0221a8b49ca118025449e25213c12ed195529",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00037-of-00113.json"
+ },
+ "model-00038-of-00113.json": {
+  "sha256": "255d79d642344b7ec260e4297877838cf6330ad0348c4d30dba364a55574075c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00038-of-00113.json"
+ },
+ "model-00039-of-00113.json": {
+  "sha256": "0d17fe845af798b3b90522dd7a49093d819b3ee538888f83e7f4b05a2b41d9cd",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00039-of-00113.json"
+ },
+ "model-00040-of-00113.json": {
+  "sha256": "5f2f08e19d4c4602fdd1d688848d6e8fc68f3da734bc05e9a305e08cde99c41e",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00040-of-00113.json"
+ },
+ "model-00041-of-00113.json": {
+  "sha256": "cc43c1a30fbf389b60ad13a04b64ef34803157b7a02bf1f9871ba33a5bc41d84",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00041-of-00113.json"
+ },
+ "model-00042-of-00113.json": {
+  "sha256": "86620b9de4b48fb46a67302422b77c03b06255cbbf9de4bf5458b2739a0c7b01",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00042-of-00113.json"
+ },
+ "model-00043-of-00113.json": {
+  "sha256": "a5685874f1e68235fd973edcf544e95bb40c6d3991c7cbf0cfde57aee18815b5",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00043-of-00113.json"
+ },
+ "model-00044-of-00113.json": {
+  "sha256": "d667e508c3c1aaed4fc33eec1142c278316b461d8f7687bafa4668dfe22c2b14",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00044-of-00113.json"
+ },
+ "model-00045-of-00113.json": {
+  "sha256": "45b12d098986da9bd5dcc3435d50689338986ce31a0affa0a315b9579064a283",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00045-of-00113.json"
+ },
+ "model-00046-of-00113.json": {
+  "sha256": "3432e40197927f73b42bbb060d3fcde21c38ae64e4ffbae08debd17d590bd501",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00046-of-00113.json"
+ },
+ "model-00047-of-00113.json": {
+  "sha256": "35def35d7e4b887faa5b8ba419a7b7bc85761173142c9b08d9446cbe2934b002",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00047-of-00113.json"
+ },
+ "model-00048-of-00113.json": {
+  "sha256": "50abc71080b7cdb8d25e86e9e770f660cf7268f3cf3dd24d089728cb8f522ead",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00048-of-00113.json"
+ },
+ "model-00049-of-00113.json": {
+  "sha256": "7ebc9752de6edcca8b2f1173dc1f2a0bd69e42c25ad85f49c47cb1e1abb98dc0",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00049-of-00113.json"
+ },
+ "model-00050-of-00113.json": {
+  "sha256": "27f9caf1135569c02963767a6e11b7010ab5cae598366c00a5edef906b6a1e2b",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00050-of-00113.json"
+ },
+ "model-00051-of-00113.json": {
+  "sha256": "b3bebd3013a42c512ca81c307b5c33962982a0b0b1c639b39cf7e7e02deb2802",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00051-of-00113.json"
+ },
+ "model-00052-of-00113.json": {
+  "sha256": "98a5bce2dc147eeee2dab2f3029631c2508f51265e62fd121e877d42b75032fc",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00052-of-00113.json"
+ },
+ "model-00053-of-00113.json": {
+  "sha256": "a2b507790b23c28fb6e2cc75362aae8a65cc224e5f3800226b59b201c2505351",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00053-of-00113.json"
+ },
+ "model-00054-of-00113.json": {
+  "sha256": "206c516a44fd60f6b92240544836b632f9fd171fedd1e2842523de15ef8904c7",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00054-of-00113.json"
+ },
+ "model-00055-of-00113.json": {
+  "sha256": "8dedd1c8a12dd96ec4d5f9726321b3a31384d7642fdf3e680b2a9b24f1c426cd",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00055-of-00113.json"
+ },
+ "model-00056-of-00113.json": {
+  "sha256": "f8a0dc82a48e3c43eb333f86f3b5e8090e8aaae0e0092ac94b4e27b23ee2afda",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00056-of-00113.json"
+ },
+ "model-00057-of-00113.json": {
+  "sha256": "a93682cf70d62cca9dc2cf4cf45a6b9d070aadb36f509d3ce9309ad388fa702c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00057-of-00113.json"
+ },
+ "model-00058-of-00113.json": {
+  "sha256": "a67f7ebc68bb50d9daf875bc4eb8cdb655530c6f1fb66bce42d87243e40353f6",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00058-of-00113.json"
+ },
+ "model-00059-of-00113.json": {
+  "sha256": "a08c00d06332adb676e04d628322c8e745d03c4ba7fa585427b6369109f4e50e",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00059-of-00113.json"
+ },
+ "model-00060-of-00113.json": {
+  "sha256": "9ec7c02efbc8efbf977c1ec5ea4bdc9b72fea54da372e297113620d816ef5acb",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00060-of-00113.json"
+ },
+ "model-00061-of-00113.json": {
+  "sha256": "9e1af106d5720a0bfc92dcf5c11e7b6e976bc7f86d96fc14265f8d1d6d23fdb9",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00061-of-00113.json"
+ },
+ "model-00062-of-00113.json": {
+  "sha256": "adaed9dc64b10a5fd7d296c37208543bd70995bad218912d395092aafd995e95",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00062-of-00113.json"
+ },
+ "model-00063-of-00113.json": {
+  "sha256": "b5444aed0479954116f7610878f01a29ad1bc043db4971a665b0ac208aa9f85f",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00063-of-00113.json"
+ },
+ "model-00064-of-00113.json": {
+  "sha256": "fa4887cc6b316b37d742ed47a6e3f25b67088047ba2707692a62a4e26ae874af",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00064-of-00113.json"
+ },
+ "model-00065-of-00113.json": {
+  "sha256": "3320a9a7c3959d8c9960a15512c1c95e1694699ff107cd832ef430ed5c0f096c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00065-of-00113.json"
+ },
+ "model-00066-of-00113.json": {
+  "sha256": "4a3d2a2746807ba93c410f96c7e8f542359d1d699a89f43daefbf87da92a5102",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00066-of-00113.json"
+ },
+ "model-00067-of-00113.json": {
+  "sha256": "46e161320e6e6463605b0bd5de67e6fb8a26615ace9cd86a46849bfba19d3f73",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00067-of-00113.json"
+ },
+ "model-00068-of-00113.json": {
+  "sha256": "8d30000d203dbf60bd05191f0b632ca1643097c2cefbb8d67ed7cfa985cdf867",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00068-of-00113.json"
+ },
+ "model-00069-of-00113.json": {
+  "sha256": "3a282764146f80d0a41a7c4d7e9db24b4f84af6c6c1b603138ac8df645fa7a1d",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00069-of-00113.json"
+ },
+ "model-00070-of-00113.json": {
+  "sha256": "f4eae1f4e44ce9654a3df33f2213466de4dcc8a0bc19f3958db30437c5d72e8a",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00070-of-00113.json"
+ },
+ "model-00071-of-00113.json": {
+  "sha256": "de187c56630873e46e30de1067ffab31dbc14f1b9d1413c6749a4b4326f6c1a4",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00071-of-00113.json"
+ },
+ "model-00072-of-00113.json": {
+  "sha256": "76b6e4843cb0c9b3de95ad5bf21d124fed749d2a041ca4388b62ecc0914d506d",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00072-of-00113.json"
+ },
+ "model-00073-of-00113.json": {
+  "sha256": "08d7746b200e2eea1121b2ba382198bb15cccd57bc7c0f0da405edb33a6f7838",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00073-of-00113.json"
+ },
+ "model-00074-of-00113.json": {
+  "sha256": "876fb627f2d1ecbd80227b16359313d0897e5aa5cf7522ed6396bbde9e0cff55",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00074-of-00113.json"
+ },
+ "model-00075-of-00113.json": {
+  "sha256": "03edaa04057796c4f9c5b0ef21a47af697ee88f7ebe4701da2a992df6743a114",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00075-of-00113.json"
+ },
+ "model-00076-of-00113.json": {
+  "sha256": "af4c07ec97ab62b27c8923864cbc5b8c40fefb6ce21f0257475b5b30de1dbdbc",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00076-of-00113.json"
+ },
+ "model-00077-of-00113.json": {
+  "sha256": "20dd810c3c95f0d34a3a4f2df136eabb9b71f0027a09d516c0e24ee1b46c3c20",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00077-of-00113.json"
+ },
+ "model-00078-of-00113.json": {
+  "sha256": "8f82f012f16fcc863be083f604461750b5877756955af3f310f89f5bffb3c998",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00078-of-00113.json"
+ },
+ "model-00079-of-00113.json": {
+  "sha256": "e3dc9c3a2cf0bf868cc546bc2b2a52e3c443052e009aa5d685c17683e6e9ca05",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00079-of-00113.json"
+ },
+ "model-00080-of-00113.json": {
+  "sha256": "faf543a2137db4fe783ab23daf70e9f4d984d6f2aebf143d12518142bac745f1",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00080-of-00113.json"
+ },
+ "model-00081-of-00113.json": {
+  "sha256": "5cf9ea061dea4c43583d4ab2b9051e53afb6f952c1a88cc3e2b5f8c72458eb3c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00081-of-00113.json"
+ },
+ "model-00082-of-00113.json": {
+  "sha256": "30a078d8c223a50ba12ee72079771a058205e355bf2f3cfa1740a010f8fbbeb0",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00082-of-00113.json"
+ },
+ "model-00083-of-00113.json": {
+  "sha256": "302c41bdb6eb12288d997a48cf66a814fd49fd780e5e97347ca77f9ecafbc731",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00083-of-00113.json"
+ },
+ "model-00084-of-00113.json": {
+  "sha256": "6b47e2eec14587a930b8e750afb2a267ed040eabfb6f0dadc717fc0d3385231f",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00084-of-00113.json"
+ },
+ "model-00085-of-00113.json": {
+  "sha256": "c18746303dffa4e6c10befd8684076d7c32cdfef83f6624f34ad6ef71da191de",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00085-of-00113.json"
+ },
+ "model-00086-of-00113.json": {
+  "sha256": "a65b201e390bd58c2d79ff196916c70b66690eb51372b6a60210c210856eb6f8",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00086-of-00113.json"
+ },
+ "model-00087-of-00113.json": {
+  "sha256": "ea6216511c96126666ea06b883e7485eeef593bf83f724310e80e6a59e66918d",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00087-of-00113.json"
+ },
+ "model-00088-of-00113.json": {
+  "sha256": "7b0b4b61d8d21b7a6974603f58c223589a6a8b0b115d2639418d0c530bbcc650",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00088-of-00113.json"
+ },
+ "model-00089-of-00113.json": {
+  "sha256": "54d3e832585aa8fa8c5c87ac50db7e3e7d77927ac07668df81aedde5ae0a4f0b",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00089-of-00113.json"
+ },
+ "model-00090-of-00113.json": {
+  "sha256": "7fcc5f10a66e27939591ac99f47133f3f923acbedcf5227663fc8ec72122752c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00090-of-00113.json"
+ },
+ "model-00091-of-00113.json": {
+  "sha256": "8cad16dd8f20836d0e51253e3515bf87f8f9f482b704d932e7e5e630567d9c3e",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00091-of-00113.json"
+ },
+ "model-00092-of-00113.json": {
+  "sha256": "8e572e9a7184590c0b65562efc80704e6d54384e271e541064591c4d15798067",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00092-of-00113.json"
+ },
+ "model-00093-of-00113.json": {
+  "sha256": "7af8aacd5b01bd573a8c7c956695bde621365b6f53515b37ad428469fc5f0000",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00093-of-00113.json"
+ },
+ "model-00094-of-00113.json": {
+  "sha256": "1a81c919d931c7bdd53306d6dea6c236f006df187375644310a00850a92bd0ad",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00094-of-00113.json"
+ },
+ "model-00095-of-00113.json": {
+  "sha256": "fc7ad9e9ea83e83461c4aa6782fa03ceba526930d1b93fd78eb60d02fbd79030",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00095-of-00113.json"
+ },
+ "model-00096-of-00113.json": {
+  "sha256": "d996d0b62cfbbcef7b90a117eae570efd14849279cb07ef5eb00e8290e9c22bc",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00096-of-00113.json"
+ },
+ "model-00097-of-00113.json": {
+  "sha256": "904e6cb9b2bae6247751d033bd211096b8a23fb4372889bfa6990facade3bb02",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00097-of-00113.json"
+ },
+ "model-00098-of-00113.json": {
+  "sha256": "552bef9610e79284adac2cd0cbdc3ccad84d66ef0bc6d1c3bf0ad0af8ae8e70d",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00098-of-00113.json"
+ },
+ "model-00099-of-00113.json": {
+  "sha256": "3efc1d71139222d98c67d03c68d8d8fd4a6aa263244a2380387c4706f61fa40d",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00099-of-00113.json"
+ },
+ "model-00100-of-00113.json": {
+  "sha256": "a5209c953e77d9de7e01c56ab90b4bac7d2ac0710f02d889fcdd1ab5811850a9",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00100-of-00113.json"
+ },
+ "model-00101-of-00113.json": {
+  "sha256": "507cde6eee6ce77982bffd1040d8f22a6eb1a2a33c98b6d1b6ca5d30f06d5f39",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00101-of-00113.json"
+ },
+ "model-00102-of-00113.json": {
+  "sha256": "7a083479234e8765477afa701510748f4db4669df3c29ec599f1d652a429f29e",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00102-of-00113.json"
+ },
+ "model-00103-of-00113.json": {
+  "sha256": "448255f08a1f31ea6f9895b2c5c86d70ffcd62b434c3dcc5b3bb241c31b95831",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00103-of-00113.json"
+ },
+ "model-00104-of-00113.json": {
+  "sha256": "f4b427f45e7bcbb5dbbb0207744b6aa006d7e015e2a31eb9678eed2be681c4fc",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00104-of-00113.json"
+ },
+ "model-00105-of-00113.json": {
+  "sha256": "cfdb82219728662a7e6701bcffd56f063aca33b9ab9f6ed4b818c7b5e8e77d42",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00105-of-00113.json"
+ },
+ "model-00106-of-00113.json": {
+  "sha256": "083f1e343a70dfc6091de4a60dc6805fccc02a111fedc9f613437cc1fd2c16b0",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00106-of-00113.json"
+ },
+ "model-00107-of-00113.json": {
+  "sha256": "d67669934b51478d328d4622e7e8b86d69a6f8a911388c4551051bec619989bb",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00107-of-00113.json"
+ },
+ "model-00108-of-00113.json": {
+  "sha256": "f7bd0ef13ae035637e993a944cf7bd33cfb25602348ee46d5e6cfc1c837229e5",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00108-of-00113.json"
+ },
+ "model-00109-of-00113.json": {
+  "sha256": "6e9ee20b9bf4b5a589e32107dc61390075a761bac2174006cb3687d0821065a8",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00109-of-00113.json"
+ },
+ "model-00110-of-00113.json": {
+  "sha256": "cf12232d4351d9382438c9586faa6efca9e7a49bcc0e9c54f96036445cdeb9ac",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00110-of-00113.json"
+ },
+ "model-00111-of-00113.json": {
+  "sha256": "1a01734cdcc81597d8ccc9d1355693c972376825ce4bcbd9d42f04b502278c0e",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00111-of-00113.json"
+ },
+ "model-00112-of-00113.json": {
+  "sha256": "829b6555bfada9239841e503e377ac03942db761f0e7540e8999c0ed9472ab18",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00112-of-00113.json"
+ },
+ "model-00113-of-00113.json": {
+  "sha256": "16b361258ac51e13a5e342aa1c11e5a02fb0534cbf49c9615d59d3b143d105cd",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model-00113-of-00113.json"
+ },
+ "model.safetensors.index.json": {
+  "sha256": "41951cc6db98b717cf45c73dd6f0503c050e99c70a9662abe01d9511bc2bed06",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/resolve/02462641f13d3af838b904f48195b9bb8a1e4ebc/model.safetensors.index.json"
+ }
+}

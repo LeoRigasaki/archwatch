@@ -9,6 +9,7 @@ KIND_LABELS = {
     "full_attention": "Global attention",
     "mamba2": "Mamba-2",
     "mlp": "MLP",
+    "moe": "MoE block",
 }
 
 FIELD_NAMES = {

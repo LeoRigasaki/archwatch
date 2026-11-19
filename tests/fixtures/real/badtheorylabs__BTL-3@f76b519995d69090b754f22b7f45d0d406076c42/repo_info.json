@@ -1,0 +1,40 @@
+{
+ "sha": "f76b519995d69090b754f22b7f45d0d406076c42",
+ "created_at": "2026-07-20T18:01:25+00:00",
+ "last_modified": "2026-07-24T08:13:03+00:00",
+ "files": [
+  ".gitattributes",
+  "LICENSE",
+  "README.md",
+  "THIRD_PARTY_NOTICES.md",
+  "adapter_config.json",
+  "adapter_model.safetensors",
+  "chat_template.jinja",
+  "processor_config.json",
+  "tokenizer.json",
+  "tokenizer_config.json"
+ ],
+ "license": "apache-2.0",
+ "license_name": null,
+ "downloads": 72,
+ "likes": 74,
+ "pipeline_tag": "text-generation",
+ "tags": [
+  "agent",
+  "base_model:Qwen/Qwen3.6-27B",
+  "base_model:adapter:Qwen/Qwen3.6-27B",
+  "coding",
+  "conversational",
+  "function-calling",
+  "license:apache-2.0",
+  "peft",
+  "qwen",
+  "reasoning",
+  "region:us",
+  "safetensors",
+  "text-generation",
+  "tool-use"
+ ],
+ "base_model": "Qwen/Qwen3.6-27B",
+ "base_model_relation": null
+}
