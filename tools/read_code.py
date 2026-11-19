@@ -23,19 +23,18 @@ from archwatch import extract, hub  # noqa: E402
 from archwatch.gemini import ProviderError, local_env  # noqa: E402
 
 
-def inputs(repo):
+def inputs(repo, section, prompt):
     info = hub.repo_info(repo)
     config = hub.get_json(repo, "config.json", revision=info["sha"])
     if not isinstance(config, dict):
         raise SystemExit(f"{repo}: no config.json")
-    code = cr.fetch_code(repo, info, config)
+    code = cr.fetch_code(repo, info, config, section.get("code_sources"))
     tensors = hub.safetensors_headers(repo, info=info)
     try:  # whatever the rules can read is the reference the claims must not contradict
         rule_facts = {k: v[0] for k, v in extract.extract(config).items() if not k.startswith("_")}
     except Exception:  # noqa: BLE001 - the rules failing is why this reader runs at all
         rule_facts = {}
-    prompt = cr.prompt_text(code["files"], config, cr.summarize_tensors(tensors), cr.FIELDS)
-    return info, config, code, tensors, rule_facts, prompt
+    return info, config, code, tensors, rule_facts, cr.prompt_text(prompt, code["files"], config)
 
 
 def decide(first: list[dict], second: list[dict] | None) -> dict:
@@ -87,14 +86,17 @@ def main():
     args = parser.parse_args()
     config = yaml.safe_load((ROOT / "config/providers.yaml").read_text())
     section = config["code_reader"]
+    prompt = cr.load_prompt(ROOT / section["prompt"])
     repos = args.repo or section["models"]
     out = ROOT / section["output"]
     calls = 0
     local_env(ROOT / ".env")
     run_id = os.environ.get("GITHUB_RUN_ID") or "local"
     for repo in repos:
-        info, cfg, code, tensors, rule_facts, prompt = inputs(repo)
-        print(f"{repo}: code {code['source']}, {len(prompt.encode()):,} prompt bytes, flags {code['flags']}")
+        info, cfg, code, tensors, rule_facts, text = inputs(repo, section, prompt)
+        print(
+            f"{repo}: code {code['source']}, {len(text.encode()):,} prompt bytes ({prompt['version']}), flags {code['flags']}"
+        )
         if args.plan or not code["files"]:
             continue
         rows, second = [], None
@@ -103,14 +105,14 @@ def main():
             if calls >= section["max_calls_per_run"]:
                 raise ProviderError("per-run call cap reached")
             try:
-                claims, meta = reader.read(repo, info["sha"], prompt)
+                claims, meta = reader.read(repo, info["sha"], prompt, text)
             finally:
                 calls += reader.calls  # a failed call was still reserved in the ledger and counts
             rows = [dict(r, model=meta["model"]) for r in cr.verdicts(claims.claims, code, cfg, tensors, rule_facts)]
             if any(r["conflicts"] for r in rows) and calls < section["max_calls_per_run"]:
                 other = cr.CodeReader(config, role=section["second_opinion"], run_id=run_id)
                 try:
-                    claims2, meta2 = other.read(repo, info["sha"], prompt)
+                    claims2, meta2 = other.read(repo, info["sha"], prompt, text, purpose="second opinion")
                 finally:
                     calls += other.calls
                 second = [
@@ -124,6 +126,7 @@ def main():
             repo=repo,
             commit=info["sha"],
             code_source=code["source"],
+            prompt_version=prompt["version"],
             code_origin=code["origin"],
             flags=code["flags"],
             claims=rows + (second or []),

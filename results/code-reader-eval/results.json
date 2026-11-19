@@ -1,0 +1,1206 @@
+{
+ "prompt": "code_reader_v1",
+ "results": [
+  {
+   "repo": "meta-llama/Llama-3.1-8B",
+   "reader": "gemini-3.5-flash-lite",
+   "code": "transformers v4.43.0",
+   "flags": [
+    "transformers_version 4.43.0.dev0 is a development build, not a release"
+   ],
+   "scored": [
+    {
+     "field": "normalization_type",
+     "value": "RMSNorm",
+     "reference": null,
+     "value_correct": null,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:58-72",
+     "module_paths": [
+      "model.layers.N.input_layernorm.weight",
+      "model.layers.N.post_attention_layernorm.weight",
+      "model.norm.weight"
+     ]
+    },
+    {
+     "field": "ffn_intermediate",
+     "value": 14336,
+     "reference": 14336,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "the cited lines build no module that reaches the model's state dict",
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:229-229",
+     "module_paths": []
+    },
+    {
+     "field": "activation",
+     "value": "silu",
+     "reference": "silu",
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:233-233",
+     "module_paths": []
+    },
+    {
+     "field": "hidden_size",
+     "value": 4096,
+     "reference": 4096,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "the cited lines build no module that reaches the model's state dict",
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:285-285",
+     "module_paths": []
+    },
+    {
+     "field": "num_attention_heads",
+     "value": 32,
+     "reference": 32,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_llama.py:286-286",
+     "module_paths": []
+    },
+    {
+     "field": "head_dim",
+     "value": 128,
+     "reference": 128,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_llama.py:287-287",
+     "module_paths": []
+    },
+    {
+     "field": "num_kv_heads",
+     "value": 8,
+     "reference": 8,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_llama.py:288-288",
+     "module_paths": []
+    },
+    {
+     "field": "context_length",
+     "value": 131072,
+     "reference": 131072,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:290-290",
+     "module_paths": []
+    },
+    {
+     "field": "vocab_size",
+     "value": 128256,
+     "reference": 128256,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "the cited lines build no module that reaches the model's state dict",
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:841-841",
+     "module_paths": []
+    },
+    {
+     "field": "num_layers",
+     "value": 32,
+     "reference": 32,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "review",
+     "problems": [
+      "code was not read at the model's own revision (see flags); capped at review"
+     ],
+     "cited": "modeling_llama.py:844-846",
+     "module_paths": [
+      "model.layers.N"
+     ]
+    }
+   ],
+   "summary": {
+    "claims": 10,
+    "value_correct": "9/9 (100%)",
+    "citation_valid": "10/10 (100%)",
+    "config_agrees": "10/10 (100%)",
+    "weight_check": "1/7 (14%)",
+    "passes_checks": "4/10 (40%)",
+    "wrong_but_passes": 0,
+    "verified": 0
+   },
+   "cached": true
+  },
+  {
+   "repo": "Qwen/Qwen3-0.6B-Base",
+   "reader": "gemini-3.5-flash-lite",
+   "code": "transformers v4.51.0",
+   "flags": [],
+   "scored": [
+    {
+     "field": "vocab_size",
+     "value": "vocab_size",
+     "reference": 151936,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "vocab_size needs a number, got 'vocab_size'",
+      "value 'vocab_size' is a config key name, not its value"
+     ],
+     "cited": "modeling_qwen3.py:480-480",
+     "module_paths": [
+      "model.embed_tokens"
+     ]
+    },
+    {
+     "field": "hidden_size",
+     "value": "hidden_size",
+     "reference": 1024,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "hidden_size needs a number, got 'hidden_size'",
+      "value 'hidden_size' is a config key name, not its value"
+     ],
+     "cited": "modeling_qwen3.py:480-480",
+     "module_paths": [
+      "model.embed_tokens"
+     ]
+    },
+    {
+     "field": "num_layers",
+     "value": "num_hidden_layers",
+     "reference": 28,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_layers needs a number, got 'num_hidden_layers'",
+      "value 'num_hidden_layers' is a config key name, not its value"
+     ],
+     "cited": "modeling_qwen3.py:481-483",
+     "module_paths": [
+      "model.layers.N"
+     ]
+    },
+    {
+     "field": "head_dim",
+     "value": "head_dim",
+     "reference": 128,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "head_dim needs a number, got 'head_dim'",
+      "value 'head_dim' is a config key name, not its value",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_qwen3.py:177-177",
+     "module_paths": []
+    },
+    {
+     "field": "num_attention_heads",
+     "value": "num_attention_heads",
+     "reference": 16,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_attention_heads needs a number, got 'num_attention_heads'",
+      "value 'num_attention_heads' is a config key name, not its value"
+     ],
+     "cited": "modeling_qwen3.py:183-185",
+     "module_paths": [
+      "model.layers.N.self_attn.q_proj"
+     ]
+    },
+    {
+     "field": "num_kv_heads",
+     "value": "num_key_value_heads",
+     "reference": 8,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_kv_heads needs a number, got 'num_key_value_heads'",
+      "value 'num_key_value_heads' is a config key name, not its value"
+     ],
+     "cited": "modeling_qwen3.py:186-188",
+     "module_paths": [
+      "model.layers.N.self_attn.k_proj"
+     ]
+    },
+    {
+     "field": "activation",
+     "value": "hidden_act",
+     "reference": "silu",
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "value 'hidden_act' is a config key name, not its value",
+      "config hidden_act = 'silu', claim says 'hidden_act'"
+     ],
+     "cited": "modeling_qwen3.py:91-91",
+     "module_paths": []
+    },
+    {
+     "field": "context_length",
+     "value": "max_position_embeddings",
+     "reference": 32768,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "context_length needs a number, got 'max_position_embeddings'",
+      "value 'max_position_embeddings' is a config key name, not its value"
+     ],
+     "cited": "modeling_qwen3.py:323-323",
+     "module_paths": []
+    }
+   ],
+   "summary": {
+    "claims": 8,
+    "value_correct": "0/8 (0%)",
+    "citation_valid": "8/8 (100%)",
+    "config_agrees": "0/8 (0%)",
+    "weight_check": "5/6 (83%)",
+    "passes_checks": "0/8 (0%)",
+    "wrong_but_passes": 0,
+    "verified": 0
+   },
+   "cached": true
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V2-Lite",
+   "reader": "gemini-3.5-flash-lite",
+   "code": "repo",
+   "flags": [],
+   "scored": [
+    {
+     "field": "vocab_size",
+     "value": "config.vocab_size",
+     "reference": 102400,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "vocab_size needs a number, got 'config.vocab_size'"
+     ],
+     "cited": "modeling_deepseek.py:1415-1417",
+     "module_paths": [
+      "model.embed_tokens"
+     ]
+    },
+    {
+     "field": "hidden_size",
+     "value": "config.hidden_size",
+     "reference": 2048,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "hidden_size needs a number, got 'config.hidden_size'"
+     ],
+     "cited": "modeling_deepseek.py:1415-1417",
+     "module_paths": [
+      "model.embed_tokens"
+     ]
+    },
+    {
+     "field": "num_layers",
+     "value": "config.num_hidden_layers",
+     "reference": 27,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_layers needs a number, got 'config.num_hidden_layers'"
+     ],
+     "cited": "modeling_deepseek.py:1418-1423",
+     "module_paths": [
+      "model.layers.N"
+     ]
+    },
+    {
+     "field": "normalization_type",
+     "value": "RMSNorm",
+     "reference": "RMSNorm",
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_deepseek.py:1425-1425",
+     "module_paths": [
+      "model.norm"
+     ]
+    },
+    {
+     "field": "tied_embeddings",
+     "value": false,
+     "reference": false,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_deepseek.py:1589-1589",
+     "module_paths": []
+    }
+   ],
+   "summary": {
+    "claims": 5,
+    "value_correct": "2/5 (40%)",
+    "citation_valid": "5/5 (100%)",
+    "config_agrees": "2/5 (40%)",
+    "weight_check": "3/3 (100%)",
+    "passes_checks": "2/5 (40%)",
+    "wrong_but_passes": 0,
+    "verified": 2
+   },
+   "cached": true
+  },
+  {
+   "repo": "LiquidAI/LFM3-1.7B-Base",
+   "reader": "gemini-3.5-flash-lite",
+   "code": "repo",
+   "flags": [],
+   "scored": [
+    {
+     "field": "hidden_size",
+     "value": "config.hidden_size",
+     "reference": 2048,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "hidden_size needs a number, got 'config.hidden_size'"
+     ],
+     "cited": "modeling_lfm3.py:58-58",
+     "module_paths": [
+      "model.embedding_norm.weight",
+      "model.layers.N.ffn_norm.weight",
+      "model.layers.N.operator_norm.weight",
+      "model.layers.N.post_ffn_norm.weight",
+      "model.layers.N.post_operator_norm.weight",
+      "model.layers.N.self_attn.k_norm.weight",
+      "model.layers.N.self_attn.q_norm.weight"
+     ]
+    },
+    {
+     "field": "vocab_size",
+     "value": "config.vocab_size",
+     "reference": 128000,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "vocab_size needs a number, got 'config.vocab_size'",
+      "the cited lines build no module that reaches the model's state dict"
+     ],
+     "cited": "modeling_lfm3.py:595-595",
+     "module_paths": []
+    },
+    {
+     "field": "num_layers",
+     "value": "config.num_hidden_layers",
+     "reference": 24,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_layers needs a number, got 'config.num_hidden_layers'"
+     ],
+     "cited": "modeling_lfm3.py:599-599",
+     "module_paths": [
+      "model.layers.N"
+     ]
+    },
+    {
+     "field": "context_length",
+     "value": "config.max_position_embeddings",
+     "reference": 262144,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "context_length needs a number, got 'config.max_position_embeddings'"
+     ],
+     "cited": "modeling_lfm3.py:80-80",
+     "module_paths": []
+    },
+    {
+     "field": "num_attention_heads",
+     "value": "config.num_attention_heads",
+     "reference": 16,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_attention_heads needs a number, got 'config.num_attention_heads'"
+     ],
+     "cited": "modeling_lfm3.py:225-225",
+     "module_paths": [
+      "model.layers.N.self_attn.q_proj"
+     ]
+    },
+    {
+     "field": "num_kv_heads",
+     "value": "config.num_key_value_heads",
+     "reference": 4,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_kv_heads needs a number, got 'config.num_key_value_heads'"
+     ],
+     "cited": "modeling_lfm3.py:226-226",
+     "module_paths": [
+      "model.layers.N.self_attn.k_proj"
+     ]
+    },
+    {
+     "field": "head_dim",
+     "value": "config.head_dim",
+     "reference": 128,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "head_dim needs a number, got 'config.head_dim'",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_lfm3.py:221-221",
+     "module_paths": []
+    },
+    {
+     "field": "layer_types",
+     "value": "config.layer_types",
+     "reference": [
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv"
+     ],
+     "value_correct": null,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:83-83",
+     "module_paths": []
+    },
+    {
+     "field": "ffn_intermediate",
+     "value": "config.intermediate_size",
+     "reference": 7680,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "ffn_intermediate needs a number, got 'config.intermediate_size'"
+     ],
+     "cited": "modeling_lfm3.py:152-152",
+     "module_paths": [
+      "model.layers.N.feed_forward.w1"
+     ]
+    },
+    {
+     "field": "normalization_type",
+     "value": "RMSNorm",
+     "reference": "RMSNorm",
+     "value_correct": true,
+     "citation_valid": false,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "quote does not equal the cited lines"
+     ],
+     "cited": "modeling_lfm3.py:52-52",
+     "module_paths": []
+    },
+    {
+     "field": "sliding_window",
+     "value": "config.sliding_window",
+     "reference": 256,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "sliding_window needs a number, got 'config.sliding_window'"
+     ],
+     "cited": "modeling_lfm3.py:232-232",
+     "module_paths": []
+    },
+    {
+     "field": "tied_embeddings",
+     "value": "True",
+     "reference": true,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "tied_embeddings needs true or false, got 'True'"
+     ],
+     "cited": "modeling_lfm3.py:804-804",
+     "module_paths": []
+    }
+   ],
+   "summary": {
+    "claims": 12,
+    "value_correct": "1/11 (9%)",
+    "citation_valid": "11/12 (92%)",
+    "config_agrees": "2/12 (17%)",
+    "weight_check": "5/7 (71%)",
+    "passes_checks": "1/12 (8%)",
+    "wrong_but_passes": 0,
+    "verified": 1
+   },
+   "cached": true
+  },
+  {
+   "repo": "nvidia/Nemotron-H-8B-Base-8K",
+   "reader": "gemini-3.5-flash-lite",
+   "code": "repo",
+   "flags": [],
+   "scored": [
+    {
+     "field": "num_layers",
+     "value": "config.num_hidden_layers",
+     "reference": 52,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_layers needs a number, got 'config.num_hidden_layers'"
+     ],
+     "cited": "modeling_nemotron_h.py:1283-1283",
+     "module_paths": [
+      "backbone.layers.N"
+     ]
+    },
+    {
+     "field": "hidden_size",
+     "value": "config.hidden_size",
+     "reference": 4096,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "hidden_size needs a number, got 'config.hidden_size'"
+     ],
+     "cited": "modeling_nemotron_h.py:1282-1282",
+     "module_paths": [
+      "backbone.embeddings"
+     ]
+    },
+    {
+     "field": "vocab_size",
+     "value": "config.vocab_size",
+     "reference": 131072,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "passed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "vocab_size needs a number, got 'config.vocab_size'"
+     ],
+     "cited": "modeling_nemotron_h.py:1282-1282",
+     "module_paths": [
+      "backbone.embeddings"
+     ]
+    },
+    {
+     "field": "context_length",
+     "value": "config.max_position_embeddings",
+     "reference": 8192,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "context_length needs a number, got 'config.max_position_embeddings'"
+     ],
+     "cited": "modeling_nemotron_h.py:851-851",
+     "module_paths": []
+    },
+    {
+     "field": "num_attention_heads",
+     "value": "config.num_attention_heads",
+     "reference": 32,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_attention_heads needs a number, got 'config.num_attention_heads'",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_nemotron_h.py:844-844",
+     "module_paths": []
+    },
+    {
+     "field": "num_kv_heads",
+     "value": "config.num_key_value_heads",
+     "reference": 8,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "num_kv_heads needs a number, got 'config.num_key_value_heads'",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_nemotron_h.py:849-849",
+     "module_paths": []
+    },
+    {
+     "field": "head_dim",
+     "value": "config.attention_head_dim",
+     "reference": 128,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "head_dim needs a number, got 'config.attention_head_dim'",
+      "no module cited and no heads x head_dim check against the projection rows was possible"
+     ],
+     "cited": "modeling_nemotron_h.py:845-846",
+     "module_paths": []
+    },
+    {
+     "field": "ffn_intermediate",
+     "value": "config.intermediate_size",
+     "reference": 21504,
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "failed",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "ffn_intermediate needs a number, got 'config.intermediate_size'",
+      "the cited lines build no module that reaches the model's state dict"
+     ],
+     "cited": "modeling_nemotron_h.py:806-806",
+     "module_paths": []
+    },
+    {
+     "field": "activation",
+     "value": "config.mlp_hidden_act",
+     "reference": "relu2",
+     "value_correct": false,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "config mlp_hidden_act = 'relu2', claim says 'config.mlp_hidden_act'"
+     ],
+     "cited": "modeling_nemotron_h.py:809-809",
+     "module_paths": []
+    },
+    {
+     "field": "normalization_type",
+     "value": "NemotronHRMSNorm",
+     "reference": null,
+     "value_correct": null,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_nemotron_h.py:746-746",
+     "module_paths": [
+      "backbone.layers.N.norm"
+     ]
+    },
+    {
+     "field": "sliding_window",
+     "value": "config.sliding_window",
+     "reference": null,
+     "value_correct": null,
+     "citation_valid": true,
+     "config_agrees": false,
+     "weight_check": "n/a",
+     "passes_checks": false,
+     "verdict": "review",
+     "problems": [
+      "sliding_window needs a number, got 'config.sliding_window'"
+     ],
+     "cited": "modeling_nemotron_h.py:996-996",
+     "module_paths": []
+    }
+   ],
+   "summary": {
+    "claims": 11,
+    "value_correct": "0/9 (0%)",
+    "citation_valid": "11/11 (100%)",
+    "config_agrees": "1/11 (9%)",
+    "weight_check": "3/7 (43%)",
+    "passes_checks": "1/11 (9%)",
+    "wrong_but_passes": 0,
+    "verified": 1
+   },
+   "cached": true
+  },
+  {
+   "repo": "meta-llama/Llama-3.1-8B",
+   "reader": "gemini-3.8-flash",
+   "code": "transformers v4.43.0",
+   "flags": [
+    "transformers_version 4.43.0.dev0 is a development build, not a release"
+   ],
+   "error": "Configured free daily request cap reached"
+  },
+  {
+   "repo": "Qwen/Qwen3-0.6B-Base",
+   "reader": "gemini-3.8-flash",
+   "code": "transformers v4.51.0",
+   "flags": [],
+   "error": "Configured free daily request cap reached"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V2-Lite",
+   "reader": "gemini-3.8-flash",
+   "code": "repo",
+   "flags": [],
+   "error": "Configured free daily request cap reached"
+  },
+  {
+   "repo": "LiquidAI/LFM3-1.7B-Base",
+   "reader": "gemini-3.8-flash",
+   "code": "repo",
+   "flags": [],
+   "scored": [
+    {
+     "field": "num_layers",
+     "value": 24,
+     "reference": 24,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:598-600",
+     "module_paths": [
+      "model.layers.N"
+     ]
+    },
+    {
+     "field": "hidden_size",
+     "value": 2048,
+     "reference": 2048,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:597-597",
+     "module_paths": [
+      "model.embed_tokens"
+     ]
+    },
+    {
+     "field": "vocab_size",
+     "value": 128000,
+     "reference": 128000,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:597-597",
+     "module_paths": [
+      "model.embed_tokens"
+     ]
+    },
+    {
+     "field": "context_length",
+     "value": 262144,
+     "reference": 262144,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:80-80",
+     "module_paths": []
+    },
+    {
+     "field": "num_attention_heads",
+     "value": 16,
+     "reference": 16,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:225-225",
+     "module_paths": [
+      "model.layers.N.self_attn.q_proj"
+     ]
+    },
+    {
+     "field": "num_kv_heads",
+     "value": 4,
+     "reference": 4,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:226-226",
+     "module_paths": [
+      "model.layers.N.self_attn.k_proj"
+     ]
+    },
+    {
+     "field": "head_dim",
+     "value": 128,
+     "reference": 128,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:221-221",
+     "module_paths": []
+    },
+    {
+     "field": "ffn_intermediate",
+     "value": 7680,
+     "reference": 7680,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "passed",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:152-152",
+     "module_paths": [
+      "model.layers.N.feed_forward.w1"
+     ]
+    },
+    {
+     "field": "activation",
+     "value": "silu",
+     "reference": "silu",
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:157-157",
+     "module_paths": []
+    },
+    {
+     "field": "normalization_type",
+     "value": "RMSNorm",
+     "reference": "RMSNorm",
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:52-52",
+     "module_paths": []
+    },
+    {
+     "field": "sliding_window",
+     "value": 256,
+     "reference": 256,
+     "value_correct": true,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "verified",
+     "problems": [],
+     "cited": "modeling_lfm3.py:232-232",
+     "module_paths": []
+    },
+    {
+     "field": "layer_types",
+     "value": [
+      "conv",
+      "conv",
+      "full_attention",
+      "conv",
+      "sliding_attention",
+      "conv",
+      "full_attention",
+      "conv",
+      "sliding_attention",
+      "conv",
+      "full_attention",
+      "conv",
+      "sliding_attention",
+      "conv",
+      "full_attention",
+      "conv",
+      "sliding_attention",
+      "conv",
+      "full_attention",
+      "conv",
+      "sliding_attention",
+      "conv",
+      "full_attention",
+      "conv"
+     ],
+     "reference": [
+      "short_conv",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv",
+      "sliding_attention",
+      "short_conv",
+      "full_attention",
+      "short_conv"
+     ],
+     "value_correct": null,
+     "citation_valid": true,
+     "config_agrees": true,
+     "weight_check": "n/a",
+     "passes_checks": true,
+     "verdict": "review",
+     "problems": [
+      "layers typed 'full_attention' and 'sliding_attention' hold identical tensors",
+      "layers typed 'sliding_attention' and 'full_attention' hold identical tensors"
+     ],
+     "cited": "modeling_lfm3.py:749-749",
+     "module_paths": []
+    }
+   ],
+   "summary": {
+    "claims": 12,
+    "value_correct": "11/11 (100%)",
+    "citation_valid": "12/12 (100%)",
+    "config_agrees": "12/12 (100%)",
+    "weight_check": "7/7 (100%)",
+    "passes_checks": "12/12 (100%)",
+    "wrong_but_passes": 0,
+    "verified": 11
+   },
+   "cached": true
+  },
+  {
+   "repo": "nvidia/Nemotron-H-8B-Base-8K",
+   "reader": "gemini-3.8-flash",
+   "code": "repo",
+   "flags": [],
+   "error": "Configured free daily request cap reached"
+  }
+ ]
+}

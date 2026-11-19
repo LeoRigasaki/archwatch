@@ -1,13 +1,15 @@
 """LLM code reader, only for architectures the deterministic rules cannot read.
 
-The model proposes claims; code decides. Every claim must cite numbered lines of the modelling code that we
-fetched at a pinned revision, quote those lines exactly, name config.json keys that exist and agree, and name
-tensor patterns that match our own safetensors headers with consistent shapes. A claim that fails any check
-goes to review. Nothing here writes data/models or the site: results are written for a person to read first.
+The model proposes claims; code decides. A claim cites numbered lines of the modelling code fetched at a pinned
+revision and quotes them exactly; its config.json keys must exist and agree. The model never names tensors: for a
+size, it cites the line that builds the module (`self.q_proj = nn.Linear(...)`), and code maps that attribute to
+its state-dict path (module tree from the code's own syntax tree) and checks the shapes in our safetensors
+headers. A claim that fails any check goes to review. Nothing here writes data/models or the site.
 """
 
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 import re
@@ -25,80 +27,53 @@ ROOT = Path(__file__).resolve().parents[2]
 CACHE = ROOT / "cache" / "code-reader"
 TRANSFORMERS = "https://raw.githubusercontent.com/huggingface/transformers/{tag}/src/transformers/models/{mt}/{name}"
 TAGS = "https://api.github.com/repos/huggingface/transformers/tags?per_page=100&page={page}"
+GITHUB_RAW = "https://raw.githubusercontent.com/{repo}/{sha}/{path}"
+GITHUB_COMMITS = "https://api.github.com/repos/{repo}/commits?until={until}&per_page=1"
 MAX_QUOTE_LINES = 40
+# Frozen prompts: editing a prompt file means a new version. The hash makes an accidental edit fail loudly.
+PROMPTS = {"code_reader_v1": "45bed7ae3932a5680d900c88b7b91a0434af27b0719d9621d4a8712bb5cab493"}
+CONFIG_CLASS = re.compile(r"(?:^|/)configuration_[\w.]+\.py$")
 
 
 # ---------------------------------------------------------------------------------------------- schema
 
 
 class Claim(BaseModel):
-    field: str = Field(description="ArchWatch field name from the list in the instructions, snake_case.")
+    field: str = Field(description="Field name from the list in the instructions, snake_case.")
     value: str = Field(description='The value as a JSON literal: 64, true, "silu", or a JSON list for per-layer types.')
-    file: str = Field(description="Code file name exactly as given, e.g. modeling_motif.py.")
+    file: str = Field(description="Code file name exactly as given in the === headers.")
     line_start: int = Field(description="First line number of the cited code (the numbers printed before '|').")
     line_end: int = Field(description="Last line number of the cited code, inclusive.")
     quote: str = Field(description="The cited lines copied exactly, without the line numbers.")
-    config_keys: list[str] = Field(description="config.json keys the code reads for this value (dotted for nested).")
-    tensor_patterns: list[str] = Field(
-        description="Tensor-name patterns from the tensor list that hold this part, with N for any index."
-    )
+    config_keys: list[str] = Field(description="config.json keys the cited code reads (dotted for nested keys).")
 
 
 class Claims(BaseModel):
     claims: list[Claim]
 
 
-FIELDS = {
-    "num_layers": "decoder layers (blocks) in the main stack",
-    "hidden_size": "model width",
-    "vocab_size": "vocabulary size (embedding rows)",
-    "context_length": "maximum positions the model is configured for",
-    "num_attention_heads": "query heads per attention layer",
-    "num_kv_heads": "key-value heads per attention layer",
-    "head_dim": "width of one query/key head",
-    "v_head_dim": "width of one value head, when it differs",
-    "attention_type": "MHA, GQA, MQA, MLA or another named mechanism",
-    "layer_types": "JSON list with one mixer kind per decoder layer, in order",
-    "mixer_type": "the sequence mixer when it is not attention (e.g. mLSTM)",
-    "moe_num_experts": "routed experts per MoE layer",
-    "moe_active_experts": "routed experts selected per token",
-    "moe_shared_experts": "always-on shared experts per MoE layer",
-    "moe_expert_intermediate": "inner width of one routed expert",
-    "ffn_intermediate": "inner width of the dense feed-forward network",
-    "dense_layers": "layers with a dense FFN instead of experts",
-    "activation": "feed-forward activation function",
-    "normalization_type": "decoder normalization (RMSNorm, LayerNorm, ...)",
-    "mla_kv_lora_rank": "MLA compressed key-value width",
-    "mla_q_lora_rank": "MLA compressed query width",
-    "mla_qk_rope_head_dim": "MLA rotary key width",
-    "sliding_window": "sliding-window size in tokens",
-    "tied_embeddings": "input embedding and output head share weights",
-    "num_mtp_layers": "multi-token prediction modules",
-}
-
-SYSTEM = """You read model source code and report architecture facts as claims.
-Rules:
-- Report only what the code and config establish. Every claim cites one file and a line range from the numbered
-  code, and quotes exactly those lines (copy them without the line numbers).
-- config_keys: the config.json keys the cited code reads to get the value. Use [] only for constants in the code.
-- tensor_patterns: patterns copied from the tensor list (with N for indices) for the weights that implement it.
-  Use [] only when no weight corresponds (e.g. an activation).
-- value is the concrete value, looked up in config.json when the code reads a config attribute. Example: the code
-  says `self.hidden_size = config.hidden_size` and config.json has "hidden_size": 4096, so value is 4096 and
-  config_keys is ["hidden_size"]. Strings only for names, e.g. "silu".
-- Report every listed field that the code and config establish; a decoder model usually establishes most of them.
-  Do not guess; omit a field you cannot cite.
-- Do not use external knowledge about the model; the files given are the only source."""
+# ---------------------------------------------------------------------------------------------- prompt
 
 
-def prompt_text(files: dict[str, str], config: dict, tensors_summary: str, fields: dict[str, str]) -> str:
-    field_list = "\n".join(f"- {name}: {meaning}" for name, meaning in fields.items())
+def load_prompt(path: Path) -> dict:
+    """A frozen prompt file: its version (the file name), system text, field list and task template."""
+    text = path.read_text()
+    version = path.stem
+    digest = hashlib.sha256(text.encode()).hexdigest()
+    if PROMPTS.get(version) != digest:
+        raise ValueError(f"{path.name} does not match its frozen sha256; a changed prompt needs a new version")
+    sections = dict(re.findall(r"^## (\w+)\n(.*?)(?=^## |\Z)", text, re.S | re.M))
+    fields = dict(re.findall(r"^- (\w+): (.+)$", sections["Fields"], re.M))
+    return dict(version=version, sha256=digest, system=sections["System"].strip(), fields=fields, task=sections["Task"])
+
+
+def prompt_text(prompt: dict, files: dict[str, str], config: dict) -> str:
     code = "\n\n".join(f"=== {name} ===\n{number(text)}" for name, text in sorted(files.items()))
     return (
-        f"Fields to report when the code establishes them:\n{field_list}\n\n"
-        f"config.json:\n{json.dumps(compact(config), indent=1, sort_keys=True)}\n\n"
-        f"Tensors from the safetensors headers (pattern, count, dtype, shape):\n{tensors_summary}\n\n"
-        f"Modelling code (line numbers added by us):\n{code}\n"
+        prompt["task"]
+        .replace("{fields}", "\n".join(f"- {k}: {v}" for k, v in prompt["fields"].items()))
+        .replace("{config}", json.dumps(compact(config), indent=1, sort_keys=True))
+        .replace("{code}", code)
     )
 
 
@@ -115,24 +90,6 @@ def compact(value, limit=400):
     if isinstance(value, list) and len(json.dumps(value)) > 4 * limit and len(value) > 64:
         return {"__omitted__": f"list of {len(value)} items"}
     return value
-
-
-INDEX = re.compile(r"\.(\d+)\.")
-
-
-def pattern_of(name: str) -> str:
-    return INDEX.sub(".N.", name)
-
-
-def summarize_tensors(tensors: dict[str, dict], limit=600) -> str:
-    groups: dict[str, list] = {}
-    for name, t in sorted(tensors.items()):
-        g = groups.setdefault(pattern_of(name), [0, t["dtype"], t["shape"]])
-        g[0] += 1
-    lines = [f"{p} | {n} | {dtype} | {shape}" for p, (n, dtype, shape) in sorted(groups.items())]
-    if len(lines) > limit:
-        lines = lines[:limit] + [f"... {len(lines) - limit} more patterns omitted"]
-    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------------------------- code sources
@@ -155,16 +112,22 @@ def _fetch(url: str, attempts: int = 3) -> bytes | None:
     return None
 
 
-def _transformers_file(tag: str, model_type: str, name: str) -> str | None:
-    cached = CACHE / "transformers" / tag / model_type / name
+def _cached_fetch(key: Path, url: str) -> str | None:
+    cached = CACHE / key
     if cached.exists():
         return cached.read_text()
-    data = _fetch(TRANSFORMERS.format(tag=tag, mt=model_type, name=name))
+    data = _fetch(url)
     if data is None:
         return None
     cached.parent.mkdir(parents=True, exist_ok=True)
     cached.write_bytes(data)
     return data.decode("utf-8", errors="replace")
+
+
+def _transformers_file(tag: str, model_type: str, name: str) -> str | None:
+    return _cached_fetch(
+        Path("transformers") / tag / model_type / name, TRANSFORMERS.format(tag=tag, mt=model_type, name=name)
+    )
 
 
 def _release_tags() -> list[tuple[int, ...]]:
@@ -183,10 +146,55 @@ def _release_tags() -> list[tuple[int, ...]]:
     return sorted({tuple(int(x) for x in m.groups()) for n in names if (m := re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", n))})
 
 
-def fetch_code(repo: str, info: dict, config: dict) -> dict:
-    """Modelling code at a pinned revision: the repo's own files, else transformers at config.transformers_version."""
-    own = sorted(f for f in info["files"] if re.fullmatch(r"(?:modeling|configuration)_[\w.]+\.py", f))
-    if any(f.startswith("modeling_") for f in own):
+def _commit_before(repo: str, until: str) -> tuple[str, str] | None:
+    """The last commit of a GitHub repo at or before a timestamp (cached)."""
+    cached = CACHE / "github" / repo.replace("/", "__") / f"commit-until-{until[:19].replace(':', '')}.json"
+    if not cached.exists():
+        batch = json.loads(_fetch(GITHUB_COMMITS.format(repo=repo, until=until)) or b"[]")
+        if not batch:
+            return None
+        cached.parent.mkdir(parents=True, exist_ok=True)
+        cached.write_text(json.dumps([batch[0]["sha"], batch[0]["commit"]["committer"]["date"]]))
+    sha, date = json.loads(cached.read_text())
+    return sha, date
+
+
+def _github_code(repo: str, info: dict, source: dict) -> dict:
+    """Code from the authors' GitHub repo at the last commit before the model's Hub release (configured per model)."""
+    released = info.get("created_at")
+    found = _commit_before(source["github"], released) if released else None
+    if not found:
+        return dict(files={}, origin={}, source=None, flags=[f"no {source['github']} commit before {released}"])
+    sha, date = found
+    files, origin = {}, {}
+    for path in source["paths"]:
+        text = _cached_fetch(
+            Path("github") / source["github"].replace("/", "__") / sha / path,
+            GITHUB_RAW.format(repo=source["github"], sha=sha, path=path),
+        )
+        if text is not None:
+            files[Path(path).name] = text
+            origin[Path(path).name] = f"https://github.com/{source['github']}/blob/{sha}/{path}"
+    flags = [
+        f"code from {source['github']} at {sha[:10]} ({date}), the last commit before the Hub release ({released}); "
+        "not the model repository's own files"
+    ]
+    return dict(
+        files=files, origin=origin, source=f"github {source['github']}@{sha[:10]}", flags=flags, version_matches=False
+    )
+
+
+def fetch_code(repo: str, info: dict, config: dict, sources: dict | None = None) -> dict:
+    """Modelling code at a pinned revision.
+
+    Order: a configured authors' repository (pinned to the release date; always capped at review), the repo's own
+    modeling_*.py at the record commit, else transformers at config.transformers_version. Configuration classes are
+    never fetched: their defaults are not the checkpoint's values.
+    """
+    if sources and repo in sources:
+        return _github_code(repo, info, sources[repo])
+    own = sorted(f for f in info["files"] if re.fullmatch(r"modeling_[\w.]+\.py", f))
+    if own:
         files = {f: hub.get_text(repo, f, revision=info["sha"]) for f in own}
         return dict(
             files={k: v for k, v in files.items() if v},
@@ -222,15 +230,140 @@ def fetch_code(repo: str, info: dict, config: dict) -> dict:
         return dict(
             files={name: text},
             origin={
-                name: TRANSFORMERS.format(tag=tag, mt=model_type, name=name).replace(
-                    "raw.githubusercontent.com/huggingface/transformers/", "github.com/huggingface/transformers/blob/"
-                )
+                name: f"https://github.com/huggingface/transformers/blob/{tag}/src/transformers/models/{model_type}/{name}"
             },
             source=f"transformers {tag}",
             flags=flags,
             version_matches=matches and not dev,
         )
     return dict(files={}, origin={}, source=None, flags=flags + [f"{name} not found in transformers releases"])
+
+
+# ---------------------------------------------------------------------------------------------- module tree
+
+
+def _callee(node) -> str | None:
+    if isinstance(node, ast.Call):
+        return _callee(node.func)
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    return None
+
+
+def _children(node, dicts) -> tuple[set[str], bool]:
+    """Classes a `self.x = ...` value builds, and whether they sit in an indexed list (ModuleList, Sequential)."""
+    if isinstance(node, ast.IfExp):
+        a, la = _children(node.body, dicts)
+        b, lb = _children(node.orelse, dicts)
+        return a | b, la or lb
+    if not isinstance(node, ast.Call):
+        return set(), False
+    name = _callee(node)
+    if name in ("ModuleList", "Sequential"):
+        kids: set[str] = set()
+        for arg in node.args:
+            elements = (
+                arg.elts
+                if isinstance(arg, (ast.List, ast.Tuple))
+                else [arg.elt]
+                if isinstance(arg, (ast.ListComp, ast.GeneratorExp))
+                else [arg]
+            )
+            for element in elements:
+                kids |= _children(element, dicts)[0]
+        return kids, True
+    if isinstance(node.func, ast.Subscript) and isinstance(node.func.value, ast.Name) and node.func.value.id in dicts:
+        return set(dicts[node.func.value.id]), False  # e.g. MIXER_TYPES[block_type](config)
+    return ({name} if name else set()), False
+
+
+def _builds(node) -> bool:
+    """A constructor call (nn.Linear, nn.Parameter, ModuleList, MIXERS[kind](...)), not getattr()/min()/a value."""
+    if isinstance(node, ast.IfExp):
+        return _builds(node.body) or _builds(node.orelse)
+    if not isinstance(node, ast.Call):
+        return False
+    if isinstance(node.func, ast.Subscript):
+        return True
+    name = _callee(node)
+    return bool(name) and name[0].isupper()
+
+
+def module_tree(files: dict[str, str]) -> dict:
+    """{class: {"bases": [...], "attrs": {attr: {"children", "list", "lines": [(file, line)]}}}} from the code itself."""
+    trees = {}
+    for fname, src in files.items():
+        try:
+            trees[fname] = ast.parse(src)
+        except SyntaxError:
+            continue
+    dicts = {}
+    for tree in trees.values():
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+                if isinstance(node.value, ast.Dict):
+                    dicts[node.targets[0].id] = [n for v in node.value.values if (n := _callee(v))]
+    classes: dict[str, dict] = {}
+    for fname, tree in trees.items():
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            entry = classes.setdefault(node.name, {"bases": [_callee(b) for b in node.bases], "attrs": {}})
+            for sub in ast.walk(node):
+                if not isinstance(sub, (ast.Assign, ast.AnnAssign)) or sub.value is None:
+                    continue
+                for target in sub.targets if isinstance(sub, ast.Assign) else [sub.target]:
+                    if (
+                        isinstance(target, ast.Attribute)
+                        and isinstance(target.value, ast.Name)
+                        and target.value.id == "self"
+                        and _builds(sub.value)  # builds a module/parameter, not a plain value
+                    ):
+                        kids, is_list = _children(sub.value, dicts)
+                        attr = entry["attrs"].setdefault(target.attr, {"children": set(), "list": False, "lines": []})
+                        attr["children"] |= kids
+                        attr["list"] |= is_list
+                        attr["lines"] += [(fname, n) for n in range(sub.lineno, (sub.end_lineno or sub.lineno) + 1)]
+    return classes
+
+
+def _attrs(classes, name, seen=()):
+    """A class's attributes including those it inherits from classes defined in the same code."""
+    if name not in classes or name in seen:
+        return {}
+    merged = {}
+    for base in classes[name]["bases"]:
+        merged.update(_attrs(classes, base, (*seen, name)))
+    merged.update(classes[name]["attrs"])
+    return merged
+
+
+def state_paths(classes: dict, root: str | None) -> dict[tuple[str, int], set[str]]:
+    """{(file, line): {state-dict module paths}} for every attribute assignment reachable from the root class."""
+    children_of = {k for c in classes.values() for a in c["attrs"].values() for k in a["children"]}
+    roots = [root] if root in classes else [c for c in classes if c not in children_of and classes[c]["attrs"]]
+    out: dict[tuple[str, int], set[str]] = {}
+
+    def walk(cls, prefix, seen):
+        for attr, a in _attrs(classes, cls).items():
+            path = prefix + [attr] + (["N"] if a["list"] else [])
+            for line in a["lines"]:
+                out.setdefault(line, set()).add(".".join(path))
+            for kid in a["children"]:
+                if kid in classes and kid not in seen and len(path) < 14:
+                    walk(kid, path, seen | {kid})
+
+    for r in roots:
+        walk(r, [], {r})
+    return out
+
+
+def tensors_under(paths: set[str], tensors: dict[str, dict]) -> list[str]:
+    """Header tensors that live under any of these module paths (a top-level prefix such as language_model. is allowed)."""
+    regexes = [re.compile(r"(?:^|\.)" + re.escape(p).replace(r"\.N", r"\.\d+") + r"(?:\.|$)") for p in paths]
+    return sorted(n for n in tensors if any(r.search(n) for r in regexes))
 
 
 # ---------------------------------------------------------------------------------------------- verification
@@ -261,58 +394,24 @@ def _resolve_key(config: dict, key: str):
     return value
 
 
-def _regex(pattern: str) -> re.Pattern:
-    return re.compile("^" + re.escape(pattern).replace(r"\.N\.", r"\.\d+\.").replace(r"\.N$", r"\.\d+") + "$")
-
-
-def _indices(names: list[str], pattern: str, marker: str) -> set[int]:
+def _indices(names: list[str], marker: str) -> set[int]:
     """Distinct indices at the N that follows `marker` (e.g. 'layers', 'experts', 'blocks')."""
-    out = set()
-    for name in names:
-        m = re.search(rf"(?:^|\.){marker}\.(\d+)\.", name)
-        if m:
-            out.add(int(m.group(1)))
-    return out
+    return {int(m.group(1)) for name in names if (m := re.search(rf"(?:^|\.){marker}\.(\d+)\.", name))}
 
 
 LAYER_MARKERS = ("layers", "blocks", "h")
-# fields the safetensors headers can confirm: a claim must name tensors for them, and the shapes must agree
+# fields the safetensors headers can confirm: the cited line must build a module whose weights are checked
 SHAPE_FIELDS = {
-    "num_layers",
-    "hidden_size",
-    "vocab_size",
-    "num_attention_heads",
-    "num_kv_heads",
-    "head_dim",
-    "v_head_dim",
-    "moe_num_experts",
-    "moe_expert_intermediate",
-    "ffn_intermediate",
-    "mla_kv_lora_rank",
-    "mla_q_lora_rank",
-    "layer_types",
-}
-NUMERIC_FIELDS = {
-    "num_layers",
-    "hidden_size",
-    "vocab_size",
-    "context_length",
-    "num_attention_heads",
-    "num_kv_heads",
-    "head_dim",
-    "v_head_dim",
-    "moe_num_experts",
-    "moe_active_experts",
-    "moe_shared_experts",
-    "moe_expert_intermediate",
-    "ffn_intermediate",
-    "dense_layers",
-    "mla_kv_lora_rank",
-    "mla_q_lora_rank",
-    "mla_qk_rope_head_dim",
-    "sliding_window",
-    "num_mtp_layers",
-}
+    "num_layers", "hidden_size", "vocab_size", "num_attention_heads", "num_kv_heads", "head_dim", "v_head_dim",
+    "moe_num_experts", "moe_expert_intermediate", "ffn_intermediate", "mla_kv_lora_rank", "mla_q_lora_rank",
+}  # fmt: skip
+NUMERIC_FIELDS = SHAPE_FIELDS | {
+    "context_length", "moe_active_experts", "moe_shared_experts", "dense_layers", "mla_qk_rope_head_dim",
+    "sliding_window", "num_mtp_layers",
+}  # fmt: skip
+BOOL_FIELDS = {"tied_embeddings"}
+# sizes that are usually plain values (self.head_dim = ...): checked by heads x head_dim = projection rows
+CROSS_CHECKED = {"num_attention_heads", "num_kv_heads", "head_dim"}
 Q_PROJ = re.compile(r"(?:q_proj|wq|query|q_b_proj)\.weight$")
 K_PROJ = re.compile(r"(?:k_proj|wk|key)\.weight$")
 
@@ -324,71 +423,82 @@ def _parse(value: str):
         return value
 
 
-def check_claim(claim: Claim, files: dict[str, str], config: dict, tensors: dict[str, dict]) -> list[str]:
-    """Problems with one claim, empty when every check passes."""
-    problems = []
+def assess(claim: Claim, code: dict, config: dict, tensors: dict[str, dict], paths: dict) -> dict:
+    """Three separate verdicts for one claim: citation, config agreement, weight check (or n/a)."""
+    citation, agreement, weights = [], [], []
+    files = code["files"]
     text = files.get(claim.file)
-    if text is None:
-        return [f"cites {claim.file}, which is not among the fetched files"]
-    if not claim.file.startswith("modeling_"):
-        problems.append(f"cites {claim.file}, the configuration class (defaults), not the modelling code")
-    lines = text.splitlines()
-    if not (1 <= claim.line_start <= claim.line_end <= len(lines)):
-        problems.append(f"line range {claim.line_start}-{claim.line_end} is outside {claim.file} (1-{len(lines)})")
-    elif claim.line_end - claim.line_start + 1 > MAX_QUOTE_LINES:
-        problems.append(f"cites {claim.line_end - claim.line_start + 1} lines; at most {MAX_QUOTE_LINES}")
-    elif _norm(claim.quote) != _norm("\n".join(lines[claim.line_start - 1 : claim.line_end])):
-        problems.append("quote does not equal the cited lines")
     value = _parse(claim.value)
+    if CONFIG_CLASS.search(claim.file):
+        citation.append(f"cites {claim.file}, a configuration class: its defaults are not this checkpoint's values")
+    if text is None:
+        citation.append(f"cites {claim.file}, which is not among the fetched modelling files")
+    else:
+        lines = text.splitlines()
+        if not (1 <= claim.line_start <= claim.line_end <= len(lines)):
+            citation.append(f"line range {claim.line_start}-{claim.line_end} is outside {claim.file} (1-{len(lines)})")
+        elif claim.line_end - claim.line_start + 1 > MAX_QUOTE_LINES:
+            citation.append(f"cites {claim.line_end - claim.line_start + 1} lines; at most {MAX_QUOTE_LINES}")
+        elif _norm(claim.quote) != _norm("\n".join(lines[claim.line_start - 1 : claim.line_end])):
+            citation.append("quote does not equal the cited lines")
+    if claim.field in BOOL_FIELDS and not isinstance(value, bool):
+        agreement.append(f"{claim.field} needs true or false, got {value!r}")
     if claim.field in NUMERIC_FIELDS and (isinstance(value, bool) or not isinstance(value, int)):
-        problems.append(f"{claim.field} needs a number, got {value!r}")
+        agreement.append(f"{claim.field} needs a number, got {value!r}")
     if isinstance(value, str) and (value in claim.config_keys or _resolve_key(config, value) is not KeyError):
-        problems.append(f"value {value!r} is a config key name, not its value")
+        agreement.append(f"value {value!r} is a config key name, not its value")
     scalars = []
     for key in claim.config_keys:
         found = _resolve_key(config, key)
         if found is KeyError:
-            problems.append(f"config key {key} does not exist")
+            agreement.append(f"config key {key} does not exist")
         elif not isinstance(found, (dict, list)):
             scalars.append((key, found))
     # only same-kind values can contradict each other: "RMSNorm" is not refuted by rms_norm_eps = 1e-05
     scalars = [(k, v) for k, v in scalars if isinstance(v, str) == isinstance(value, str)]
-    if not isinstance(value, (dict, list)) and scalars and value not in [v for _, v in scalars]:
-        if len(scalars) == 1:
-            problems.append(f"config {scalars[0][0]} = {scalars[0][1]!r}, claim says {value!r}")
-        elif not claim.tensor_patterns:
-            problems.append("value is derived from several config keys and no tensor confirms it")
-    if claim.field in SHAPE_FIELDS and not claim.tensor_patterns:
-        problems.append(f"{claim.field} is a weight shape, but the claim names no tensor to check it against")
-    names = list(tensors)
-    matched: dict[str, list[str]] = {}
-    for pattern in claim.tensor_patterns:
-        regex = _regex(pattern)
-        hits = [n for n in names if regex.match(n)]
-        if not hits:
-            problems.append(f"tensor pattern {pattern} matches no tensor in the headers")
-        matched[pattern] = hits
-    hits = sorted({n for group in matched.values() for n in group})
-    if hits and isinstance(value, (int, float)) and not isinstance(value, bool):
-        problems += _shape_problems(claim.field, value, hits, tensors)
-    if claim.field == "layer_types" and isinstance(value, list):
-        problems += _pattern_problems(value, tensors)
-    return problems
+    if not isinstance(value, (dict, list)) and len(scalars) == 1 and value != scalars[0][1]:
+        agreement.append(f"config {scalars[0][0]} = {scalars[0][1]!r}, claim says {value!r}")
+    mapped: set[str] = set()
+    for line in range(claim.line_start, claim.line_end + 1):
+        mapped |= paths.get((claim.file, line), set())
+    hits = tensors_under(mapped, tensors) if mapped else []
+    status = "n/a"
+    if claim.field in SHAPE_FIELDS:
+        if not mapped and claim.field in CROSS_CHECKED:
+            status = "cross-check"  # decided in verdicts(): heads x head_dim against the projection rows
+        elif not mapped:
+            weights.append("the cited lines build no module that reaches the model's state dict")
+        elif not hits:
+            weights.append(f"cited module {sorted(mapped)[0]} maps to no tensor in the headers")
+        elif isinstance(value, int) and not isinstance(value, bool):
+            weights += _shape_problems(claim.field, value, hits, tensors)
+        if status != "cross-check":
+            status = "failed" if weights else "passed"
+    return dict(
+        citation=citation,
+        agreement=agreement,
+        weights=weights,
+        weight_status=status,
+        module_paths=sorted(mapped),
+        tensors=len(hits),
+    )
 
 
 def _shape_problems(field: str, value, hits: list[str], tensors: dict[str, dict]) -> list[str]:
     if field == "num_layers":
-        counts = [len(_indices(hits, "", m)) for m in LAYER_MARKERS]
-        return [] if value in counts else [f"matched tensors span {max(counts)} layers, claim says {value}"]
+        counts = [len(_indices(hits, m)) for m in LAYER_MARKERS]
+        return [] if value in counts else [f"the cited module holds {max(counts)} layers, claim says {value}"]
     if field == "moe_num_experts":
-        counts = {len(_indices(hits, "", "experts"))} | {
+        counts = {len(_indices(hits, "experts"))} | {
             tensors[n]["shape"][0] for n in hits if len(tensors[n]["shape"]) == 3
         }
-        return [] if value in counts else [f"matched tensors hold {sorted(counts)} experts, claim says {value}"]
+        return [] if value in counts else [f"the cited module holds {sorted(counts)} experts, claim says {value}"]
+    if field in ("num_attention_heads", "num_kv_heads", "head_dim"):
+        return []  # not a single dimension: checked across claims (heads x head_dim = projection rows)
     dims = {d for n in hits for d in tensors[n]["shape"]}
-    if field in ("num_attention_heads", "num_kv_heads", "head_dim", "moe_active_experts", "moe_shared_experts"):
-        return []  # counts that are not a tensor dimension; checked across claims (heads x head_dim)
-    return [] if value in dims else [f"no matched tensor has a dimension equal to {value} (dims {sorted(dims)[:12]})"]
+    return (
+        [] if value in dims else [f"no tensor of the cited module has a dimension {value} (dims {sorted(dims)[:12]})"]
+    )
 
 
 def _pattern_problems(kinds: list, tensors: dict[str, dict]) -> list[str]:
@@ -432,17 +542,38 @@ def cross_checks(values: dict, tensors: dict[str, dict]) -> dict[str, list[str]]
 
 
 def verdicts(claims: list[Claim], code: dict, config: dict, tensors: dict, rule_facts: dict) -> list[dict]:
+    classes = module_tree(code["files"])
+    root = ((config.get("architectures") or [None])[0]) if isinstance(config.get("architectures"), list) else None
+    paths = state_paths(classes, root)
     rows = []
     for claim in claims:
-        problems = check_claim(claim, code["files"], config, tensors)
+        a = assess(claim, code, config, tensors, paths)
+        problems = a["citation"] + a["agreement"] + a["weights"]
+        value = _parse(claim.value)
+        if claim.field == "layer_types" and isinstance(value, list):
+            problems += _pattern_problems(value, tensors)
         if not code.get("version_matches", True):
-            problems.append("code was not read at the config's own transformers version")
-        rows.append(dict(claim.model_dump(), value=_parse(claim.value), problems=problems))
+            problems.append("code was not read at the model's own revision (see flags); capped at review")
+        rows.append(dict(claim.model_dump(), value=value, problems=problems, **a))
     values = {r["field"]: r["value"] for r in rows if not r["problems"]}
     for field, issues in cross_checks(values, tensors).items():
         for r in rows:
             if r["field"] == field:
                 r["problems"] = r["problems"] + issues
+                r["weights"] = r["weights"] + issues
+                r["weight_status"] = "failed"
+    checkable = isinstance(values.get("head_dim"), int) and any(
+        isinstance(values.get(f), int) for f in ("num_attention_heads", "num_kv_heads")
+    )
+    for r in rows:
+        if r["weight_status"] == "cross-check":
+            if checkable and not r["weights"]:
+                r["weight_status"] = "passed"
+            else:
+                issue = "no module cited and no heads x head_dim check against the projection rows was possible"
+                r["weights"] = r["weights"] + ([] if r["weights"] else [issue])
+                r["problems"] = r["problems"] + ([] if r["weights"] != [issue] else [issue])
+                r["weight_status"] = "failed"
     by_field: dict[str, set] = {}
     for r in rows:
         by_field.setdefault(r["field"], set()).add(json.dumps(r["value"], sort_keys=True))
@@ -472,27 +603,23 @@ class CodeReader(Gemini):
         self.client = client
         self.calls = 0  # calls reserved by this reader, including ones that later failed
 
-    def read(self, repo: str, commit: str, prompt: str) -> tuple[Claims, dict]:
+    def read(self, repo: str, commit: str, prompt: dict, text: str, purpose: str = "read") -> tuple[Claims, dict]:
         model = self.config["models"][self.role]["id"]
-        digest = hashlib.sha256((SYSTEM + "\n" + prompt).encode()).hexdigest()
-        cached = CACHE / "responses" / f"{commit}-{model}-{digest[:16]}.json"
-        if cached.exists():  # same commit, same prompt, same model: no new call
+        digest = hashlib.sha256((prompt["system"] + "\n" + text).encode()).hexdigest()
+        cached = CACHE / "responses" / f"{commit}-{model}-{prompt['version']}-{digest[:16]}.json"
+        if cached.exists():  # same commit, model, prompt version and prompt text: no new call
             saved = json.loads(cached.read_text())
             return Claims.model_validate_json(saved["output_text"]), dict(saved["meta"], cached=True)
-        self._reserve(len(SYSTEM.encode()) + len(prompt.encode()))
+        self._reserve(len(prompt["system"].encode()) + len(text.encode()))
         self.calls += 1
-        self._annotate(repo=repo, prompt_sha256=digest)
-        client = self.client
-        if client is None:
-            from google import genai
-
-            client = genai.Client(api_key=self.key)
+        self._annotate(repo=repo, prompt_version=prompt["version"], prompt_sha256=digest, purpose=purpose)
+        client = self.client or self._client()
         started = self.clock()
         try:
             interaction = client.interactions.create(
                 model=model,
-                input=prompt,
-                system_instruction=SYSTEM,
+                input=text,
+                system_instruction=prompt["system"],
                 response_format={"type": "text", "mime_type": "application/json", "schema": Claims.model_json_schema()},
                 generation_config={
                     "temperature": self.config["temperature"],
@@ -500,14 +627,35 @@ class CodeReader(Gemini):
                 },
                 store=False,
             )
-        except Exception as error:  # noqa: BLE001 - provider details (and keys) are never echoed
-            raise ProviderError(f"Gemini interaction failed ({type(error).__name__}); no fallback attempted") from None
-        text = interaction.output_text or ""
-        claims = Claims.model_validate_json(text)
-        meta = dict(model=model, prompt_sha256=digest, elapsed_seconds=round(self.clock() - started, 3), cached=False)
+        except Exception as error:  # noqa: BLE001 - the key is stripped from anything echoed
+            detail = str(error).replace(self.key, "<key>")[:160]
+            raise ProviderError(f"Gemini interaction failed ({type(error).__name__}: {detail}); no fallback") from None
+        output = interaction.output_text or ""
+        claims = Claims.model_validate_json(output)
+        meta = dict(
+            model=model,
+            prompt_version=prompt["version"],
+            prompt_sha256=digest,
+            elapsed_seconds=round(self.clock() - started, 3),
+            cached=False,
+        )
         cached.parent.mkdir(parents=True, exist_ok=True)
-        cached.write_text(json.dumps(dict(output_text=text, meta=meta), indent=1))
+        cached.write_text(json.dumps(dict(output_text=output, meta=meta), indent=1))
         return claims, meta
+
+    def _client(self):
+        """One request per reserved call: the SDK's automatic retries are off, because every retry is a real
+        request against the free daily limit that the ledger would never see. A stalled call times out."""
+        from google import genai
+        from google.genai import types
+
+        return genai.Client(
+            api_key=self.key,
+            http_options=types.HttpOptions(
+                timeout=int(self.config["request_timeout_seconds"] * 1000),
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
+        )
 
     def _annotate(self, **fields):
         """Add who/what to the entry _reserve just wrote, so every call in the ledger names its purpose."""
