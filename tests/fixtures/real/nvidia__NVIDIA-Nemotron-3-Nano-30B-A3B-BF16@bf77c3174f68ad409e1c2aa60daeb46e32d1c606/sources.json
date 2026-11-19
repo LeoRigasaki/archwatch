@@ -1,0 +1,22 @@
+{
+ "README.md": {
+  "sha256": "faec6eef185d9993d92a0f03c6ad872381bf252b21699bf5b3ecb52fdeac112b",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16/resolve/bf77c3174f68ad409e1c2aa60daeb46e32d1c606/README.md"
+ },
+ "config.json": {
+  "sha256": "dd9fa380ac107b0477db5a26108db9febe6378e7bb3966a107944853ec4f76f8",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16/resolve/bf77c3174f68ad409e1c2aa60daeb46e32d1c606/config.json"
+ },
+ "configuration_nemotron_h.py": {
+  "sha256": "09a3179517667d302068c2f8c96c9f059297418a829bf3cb96273040563b955c",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16/resolve/bf77c3174f68ad409e1c2aa60daeb46e32d1c606/configuration_nemotron_h.py"
+ },
+ "model.safetensors.index.json": {
+  "sha256": "e4f8729dca1df07816a914b620c6c32976c89b74061740507e43d5a0279ff0ad",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16/resolve/bf77c3174f68ad409e1c2aa60daeb46e32d1c606/model.safetensors.index.json"
+ },
+ "modeling_nemotron_h.py": {
+  "sha256": "4d353ce6e8f495d043f2d8c5acd13496a84ba2b2d45da8279797a55f680309d9",
+  "url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16/resolve/bf77c3174f68ad409e1c2aa60daeb46e32d1c606/modeling_nemotron_h.py"
+ }
+}

@@ -17,6 +17,9 @@ def _src_line(src: str, lineno: int) -> str:
     return src.splitlines()[lineno - 1].strip()
 
 
+VISION_CODE = re.compile(r"modeling_(?:radio|siglip|clip|vit|intern_?vit|\w*vision\w*|\w*visual\w*)\.py$")
+
+
 def scan(files: dict[str, str]) -> dict:
     out: dict = {"files": sorted(files), "classes": [], "facts": {}}
     facts = out["facts"]
@@ -30,7 +33,8 @@ def scan(files: dict[str, str]) -> dict:
             if isinstance(node, ast.ClassDef):
                 doc = (ast.get_docstring(node) or "").split("\n")[0][:160]
                 out["classes"].append({"name": node.name, "file": fname, "line": node.lineno, "doc": doc})
-                if re.search(r"MLP|FFN|FeedForward|Feedforward", node.name):
+                # Vision-encoder files (e.g. modeling_radio.py) describe the image tower, not the decoder FFN.
+                if re.search(r"MLP|FFN|FeedForward|Feedforward", node.name) and not VISION_CODE.search(fname):
                     for call in ast.walk(node):
                         if (
                             isinstance(call, ast.Call)

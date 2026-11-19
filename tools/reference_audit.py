@@ -131,6 +131,11 @@ def _analyze_once(repo: str) -> dict:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(record, indent=1, default=str))
         return dict(repo=repo, status="analyzed", commit=info["sha"])
+    except pipeline.OutOfScope as skipped:  # e.g. a PEFT adapter: not an architecture source, like a fine-tune
+        result = dict(repo=repo, status="out_of_scope", error=str(skipped)[:300])
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(result))
+        return result
     except Exception as error:  # noqa: BLE001 - every failure is reported, never hidden
         text = f"{type(error).__name__}: {error}"[:300]
         gated = any(s in text for s in ("401", "403", "Gated", "gated", "restricted"))
@@ -140,10 +145,18 @@ def _analyze_once(repo: str) -> dict:
         return result
 
 
-def analyze(rows: list[dict], workers: int = 2) -> list[dict]:
+def analyze(rows: list[dict], workers: int = 2, only: set[str] | None = None) -> list[dict]:
     repos = [r["repo"] for r in rows if r["status"] == "mapped"]
+    previous = {}
+    if only:  # re-run just these repos; every other row keeps its last run
+        previous = {r["repo"]: r for r in json.loads((CACHE / "runs.json").read_text())}
+        unknown = only - set(repos)
+        if unknown:
+            raise SystemExit(f"not in the mapping: {sorted(unknown)}")
+    targets = [r for r in repos if not only or r in only]
     with futures.ThreadPoolExecutor(workers) as pool:
-        results = list(pool.map(analyze_one, repos))
+        fresh = dict(zip(targets, pool.map(analyze_one, targets)))
+    results = [fresh.get(r) or previous[r] for r in repos if r in fresh or r in previous]
     (CACHE / "runs.json").write_text(json.dumps(results, indent=1))
     return results
 
@@ -666,7 +679,8 @@ def report(meta: dict, mapping_rows: list, runs: list, rows: list, moved: list |
         "## Not analyzed",
         "",
         "Not counted in the groups above: there is no ArchWatch value to compare. `access_needed` repos need the owner "
-        "to request access; `pipeline_error` repos use formats the extractor does not support yet (open ArchWatch work).",
+        "to request access; `pipeline_error` repos use formats the extractor does not support yet (open ArchWatch work); "
+        "`out_of_scope` repos are not architecture sources (e.g. PEFT adapters), skipped like fine-tunes.",
         "",
         "| Entry | Repo | Status | Reason |",
         "|---|---|---|---|",
@@ -689,6 +703,7 @@ def main():
     parser.add_argument("--repo", help="reference repository, owner/name (or REFERENCE_REPO)")
     parser.add_argument("--path", help="YAML file in that repository (or REFERENCE_PATH)")
     parser.add_argument("--commit", help="answer-sheet commit (default: latest commit touching the file)")
+    parser.add_argument("--only", help="comma-separated Hub repos to re-analyze; the rest keep their last run")
     args = parser.parse_args()
     config = ref.reference_config(args.repo, args.path, args.commit)
     file_commit = config["commit"]
@@ -697,7 +712,9 @@ def main():
     CACHE.mkdir(parents=True, exist_ok=True)
     global REFRESH
     REFRESH = not args.reanalyze
-    runs = analyze(rows_map) if (args.analyze or args.reanalyze) else json.loads((CACHE / "runs.json").read_text())
+    only = set(filter(None, (args.only or "").split(","))) or None
+    rerun = args.analyze or args.reanalyze or only
+    runs = analyze(rows_map, only=only) if rerun else json.loads((CACHE / "runs.json").read_text())
     causes_path = ref.REPORTS / "audit-causes.yaml"  # optional, hand-checked, kept out of git
     causes = (yaml.safe_load(causes_path.read_text()) or {}) if causes_path.exists() else {}
     records = load_records()

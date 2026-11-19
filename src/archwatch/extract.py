@@ -6,6 +6,7 @@ so the verifier and the published page can show where each number was read.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .concept_extract import config_facts
@@ -43,10 +44,15 @@ class _Config(dict):
         return (self[key] for key in self)
 
 
+BULK_LEAVES = ("quantization_config.quantized_layers", "quantization_config.ignore")
+
+
 def _config_paths(value, prefix=""):
     for key, child in value.items():
         path = prefix + key
-        if isinstance(child, dict) and child:
+        if path.endswith(BULK_LEAVES):
+            yield path  # a per-tensor quantization map: one setting, read as a whole
+        elif isinstance(child, dict) and child:
             yield from _config_paths(child, path + ".")
         elif isinstance(child, list) and any(isinstance(item, dict) for item in child):
             for i, item in enumerate(child):
@@ -86,6 +92,21 @@ def _first(cfg: dict, keys: list[str], prefix: str) -> Fact | None:
     return None
 
 
+# Nemotron-H blocks hold exactly one operator each: Mamba-2, attention, a dense MLP or an MoE layer.
+NEMOTRON_PATTERN = {"M": "mamba2", "*": "full_attention", "-": "mlp", "E": "moe"}
+NEMOTRON_BLOCKS = {"mamba": "mamba2", "attention": "full_attention", "mlp": "mlp", "moe": "moe"}
+
+
+def _num_layers(text: dict, prefix: str) -> Fact:
+    """Decoder depth under the config's own naming: HF, GPT-2 legacy, Mistral-native, or a Nemotron block list."""
+    found = _first(text, ["num_hidden_layers", "n_layer", "n_layers"], prefix)
+    if found:
+        return found
+    if text.get("model_type") == "nemotron_h" and isinstance(text.get("layers_block_type"), list):
+        return len(text["layers_block_type"]), f"derived:len({prefix}layers_block_type)"
+    raise KeyError("num_hidden_layers")
+
+
 def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str, int | None]:
     """Return a per-layer mixer list (0-based), the evidence, and the index base the config used."""
     model_type = str(text.get("model_type") or "")
@@ -93,13 +114,14 @@ def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str
         return ["compressed_attention"] * n_layers, f"config:{prefix}model_type/compress_ratios", None
     if text.get("model_type") == "nemotron_h" and text.get("hybrid_override_pattern"):
         pattern = text["hybrid_override_pattern"]
-        if len(pattern) != n_layers or set(pattern) - set("M*-"):
+        if len(pattern) != n_layers or set(pattern) - set(NEMOTRON_PATTERN):
             raise ValueError("Invalid Nemotron-H block pattern")
-        return (
-            [{"M": "mamba2", "*": "full_attention", "-": "mlp"}[p] for p in pattern],
-            f"config:{prefix}hybrid_override_pattern",
-            None,
-        )
+        return [NEMOTRON_PATTERN[p] for p in pattern], f"config:{prefix}hybrid_override_pattern", None
+    if text.get("model_type") == "nemotron_h" and isinstance(text.get("layers_block_type"), list):
+        blocks = text["layers_block_type"]
+        if len(blocks) != n_layers or set(blocks) - set(NEMOTRON_BLOCKS):
+            raise ValueError("Invalid Nemotron-H layers_block_type")
+        return [NEMOTRON_BLOCKS[b] for b in blocks], f"config:{prefix}layers_block_type", None
     if isinstance(text.get("layer_types"), list):
         mapping = {
             "conv": "short_conv",
@@ -150,15 +172,20 @@ def _layer_types(text: dict, prefix: str, n_layers: int) -> tuple[list[str], str
 
 
 def _extract(config: dict) -> dict[str, Fact]:
-    text, prefix = (config["text_config"], "text_config.") if "text_config" in config else (config, "")
+    text, prefix = config, ""
+    for nested in ("text_config", "llm_config"):
+        if isinstance(config.get(nested), dict):
+            text, prefix = config[nested], nested + "."
+            break
     f: dict[str, Fact] = {}
 
     f["architecture_class"] = ((config.get("architectures") or ["?"])[0], "config:architectures")
     f["model_type"] = (config.get("model_type"), "config:model_type")
 
-    n_layers = text["num_hidden_layers"]
-    f["num_layers"] = (n_layers, f"config:{prefix}num_hidden_layers")
-    f["hidden_size"] = (text["hidden_size"], f"config:{prefix}hidden_size")
+    f["num_layers"] = _num_layers(text, prefix)
+    n_layers = f["num_layers"][0]
+    f["hidden_size"] = _first(text, ["hidden_size", "n_embd", "dim"], prefix) or (None, f"config:{prefix}hidden_size")
+    hidden = f["hidden_size"][0]
     # Structured mechanisms remain source facts even when the graph/cache
     # renderer does not yet qualify their topology or sharing semantics.
     for field, source in (
@@ -184,6 +211,17 @@ def _extract(config: dict) -> dict[str, Fact]:
     mtp = _first(text, ["num_nextn_predict_layers", "mtp_num_hidden_layers"], prefix)
     if mtp:
         f["num_mtp_layers"] = mtp
+    # Nemotron-H MTP: the blocks of each prediction module (counted as MTP, not as decoder layers)
+    if isinstance(text.get("mtp_layers_block_type"), list):
+        f["mtp_block_types"] = (
+            [NEMOTRON_BLOCKS.get(b, b) for b in text["mtp_layers_block_type"]],
+            f"config:{prefix}mtp_layers_block_type",
+        )
+    elif text.get("mtp_hybrid_override_pattern"):
+        f["mtp_block_types"] = (
+            [NEMOTRON_PATTERN.get(b, b) for b in text["mtp_hybrid_override_pattern"]],
+            f"config:{prefix}mtp_hybrid_override_pattern",
+        )
     if text.get("kv_source_layers"):
         f["shared_kv_layers"] = (
             sum(i != source for i, source in enumerate(text["kv_source_layers"])),
@@ -195,7 +233,8 @@ def _extract(config: dict) -> dict[str, Fact]:
     if text.get("model_type") == "dory":
         f["generation_type"] = ("latent_recurrent", f"config:{prefix}n_recurrent_loops/recurrent_kv_cache_mode")
     if text.get("model_type") == "nemotron_h":
-        f["block_layout"] = ("standalone", f"config:{prefix}hybrid_override_pattern (one operator per block)")
+        pattern_key = "hybrid_override_pattern" if text.get("hybrid_override_pattern") else "layers_block_type"
+        f["block_layout"] = ("standalone", f"config:{prefix}{pattern_key} (one operator per block)")
         for key, source in (
             ("mamba_num_heads", "mamba_num_heads"),
             ("mamba_head_dim", "mamba_head_dim"),
@@ -211,7 +250,7 @@ def _extract(config: dict) -> dict[str, Fact]:
             "derived:PhiDecoderLayer parallel attention/MLP residual rule (Transformers v4.37.0)",
         )
     f["vocab_size"] = (text.get("vocab_size"), f"config:{prefix}vocab_size")
-    ctx = _first(text, ["max_position_embeddings", "max_seq_len", "seq_length"], prefix)
+    ctx = _first(text, ["max_position_embeddings", "max_seq_len", "seq_length", "n_positions"], prefix)
     if ctx:
         f["context_length"] = ctx
     tie = config.get("tie_word_embeddings") if "tie_word_embeddings" in config else text.get("tie_word_embeddings")
@@ -228,10 +267,17 @@ def _extract(config: dict) -> dict[str, Fact]:
     f["layer_type_counts"] = (counts, ev)
 
     # attention
-    heads = text.get("num_attention_heads")
-    kv = text.get("num_key_value_heads", heads)
-    f["num_attention_heads"] = (heads, f"config:{prefix}num_attention_heads")
-    f["num_kv_heads"] = (kv, f"config:{prefix}num_key_value_heads")
+    heads_fact = _first(text, ["num_attention_heads", "n_head", "n_heads"], prefix)
+    heads = heads_fact[0] if heads_fact else None
+    kv_fact = _first(text, ["num_key_value_heads", "n_kv_heads"], prefix)
+    kv = kv_fact[0] if kv_fact else heads
+    f["num_attention_heads"] = heads_fact or (None, f"config:{prefix}num_attention_heads")
+    if kv_fact:
+        f["num_kv_heads"] = kv_fact
+    elif heads_fact and not heads_fact[1].endswith("num_attention_heads"):
+        f["num_kv_heads"] = (kv, f"derived:{heads_fact[1].split(':', 1)[1]} (no separate key-value head key)")
+    else:
+        f["num_kv_heads"] = (kv, f"config:{prefix}num_key_value_heads")
     if text.get("kv_lora_rank") and text.get("qk_nope_head_dim") is not None:
         # MLA: a query/key head is the no-RoPE part plus the RoPE part; values have their own width
         f["head_dim"] = (
@@ -241,7 +287,7 @@ def _extract(config: dict) -> dict[str, Fact]:
         f["v_head_dim"] = (text.get("v_head_dim"), f"config:{prefix}v_head_dim")
     else:
         f["head_dim"] = _first(text, ["head_dim", "attention_head_dim"], prefix) or (
-            text["hidden_size"] // heads if heads else None,
+            hidden // heads if heads and hidden else None,
             "derived:hidden_size/num_attention_heads",
         )
     if text.get("kv_lora_rank"):
@@ -295,11 +341,13 @@ def _extract(config: dict) -> dict[str, Fact]:
             mi = _first(text, ["intermediate_size"], prefix)
         if mi:
             f["moe_expert_intermediate"] = mi
-        lat = _first(text, ["routed_expert_hidden_size"], prefix)
+        lat = _first(text, ["routed_expert_hidden_size", "moe_latent_size"], prefix)
         if lat:
             f["moe_latent_dim"] = lat
         fk = _first(text, ["first_k_dense_replace"], prefix)
         f["dense_layers"] = (fk[0] if fk else 0, fk[1] if fk else "default:0")
+        if text.get("model_type") == "nemotron_h":
+            f["dense_layers"] = (types.count("mlp"), ev + " (MLP blocks)")
         f["dense_ffn_intermediate"] = (text.get("intermediate_size"), f"config:{prefix}intermediate_size")
         if text.get("model_type") == "llama4_text":
             step = text["interleave_moe_layer_step"]
@@ -316,9 +364,14 @@ def _extract(config: dict) -> dict[str, Fact]:
             m in mixers for m in ("short_conv", "kda_linear", "linear_attention", "mamba2")
         )
         f["decoder_type"] = ("Hybrid (dense)" if hybrid else "Dense", ev if hybrid else "derived:no expert keys")
-        width = text.get("block_ff_dim") if "block_ff_dim" in text else text.get("intermediate_size")
-        width_key = "block_ff_dim" if "block_ff_dim" in text else "intermediate_size"
+        width_key = next(
+            (key for key in ("block_ff_dim", "intermediate_size", "n_inner") if key in text), "intermediate_size"
+        )
+        width = text.get(width_key)
         f["ffn_intermediate"] = (width, f"config:{prefix}{width_key}")
+        if width is None and text.get("model_type") == "gpt2" and hidden:
+            # GPT2MLP: inner_dim = n_inner if n_inner is not None else 4 * hidden_size
+            f["ffn_intermediate"] = (4 * hidden, f"derived:4 * {prefix}n_embd (GPT-2 default when n_inner is null)")
         if width is not None and text.get("block_auto_adjust_ff_dim") is True:
             # Lfm2MLP applies these operations only inside the auto-adjust branch.
             multiplier = text.get("block_ffn_dim_multiplier", 1.0)
@@ -333,7 +386,9 @@ def _extract(config: dict) -> dict[str, Fact]:
                 f"derived:Lfm2MLP({prefix}{width_key}={width}, block_auto_adjust_ff_dim=true, "
                 f"block_ffn_dim_multiplier={multiplier}, block_multiple_of={multiple})",
             )
-    act = _first(text, ["hidden_act", "hidden_activation", "mlp_hidden_act", "activation"], prefix)
+    act = _first(
+        text, ["hidden_act", "hidden_activation", "mlp_hidden_act", "activation", "activation_function"], prefix
+    )
     if act:
         f["activation"] = act
 
@@ -364,6 +419,7 @@ def _extract(config: dict) -> dict[str, Fact]:
         )
 
     q = text.get("quantization_config") or config.get("quantization_config")
+    q_where = prefix if text.get("quantization_config") else ""
     if q:
         fmt = q.get("format") or q.get("quant_method")
         bits = None
@@ -371,9 +427,9 @@ def _extract(config: dict) -> dict[str, Fact]:
             bits = (g.get("weights") or {}).get("num_bits", bits)
         f["released_weights_format"] = (
             f"{fmt}" + (f" ({bits}-bit)" if bits else ""),
-            f"config:{prefix}quantization_config",
+            f"config:{q_where}quantization_config",
         )
-        f["_quant_bits"] = (bits, f"config:{prefix}quantization_config")
+        f["_quant_bits"] = (bits, f"config:{q_where}quantization_config")
     else:
         f["released_weights_format"] = (
             str(config.get("dtype") or config.get("torch_dtype") or text.get("dtype")),
@@ -389,3 +445,75 @@ def _extract(config: dict) -> dict[str, Fact]:
         f["vision_hidden_size"] = (vc.get("vt_hidden_size") or vc.get("hidden_size"), "config:vision_config")
     f.update(config_facts(config))
     return f
+
+
+# Mistral-native params.json -> the HF-style keys the extractor reads. Each entry: (HF key, params.json path).
+MISTRAL_PARAMS = (
+    ("hidden_size", "dim"),
+    ("num_hidden_layers", "n_layers"),
+    ("num_attention_heads", "n_heads"),
+    ("num_key_value_heads", "n_kv_heads"),
+    ("intermediate_size", "hidden_dim"),
+    ("vocab_size", "vocab_size"),
+    ("tie_word_embeddings", "tied_embeddings"),
+    ("rope_theta", "rope_theta"),
+    ("rms_norm_eps", "norm_eps"),
+    ("q_lora_rank", "q_lora_rank"),
+    ("kv_lora_rank", "kv_lora_rank"),
+    ("qk_rope_head_dim", "qk_rope_head_dim"),
+    ("qk_nope_head_dim", "qk_nope_head_dim"),
+    ("v_head_dim", "v_head_dim"),
+    ("head_dim", "head_dim"),
+    ("n_routed_experts", "moe.num_experts"),
+    ("num_experts_per_tok", "moe.num_experts_per_tok"),
+    ("first_k_dense_replace", "moe.first_k_dense_replace"),
+    ("moe_intermediate_size", "moe.expert_hidden_dim"),
+    ("n_shared_experts", "moe.num_shared_experts"),
+    ("rope_scaling", "yarn"),
+    ("quantization_config", "quantization_config"),
+)
+
+
+def _dig(value, path):
+    for part in path.split("."):
+        if not isinstance(value, dict) or part not in value:
+            return None
+        value = value[part]
+    return value
+
+
+def extract_mistral_params(params: dict):
+    """Facts from a Mistral-native params.json; every evidence string names params.json and the native key."""
+    cfg, origin = {}, {}
+    for hf_key, native in MISTRAL_PARAMS:
+        value = _dig(params, native)
+        if value is not None:
+            cfg[hf_key], origin[hf_key] = value, native
+    # Context: max_seq_len is the served length; max_position_embeddings is the RoPE table it can address.
+    for native in ("max_seq_len", "max_position_embeddings"):
+        if params.get(native) is not None:
+            cfg["max_position_embeddings"], origin["max_position_embeddings"] = params[native], native
+            break
+    vision = params.get("vision_encoder")
+    if isinstance(vision, dict):
+        cfg["vision_config"] = {k: vision[k] for k in ("num_hidden_layers", "hidden_size") if k in vision}
+        origin.update({f"vision_config.{k}": f"vision_encoder.{k}" for k in cfg["vision_config"]})
+    facts, coverage = extract_with_usage(cfg)
+
+    def native(evidence):
+        if not isinstance(evidence, str):
+            return evidence
+        for hf_key in sorted(origin, key=len, reverse=True):
+            evidence = re.sub(rf"config:{re.escape(hf_key)}\b", f"params.json:{origin[hf_key]}", evidence)
+            evidence = re.sub(rf"(derived:[^ ]*?)\b{re.escape(hf_key)}\b", rf"\g<1>{origin[hf_key]}", evidence)
+        evidence = evidence.replace("config:vision_config", "params.json:vision_encoder")
+        evidence = evidence.replace("config:architectures", "params.json:(no architectures key)")
+        evidence = evidence.replace("config:model_type", "params.json:(no model_type key)")
+        return evidence.replace("config:", "params.json:")  # anything else was read from the same file
+
+    facts = {k: (v[0], native(v[1])) for k, v in facts.items()}
+    consumed_native = {origin.get(p.split(".")[0], p) if p.split(".")[0] in origin else p for p in coverage["consumed"]}
+    consumed_native |= {origin[p] for p in coverage["consumed"] if p in origin}
+    every = set(_config_paths(params))
+    used = {p for p in every if any(p == c or p.startswith(c + ".") for c in consumed_native)}
+    return facts, {"consumed": sorted(used), "unconsumed": sorted(every - used), "source": "params.json"}

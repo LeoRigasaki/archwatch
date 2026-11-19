@@ -64,13 +64,33 @@ def native_expert_bits_of(cfg: dict) -> int | None:
     return 4 if dtype == "fp4" else None
 
 
+class OutOfScope(ValueError):
+    """The repository is not a model architecture ArchWatch analyzes (e.g. a PEFT adapter); skipped, not failed."""
+
+
 def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -> dict:
     # Refresh once per analysis; every subsequent file/header read uses this snapshot.
     info = info or hub.repo_info(repo, refresh=True)
+    from .watcher import derivative_relation
+
+    if derivative_relation(info) == "adapter" or "adapter_config.json" in info["files"]:
+        raise OutOfScope(
+            "Adapter repository (PEFT weights on a base model): out of scope like fine-tunes; "
+            "the base model's own repository is the architecture source"
+        )
     cfg = hub.get_json(repo, "config.json", revision=info["sha"])
-    if not isinstance(cfg, dict):
+    config_file = "config.json"
+    if isinstance(cfg, dict):
+        facts, config_coverage = extract.extract_with_usage(cfg)
+    elif "params.json" in info["files"]:
+        # Mistral-native release: no HF config.json, only params.json next to consolidated-*.safetensors
+        cfg = hub.get_json(repo, "params.json", revision=info["sha"])
+        if not isinstance(cfg, dict):
+            raise ValueError("params.json is not a JSON object")
+        facts, config_coverage = extract.extract_mistral_params(cfg)
+        config_file = "params.json"
+    else:
         raise ValueError("No readable root config.json; this source format requires a separate adapter")
-    facts, config_coverage = extract.extract_with_usage(cfg)
     bits = facts.get("_quant_bits", (None, ""))[0]
     native_expert_bits = native_expert_bits_of(cfg)
     num_layers = facts["num_layers"][0]
@@ -123,12 +143,16 @@ def analyze(repo: str, with_weights: bool = True, *, info: dict | None = None) -
         "license": info.get("license_name") or info.get("license"),
         "hub_metadata": {k: info.get(k) for k in ("base_model", "base_model_relation", "tags")},
         "analyzed_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "config_file": config_file,
         "facts": {k: {"value": v[0], "evidence": v[1]} for k, v in facts.items() if not k.startswith("_")},
         "config_coverage": config_coverage,
         "source_files": sorted(
             f
             for f in info["files"]
-            if f in ("config.json", "README.md") or f in py or f.endswith((".safetensors", ".safetensors.index.json"))
+            if f in ("config.json", "params.json", "README.md")
+            or f in py
+            or f.endswith((".safetensors", ".safetensors.index.json"))
+            or hub.PER_SHARD_INDEX.match(f)
         ),
         "params": {"counted_from_weights": wcount, "active": active},
         "cache": mem,

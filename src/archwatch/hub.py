@@ -134,7 +134,32 @@ def weight_shards(repo: str, info: dict) -> list[str]:
         listed = set((index.get("weight_map") or {}).values())
         if listed and listed <= set(shards):
             shards = [x for x in shards if x in listed or not x.startswith("consolidated")]
+    if per_shard_indexes(info):
+        # Nemotron-3 Ultra also ships one weight-map JSON per shard: they must name exactly the shards counted.
+        listed = set(shard_index_map(repo, info).values())
+        if listed != set(shards):
+            raise ValueError("Per-shard index files do not list exactly the safetensors shards being counted")
     return shards
+
+
+PER_SHARD_INDEX = re.compile(r"^model-\d+-of-\d+\.json$")
+
+
+def per_shard_indexes(info: dict) -> list[str]:
+    """Some exports (Nemotron-3 Ultra) ship one small weight-map JSON per shard instead of one index."""
+    return sorted(x for x in info["files"] if PER_SHARD_INDEX.match(x))
+
+
+def shard_index_map(repo: str, info: dict) -> dict[str, str]:
+    """{tensor name: shard} merged from the per-shard index files; each file must map only to its own shard."""
+    merged: dict[str, str] = {}
+    for name in per_shard_indexes(info):
+        weight_map = (get_json(repo, name, revision=info["sha"]) or {}).get("weight_map") or {}
+        own = name.removesuffix(".json") + ".safetensors"
+        if set(weight_map.values()) - {own}:
+            raise ValueError(f"{name} maps tensors to another shard")
+        merged.update(weight_map)
+    return merged
 
 
 def safetensors_headers(repo: str, *, info: dict | None = None) -> dict[str, dict]:

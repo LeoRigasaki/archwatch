@@ -80,6 +80,7 @@ TO_WEIGHT_KIND = {
     "indexed_mla": "dsa_mla",
     "mamba2": "mamba2",
     "mlp": "mlp",
+    "moe": "moe",
     "kda_linear": "linear_delta",
     "gated_dsa_mla": "dsa_mla",
     "full_attention_mla": "mla",
@@ -229,13 +230,18 @@ def verify(
                     ],
                 )
             )
+        # Nemotron-H blocks hold one operator each: only MLP blocks are dense FFN layers (Mamba/attention have none)
+        standalone = V.get("block_layout", (None,))[0] == "standalone"
         out.append(
             check(
                 "dense_layers",
                 [
                     c("dense_layers"),
                     k("dense_layers"),
-                    w(V["num_layers"][0] - wcount["moe_layers"], "layers without expert tensors"),
+                    w(
+                        wkinds.count("mlp") if standalone and wkinds else V["num_layers"][0] - wcount["moe_layers"],
+                        "standalone MLP blocks" if standalone and wkinds else "layers without expert tensors",
+                    ),
                 ],
             )
         )
@@ -279,6 +285,17 @@ def verify(
                 [
                     {"value": from_config, "evidence": V["layer_types"][1] + " (mapped to weight-level kinds)"},
                     {"value": wkinds, "evidence": "weights:tensor names per layer"},
+                ],
+            )
+        )
+    if "mtp_block_types" in V:
+        # Nemotron-H MTP: the config's block list for the prediction module must match the mtp.layers.N groups stored
+        out.append(
+            check(
+                "mtp_block_count",
+                [
+                    {"value": len(V["mtp_block_types"][0]), "evidence": "derived:len(" + V["mtp_block_types"][1] + ")"},
+                    w(wshape.get("mtp_blocks"), "distinct mtp.layers.N groups"),
                 ],
             )
         )
