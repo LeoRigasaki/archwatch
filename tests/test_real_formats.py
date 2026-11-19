@@ -2,11 +2,15 @@
 
 Fixtures under tests/fixtures/real/<repo>@<commit>/ are the Hub files at that commit (config.json or
 params.json, README, modelling code, index files) plus the safetensors headers read with range requests.
-No network: the Hub client is pointed at the fixture folder.
+Files whose licences do not allow redistribution here (NVIDIA's model files, including modelling code) are
+listed in sources.json as {url at the pinned commit, sha256}: tests download them into cache/ (gitignored) and
+verify the hash. The Hub client is pointed at the fixture folder; nothing else touches the network.
 """
 
 import gzip
+import hashlib
 import json
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -21,16 +25,50 @@ def fixture_dir(repo):
     return match
 
 
+DOWNLOADS = Path(__file__).resolve().parents[1] / "cache" / "test-fixtures"
+
+
+def sourced(folder, name):
+    """A file that is not redistributed here: fetched from its pinned Hub URL into cache/ and hash-checked."""
+    manifest = folder / "sources.json"
+    entry = json.loads(manifest.read_text()).get(name) if manifest.exists() else None
+    if entry is None:
+        return None
+    target = DOWNLOADS / folder.name / name
+    if not target.exists():
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with urllib.request.urlopen(entry["url"], timeout=120) as response:
+            data = response.read()
+        if hashlib.sha256(data).hexdigest() != entry["sha256"]:
+            raise AssertionError(f"{name}: downloaded bytes do not match the pinned sha256")
+        target.write_bytes(data)
+    data = target.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == entry["sha256"], f"{name}: cached copy changed"
+    return data.decode("utf-8")
+
+
 def read(folder, name):
     plain, packed = folder / name, folder / (name + ".gz")
     if plain.exists():
         return plain.read_text()
     if packed.exists():
         return gzip.decompress(packed.read_bytes()).decode()
-    bundle = folder / "per_shard_index.json.gz"
-    if bundle.exists():
-        return json.loads(gzip.decompress(bundle.read_bytes())).get(name)
-    return None
+    return sourced(folder, name)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def prefetched():
+    """Download every manifest-listed file once, in parallel (Ultra lists 113 per-shard index files)."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    jobs = [
+        (f, n)
+        for f in FIXTURES.iterdir()
+        if (f / "sources.json").exists()
+        for n in json.loads((f / "sources.json").read_text())
+    ]
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        list(pool.map(lambda job: sourced(*job), jobs))
 
 
 @pytest.fixture
@@ -179,3 +217,17 @@ def test_mistral_params_prefer_the_served_sequence_length():
 def test_btl3_adapter_is_skipped_as_out_of_scope(offline):
     with pytest.raises(pipeline.OutOfScope, match="out of scope like fine-tunes"):
         offline("badtheorylabs/BTL-3")
+
+
+def test_fixtures_redistribute_no_third_party_model_files():
+    for folder in FIXTURES.iterdir():
+        stored = {p.name.removesuffix(".gz") for p in folder.iterdir()}
+        assert not [n for n in stored if n.endswith(".py")], folder.name  # modelling code is never copied here
+        licence = (json.loads((folder / "repo_info.json").read_text()).get("license") or "").lower()
+        if licence not in ("mit", "apache-2.0"):
+            assert stored <= {"repo_info.json", "tensors.json", "sources.json"}, folder.name
+        if (folder / "sources.json").exists():
+            listed = json.loads((folder / "sources.json").read_text())
+            assert not set(listed) & stored and all(
+                e["url"].split("/resolve/")[1].startswith(folder.name.split("@")[1]) for e in listed.values()
+            )

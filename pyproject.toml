@@ -29,7 +29,7 @@ testpaths = ["tests"]
 [tool.ruff]
 target-version = "py312"
 line-length = 120
-# Upstream modelling code kept byte-for-byte as test fixtures; not ArchWatch code.
+# Test fixtures are real files kept byte-for-byte; never reformat them.
 extend-exclude = ["tests/fixtures/real"]
 force-exclude = true
 
