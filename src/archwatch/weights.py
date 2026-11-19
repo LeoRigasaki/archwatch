@@ -16,6 +16,8 @@ SCALE_SUFFIXES = (
     "weight_scale_2",
     "weight_zero_point",
     "qscale_weight",
+    "k_scale",  # KV-cache quantization scales (modelopt NVFP4 exports): metadata, not weights
+    "v_scale",
 )
 
 
@@ -36,12 +38,20 @@ def annotate_packed_fp4(tensors: dict[str, dict]) -> dict[str, dict]:
     return tensors
 
 
+CAUSAL_MASK = re.compile(r"\.attn\.(masked_)?bias$")
+# GPT-2 (Conv1D) keeps decoder blocks under h.N and stores projection weights as [in_features, out_features].
+GPT2_ATTN = re.compile(r"(?:^|\.)h\.\d+\.attn\.c_(attn|proj)\.")
+GPT2_MLP = re.compile(r"(?:^|\.)h\.\d+\.mlp\.c_(fc|proj)\.")
+
+
 def logical_elements(name, tensor, quant_bits=None, native_expert_bits=None):
     """Exclude recognized storage metadata; unpack only an explicitly supported format."""
     if name.endswith(SCALE_SUFFIXES) or (name.endswith(".scale") and tensor["dtype"] == "F8_E8M0"):
         return None
     if tensor["dtype"] == "I64" and not name.endswith(".weight"):
         return None  # e.g. n-gram hash multipliers, offsets and vocabulary sizes
+    if CAUSAL_MASK.search(name) and len(tensor["shape"]) == 4 and tensor["shape"][:2] == [1, 1]:
+        return None  # GPT-2 stores its [1, 1, n_ctx, n_ctx] causal mask as attn.bias: a buffer, not a weight
     if name.endswith("_scales") and tensor["dtype"] == "U8":
         return None  # MXFP4 block scales are metadata
     n = prod(tensor["shape"]) * tensor.get("tp_parts", 1)
@@ -75,7 +85,10 @@ def main_language_tensor(name, num_layers=None):
 
 
 LOOKUP_TABLE = re.compile(r"engram\.embed|ngram_embed|ple_embedding|embed_tokens_per_layer|per_layer_embed")
-INPUT_EMBED = re.compile(r"(?:^|\.)llm\.embed\.weight$")  # Inkling native names: model.llm.embed / unembed
+INPUT_EMBED = re.compile(r"(?:^|\.)llm\.embed\.weight$")
+MISTRAL_ATTN = re.compile(r"(?:^|\.)layers\.\d+\.attention\.w")  # Mistral-native wq/wk/wv/wo, MLA wq_a/wkv_b
+GPT2_TOKENS = re.compile(r"(?:^|\.)wte\.weight$")
+GPT2_POSITIONS = re.compile(r"(?:^|\.)wpe\.weight$")  # Inkling native names: model.llm.embed / unembed
 OUTPUT_UNEMBED = re.compile(r"(?:^|\.)unembed\.weight$")
 STEP_EXPERTS = re.compile(r"\.moe\.(gate|up|down)_proj\.weight$")  # Step: experts stacked in one 3-D tensor
 
@@ -86,17 +99,23 @@ def _component(name: str) -> str:
         return "lookup_embedding"  # per-token row lookups (Engram, n-gram, per-layer embeddings), not matmul weights
     if "cls_net." in n or _is_mtp(n):
         return "auxiliary"
-    if any(x in n for x in ("mm_projector", "multi_modal_projector", "patch_merge", "pre_mm_projector_norm")):
-        return "vision_projector"  # image-to-text projectors are not text weights
+    if any(
+        x in n for x in ("mm_projector", "multi_modal_projector", "patch_merge", "pre_mm_projector_norm")
+    ) or re.match(r"(?:vision_language_adapter|mlp1)\.", n):
+        return "vision_projector"  # image-to-text projectors (incl. Mistral-native adapter, InternVL-style mlp1)
     if "vision" in n or "visual." in n:
         return "vision"
     if (
         "embed_tokens" in n
         or "word_embeddings" in n
         or n in ("backbone.embeddings.weight", "embed.weight", "tok_embeddings.weight")
+        or n.endswith(".backbone.embeddings.weight")
         or INPUT_EMBED.search(n)
+        or GPT2_TOKENS.search(n)
     ):
         return "embedding"
+    if GPT2_POSITIONS.search(n):
+        return "position_embedding"  # learned absolute positions (GPT-2 wpe)
     if "lm_head" in n or n in ("head.weight", "output.weight", "model.output.weight") or OUTPUT_UNEMBED.search(n):
         return "lm_head"
     if ".experts." in n or ".experts.gate_up_proj" in n or ".experts.down_proj" in n or STEP_EXPERTS.search(n):
@@ -105,9 +124,11 @@ def _component(name: str) -> str:
         return "moe_shared_experts"
     if "routed_expert_" in n:
         return "moe_latent_projection"
-    if re.search(r"block_sparse_moe\.gate|mlp\.gate\.|router", n):
-        return "moe_router"
-    if "self_attn" in n:
+    if "_latent_proj." in n:
+        return "moe_latent_projection"  # Nemotron-3 LatentMoE fc1/fc2 projections around the experts
+    if re.search(r"block_sparse_moe\.gate|mlp\.gate\.|mixer\.gate\.|router|(?:^|\.)layers\.\d+\.gate\.weight$", n):
+        return "moe_router"  # (Mistral-native routers sit at layers.N.gate)
+    if "self_attn" in n or GPT2_ATTN.search(n) or MISTRAL_ATTN.search(n):
         return "attention_or_linear_mixer"
     if ".mixer." in n and any(s in n for s in ("in_proj", "conv1d", "A_log", "dt_bias", ".D", "out_proj")):
         return "state_space_mixer"
@@ -121,13 +142,16 @@ def _component(name: str) -> str:
         return "dense_ffn"
     if "_res_" in n:
         return "attention_residuals"
-    if "norm" in n:
+    if "norm" in n or re.search(r"(?:^|\.)ln_(?:\d+|f)\.", n):
         return "norms"
     return "other"
 
 
+LAYER_INDEX = re.compile(r"(?:layers|(?:^|\.)h)\.(\d+)\.")  # HF layers.N, GPT-2 h.N
+
+
 def _layer_idx(name: str) -> int | None:
-    m = re.search(r"layers\.(\d+)\.", name)
+    m = LAYER_INDEX.search(name)
     return int(m.group(1)) if m else None
 
 
@@ -234,8 +258,10 @@ def layer_kinds(tensors: dict[str, dict], *, num_layers=None) -> list[str]:
             out.append("linear_delta")
         elif ".conv.conv." in s or ".conv.in_proj" in s:
             out.append("short_conv")
-        elif "self_attn.q_proj" in s or ".mixer.q_proj" in s:
+        elif "self_attn.q_proj" in s or ".mixer.q_proj" in s or ".attn.c_attn." in s:
             out.append("attention")
+        elif ".mixer.experts." in s and ".mixer.gate.weight" in s:
+            out.append("moe")
         elif ".mixer.up_proj" in s and ".mixer.down_proj" in s:
             out.append("mlp")
         else:
@@ -251,7 +277,13 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
     for name, t in sorted(tensors.items()):
         if not main_language_tensor(name, num_layers):
             continue
-        if re.search(r"experts\.0\.(w1|gate_proj)\.weight(_packed)?$", name) and "expert_intermediate" not in out:
+        ungated_up = (
+            name.endswith("experts.0.up_proj.weight")
+            and name.removesuffix("up_proj.weight") + "gate_proj.weight" not in tensors
+        )
+        if (
+            re.search(r"experts\.0\.(w1|gate_proj)\.weight(_packed)?$", name) or ungated_up
+        ) and "expert_intermediate" not in out:
             rows, cols = t["shape"]
             out["expert_intermediate"] = rows
             out["expert_input_dim"] = cols * (mult if name.endswith("_packed") else 2 if t.get("fp4_packed") else 1)
@@ -269,7 +301,9 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
                     out.setdefault("expert_intermediate", b)
                     out.setdefault("expert_input_dim", a)
                 out["ffn_gated"] = True
-        if name.endswith(("shared_expert.gate_proj.weight", "shared_experts.gate_proj.weight")):
+        if name.endswith(
+            ("shared_expert.gate_proj.weight", "shared_experts.gate_proj.weight", "shared_experts.w1.weight")
+        ):
             out["shared_experts"] = 1
             out["shared_expert_intermediate"] = t["shape"][0]
         if ".router.proj.weight" in name and any(
@@ -282,8 +316,20 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
                 out["shared_expert_intermediate"] = dense_gate["shape"][0]
         if name.endswith("routed_expert_up_proj.weight") and "latent_dim" not in out:
             out["latent_dim"] = t["shape"][1] if t["shape"][0] > t["shape"][1] else t["shape"][0]
+        if name.endswith("fc1_latent_proj.weight") and "latent_dim" not in out:
+            out["latent_dim"] = t["shape"][0]  # hidden -> latent, [latent, hidden]
+        if name.endswith("shared_experts.up_proj.weight") and "shared_expert_intermediate" not in out:
+            if name.removesuffix("up_proj.weight") + "gate_proj.weight" not in tensors:
+                out["shared_experts"] = 1
+                out["shared_expert_intermediate"] = t["shape"][0]
+        if GPT2_TOKENS.search(name) and "vocab_rows" not in out:
+            out["vocab_rows"], out["hidden_size"] = t["shape"]
+        if GPT2_MLP.search(name) and name.endswith("c_fc.weight") and "ffn_intermediate" not in out:
+            out["ffn_intermediate"] = t["shape"][1]  # Conv1D stores [in, out]: the inner width is the last dimension
+        if GPT2_ATTN.search(name) and name.endswith("c_attn.weight") and "fused_qkv_width" not in out:
+            out["fused_qkv_input"], out["fused_qkv_width"] = t["shape"]  # Conv1D [in, out]: out = 3 * hidden
         if (
-            name.endswith("embed_tokens.weight")
+            name.endswith(("embed_tokens.weight", ".backbone.embeddings.weight"))
             or name in ("backbone.embeddings.weight", "embed.weight", "tok_embeddings.weight")
         ) and "vocab_rows" not in out:
             out["vocab_rows"], out["hidden_size"] = t["shape"]
@@ -308,12 +354,15 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
             or OUTPUT_UNEMBED.search(name)
         ):
             out["has_lm_head"] = True  # separate output head (HF lm_head, DeepSeek-native head, Mistral-native output)
-        if name.endswith("kv_a_proj_with_mqa.weight") and "mla_cached_width" not in out:
+        if name.endswith(("kv_a_proj_with_mqa.weight", "wkv_a_with_mqa.weight")) and "mla_cached_width" not in out:
             out["mla_cached_width"] = t["shape"][0]  # kv_lora_rank + qk_rope_head_dim
         if name.endswith("indexer.wk.weight") and "dsa_index_key_width" not in out:
             out["dsa_index_key_width"] = t["shape"][0]
         if name.endswith("mixer.conv1d.weight"):
             out["mamba_conv_channels"] = t["shape"][0]
+    mtp_blocks = {int(m.group(1)) for n in tensors if (m := re.search(r"(?:^|\.)mtp\.layers\.(\d+)\.", n))}
+    if mtp_blocks:
+        out["mtp_blocks"] = len(mtp_blocks)
     language = [n for n in tensors if main_language_tensor(n, num_layers)]
     if any(
         n.endswith(
@@ -330,14 +379,18 @@ def shape_facts(tensors: dict[str, dict], quant_bits: int | None, *, native_expe
         for n in language
     ):
         out["ffn_gated"] = True
-    elif any(n.endswith(("mlp.fc1.weight", "mixer.up_proj.weight")) for n in language):
+    elif any(n.endswith(("mlp.fc1.weight", "mixer.up_proj.weight", "mlp.c_fc.weight")) for n in language):
         out["ffn_gated"] = False
+    elif any(n.endswith("experts.0.up_proj.weight") for n in language) and not any(
+        n.endswith("experts.0.gate_proj.weight") for n in language
+    ):
+        out["ffn_gated"] = False  # Nemotron-3 experts: up -> relu2 -> down, no gate
     if any("post_feedforward_layernorm" in n or "post_ffn_norm" in n or "post_mlp_layernorm" in n for n in language):
         out["sandwich_norm"] = True
     return out
 
 
-LAYER_TENSOR = re.compile(r"^(?:.*\.)?layers\.(\d+)\.(.+)$")
+LAYER_TENSOR = re.compile(r"^(?:.*\.)?(?:layers|h)\.(\d+)\.(.+)$")
 FFN_PREFIXES = ("mlp.", "feed_forward.", "block_sparse_moe.")
 GLOBAL_PREFIXES = ("language_model.", "model.", "backbone.")
 
