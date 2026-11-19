@@ -28,8 +28,39 @@ from archwatch.gemini import ProviderError, local_env  # noqa: E402
 NO_REFERENCE = {"layer_types", "mixer_type"}  # our record uses ArchWatch kind names; not comparable word for word
 
 
+def record(repo: str) -> dict:
+    return json.loads((ROOT / "data/models" / (repo.replace("/", "__") + ".json")).read_text())
+
+
 def truth(repo: str) -> dict:
-    return json.loads((ROOT / "data/models" / (repo.replace("/", "__") + ".json")).read_text())["published"]
+    return record(repo)["published"]
+
+
+def after_cutoff(repo: str, reader: dict) -> bool | None:
+    """Did the model reach the Hub after the reader's stated training cutoff (so it cannot have memorised it)?"""
+    cutoff = reader.get("knowledge_cutoff")
+    released = (record(repo).get("hub_created_at") or "")[:10]
+    return released > str(cutoff) if cutoff and released else None
+
+
+def cutoff_cell(r) -> str:
+    return {True: f"yes ({r['released']})", False: f"no ({r['released']})"}.get(r.get("after_cutoff"), "unknown")
+
+
+def sample_size(results, config) -> str:
+    scored = [r for r in results if "scored" in r]
+    models = sorted({r["repo"] for r in scored})
+    ref = sum(1 for r in scored for s in r["scored"] if s["value_correct"] is not None)
+    after = sorted({r["repo"].split("/")[1] for r in scored if r["after_cutoff"]})
+    cutoffs = sorted(
+        {f"{m['id']} {m['knowledge_cutoff']}" for m in config["models"].values() if m.get("knowledge_cutoff")}
+    )
+    return (
+        f"Sample size: {len(models)} models and {ref} claimed fields with a reference value across {len(scored)} "
+        f"readings; {len(after)} model(s) released after the reader's cutoff ({', '.join(after) or 'none'}). "
+        f"Cutoff from the model card: {', '.join(cutoffs)} (the card adds that some domains end in January 2025). "
+        "Too small to generalize: these numbers decide whether to try the reader on new models, nothing more."
+    )
 
 
 def correct(field, value, reference):
@@ -99,31 +130,40 @@ def report(results, prompt, config) -> str:
         "**passes all checks** = every check above with no conflict (the version cap is reported separately); "
         "**wrong but passes** = passes every check yet disagrees with our record (the verifier must keep this at 0).",
         "",
-        "| Model | Reader | Code | Claims | Value correct | Citation valid | Config agrees | Weight check | Passes all checks | Wrong but passes | Verified |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "| Model | Reader | Code | Released after reader's training cutoff | Claims | Value correct | Citation valid | "
+        "Config agrees | Weight check | Passes all checks | Wrong but passes | Verified |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in results:
         if "error" in r:
             lines.append(
-                f"| {r['repo'].split('/')[1]} | {r['reader']} | {r.get('code', '')} | error: {r['error']} | | | | | | | |"
+                f"| {r['repo'].split('/')[1]} | {r['reader']} | {r.get('code', '')} | {cutoff_cell(r)} | "
+                f"error: {r['error']} | | | | | | | |"
             )
             continue
         s = r["summary"]
         lines.append(
-            f"| {r['repo'].split('/')[1]} | {r['reader']} | {r['code']} | {s['claims']} | {s['value_correct']} | "
+            f"| {r['repo'].split('/')[1]} | {r['reader']} | {r['code']} | {cutoff_cell(r)} | {s['claims']} | "
+            f"{s['value_correct']} | "
             f"{s['citation_valid']} | {s['config_agrees']} | {s['weight_check']} | {s['passes_checks']} | "
             f"{s['wrong_but_passes']} | {s['verified']} |"
         )
+    lines.append("")
     for reader in sorted({r["reader"] for r in results}):
-        all_scored = [s for r in results if r["reader"] == reader and "scored" in r for s in r["scored"]]
-        if all_scored:
-            t = summary(all_scored)
-            lines += [
-                "",
-                f"**{reader} overall:** {t['claims']} claims; value correct {t['value_correct']}; citation valid "
-                f"{t['citation_valid']}; weight check {t['weight_check']}; passes all checks {t['passes_checks']}; "
-                f"wrong but passes {t['wrong_but_passes']}.",
+        for label, keep in (("all models", None), ("released after its cutoff", True), ("released before it", False)):
+            group = [
+                r for r in results if r["reader"] == reader and "scored" in r and keep in (None, r["after_cutoff"])
             ]
+            if not group:
+                lines.append(f"- **{reader}, {label}:** no scored models")
+                continue
+            t = summary([s for r in group for s in r["scored"]])
+            lines.append(
+                f"- **{reader}, {label}** ({len(group)} models, {t['claims']} claims): value correct "
+                f"{t['value_correct']}; citation valid {t['citation_valid']}; weight check {t['weight_check']}; "
+                f"passes all checks {t['passes_checks']}; wrong but passes {t['wrong_but_passes']}."
+            )
+    lines += ["", sample_size(results, config)]
     lines += ["", "## Per field", ""]
     fields = sorted({s["field"] for r in results if "scored" in r for s in r["scored"]})
     readers = sorted({r["reader"] for r in results if "scored" in r})
@@ -178,7 +218,14 @@ def main():
             print(f"{reader_id} {repo}: {code['source']}, {len(text.encode()):,} bytes, flags {code['flags']}")
             if args.plan:
                 continue
-            entry = dict(repo=repo, reader=reader_id, code=code["source"], flags=code["flags"])
+            entry = dict(
+                repo=repo,
+                reader=reader_id,
+                code=code["source"],
+                flags=code["flags"],
+                released=(record(repo).get("hub_created_at") or "")[:10],
+                after_cutoff=after_cutoff(repo, config["models"][role]),
+            )
             if calls >= ev["max_calls_per_run"]:
                 results.append(dict(entry, error="eval call cap reached"))
                 continue

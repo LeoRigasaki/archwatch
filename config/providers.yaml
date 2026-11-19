@@ -17,12 +17,16 @@ models:
     rpm: 5
     tpm: 250000
     rpd: 20
+    knowledge_cutoff: "2026-03-31"   # model card: "March 2026 ... in others ... January 2025"
+    knowledge_cutoff_source: https://deepmind.google/models/model-cards/gemini-3-8-flash/
   review:
     id: gemini-3.5-flash-lite
     free: true
     rpm: 15
     tpm: 250000
     rpd: 500
+    knowledge_cutoff: "2026-03-31"   # model card: "March 2026 ... in others ... January 2025"
+    knowledge_cutoff_source: https://deepmind.google/models/model-cards/gemini-3-5-flash-lite/
 diagram_gen:
   # Spec-driven SVG generation with code checks and a repair loop. Manual runs only.
   # One budget: every Gemini call is logged in the shared ledger and counts against

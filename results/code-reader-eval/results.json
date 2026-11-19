@@ -8,6 +8,8 @@
    "flags": [
     "transformers_version 4.43.0.dev0 is a development build, not a release"
    ],
+   "released": "2024-07-14",
+   "after_cutoff": false,
    "scored": [
     {
      "field": "normalization_type",
@@ -199,6 +201,8 @@
    "reader": "gemini-3.5-flash-lite",
    "code": "transformers v4.51.0",
    "flags": [],
+   "released": "2025-04-28",
+   "after_cutoff": false,
    "scored": [
     {
      "field": "vocab_size",
@@ -365,6 +369,8 @@
    "reader": "gemini-3.5-flash-lite",
    "code": "repo",
    "flags": [],
+   "released": "2024-05-15",
+   "after_cutoff": false,
    "scored": [
     {
      "field": "vocab_size",
@@ -468,6 +474,8 @@
    "reader": "gemini-3.5-flash-lite",
    "code": "repo",
    "flags": [],
+   "released": "2026-10-26",
+   "after_cutoff": true,
    "scored": [
     {
      "field": "hidden_size",
@@ -720,6 +728,8 @@
    "reader": "gemini-3.5-flash-lite",
    "code": "repo",
    "flags": [],
+   "released": "2025-03-19",
+   "after_cutoff": false,
    "scored": [
     {
      "field": "num_layers",
@@ -927,6 +937,8 @@
    "flags": [
     "transformers_version 4.43.0.dev0 is a development build, not a release"
    ],
+   "released": "2024-07-14",
+   "after_cutoff": false,
    "error": "Configured free daily request cap reached"
   },
   {
@@ -934,6 +946,8 @@
    "reader": "gemini-3.8-flash",
    "code": "transformers v4.51.0",
    "flags": [],
+   "released": "2025-04-28",
+   "after_cutoff": false,
    "error": "Configured free daily request cap reached"
   },
   {
@@ -941,6 +955,8 @@
    "reader": "gemini-3.8-flash",
    "code": "repo",
    "flags": [],
+   "released": "2024-05-15",
+   "after_cutoff": false,
    "error": "Configured free daily request cap reached"
   },
   {
@@ -948,6 +964,8 @@
    "reader": "gemini-3.8-flash",
    "code": "repo",
    "flags": [],
+   "released": "2026-10-26",
+   "after_cutoff": true,
    "scored": [
     {
      "field": "num_layers",
@@ -1200,6 +1218,8 @@
    "reader": "gemini-3.8-flash",
    "code": "repo",
    "flags": [],
+   "released": "2025-03-19",
+   "after_cutoff": false,
    "error": "Configured free daily request cap reached"
   }
  ]

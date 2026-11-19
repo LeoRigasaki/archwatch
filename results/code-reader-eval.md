@@ -4,22 +4,27 @@ Prompt `code_reader_v1` (sha256 `45bed7ae3932`). Reference: our published record
 
 Columns: **value correct** = claimed value equals our published value (claims whose field has a reference); **citation valid** = cited file is fetched modelling code, the line range exists and the quote equals those lines; **config agrees** = cited config keys exist and agree; **weight check** = the cited line builds a module whose tensors, mapped from the code's own module tree, have consistent shapes (fields with a weight only); **passes all checks** = every check above with no conflict (the version cap is reported separately); **wrong but passes** = passes every check yet disagrees with our record (the verifier must keep this at 0).
 
-| Model | Reader | Code | Claims | Value correct | Citation valid | Config agrees | Weight check | Passes all checks | Wrong but passes | Verified |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Llama-3.1-8B | gemini-3.5-flash-lite | transformers v4.43.0 | 10 | 9/9 (100%) | 10/10 (100%) | 10/10 (100%) | 1/7 (14%) | 4/10 (40%) | 0 | 0 |
-| Qwen3-0.6B-Base | gemini-3.5-flash-lite | transformers v4.51.0 | 8 | 0/8 (0%) | 8/8 (100%) | 0/8 (0%) | 5/6 (83%) | 0/8 (0%) | 0 | 0 |
-| DeepSeek-V2-Lite | gemini-3.5-flash-lite | repo | 5 | 2/5 (40%) | 5/5 (100%) | 2/5 (40%) | 3/3 (100%) | 2/5 (40%) | 0 | 2 |
-| LFM3-1.7B-Base | gemini-3.5-flash-lite | repo | 12 | 1/11 (9%) | 11/12 (92%) | 2/12 (17%) | 5/7 (71%) | 1/12 (8%) | 0 | 1 |
-| Nemotron-H-8B-Base-8K | gemini-3.5-flash-lite | repo | 11 | 0/9 (0%) | 11/11 (100%) | 1/11 (9%) | 3/7 (43%) | 1/11 (9%) | 0 | 1 |
-| Llama-3.1-8B | gemini-3.8-flash | transformers v4.43.0 | error: Configured free daily request cap reached | | | | | | | |
-| Qwen3-0.6B-Base | gemini-3.8-flash | transformers v4.51.0 | error: Configured free daily request cap reached | | | | | | | |
-| DeepSeek-V2-Lite | gemini-3.8-flash | repo | error: Configured free daily request cap reached | | | | | | | |
-| LFM3-1.7B-Base | gemini-3.8-flash | repo | 12 | 11/11 (100%) | 12/12 (100%) | 12/12 (100%) | 7/7 (100%) | 12/12 (100%) | 0 | 11 |
-| Nemotron-H-8B-Base-8K | gemini-3.8-flash | repo | error: Configured free daily request cap reached | | | | | | | |
+| Model | Reader | Code | Released after reader's training cutoff | Claims | Value correct | Citation valid | Config agrees | Weight check | Passes all checks | Wrong but passes | Verified |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Llama-3.1-8B | gemini-3.5-flash-lite | transformers v4.43.0 | no (2024-07-14) | 10 | 9/9 (100%) | 10/10 (100%) | 10/10 (100%) | 1/7 (14%) | 4/10 (40%) | 0 | 0 |
+| Qwen3-0.6B-Base | gemini-3.5-flash-lite | transformers v4.51.0 | no (2025-04-28) | 8 | 0/8 (0%) | 8/8 (100%) | 0/8 (0%) | 5/6 (83%) | 0/8 (0%) | 0 | 0 |
+| DeepSeek-V2-Lite | gemini-3.5-flash-lite | repo | no (2024-05-15) | 5 | 2/5 (40%) | 5/5 (100%) | 2/5 (40%) | 3/3 (100%) | 2/5 (40%) | 0 | 2 |
+| LFM3-1.7B-Base | gemini-3.5-flash-lite | repo | yes (2026-10-26) | 12 | 1/11 (9%) | 11/12 (92%) | 2/12 (17%) | 5/7 (71%) | 1/12 (8%) | 0 | 1 |
+| Nemotron-H-8B-Base-8K | gemini-3.5-flash-lite | repo | no (2025-03-19) | 11 | 0/9 (0%) | 11/11 (100%) | 1/11 (9%) | 3/7 (43%) | 1/11 (9%) | 0 | 1 |
+| Llama-3.1-8B | gemini-3.8-flash | transformers v4.43.0 | no (2024-07-14) | error: Configured free daily request cap reached | | | | | | | |
+| Qwen3-0.6B-Base | gemini-3.8-flash | transformers v4.51.0 | no (2025-04-28) | error: Configured free daily request cap reached | | | | | | | |
+| DeepSeek-V2-Lite | gemini-3.8-flash | repo | no (2024-05-15) | error: Configured free daily request cap reached | | | | | | | |
+| LFM3-1.7B-Base | gemini-3.8-flash | repo | yes (2026-10-26) | 12 | 11/11 (100%) | 12/12 (100%) | 12/12 (100%) | 7/7 (100%) | 12/12 (100%) | 0 | 11 |
+| Nemotron-H-8B-Base-8K | gemini-3.8-flash | repo | no (2025-03-19) | error: Configured free daily request cap reached | | | | | | | |
 
-**gemini-3.5-flash-lite overall:** 46 claims; value correct 12/42 (29%); citation valid 45/46 (98%); weight check 17/30 (57%); passes all checks 8/46 (17%); wrong but passes 0.
+- **gemini-3.5-flash-lite, all models** (5 models, 46 claims): value correct 12/42 (29%); citation valid 45/46 (98%); weight check 17/30 (57%); passes all checks 8/46 (17%); wrong but passes 0.
+- **gemini-3.5-flash-lite, released after its cutoff** (1 models, 12 claims): value correct 1/11 (9%); citation valid 11/12 (92%); weight check 5/7 (71%); passes all checks 1/12 (8%); wrong but passes 0.
+- **gemini-3.5-flash-lite, released before it** (4 models, 34 claims): value correct 11/31 (35%); citation valid 34/34 (100%); weight check 12/23 (52%); passes all checks 7/34 (21%); wrong but passes 0.
+- **gemini-3.8-flash, all models** (1 models, 12 claims): value correct 11/11 (100%); citation valid 12/12 (100%); weight check 7/7 (100%); passes all checks 12/12 (100%); wrong but passes 0.
+- **gemini-3.8-flash, released after its cutoff** (1 models, 12 claims): value correct 11/11 (100%); citation valid 12/12 (100%); weight check 7/7 (100%); passes all checks 12/12 (100%); wrong but passes 0.
+- **gemini-3.8-flash, released before it:** no scored models
 
-**gemini-3.8-flash overall:** 12 claims; value correct 11/11 (100%); citation valid 12/12 (100%); weight check 7/7 (100%); passes all checks 12/12 (100%); wrong but passes 0.
+Sample size: 5 models and 53 claimed fields with a reference value across 6 readings; 1 model(s) released after the reader's cutoff (LFM3-1.7B-Base). Cutoff from the model card: gemini-3.5-flash-lite 2026-03-31, gemini-3.8-flash 2026-03-31 (the card adds that some domains end in January 2025). Too small to generalize: these numbers decide whether to try the reader on new models, nothing more.
 
 ## Per field
 

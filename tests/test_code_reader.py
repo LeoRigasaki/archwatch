@@ -224,15 +224,41 @@ def test_one_logged_call_per_prompt_then_the_cache_answers(tmp_path, monkeypatch
     assert len(cached) == 1 and "-code_reader_v1-" in cached[0].name
 
 
-def test_a_failed_call_still_counts(tmp_path, monkeypatch):
-    class Boom:
-        def create(self, **request):
-            raise RuntimeError("500 from provider")
+class Failing:
+    def __init__(self, errors, text=""):
+        self.errors, self.text, self.requests = list(errors), text, 0
 
-    r = reader(tmp_path, monkeypatch, Boom())
+    def create(self, **request):
+        self.requests += 1
+        if self.errors:
+            raise self.errors.pop(0)
+        return types.SimpleNamespace(output_text=self.text)
+
+
+class Status(Exception):
+    def __init__(self, code):
+        super().__init__(f"HTTP {code}")
+        self.code = code
+
+
+def test_a_server_error_gets_exactly_one_retry_logged_as_its_own_call(tmp_path, monkeypatch):
+    prompt = cr.load_prompt(ROOT / "prompts/code_reader_v1.md")
+    fake = Failing([Status(503)], json.dumps({"claims": []}))
+    r = reader(tmp_path, monkeypatch, fake)
+    r.read("org/m", "c" * 40, prompt, "text", purpose="eval")
+    ledger = json.loads((tmp_path / "ledger.json").read_text())
+    assert fake.requests == 2 and r.calls == 2 and len(ledger) == 2
+    assert [e["purpose"] for e in ledger] == ["eval", "eval: retry after a server error"]
+
+
+@pytest.mark.parametrize(
+    "errors, requests", [([Status(500), Status(502)], 2), ([Status(429)], 1), ([RuntimeError("x")], 1)]
+)
+def test_no_other_retries(tmp_path, monkeypatch, errors, requests):
+    r = reader(tmp_path, monkeypatch, Failing(errors))
     with pytest.raises(cr.ProviderError):
         r.read("org/m", "c" * 40, cr.load_prompt(ROOT / "prompts/code_reader_v1.md"), "text")
-    assert r.calls == 1 and len(json.loads((tmp_path / "ledger.json").read_text())) == 1
+    assert r.calls == requests and len(json.loads((tmp_path / "ledger.json").read_text())) == requests
 
 
 def test_the_reader_models_caps_and_prompt_come_from_config():

@@ -593,6 +593,14 @@ def verdicts(claims: list[Claim], code: dict, config: dict, tensors: dict, rule_
 # ---------------------------------------------------------------------------------------------- calls
 
 
+def server_error(error) -> bool:
+    """A 5xx from the provider (the only failure worth one retry); 4xx such as 429 never is."""
+    code = getattr(error, "code", None) or getattr(error, "status_code", None)
+    if isinstance(code, int):
+        return code >= 500
+    return type(error).__name__ in ("ServerError", "InternalServerError", "ServiceUnavailableError")
+
+
 class CodeReader(Gemini):
     """Structured-output calls through the Interactions API; each call reserved in the one shared ledger."""
 
@@ -610,26 +618,39 @@ class CodeReader(Gemini):
         if cached.exists():  # same commit, model, prompt version and prompt text: no new call
             saved = json.loads(cached.read_text())
             return Claims.model_validate_json(saved["output_text"]), dict(saved["meta"], cached=True)
-        self._reserve(len(prompt["system"].encode()) + len(text.encode()))
-        self.calls += 1
-        self._annotate(repo=repo, prompt_version=prompt["version"], prompt_sha256=digest, purpose=purpose)
         client = self.client or self._client()
         started = self.clock()
-        try:
-            interaction = client.interactions.create(
-                model=model,
-                input=text,
-                system_instruction=prompt["system"],
-                response_format={"type": "text", "mime_type": "application/json", "schema": Claims.model_json_schema()},
-                generation_config={
-                    "temperature": self.config["temperature"],
-                    "max_output_tokens": self.section["max_output_tokens"],
-                },
-                store=False,
+        for attempt in (1, 2):  # one retry, only after a server error, and it is reserved as its own call
+            self._reserve(len(prompt["system"].encode()) + len(text.encode()))
+            self.calls += 1
+            self._annotate(
+                repo=repo,
+                prompt_version=prompt["version"],
+                prompt_sha256=digest,
+                purpose=purpose if attempt == 1 else f"{purpose}: retry after a server error",
             )
-        except Exception as error:  # noqa: BLE001 - the key is stripped from anything echoed
-            detail = str(error).replace(self.key, "<key>")[:160]
-            raise ProviderError(f"Gemini interaction failed ({type(error).__name__}: {detail}); no fallback") from None
+            try:
+                interaction = client.interactions.create(
+                    model=model,
+                    input=text,
+                    system_instruction=prompt["system"],
+                    response_format={
+                        "type": "text",
+                        "mime_type": "application/json",
+                        "schema": Claims.model_json_schema(),
+                    },
+                    generation_config={
+                        "temperature": self.config["temperature"],
+                        "max_output_tokens": self.section["max_output_tokens"],
+                    },
+                    store=False,
+                )
+                break
+            except Exception as error:  # noqa: BLE001 - the key is stripped from anything echoed
+                detail = str(error).replace(self.key, "<key>")[:160]
+                if attempt == 1 and server_error(error):
+                    continue
+                raise ProviderError(f"Gemini interaction failed ({type(error).__name__}: {detail})") from None
         output = interaction.output_text or ""
         claims = Claims.model_validate_json(output)
         meta = dict(
@@ -645,7 +666,8 @@ class CodeReader(Gemini):
 
     def _client(self):
         """One request per reserved call: the SDK's automatic retries are off, because every retry is a real
-        request against the free daily limit that the ledger would never see. A stalled call times out."""
+        request against the free daily limit that the ledger would never see. read() makes its own single retry
+        after a server error, reserved like any call. A stalled call times out."""
         from google import genai
         from google.genai import types
 
