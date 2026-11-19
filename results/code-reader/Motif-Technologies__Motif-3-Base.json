@@ -1,0 +1,509 @@
+{
+ "repo": "Motif-Technologies/Motif-3-Base",
+ "commit": "7f7531c7f2b0259b527477c72715ed1805dd95ce",
+ "code_source": "repo",
+ "code_origin": {
+  "configuration_motif.py": "https://huggingface.co/Motif-Technologies/Motif-3-Base/blob/7f7531c7f2b0259b527477c72715ed1805dd95ce/configuration_motif.py",
+  "modeling_motif.py": "https://huggingface.co/Motif-Technologies/Motif-3-Base/blob/7f7531c7f2b0259b527477c72715ed1805dd95ce/modeling_motif.py"
+ },
+ "flags": [],
+ "claims": [
+  {
+   "field": "num_layers",
+   "value": 53,
+   "file": "configuration_motif.py",
+   "line_start": 136,
+   "line_end": 136,
+   "quote": "        num_hidden_layers=32,",
+   "config_keys": [
+    "num_hidden_layers"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "num_layers is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "hidden_size",
+   "value": 4096,
+   "file": "configuration_motif.py",
+   "line_start": 134,
+   "line_end": 134,
+   "quote": "        hidden_size=4096,",
+   "config_keys": [
+    "hidden_size"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "hidden_size is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "vocab_size",
+   "value": 220160,
+   "file": "configuration_motif.py",
+   "line_start": 133,
+   "line_end": 133,
+   "quote": "        vocab_size=151936,",
+   "config_keys": [
+    "vocab_size"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "vocab_size is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "context_length",
+   "value": 262144,
+   "file": "configuration_motif.py",
+   "line_start": 140,
+   "line_end": 140,
+   "quote": "        max_position_embeddings=32768,",
+   "config_keys": [
+    "max_position_embeddings"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 80,
+   "file": "configuration_motif.py",
+   "line_start": 137,
+   "line_end": 137,
+   "quote": "        num_attention_heads=32,",
+   "config_keys": [
+    "num_attention_heads"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "num_attention_heads is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 16,
+   "file": "configuration_motif.py",
+   "line_start": 138,
+   "line_end": 138,
+   "quote": "        num_key_value_heads=32,",
+   "config_keys": [
+    "num_key_value_heads"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "num_kv_heads is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "head_dim",
+   "value": 192,
+   "file": "configuration_motif.py",
+   "line_start": 154,
+   "line_end": 154,
+   "quote": "        head_dim=None,",
+   "config_keys": [
+    "head_dim"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "head_dim is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "v_head_dim",
+   "value": 128,
+   "file": "configuration_motif.py",
+   "line_start": 183,
+   "line_end": 183,
+   "quote": "        v_head_dim=None,",
+   "config_keys": [
+    "v_head_dim"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "v_head_dim is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "attention_type",
+   "value": "MLA",
+   "file": "modeling_motif.py",
+   "line_start": 535,
+   "line_end": 540,
+   "quote": "    \u2022\u2022\u2022    Ports GDLAttention from torchtitan. Uses low-rank Q and KV projections\n    (MLA-style) with RoPE applied only to the qk_rope_head_dim dimensions.\n    Only diff_v2=True is fully supported (the motif3 configuration).\n    \"\"\"",
+   "config_keys": [
+    "attention_cls"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "quote does not equal the cited lines",
+    "config attention_cls = 'gdla', claim says 'MLA'"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "moe_num_experts",
+   "value": 384,
+   "file": "configuration_motif.py",
+   "line_start": 158,
+   "line_end": 158,
+   "quote": "        num_experts=0,",
+   "config_keys": [
+    "num_experts"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "moe_num_experts is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "moe_active_experts",
+   "value": 8,
+   "file": "configuration_motif.py",
+   "line_start": 159,
+   "line_end": 159,
+   "quote": "        experts_top_k=2,",
+   "config_keys": [
+    "experts_top_k"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "moe_shared_experts",
+   "value": 1,
+   "file": "configuration_motif.py",
+   "line_start": 160,
+   "line_end": 160,
+   "quote": "        num_shared_experts=0,",
+   "config_keys": [
+    "num_shared_experts"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "moe_expert_intermediate",
+   "value": 1280,
+   "file": "configuration_motif.py",
+   "line_start": 162,
+   "line_end": 162,
+   "quote": "        moe_intermediate_size=None,",
+   "config_keys": [
+    "moe_intermediate_size"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "moe_expert_intermediate is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 12288,
+   "file": "configuration_motif.py",
+   "line_start": 135,
+   "line_end": 135,
+   "quote": "        intermediate_size=22016,",
+   "config_keys": [
+    "intermediate_size"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "ffn_intermediate is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "activation",
+   "value": "poly_norm",
+   "file": "configuration_motif.py",
+   "line_start": 139,
+   "line_end": 139,
+   "quote": "        hidden_act=\"silu\",",
+   "config_keys": [
+    "hidden_act"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "normalization_type",
+   "value": "RMSNorm",
+   "file": "modeling_motif.py",
+   "line_start": 139,
+   "line_end": 140,
+   "quote": "class MotifRMSNorm(nn.Module):\n    def __init__(self, hidden_size, eps=1e-6):",
+   "config_keys": [
+    "rms_norm_eps"
+   ],
+   "tensor_patterns": [],
+   "problems": [],
+   "conflicts": [],
+   "verdict": "verified",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "mla_kv_lora_rank",
+   "value": 512,
+   "file": "configuration_motif.py",
+   "line_start": 181,
+   "line_end": 181,
+   "quote": "        kv_lora_rank=0,",
+   "config_keys": [
+    "kv_lora_rank"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "mla_kv_lora_rank is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "mla_q_lora_rank",
+   "value": 1024,
+   "file": "configuration_motif.py",
+   "line_start": 180,
+   "line_end": 180,
+   "quote": "        q_lora_rank=0,",
+   "config_keys": [
+    "q_lora_rank"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code",
+    "mla_q_lora_rank is a weight shape, but the claim names no tensor to check it against"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "mla_qk_rope_head_dim",
+   "value": 64,
+   "file": "configuration_motif.py",
+   "line_start": 182,
+   "line_end": 182,
+   "quote": "        qk_rope_head_dim=None,",
+   "config_keys": [
+    "qk_rope_head_dim"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "sliding_window",
+   "value": 128,
+   "file": "configuration_motif.py",
+   "line_start": 148,
+   "line_end": 148,
+   "quote": "        sliding_window=4096,",
+   "config_keys": [
+    "sliding_window"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "file": "configuration_motif.py",
+   "line_start": 144,
+   "line_end": 144,
+   "quote": "        tie_word_embeddings=False,",
+   "config_keys": [
+    "tie_word_embeddings"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites configuration_motif.py, the configuration class (defaults), not the modelling code"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  }
+ ],
+ "fields": {
+  "activation": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "attention_type": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "context_length": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "ffn_intermediate": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "head_dim": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "hidden_size": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "mla_kv_lora_rank": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "mla_q_lora_rank": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "mla_qk_rope_head_dim": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "moe_active_experts": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "moe_expert_intermediate": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "moe_num_experts": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "moe_shared_experts": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "normalization_type": {
+   "verdict": "verified",
+   "value": "RMSNorm",
+   "why": "verified"
+  },
+  "num_attention_heads": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "num_kv_heads": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "num_layers": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "sliding_window": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "tied_embeddings": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "v_head_dim": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "vocab_size": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  }
+ },
+ "published": false
+}

@@ -389,5 +389,95 @@
     "outputs_lost": true,
     "time_approximate": true,
     "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1795101899.1210299,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Motif-Technologies/Motif-3-Base",
+    "prompt_sha256": "73abfb4ef46973cc50c8d71007ee51c4edf8b1cbcb854c3cda4d35e06e50fd5f",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102102.0738728,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "eb05df0052c8d732ae61032249b43552b5b907e82bd82a04e7331237d33013da",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102225.5497642,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "NX-AI/xLSTM-7b",
+    "prompt_sha256": "21783a169f3011a7f7e0adc5ee9213105f58f706048c962c8677e07eea73d2ab",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102324.789267,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Motif-Technologies/Motif-3-Base",
+    "prompt_sha256": "c0e2803be2e40791bbbd7951278c4588e5e297ed01b3e76b7edb3dd5102a0153",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102339.7944582,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "4f8f62985c2c79a5c76eaf7d33d217dde4e22c348d9da99c6326da2186c70670",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102479.0446222,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "NX-AI/xLSTM-7b",
+    "prompt_sha256": "316b3f4374549f5d51a70b4f96f03bace5122bdcf04ee632da8b4862c2a097cd",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102645.132757,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "Motif-Technologies/Motif-3-Base",
+    "prompt_sha256": "5cbff030c7ae9aadf8be3fa969062d327ab1be740511fe67b1b4064d02da95a7",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102752.1353338,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "b4db2d282b23cbf7fe77dac261646a39232ca721cfde10d70fc69373f8ff53e2",
+    "run_id": "local"
+  },
+  {
+    "time": 1795102961.7099361,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "NX-AI/xLSTM-7b",
+    "prompt_sha256": "80957162384d2dcf86a33e6f9bb38a5288c46160557e2c935904a3e6720656b6",
+    "run_id": "local"
+  },
+  {
+    "time": 1795103050.387379,
+    "day": "2026-11-19",
+    "model": "gemini-3.5-flash-lite",
+    "experiment": "code-reader-v1",
+    "repo": "meituan-longcat/LongCat-Flash-Lite",
+    "prompt_sha256": "b4db2d282b23cbf7fe77dac261646a39232ca721cfde10d70fc69373f8ff53e2",
+    "run_id": "local"
   }
 ]

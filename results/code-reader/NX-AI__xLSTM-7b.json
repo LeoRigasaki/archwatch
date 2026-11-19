@@ -1,0 +1,238 @@
+{
+ "repo": "NX-AI/xLSTM-7b",
+ "commit": "9dc507bd0939cf372a4a4f667335651d8e49dddb",
+ "code_source": "transformers v4.54.0",
+ "code_origin": {
+  "modeling_xlstm.py": "https://github.com/huggingface/transformers/blob/v4.54.0/src/transformers/models/xlstm/modeling_xlstm.py"
+ },
+ "flags": [
+  "transformers_version 4.48.0.dev0 is a development build, not a release",
+  "modeling_xlstm.py is absent at v4.48.0; read at v4.54.0, the first later release"
+ ],
+ "claims": [
+  {
+   "field": "num_layers",
+   "value": 32,
+   "file": "modeling_xlstm.py",
+   "line_start": 1382,
+   "line_end": 1382,
+   "quote": "        self.blocks = nn.ModuleList([xLSTMBlock(config) for _ in range(config.num_blocks)])",
+   "config_keys": [
+    "num_blocks"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "num_layers is a weight shape, but the claim names no tensor to check it against",
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "hidden_size",
+   "value": 4096,
+   "file": "modeling_xlstm.py",
+   "line_start": 1381,
+   "line_end": 1381,
+   "quote": "        self.embeddings = nn.Embedding(config.vocab_size, config.embedding_dim)",
+   "config_keys": [
+    "embedding_dim"
+   ],
+   "tensor_patterns": [
+    "backbone.embeddings.weight"
+   ],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "vocab_size",
+   "value": 50304,
+   "file": "modeling_xlstm.py",
+   "line_start": 1381,
+   "line_end": 1381,
+   "quote": "        self.embeddings = nn.Embedding(config.vocab_size, config.embedding_dim)",
+   "config_keys": [
+    "vocab_size"
+   ],
+   "tensor_patterns": [
+    "backbone.embeddings.weight"
+   ],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 8,
+   "file": "modeling_xlstm.py",
+   "line_start": 1061,
+   "line_end": 1065,
+   "quote": "        self.igate_preact = nn.Linear(\n            in_features=self.config.hidden_size,\n            out_features=self.config.num_heads,\n            bias=True,\n        )",
+   "config_keys": [
+    "num_heads"
+   ],
+   "tensor_patterns": [
+    "backbone.blocks.N.mlstm_layer.igate_preact.weight"
+   ],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "mixer_type",
+   "value": "mlstm",
+   "file": "modeling_xlstm.py",
+   "line_start": 1178,
+   "line_end": 1178,
+   "quote": "            self.mlstm_layer = xLSTMLayer(config)",
+   "config_keys": [],
+   "tensor_patterns": [
+    "backbone.blocks.N.mlstm_layer.q.weight"
+   ],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 10944,
+   "file": "modeling_xlstm.py",
+   "line_start": 989,
+   "line_end": 992,
+   "quote": "            self.up_proj_dim = round_up_to_next_multiple_of(\n                config.hidden_size * config.ffn_proj_factor,\n                config.ffn_round_up_to_multiple_of,\n            )",
+   "config_keys": [
+    "embedding_dim",
+    "ffn_proj_factor",
+    "ffn_round_up_to_multiple_of"
+   ],
+   "tensor_patterns": [
+    "backbone.blocks.N.ffn.proj_up.weight"
+   ],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "file": "modeling_xlstm.py",
+   "line_start": 1018,
+   "line_end": 1018,
+   "quote": "            self.act_fn = nn.SiLU()",
+   "config_keys": [],
+   "tensor_patterns": [],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "normalization_type",
+   "value": "RMSNorm",
+   "file": "modeling_xlstm.py",
+   "line_start": 1171,
+   "line_end": 1177,
+   "quote": "            self.norm_mlstm = xLSTMRMSNorm(\n                num_features=config.hidden_size,\n                eps=config.norm_eps,\n                use_weight=True,\n                use_bias=config.use_bias,\n                force_float32_reductions=config.norm_reduction_force_float32,\n            )",
+   "config_keys": [
+    "embedding_dim",
+    "norm_eps",
+    "use_bias",
+    "norm_reduction_force_float32"
+   ],
+   "tensor_patterns": [
+    "backbone.blocks.N.norm_mlstm.weight"
+   ],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  },
+  {
+   "field": "tied_embeddings",
+   "value": false,
+   "file": "modeling_xlstm.py",
+   "line_start": 1519,
+   "line_end": 1519,
+   "quote": "        self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)",
+   "config_keys": [
+    "tie_word_embeddings"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "code was not read at the config's own transformers version"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  }
+ ],
+ "fields": {
+  "activation": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "ffn_intermediate": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "hidden_size": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "mixer_type": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "normalization_type": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "num_attention_heads": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "num_layers": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "tied_embeddings": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  },
+  "vocab_size": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  }
+ },
+ "published": false
+}

@@ -55,6 +55,22 @@ explainer:
   max_words_base: 60                 # word limit: base + per changed field, capped
   max_words_per_change: 10
   max_words_cap: 220
+code_reader:
+  # LLM code reader, only for architectures the deterministic rules cannot read. Manual runs only.
+  # The model proposes claims (field, value, cited lines, config keys, tensor patterns); code verifies each one.
+  # Failing claims go to review. Nothing here writes data/models or the site.
+  experiment: code-reader-v1
+  ledger: data/gemini-requests.json   # the same one budget as diagrams and the explainer
+  first: review                       # models.review (gemini-3.5-flash-lite) reads every model
+  second_opinion: fallback            # models.fallback (gemini-3.8-flash), only when claims conflict
+  requests_per_minute: 4
+  max_output_tokens: 16384
+  max_calls_per_run: 6
+  output: results/code-reader
+  models:
+    - Motif-Technologies/Motif-3-Base
+    - meituan-longcat/LongCat-Flash-Lite
+    - NX-AI/xLSTM-7b
 schedule:
   # Both crons stay commented out in .github/workflows until the owner approves them.
   daily:
