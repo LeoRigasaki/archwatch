@@ -1,0 +1,226 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1340">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#333333"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; fill: #1F2937; }
+      .title { font-size: 34px; font-weight: 700; text-anchor: middle; }
+      .summary { font-size: 16px; fill: #4B5563; text-anchor: middle; }
+      .panel-title { font-size: 18px; font-weight: 700; }
+      .box-label { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+      .bar-label { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .repeat-label { font-size: 16px; font-weight: 700; fill: #374151; dominant-baseline: central; }
+      .caption { font-size: 14px; fill: #6B7280; }
+      .callout { font-size: 15px; font-weight: 700; fill: #1F2937; }
+      .edge { fill: none; stroke: #333333; stroke-width: 1.6; }
+      .node-box { fill: #FFFFFF; stroke: #4B5563; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1480" height="1340" fill="#FFFFFF"/>
+
+  <g data-section="title">
+    <text x="740" y="62" class="title">GLM-4-9B-0414</text>
+    <text x="740" y="94" class="summary">9.40B parameters, 40 layers, 32K context</text>
+  </g>
+
+  <g data-section="stack">
+    <rect x="24" y="130" width="756" height="496" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+
+    <line x1="224" y1="184" x2="224" y2="148" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="lm_head">
+      <rect x="48" y="184" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="206" class="box-label">LM head 4096 -&gt; 151,552</text>
+    </g>
+    <text x="416" y="201" class="caption">LM head is not tied <tspan x="416" dy="18">to the embedding</tspan></text>
+
+    <line x1="224" y1="256" x2="224" y2="228" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="final_norm">
+      <rect x="48" y="256" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="278" class="box-label">Final norm</text>
+    </g>
+
+    <line x1="224" y1="332" x2="224" y2="300" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="1" data-repeat="40">
+      <rect x="36" y="332" width="376" height="116" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="GQA + FFN" x="48" y="373" width="352" height="34" rx="5" fill="#F4A8A4" stroke="#B84742" stroke-width="1.2"/>
+      <text x="224" y="390" class="bar-label">GQA + FFN</text>
+      <text x="424" y="390" class="repeat-label">40 x</text>
+    </g>
+
+    <line x1="224" y1="476" x2="224" y2="448" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="embedding">
+      <rect x="48" y="476" width="352" height="64" rx="8" class="node-box"/>
+      <text x="224" y="508" class="box-label">Token embedding 151,552 x 4096</text>
+    </g>
+
+    <line x1="224" y1="566" x2="224" y2="540" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="text">
+      <rect x="48" y="566" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="588" class="box-label">Tokenized text</text>
+    </g>
+
+    <g data-callout="1">
+      <text x="564" y="340" class="callout">Context length: 32K <tspan x="564" dy="19">tokens</tspan></text>
+    </g>
+    <g data-callout="2">
+      <text x="564" y="390" class="callout" style="dominant-baseline: central;">32 Q / 2 KV heads</text>
+    </g>
+    <g data-callout="5">
+      <text x="564" y="420" class="callout">KV cache: 40 KB per <tspan x="564" dy="19">token</tspan></text>
+    </g>
+    <g data-callout="3">
+      <text x="564" y="488" class="callout" style="dominant-baseline: central;">Vocabulary: 148K</text>
+    </g>
+    <g data-callout="4">
+      <text x="564" y="514" class="callout">Embedding dimension: <tspan x="564" dy="19">4096</tspan></text>
+    </g>
+  </g>
+
+  <g data-section="each-layer">
+    <rect x="24" y="650" width="756" height="666" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <text x="44" y="684" class="panel-title">Each layer</text>
+
+    <g data-node="out">
+      <rect x="460" y="700" width="160" height="34" rx="8" class="node-box"/>
+      <text x="540" y="717" class="box-label">layer output</text>
+    </g>
+    <g data-node="res2">
+      <rect x="460" y="762" width="160" height="34" rx="8" class="node-box"/>
+      <text x="540" y="779" class="box-label">residual add</text>
+    </g>
+    <g data-node="post_ffn_norm">
+      <rect x="155" y="824" width="170" height="34" rx="8" class="node-box"/>
+      <text x="240" y="841" class="box-label">norm (post-FFN)</text>
+    </g>
+    <g data-node="ffn">
+      <rect x="180" y="886" width="120" height="34" rx="8" class="node-box"/>
+      <text x="240" y="903" class="box-label">FFN</text>
+    </g>
+    <g data-node="pre_ffn_norm">
+      <rect x="160" y="948" width="160" height="34" rx="8" class="node-box"/>
+      <text x="240" y="965" class="box-label">norm (pre-FFN)</text>
+    </g>
+    <g data-node="res1">
+      <rect x="460" y="1010" width="160" height="34" rx="8" class="node-box"/>
+      <text x="540" y="1027" class="box-label">residual add</text>
+    </g>
+    <g data-node="post_mixer_norm">
+      <rect x="147" y="1072" width="186" height="34" rx="8" class="node-box"/>
+      <text x="240" y="1089" class="box-label">norm (post-mixer)</text>
+    </g>
+    <g data-node="mixer">
+      <rect x="150" y="1134" width="180" height="34" rx="8" class="node-box"/>
+      <text x="240" y="1151" class="box-label">token mixer: GQA</text>
+    </g>
+    <g data-node="pre_mixer_norm">
+      <rect x="150" y="1196" width="180" height="34" rx="8" class="node-box"/>
+      <text x="240" y="1213" class="box-label">norm (pre-mixer)</text>
+    </g>
+    <g data-node="in">
+      <rect x="460" y="1258" width="160" height="34" rx="8" class="node-box"/>
+      <text x="540" y="1275" class="box-label">layer input</text>
+    </g>
+
+    <polyline data-edge="in->pre_mixer_norm" points="460,1275 240,1275 240,1230" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="pre_mixer_norm->mixer" x1="240" y1="1196" x2="240" y2="1168" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="mixer->post_mixer_norm" x1="240" y1="1134" x2="240" y2="1106" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="post_mixer_norm->res1" points="240,1072 240,1027 460,1027" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="in->res1" x1="540" y1="1258" x2="540" y2="1044" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="res1->pre_ffn_norm" points="500,1010 500,996 240,996 240,982" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="pre_ffn_norm->ffn" x1="240" y1="948" x2="240" y2="920" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="ffn->post_ffn_norm" x1="240" y1="886" x2="240" y2="858" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="post_ffn_norm->res2" points="240,824 240,779 460,779" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="res1->res2" x1="560" y1="1010" x2="560" y2="796" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="res2->out" x1="540" y1="762" x2="540" y2="734" class="edge" marker-end="url(#arrow)"/>
+  </g>
+
+  <g data-section="zooms">
+    <g data-zoom="gqa">
+      <rect x="810" y="130" width="640" height="556" rx="10" fill="#FFFFFF" stroke="#B84742" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="160" class="panel-title" style="fill: #B84742;">GQA attention (40 layers)</text>
+
+      <g data-node="out">
+        <rect x="1055" y="184" width="150" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="204" class="box-label">output (4096)</text>
+      </g>
+      <g data-node="oproj">
+        <rect x="982" y="260" width="296" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="280" class="box-label">output projection: 4096 -&gt; 4096</text>
+      </g>
+      <g data-node="attn">
+        <rect x="995" y="336" width="270" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="356" class="box-label">attention: 32 q / 2 kv heads</text>
+      </g>
+      <g data-node="rotary">
+        <rect x="942" y="412" width="176" height="40" rx="8" class="node-box"/>
+        <text x="1030" y="432" class="box-label">rotary on q and k</text>
+      </g>
+      <g data-node="q">
+        <rect x="826" y="488" width="196" height="40" rx="8" class="node-box"/>
+        <text x="924" y="508" class="box-label">q: Linear 4096 -&gt; 4096</text>
+      </g>
+      <g data-node="k">
+        <rect x="1046" y="488" width="182" height="40" rx="8" class="node-box"/>
+        <text x="1137" y="508" class="box-label">k: Linear 4096 -&gt; 256</text>
+      </g>
+      <g data-node="v">
+        <rect x="1252" y="488" width="182" height="40" rx="8" class="node-box"/>
+        <text x="1343" y="508" class="box-label">v: Linear 4096 -&gt; 256</text>
+      </g>
+      <g data-node="in">
+        <rect x="1055" y="564" width="150" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="584" class="box-label">input (4096)</text>
+      </g>
+
+      <polyline data-edge="in->q" points="1090,564 1090,546 924,546 924,528" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="in->k" x1="1137" y1="564" x2="1137" y2="528" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in->v" points="1170,564 1170,546 1343,546 1343,528" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="q->rotary" points="924,488 924,470 986,470 986,452" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="k->rotary" points="1137,488 1137,470 1074,470 1074,452" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="rotary->attn" x1="1040" y1="412" x2="1040" y2="376" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="v->attn" points="1343,488 1343,394 1210,394 1210,376" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="attn->oproj" x1="1130" y1="336" x2="1130" y2="300" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="oproj->out" x1="1130" y1="260" x2="1130" y2="224" class="edge" marker-end="url(#arrow)"/>
+
+      <text x="830" y="638" class="caption">32 query heads, 2 key/value heads, head size 128 <tspan x="830" dy="20">rotary position encoding on 0.5 of each head, theta 10,000</tspan></text>
+    </g>
+
+    <g data-zoom="ffn">
+      <rect x="810" y="710" width="640" height="456" rx="10" fill="#FFFFFF" stroke="#5A6270" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="740" class="panel-title" style="fill: #5A6270;">SwiGLU FFN</text>
+
+      <g data-node="out">
+        <rect x="1055" y="764" width="150" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="784" class="box-label">output (4096)</text>
+      </g>
+      <g data-node="down">
+        <rect x="1005" y="848" width="250" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="868" class="box-label">down: Linear 13696 -&gt; 4096</text>
+      </g>
+      <g data-node="act">
+        <rect x="1080" y="932" width="100" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="952" class="box-label">SiLU</text>
+      </g>
+      <g data-node="up">
+        <rect x="1012" y="1016" width="236" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="1036" class="box-label">up: Linear 4096 -&gt; 27392</text>
+      </g>
+      <g data-node="in">
+        <rect x="1055" y="1100" width="150" height="40" rx="8" class="node-box"/>
+        <text x="1130" y="1120" class="box-label">input (4096)</text>
+      </g>
+
+      <line data-edge="in->up" x1="1130" y1="1100" x2="1130" y2="1056" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="up->act" x1="1130" y1="1016" x2="1130" y2="972" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="act->down" x1="1130" y1="932" x2="1130" y2="888" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="down->out" x1="1130" y1="848" x2="1130" y2="804" class="edge" marker-end="url(#arrow)"/>
+    </g>
+  </g>
+</svg>

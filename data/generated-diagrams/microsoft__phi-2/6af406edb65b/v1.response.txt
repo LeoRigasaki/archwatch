@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1120">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#333333"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; fill: #1F2937; }
+      .title { font-size: 34px; font-weight: 700; text-anchor: middle; }
+      .summary { font-size: 16px; fill: #4B5563; text-anchor: middle; }
+      .panel-title { font-size: 18px; font-weight: 700; }
+      .box-label { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+      .bar-label { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .repeat-label { font-size: 16px; font-weight: 700; fill: #374151; dominant-baseline: central; }
+      .caption { font-size: 14px; fill: #6B7280; }
+      .callout { font-size: 15px; font-weight: 700; fill: #1F2937; }
+      .edge { fill: none; stroke: #333333; stroke-width: 1.6; }
+      .node-box { fill: #FFFFFF; stroke: #4B5563; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1480" height="1120" fill="#FFFFFF"/>
+
+  <g data-section="title">
+    <text x="740" y="62" class="title">phi-2 (2.8B)</text>
+    <text x="740" y="94" class="summary">2.78B parameters, 32 layers, 2K context</text>
+  </g>
+
+  <g data-section="stack">
+    <rect x="24" y="130" width="756" height="520" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+
+    <line x1="224" y1="184" x2="224" y2="148" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="lm_head">
+      <rect x="48" y="184" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="206" class="box-label">LM head 2560 -&gt; 51,200</text>
+    </g>
+    <text x="416" y="206" class="caption" style="dominant-baseline: central;">LM head is not tied to the embedding</text>
+
+    <line x1="224" y1="260" x2="224" y2="228" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="final_norm">
+      <rect x="48" y="260" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="282" class="box-label">Final norm</text>
+    </g>
+
+    <line x1="224" y1="338" x2="224" y2="304" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="1" data-repeat="32">
+      <rect x="36" y="338" width="376" height="114" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="MHA + FFN" x="48" y="394" width="352" height="34" rx="5" fill="#F4A8A4" stroke="#B84742" stroke-width="1.2"/>
+      <text x="224" y="411" class="bar-label">MHA + FFN</text>
+      <text x="424" y="411" class="repeat-label">32 x</text>
+    </g>
+
+    <line x1="224" y1="484" x2="224" y2="452" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="embedding">
+      <rect x="48" y="484" width="352" height="64" rx="8" class="node-box"/>
+      <text x="224" y="516" class="box-label">Token embedding 51,200 x 2560</text>
+    </g>
+
+    <line x1="224" y1="582" x2="224" y2="548" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="text">
+      <rect x="48" y="582" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="604" class="box-label">Tokenized text</text>
+    </g>
+
+    <g data-callout="1">
+      <text x="564" y="350" class="callout">Context length: 2K
+        <tspan x="564" dy="20">tokens</tspan>
+      </text>
+    </g>
+    <g data-callout="4">
+      <text x="564" y="404" class="callout">KV cache: 320 KB
+        <tspan x="564" dy="20">per token</tspan>
+      </text>
+    </g>
+    <g data-callout="2">
+      <text x="564" y="496" class="callout" style="dominant-baseline: central;">Vocabulary: 50K</text>
+    </g>
+    <g data-callout="3">
+      <text x="564" y="524" class="callout">Embedding dimension:
+        <tspan x="564" dy="20">2560</tspan>
+      </text>
+    </g>
+  </g>
+
+  <g data-section="each-layer">
+    <rect x="24" y="674" width="756" height="412" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <text x="44" y="706" class="panel-title">Each layer</text>
+
+    <g data-node="out">
+      <rect x="350" y="726" width="160" height="36" rx="8" class="node-box"/>
+      <text x="430" y="744" class="box-label">layer output</text>
+    </g>
+    <g data-node="add">
+      <rect x="304" y="796" width="252" height="36" rx="8" class="node-box"/>
+      <text x="430" y="814" class="box-label">add input and both branches</text>
+    </g>
+    <g data-node="mixer">
+      <rect x="130" y="866" width="160" height="36" rx="8" class="node-box"/>
+      <text x="210" y="884" class="box-label">attention: MHA</text>
+    </g>
+    <g data-node="ffn">
+      <rect x="340" y="866" width="120" height="36" rx="8" class="node-box"/>
+      <text x="400" y="884" class="box-label">FFN</text>
+    </g>
+    <g data-node="norm">
+      <rect x="225" y="936" width="160" height="36" rx="8" class="node-box"/>
+      <text x="305" y="954" class="box-label">norm (shared)</text>
+    </g>
+    <g data-node="in">
+      <rect x="490" y="1006" width="160" height="36" rx="8" class="node-box"/>
+      <text x="570" y="1024" class="box-label">layer input</text>
+    </g>
+
+    <polyline data-edge="in->norm" points="490,1024 305,1024 305,972" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="norm->mixer" points="275,936 275,919 210,919 210,902" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="norm->ffn" points="335,936 335,919 400,919 400,902" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="mixer->add" points="210,866 210,849 350,849 350,832" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="ffn->add" x1="400" y1="866" x2="400" y2="832" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="in->add" x1="526" y1="1006" x2="526" y2="832" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="add->out" x1="430" y1="796" x2="430" y2="762" class="edge" marker-end="url(#arrow)"/>
+
+    <text x="44" y="1068" class="caption">parallel block: attention and the FFN both read the same normed input</text>
+  </g>
+
+  <g data-section="zooms">
+    <g data-zoom="mha">
+      <rect x="810" y="130" width="640" height="526" rx="10" fill="#FFFFFF" stroke="#B84742" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="160" class="panel-title" style="fill: #B84742;">MHA attention (32 layers)</text>
+
+      <g data-node="out">
+        <rect x="1055" y="184" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="202" class="box-label">output (2560)</text>
+      </g>
+      <g data-node="oproj">
+        <rect x="990" y="250" width="280" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="268" class="box-label">output projection: 2560 -&gt; 2560</text>
+      </g>
+      <g data-node="attn">
+        <rect x="992" y="316" width="276" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="334" class="box-label">attention: 32 q / 32 kv heads</text>
+      </g>
+      <g data-node="rotary">
+        <rect x="938" y="386" width="176" height="36" rx="8" class="node-box"/>
+        <text x="1026" y="404" class="box-label">rotary on q and k</text>
+      </g>
+      <g data-node="q">
+        <rect x="830" y="456" width="184" height="36" rx="8" class="node-box"/>
+        <text x="922" y="474" class="box-label">q: Linear 2560 -&gt; 2560</text>
+      </g>
+      <g data-node="k">
+        <rect x="1038" y="456" width="184" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="474" class="box-label">k: Linear 2560 -&gt; 2560</text>
+      </g>
+      <g data-node="v">
+        <rect x="1246" y="456" width="184" height="36" rx="8" class="node-box"/>
+        <text x="1338" y="474" class="box-label">v: Linear 2560 -&gt; 2560</text>
+      </g>
+      <g data-node="in">
+        <rect x="1055" y="526" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="544" class="box-label">input (2560)</text>
+      </g>
+
+      <polyline data-edge="in->q" points="1090,526 1090,509 922,509 922,492" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="in->k" x1="1130" y1="526" x2="1130" y2="492" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in->v" points="1170,526 1170,509 1338,509 1338,492" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="q->rotary" points="922,456 922,439 982,439 982,422" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="k->rotary" points="1130,456 1130,439 1070,439 1070,422" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="rotary->attn" x1="1040" y1="386" x2="1040" y2="352" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="v->attn" points="1338,456 1338,369 1220,369 1220,352" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="attn->oproj" x1="1130" y1="316" x2="1130" y2="286" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="oproj->out" x1="1130" y1="250" x2="1130" y2="220" class="edge" marker-end="url(#arrow)"/>
+
+      <text x="830" y="596" class="caption">32 query heads, 32 key/value heads, head size 80
+        <tspan x="830" dy="20">rotary position encoding on 0.4 of each head, theta 10,000</tspan>
+      </text>
+    </g>
+
+    <g data-zoom="ffn">
+      <rect x="810" y="680" width="640" height="400" rx="10" fill="#FFFFFF" stroke="#5A6270" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="710" class="panel-title" style="fill: #5A6270;">FFN</text>
+
+      <g data-node="out">
+        <rect x="1055" y="738" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="756" class="box-label">output (2560)</text>
+      </g>
+      <g data-node="down">
+        <rect x="1015" y="808" width="230" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="826" class="box-label">fc2: Linear 10240 -&gt; 2560</text>
+      </g>
+      <g data-node="act">
+        <rect x="1075" y="878" width="110" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="896" class="box-label">GELU</text>
+      </g>
+      <g data-node="up">
+        <rect x="1015" y="948" width="230" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="966" class="box-label">fc1: Linear 2560 -&gt; 10240</text>
+      </g>
+      <g data-node="in">
+        <rect x="1055" y="1018" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1036" class="box-label">input (2560)</text>
+      </g>
+
+      <line data-edge="in->up" x1="1130" y1="1018" x2="1130" y2="984" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="up->act" x1="1130" y1="948" x2="1130" y2="914" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="act->down" x1="1130" y1="878" x2="1130" y2="844" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="down->out" x1="1130" y1="808" x2="1130" y2="774" class="edge" marker-end="url(#arrow)"/>
+    </g>
+  </g>
+</svg>
