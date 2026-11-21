@@ -1,0 +1,1532 @@
+{
+ "id": "microsoft/Aion-1.0-Instruct-2.3B",
+ "source_commit": "28902cbfd9f4e0347d6c853aa1301f5d559b2fc0",
+ "hub_created_at": "2026-11-18T17:05:50+00:00",
+ "license": "mit",
+ "hub_metadata": {
+  "base_model": null,
+  "base_model_relation": null,
+  "tags": [
+   "aion_instruct",
+   "chat",
+   "conversational",
+   "custom_code",
+   "de",
+   "en",
+   "es",
+   "fr",
+   "it",
+   "ja",
+   "license:mit",
+   "pt",
+   "region:us",
+   "rewriting",
+   "safetensors",
+   "summarization",
+   "text-generation",
+   "transformers",
+   "zh"
+  ]
+ },
+ "analyzed_at": "2026-11-21T09:55:57+00:00",
+ "config_file": "config.json",
+ "facts": {
+  "architecture_class": {
+   "value": "AionInstructForCausalLM",
+   "evidence": "config:architectures"
+  },
+  "model_type": {
+   "value": "aion_instruct",
+   "evidence": "config:model_type"
+  },
+  "num_layers": {
+   "value": 28,
+   "evidence": "config:num_hidden_layers"
+  },
+  "hidden_size": {
+   "value": 2048,
+   "evidence": "config:hidden_size"
+  },
+  "vocab_size": {
+   "value": 200029,
+   "evidence": "config:vocab_size"
+  },
+  "context_length": {
+   "value": 32768,
+   "evidence": "config:max_position_embeddings"
+  },
+  "tied_embeddings": {
+   "value": true,
+   "evidence": "config:tie_word_embeddings"
+  },
+  "layer_types": {
+   "value": [
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "full_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention"
+   ],
+   "evidence": "config:layer_types"
+  },
+  "layer_index_base_in_config": {
+   "value": 0,
+   "evidence": "config:layer_types (inferred from index range)"
+  },
+  "layer_type_counts": {
+   "value": {
+    "sliding_attention": 21,
+    "full_attention": 7
+   },
+   "evidence": "config:layer_types"
+  },
+  "num_attention_heads": {
+   "value": 24,
+   "evidence": "config:num_attention_heads"
+  },
+  "num_kv_heads": {
+   "value": 8,
+   "evidence": "config:num_key_value_heads"
+  },
+  "head_dim": {
+   "value": 128,
+   "evidence": "config:head_dim"
+  },
+  "attention_type": {
+   "value": "GQA",
+   "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(24)"
+  },
+  "sliding_window": {
+   "value": 2048,
+   "evidence": "config:sliding_window"
+  },
+  "decoder_type": {
+   "value": "Dense",
+   "evidence": "derived:no expert keys"
+  },
+  "ffn_intermediate": {
+   "value": 8192,
+   "evidence": "config:intermediate_size"
+  },
+  "activation": {
+   "value": "silu",
+   "evidence": "config:hidden_act"
+  },
+  "rope": {
+   "value": {
+    "full_attention": {
+     "beta_fast": 32.0,
+     "beta_slow": 1.0,
+     "factor": 16.0,
+     "original_max_position_embeddings": 2048,
+     "rope_theta": 32000,
+     "rope_type": "yarn"
+    },
+    "sliding_attention": {
+     "rope_type": "default",
+     "rope_theta": 32000
+    }
+   },
+   "evidence": "config:rope_parameters"
+  },
+  "released_weights_format": {
+   "value": "bfloat16",
+   "evidence": "config:dtype"
+  }
+ },
+ "config_coverage": {
+  "consumed": [
+   "architectures",
+   "dtype",
+   "head_dim",
+   "hidden_act",
+   "hidden_size",
+   "intermediate_size",
+   "layer_types",
+   "max_position_embeddings",
+   "model_type",
+   "num_attention_heads",
+   "num_hidden_layers",
+   "num_key_value_heads",
+   "rope_parameters.full_attention.beta_fast",
+   "rope_parameters.full_attention.beta_slow",
+   "rope_parameters.full_attention.factor",
+   "rope_parameters.full_attention.original_max_position_embeddings",
+   "rope_parameters.full_attention.rope_theta",
+   "rope_parameters.full_attention.rope_type",
+   "rope_parameters.sliding_attention.rope_theta",
+   "rope_parameters.sliding_attention.rope_type",
+   "sliding_window",
+   "tie_word_embeddings",
+   "vocab_size"
+  ],
+  "unconsumed": [
+   "attention_bias",
+   "attention_dropout",
+   "auto_map.AutoConfig",
+   "auto_map.AutoModel",
+   "auto_map.AutoModelForCausalLM",
+   "bos_token_id",
+   "eos_token_id",
+   "initializer_range",
+   "pad_token_id",
+   "rms_norm_eps",
+   "transformers_version",
+   "use_cache"
+  ]
+ },
+ "source_files": [
+  "README.md",
+  "config.json",
+  "configuration_aion_instruct.py",
+  "model.safetensors",
+  "modeling_aion_instruct.py"
+ ],
+ "params": {
+  "counted_from_weights": {
+   "total": 2288831488,
+   "text_total": 2288831488,
+   "mtp_params": 0,
+   "headline_total": 2288831488,
+   "by_component": {
+    "dense_ffn": 1409286144,
+    "attention_or_linear_mixer": 469769216,
+    "embedding": 409659392,
+    "norms": 116736
+   },
+   "routed_expert_params": 0,
+   "moe_layers": 0,
+   "experts_per_moe_layer": [],
+   "layer_indices_in_weights": [
+    0,
+    27
+   ],
+   "tensor_count": 310,
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  },
+  "active": null
+ },
+ "cache": {
+  "grows_per_token_bytes": 28672,
+  "grows_per_token_bytes_low": 28672,
+  "constant_bytes": 176160768,
+  "constant_bytes_low": 176160768,
+  "naive_mha_per_token_bytes": 344064,
+  "reduction_vs_naive_mha": 12.0,
+  "memory_at_context": {
+   "8192": {
+    "bytes": 411041792,
+    "gib": 0.383
+   },
+   "32768": {
+    "bytes": 1115684864,
+    "gib": 1.039
+   }
+  },
+  "breakdown": [
+   {
+    "layer_type": "full_attention",
+    "layers": 7,
+    "grows_per_token_bytes": 28672,
+    "constant_bytes": 0,
+    "formula": "2 x 8 KV heads x 128 head_dim x 2 B x 7 layers"
+   },
+   {
+    "layer_type": "sliding_attention",
+    "layers": 21,
+    "grows_per_token_bytes": 0,
+    "constant_bytes": 176160768,
+    "formula": "window 2048 x 2 x 8 x 128 x 2 B x 21 layers (capped)"
+   }
+  ],
+  "assumptions": [
+   "cache values stored in bf16 (2 bytes) unless noted"
+  ]
+ },
+ "code_scan": {
+  "files": [
+   "configuration_aion_instruct.py",
+   "modeling_aion_instruct.py"
+  ],
+  "classes": [
+   {
+    "name": "AionInstructConfig",
+    "file": "configuration_aion_instruct.py",
+    "line": 32,
+    "doc": "This is the configuration class to store the configuration of an [`AionInstructModel`]. It is used to instantiate"
+   },
+   {
+    "name": "AionInstructRMSNorm",
+    "file": "modeling_aion_instruct.py",
+    "line": 50,
+    "doc": ""
+   },
+   {
+    "name": "AionInstructMLP",
+    "file": "modeling_aion_instruct.py",
+    "line": 67,
+    "doc": ""
+   },
+   {
+    "name": "AionInstructRotaryEmbedding",
+    "file": "modeling_aion_instruct.py",
+    "line": 83,
+    "doc": "Rotary position embeddings with separate parameters for each attention layer type."
+   },
+   {
+    "name": "AionInstructAttention",
+    "file": "modeling_aion_instruct.py",
+    "line": 220,
+    "doc": "Grouped-query attention with RMSNorm on each query and key head, over the full context or a sliding window.",
+    "builds": [
+     "q_proj=Linear",
+     "k_proj=Linear",
+     "v_proj=Linear",
+     "o_proj=Linear",
+     "q_norm=AionInstructRMSNorm",
+     "k_norm=AionInstructRMSNorm"
+    ]
+   },
+   {
+    "name": "AionInstructDecoderLayer",
+    "file": "modeling_aion_instruct.py",
+    "line": 292,
+    "doc": ""
+   },
+   {
+    "name": "AionInstructPreTrainedModel",
+    "file": "modeling_aion_instruct.py",
+    "line": 333,
+    "doc": ""
+   },
+   {
+    "name": "AionInstructModel",
+    "file": "modeling_aion_instruct.py",
+    "line": 363,
+    "doc": ""
+   },
+   {
+    "name": "AionInstructForCausalLM",
+    "file": "modeling_aion_instruct.py",
+    "line": 449,
+    "doc": ""
+   }
+  ],
+  "facts": {
+   "qk_norm": {
+    "value": true,
+    "evidence": "code:modeling_aion_instruct.py#L247"
+   },
+   "sliding_window_applies_to": {
+    "value": "sliding_attention layers only",
+    "evidence": "code:modeling_aion_instruct.py#L248"
+   },
+   "normalization_type": {
+    "value": "RMSNorm",
+    "evidence": "code:modeling_aion_instruct.py#L60"
+   },
+   "normalization_modules": {
+    "value": [
+     {
+      "kind": "RMSNorm",
+      "scope": "decoder",
+      "module": "AionInstructDecoderLayer.input_layernorm",
+      "implementation": "AionInstructRMSNorm",
+      "formula_line": 60,
+      "call_line": 298
+     },
+     {
+      "kind": "RMSNorm",
+      "scope": "decoder",
+      "module": "AionInstructDecoderLayer.post_attention_layernorm",
+      "implementation": "AionInstructRMSNorm",
+      "formula_line": 60,
+      "call_line": 299
+     }
+    ],
+    "evidence": "code:modeling_aion_instruct.py#L60"
+   },
+   "modeling_code_in_repo": {
+    "value": true,
+    "evidence": "repo file list"
+   }
+  }
+ },
+ "card_claims": {
+  "license": {
+   "raw": "MIT"
+  },
+  "params_total": {
+   "raw": "~2.29B (tied input/output embeddings)",
+   "value": 2290000000.0,
+   "tolerance": 5000000.0,
+   "k_suffix": false
+  },
+  "num_layers": {
+   "raw": "28",
+   "value": 28.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "hidden_size": {
+   "raw": "2048",
+   "value": 2048.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "context_length": {
+   "raw": "32,768 tokens",
+   "value": 32768.0,
+   "tolerance": 0,
+   "k_suffix": false
+  },
+  "vocab_size": {
+   "raw": "200,029",
+   "value": 200029.0,
+   "tolerance": 0,
+   "k_suffix": false
+  }
+ },
+ "checks": [
+  {
+   "field": "num_layers",
+   "value": 28,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 28,
+     "evidence": "config:num_hidden_layers"
+    },
+    {
+     "value": 28.0,
+     "evidence": "card:num_layers",
+     "raw": "28"
+    },
+    {
+     "value": 28,
+     "evidence": "weights:highest layer index + 1"
+    }
+   ]
+  },
+  {
+   "field": "hidden_size",
+   "value": 2048,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:hidden_size"
+    },
+    {
+     "value": 2048.0,
+     "evidence": "card:hidden_size",
+     "raw": "2048"
+    },
+    {
+     "value": 2048,
+     "evidence": "weights:embed_tokens columns"
+    }
+   ]
+  },
+  {
+   "field": "vocab_size",
+   "value": 200029,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 200029,
+     "evidence": "config:vocab_size"
+    },
+    {
+     "value": 200029.0,
+     "evidence": "card:vocab_size",
+     "raw": "200,029"
+    },
+    {
+     "value": 200029,
+     "evidence": "weights:embed_tokens rows"
+    }
+   ]
+  },
+  {
+   "field": "context_length",
+   "value": 32768,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 32768,
+     "evidence": "config:max_position_embeddings"
+    },
+    {
+     "value": 32768.0,
+     "evidence": "card:context_length",
+     "raw": "32,768 tokens"
+    }
+   ]
+  },
+  {
+   "field": "num_attention_heads",
+   "value": 24,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 24,
+     "evidence": "config:num_attention_heads"
+    }
+   ]
+  },
+  {
+   "field": "num_kv_heads",
+   "value": 8,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8,
+     "evidence": "config:num_key_value_heads"
+    }
+   ]
+  },
+  {
+   "field": "head_dim",
+   "value": 128,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 128,
+     "evidence": "config:head_dim"
+    }
+   ]
+  },
+  {
+   "field": "attention_type",
+   "value": "GQA",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "GQA",
+     "evidence": "derived:num_key_value_heads(8) vs num_attention_heads(24)"
+    }
+   ]
+  },
+  {
+   "field": "ffn_gated",
+   "value": true,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "weights:FFN gate/up/down tensor layout"
+    }
+   ]
+  },
+  {
+   "field": "tied_embeddings",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "config:tie_word_embeddings"
+    },
+    {
+     "value": true,
+     "evidence": "weights:separate lm_head tensor present or absent"
+    }
+   ]
+  },
+  {
+   "field": "ffn_intermediate",
+   "value": 8192,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 8192,
+     "evidence": "config:intermediate_size"
+    },
+    {
+     "value": 8192,
+     "evidence": "weights:feed_forward.w1 rows"
+    }
+   ]
+  },
+  {
+   "field": "sliding_window",
+   "value": 2048,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2048,
+     "evidence": "config:sliding_window"
+    }
+   ]
+  },
+  {
+   "field": "layer_type_counts",
+   "value": {
+    "sliding_attention": 21,
+    "full_attention": 7
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "sliding_attention": 21,
+      "full_attention": 7
+     },
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "layer_pattern_per_layer",
+   "value": [
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention",
+    "attention"
+   ],
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "config:layer_types (mapped to weight-level kinds)"
+    },
+    {
+     "value": [
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention",
+      "attention"
+     ],
+     "evidence": "weights:tensor names per layer"
+    }
+   ]
+  },
+  {
+   "field": "layer_index_base_in_config",
+   "value": 0,
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": 0,
+     "evidence": "config:layer_types (inferred from index range)"
+    }
+   ]
+  },
+  {
+   "field": "qk_norm",
+   "value": true,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": true,
+     "evidence": "code:modeling_aion_instruct.py#L247"
+    },
+    {
+     "value": true,
+     "evidence": "weights:q_norm/k_norm tensors"
+    }
+   ]
+  },
+  {
+   "field": "params_total",
+   "value": 2288831488,
+   "status": "verified",
+   "confidence": 1.0,
+   "published": true,
+   "candidates": [
+    {
+     "value": 2288831488,
+     "evidence": "weights:sum of tensor shapes, MTP modules reported separately"
+    },
+    {
+     "value": 2290000000.0,
+     "evidence": "card:params_total",
+     "raw": "~2.29B (tied input/output embeddings)"
+    }
+   ]
+  },
+  {
+   "field": "model_type",
+   "value": "aion_instruct",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "aion_instruct",
+     "evidence": "config:model_type"
+    }
+   ]
+  },
+  {
+   "field": "layer_types",
+   "value": [
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "full_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "full_attention",
+    "sliding_attention",
+    "full_attention",
+    "full_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention",
+    "sliding_attention"
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "full_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "full_attention",
+      "sliding_attention",
+      "full_attention",
+      "full_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention",
+      "sliding_attention"
+     ],
+     "evidence": "config:layer_types"
+    }
+   ]
+  },
+  {
+   "field": "decoder_type",
+   "value": "Dense",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "Dense",
+     "evidence": "derived:no expert keys"
+    }
+   ]
+  },
+  {
+   "field": "rope",
+   "value": {
+    "full_attention": {
+     "beta_fast": 32.0,
+     "beta_slow": 1.0,
+     "factor": 16.0,
+     "original_max_position_embeddings": 2048,
+     "rope_theta": 32000,
+     "rope_type": "yarn"
+    },
+    "sliding_attention": {
+     "rope_type": "default",
+     "rope_theta": 32000
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "full_attention": {
+       "beta_fast": 32.0,
+       "beta_slow": 1.0,
+       "factor": 16.0,
+       "original_max_position_embeddings": 2048,
+       "rope_theta": 32000,
+       "rope_type": "yarn"
+      },
+      "sliding_attention": {
+       "rope_type": "default",
+       "rope_theta": 32000
+      }
+     },
+     "evidence": "config:rope_parameters"
+    }
+   ]
+  },
+  {
+   "field": "activation",
+   "value": "silu",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "silu",
+     "evidence": "config:hidden_act"
+    }
+   ]
+  },
+  {
+   "field": "released_weights_format",
+   "value": "bfloat16",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "bfloat16",
+     "evidence": "config:dtype"
+    }
+   ]
+  },
+  {
+   "field": "normalization_type",
+   "value": "RMSNorm",
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": "RMSNorm",
+     "evidence": "code:modeling_aion_instruct.py#L60"
+    }
+   ]
+  },
+  {
+   "field": "normalization_modules",
+   "value": [
+    {
+     "kind": "RMSNorm",
+     "scope": "decoder",
+     "module": "AionInstructDecoderLayer.input_layernorm",
+     "implementation": "AionInstructRMSNorm",
+     "formula_line": 60,
+     "call_line": 298
+    },
+    {
+     "kind": "RMSNorm",
+     "scope": "decoder",
+     "module": "AionInstructDecoderLayer.post_attention_layernorm",
+     "implementation": "AionInstructRMSNorm",
+     "formula_line": 60,
+     "call_line": 299
+    }
+   ],
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": [
+      {
+       "kind": "RMSNorm",
+       "scope": "decoder",
+       "module": "AionInstructDecoderLayer.input_layernorm",
+       "implementation": "AionInstructRMSNorm",
+       "formula_line": 60,
+       "call_line": 298
+      },
+      {
+       "kind": "RMSNorm",
+       "scope": "decoder",
+       "module": "AionInstructDecoderLayer.post_attention_layernorm",
+       "implementation": "AionInstructRMSNorm",
+       "formula_line": 60,
+       "call_line": 299
+      }
+     ],
+     "evidence": "code:modeling_aion_instruct.py#L60"
+    }
+   ]
+  },
+  {
+   "field": "parameter_components",
+   "value": {
+    "dense_ffn": 1409286144,
+    "attention_or_linear_mixer": 469769216,
+    "embedding": 409659392,
+    "norms": 116736
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "dense_ffn": 1409286144,
+      "attention_or_linear_mixer": 469769216,
+      "embedding": 409659392,
+      "norms": 116736
+     },
+     "evidence": "weights:parameter totals by tensor group"
+    }
+   ]
+  },
+  {
+   "field": "weight_header_summary",
+   "value": {
+    "tensor_count": 310,
+    "skipped_scale_tensors": 0,
+    "skipped_buffer_tensors": 0
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "tensor_count": 310,
+      "skipped_scale_tensors": 0,
+      "skipped_buffer_tensors": 0
+     },
+     "evidence": "weights:tensor header inventory"
+    }
+   ]
+  },
+  {
+   "field": "block_shapes",
+   "value": {
+    "mixers": {
+     "sliding_attention": {
+      "layers": 21,
+      "tensors": {
+       "input_layernorm.weight": [
+        2048
+       ],
+       "post_attention_layernorm.weight": [
+        2048
+       ],
+       "self_attn.k_norm.weight": [
+        128
+       ],
+       "self_attn.k_proj.weight": [
+        1024,
+        2048
+       ],
+       "self_attn.o_proj.weight": [
+        2048,
+        3072
+       ],
+       "self_attn.q_norm.weight": [
+        128
+       ],
+       "self_attn.q_proj.weight": [
+        3072,
+        2048
+       ],
+       "self_attn.v_proj.weight": [
+        1024,
+        2048
+       ]
+      }
+     },
+     "full_attention": {
+      "layers": 7,
+      "tensors": {
+       "input_layernorm.weight": [
+        2048
+       ],
+       "post_attention_layernorm.weight": [
+        2048
+       ],
+       "self_attn.k_norm.weight": [
+        128
+       ],
+       "self_attn.k_proj.weight": [
+        1024,
+        2048
+       ],
+       "self_attn.o_proj.weight": [
+        2048,
+        3072
+       ],
+       "self_attn.q_norm.weight": [
+        128
+       ],
+       "self_attn.q_proj.weight": [
+        3072,
+        2048
+       ],
+       "self_attn.v_proj.weight": [
+        1024,
+        2048
+       ]
+      }
+     }
+    },
+    "ffns": [
+     {
+      "layer_ranges": [
+       [
+        0,
+        27
+       ]
+      ],
+      "tensors": {
+       "mlp.down_proj.weight": [
+        2048,
+        8192
+       ],
+       "mlp.gate_proj.weight": [
+        8192,
+        2048
+       ],
+       "mlp.up_proj.weight": [
+        8192,
+        2048
+       ]
+      }
+     }
+    ],
+    "globals": {
+     "embed_tokens.weight": [
+      200029,
+      2048
+     ],
+     "norm.weight": [
+      2048
+     ]
+    }
+   },
+   "status": "single source",
+   "confidence": 0.7,
+   "published": true,
+   "candidates": [
+    {
+     "value": {
+      "mixers": {
+       "sliding_attention": {
+        "layers": 21,
+        "tensors": {
+         "input_layernorm.weight": [
+          2048
+         ],
+         "post_attention_layernorm.weight": [
+          2048
+         ],
+         "self_attn.k_norm.weight": [
+          128
+         ],
+         "self_attn.k_proj.weight": [
+          1024,
+          2048
+         ],
+         "self_attn.o_proj.weight": [
+          2048,
+          3072
+         ],
+         "self_attn.q_norm.weight": [
+          128
+         ],
+         "self_attn.q_proj.weight": [
+          3072,
+          2048
+         ],
+         "self_attn.v_proj.weight": [
+          1024,
+          2048
+         ]
+        }
+       },
+       "full_attention": {
+        "layers": 7,
+        "tensors": {
+         "input_layernorm.weight": [
+          2048
+         ],
+         "post_attention_layernorm.weight": [
+          2048
+         ],
+         "self_attn.k_norm.weight": [
+          128
+         ],
+         "self_attn.k_proj.weight": [
+          1024,
+          2048
+         ],
+         "self_attn.o_proj.weight": [
+          2048,
+          3072
+         ],
+         "self_attn.q_norm.weight": [
+          128
+         ],
+         "self_attn.q_proj.weight": [
+          3072,
+          2048
+         ],
+         "self_attn.v_proj.weight": [
+          1024,
+          2048
+         ]
+        }
+       }
+      },
+      "ffns": [
+       {
+        "layer_ranges": [
+         [
+          0,
+          27
+         ]
+        ],
+        "tensors": {
+         "mlp.down_proj.weight": [
+          2048,
+          8192
+         ],
+         "mlp.gate_proj.weight": [
+          8192,
+          2048
+         ],
+         "mlp.up_proj.weight": [
+          8192,
+          2048
+         ]
+        }
+       }
+      ],
+      "globals": {
+       "embed_tokens.weight": [
+        200029,
+        2048
+       ],
+       "norm.weight": [
+        2048
+       ]
+      }
+     },
+     "evidence": "weights:per-layer tensor shapes, identical within each config layer type"
+    }
+   ]
+  }
+ ],
+ "published": {
+  "num_layers": 28,
+  "hidden_size": 2048,
+  "vocab_size": 200029,
+  "context_length": 32768,
+  "num_attention_heads": 24,
+  "num_kv_heads": 8,
+  "head_dim": 128,
+  "attention_type": "GQA",
+  "ffn_gated": true,
+  "tied_embeddings": true,
+  "ffn_intermediate": 8192,
+  "sliding_window": 2048,
+  "layer_type_counts": {
+   "sliding_attention": 21,
+   "full_attention": 7
+  },
+  "layer_pattern_per_layer": [
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention",
+   "attention"
+  ],
+  "layer_index_base_in_config": 0,
+  "qk_norm": true,
+  "params_total": 2288831488,
+  "model_type": "aion_instruct",
+  "layer_types": [
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "full_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "full_attention",
+   "sliding_attention",
+   "full_attention",
+   "full_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention",
+   "sliding_attention"
+  ],
+  "decoder_type": "Dense",
+  "rope": {
+   "full_attention": {
+    "beta_fast": 32.0,
+    "beta_slow": 1.0,
+    "factor": 16.0,
+    "original_max_position_embeddings": 2048,
+    "rope_theta": 32000,
+    "rope_type": "yarn"
+   },
+   "sliding_attention": {
+    "rope_type": "default",
+    "rope_theta": 32000
+   }
+  },
+  "activation": "silu",
+  "released_weights_format": "bfloat16",
+  "normalization_type": "RMSNorm",
+  "normalization_modules": [
+   {
+    "kind": "RMSNorm",
+    "scope": "decoder",
+    "module": "AionInstructDecoderLayer.input_layernorm",
+    "implementation": "AionInstructRMSNorm",
+    "formula_line": 60,
+    "call_line": 298
+   },
+   {
+    "kind": "RMSNorm",
+    "scope": "decoder",
+    "module": "AionInstructDecoderLayer.post_attention_layernorm",
+    "implementation": "AionInstructRMSNorm",
+    "formula_line": 60,
+    "call_line": 299
+   }
+  ],
+  "parameter_components": {
+   "dense_ffn": 1409286144,
+   "attention_or_linear_mixer": 469769216,
+   "embedding": 409659392,
+   "norms": 116736
+  },
+  "weight_header_summary": {
+   "tensor_count": 310,
+   "skipped_scale_tensors": 0,
+   "skipped_buffer_tensors": 0
+  },
+  "block_shapes": {
+   "mixers": {
+    "sliding_attention": {
+     "layers": 21,
+     "tensors": {
+      "input_layernorm.weight": [
+       2048
+      ],
+      "post_attention_layernorm.weight": [
+       2048
+      ],
+      "self_attn.k_norm.weight": [
+       128
+      ],
+      "self_attn.k_proj.weight": [
+       1024,
+       2048
+      ],
+      "self_attn.o_proj.weight": [
+       2048,
+       3072
+      ],
+      "self_attn.q_norm.weight": [
+       128
+      ],
+      "self_attn.q_proj.weight": [
+       3072,
+       2048
+      ],
+      "self_attn.v_proj.weight": [
+       1024,
+       2048
+      ]
+     }
+    },
+    "full_attention": {
+     "layers": 7,
+     "tensors": {
+      "input_layernorm.weight": [
+       2048
+      ],
+      "post_attention_layernorm.weight": [
+       2048
+      ],
+      "self_attn.k_norm.weight": [
+       128
+      ],
+      "self_attn.k_proj.weight": [
+       1024,
+       2048
+      ],
+      "self_attn.o_proj.weight": [
+       2048,
+       3072
+      ],
+      "self_attn.q_norm.weight": [
+       128
+      ],
+      "self_attn.q_proj.weight": [
+       3072,
+       2048
+      ],
+      "self_attn.v_proj.weight": [
+       1024,
+       2048
+      ]
+     }
+    }
+   },
+   "ffns": [
+    {
+     "layer_ranges": [
+      [
+       0,
+       27
+      ]
+     ],
+     "tensors": {
+      "mlp.down_proj.weight": [
+       2048,
+       8192
+      ],
+      "mlp.gate_proj.weight": [
+       8192,
+       2048
+      ],
+      "mlp.up_proj.weight": [
+       8192,
+       2048
+      ]
+     }
+    }
+   ],
+   "globals": {
+    "embed_tokens.weight": [
+     200029,
+     2048
+    ],
+    "norm.weight": [
+     2048
+    ]
+   }
+  }
+ },
+ "review_queue": [],
+ "unchecked_notes": [
+  "Config keys not consumed by the extractor (including metadata/defaults): attention_bias, attention_dropout, auto_map.AutoConfig, auto_map.AutoModel, auto_map.AutoModelForCausalLM, bos_token_id, eos_token_id, initializer_range, pad_token_id, rms_norm_eps, transformers_version, use_cache"
+ ],
+ "weight_layer_kinds": [
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention",
+  "attention"
+ ]
+}
