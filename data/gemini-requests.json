@@ -389,5 +389,35 @@
     "outputs_lost": true,
     "time_approximate": true,
     "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1795613264.3005247,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1795613279.300701,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1795613294.3008697,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1795613309.3010619,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
+  },
+  {
+    "time": 1795613324.3012218,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2"
   }
 ]
