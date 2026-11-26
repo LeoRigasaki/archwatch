@@ -53,7 +53,7 @@ def edges(panel):
 )
 def test_generated_spec_matches_hand_written_kit_numbers(stem, kit, deviations):
     rec = record(stem)
-    spec = build_spec(rec)
+    spec = build_spec(rec, "v1")  # the hand-written kits follow the v1 template wording ("160K" vocabulary)
     spec.pop("layout")  # page geometry, not architecture facts
     body = dump(spec, rec).split("\n\n", 1)[1]
     expected = numbers((ROOT / "docs/diagram-kit/specs" / f"{kit}.yaml").read_text())

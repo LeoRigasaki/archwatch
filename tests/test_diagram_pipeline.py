@@ -202,3 +202,121 @@ def test_the_lost_runs_are_in_the_ledger():
     ]
     assert sorted({e["day"] for e in carried}) == ["2026-11-18", "2026-11-20", "2026-11-23", "2026-11-25"]
     assert len(carried) == 22
+
+
+# ---------------------------------------------------------------- dimensions connect
+
+from archwatch import diagram_checks, diagram_spec, generated  # noqa: E402
+
+
+def test_glm_rejected_svg_fails_dimensions_connect():
+    root = diagram_checks.parse((ROOT / "tests/fixtures/diagrams/glm-4-9b-0414-rejected.svg").read_text())
+    assert diagram_checks.svg_dimension_problems(root) == [
+        'ffn: "down: Linear 13696 -> 4096" takes 13696 but is fed 27392'
+    ]
+
+
+@pytest.mark.parametrize("svg", sorted((ROOT / "diagrams/generated").glob("*.svg")), ids=lambda p: p.stem)
+def test_every_approved_diagram_passes_dimensions_connect(svg):
+    assert diagram_checks.svg_dimension_problems(diagram_checks.parse(svg.read_text())) == []
+
+
+def test_split_and_multiply_explain_width_changes_and_per_head_norms_keep_width():
+    nodes = {
+        "in": "input (4096)",
+        "gu": "gate_up: Linear 4096 -> 27392",
+        "split": "split: 2 x 13696",
+        "act": "SiLU",
+        "mul": "multiply",
+        "down": "down: Linear 13696 -> 4096",
+        "out": "output (4096)",
+    }
+    edges = [
+        ("in", "gu"),
+        ("gu", "split"),
+        ("split", "act"),
+        ("act", "mul"),
+        ("split", "mul"),
+        ("mul", "down"),
+        ("down", "out"),
+    ]
+    assert diagram_checks.dimension_problems(nodes, edges) == []
+    bad = dict(nodes, split="split: 2 x 12000")
+    assert diagram_checks.dimension_problems(bad, edges)[0].startswith('"split: 2 x 12000" splits 24000 but is fed')
+    heads = {
+        "in": "input (1152)",
+        "q": "q: Linear 1152 -> 1024",
+        "n": "q norm (256)",
+        "o": "output projection: 1024 -> 1152",
+    }
+    assert diagram_checks.dimension_problems(heads, [("in", "q"), ("q", "n"), ("n", "o")]) == []
+
+
+def test_fused_gate_up_specs_draw_an_explicit_split():
+    spec = diagram_spec.build_spec(json.loads((ROOT / "data/models/zai-org__GLM-4-9B-0414.json").read_text()))
+    ffn = next(p for k, p in spec["zoom_panels"].items() if "ffn" in k)
+    labels = [n["label"] for n in ffn["nodes"]]
+    assert "gate_up: Linear 4096 -> 27392" in labels and "split: 2 x 13696" in labels and "multiply" in labels
+    assert diagram_checks.spec_dimension_problems(spec) == []
+
+
+def test_a_spec_whose_widths_do_not_connect_costs_no_call(tmp_path, monkeypatch):
+    root = root_with(tmp_path, READY)
+    log = []
+    monkeypatch.setattr(queue.diagram_gen, "run_model", runner({}, log))
+    monkeypatch.setattr(queue, "spec_dimension_problems", lambda spec: ['ffn: "down" takes 1 but is fed 2'])
+    summary = queue.run(root, CONFIG, client=None, today=date(2026, 11, 26))
+    assert log == [] and summary["calls"] == 0 and all("do not connect" in s["reason"] for s in summary["skipped"])
+
+
+# ---------------------------------------------------------------- timeouts
+
+
+def test_a_timeout_gets_the_same_single_logged_retry(tmp_path, monkeypatch):
+    import socket
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    answers = [urllib.error.URLError(socket.timeout("timed out")), None]
+    waits = []
+
+    def opener(request, timeout):
+        answer = answers.pop(0)
+        if answer is None:
+            return Ok()
+        raise answer
+
+    clock = iter(range(1000, 100_000, 100))
+    c = Gemini(CONFIG, tmp_path / "ledger.json", opener=opener, clock=lambda: next(clock), wait=waits.append)
+    assert c.generate("S", "P", tag={"for": "org/m"})[0] == "<svg/>"
+    entries = ledger(tmp_path)
+    assert len(entries) == 2 and entries[1]["retry"] == "after a timeout" and gemini.RETRY_WAIT_SECONDS in waits
+    answers[:] = [TimeoutError("timed out"), TimeoutError("timed out")]
+    with pytest.raises(ProviderError) as error:
+        c.generate("S", "P")
+    assert error.value.status == "timeout" and len(ledger(tmp_path)) == 4  # one retry, then the run stops
+
+
+# ---------------------------------------------------------------- spec template versions
+
+
+def test_v2_template_shows_exact_vocabulary_and_title_rounding_v1_is_unchanged():
+    record = json.loads((ROOT / "data/models/deepseek-ai__DeepSeek-V2-Lite.json").read_text())
+    v1, v2 = diagram_spec.build_spec(record, "v1"), diagram_spec.build_spec(record, "v2")
+    assert diagram_spec.CURRENT_TEMPLATE == "v2"
+    assert v1["model"]["summary_line"].startswith("16B parameters") and "Vocabulary: 100K" in diagram_spec.dump(
+        v1, record
+    )
+    assert v2["model"]["summary_line"].startswith("15.7B parameters") and v2["model"]["title_label"].endswith("(15.7B)")
+    assert "Vocabulary: 102,400" in diagram_spec.dump(v2, record) and "100K" not in v2["model"]["vocabulary"]
+
+
+def test_approved_diagrams_keep_their_template_and_are_not_requeued(monkeypatch):
+    monkeypatch.setattr(queue, "published_for", lambda root, record: generated.select(record, root))  # undo the stub
+    for meta in sorted((ROOT / "diagrams/generated").glob("*.json")):
+        record = json.loads((ROOT / "data/models" / meta.name).read_text())
+        assert generated.select(record, ROOT) is not None, meta.stem  # still selected under its own template
+    plan, _ = queue.plan(
+        ROOT, queue.load_state(ROOT / CONFIG["schedule"]["diagrams"]["state"]), CONFIG["schedule"]["diagrams"]
+    )
+    approved = {json.loads(m.read_text())["model"] for m in (ROOT / "diagrams/generated").glob("*.json")}
+    assert not approved & {q["model"] for q in plan}

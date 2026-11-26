@@ -24,7 +24,17 @@ class ProviderError(RuntimeError):
         self.status = status
 
 
-RETRY_WAIT_SECONDS = 60  # one retry after a server error, after this pause
+RETRY_WAIT_SECONDS = 60  # one retry after a server error or a timeout, after this pause
+
+
+def _timed_out(error) -> bool:
+    reason = getattr(error, "reason", error)  # urllib wraps socket timeouts in URLError(reason=...)
+    return isinstance(error, TimeoutError) or isinstance(reason, TimeoutError) or "timed out" in str(reason)
+
+
+def retryable(error) -> bool:
+    """A 5xx or a timeout: the provider's side. 429, 4xx and everything else are not retried."""
+    return error.status == "timeout" or (isinstance(error.status, int) and error.status >= 500)
 
 
 def local_env(path):
@@ -78,7 +88,9 @@ class Gemini:
             raise ProviderError(
                 f"Gemini request failed (HTTP {error.code}); no fallback attempted", error.code
             ) from None
-        except (OSError, ValueError):
+        except (OSError, ValueError) as error:
+            if _timed_out(error):  # treated like a 5xx: the server did not answer in time
+                raise ProviderError("Gemini request timed out; no response", "timeout") from None
             raise ProviderError("Gemini request failed; credentials and transport details omitted") from None
 
     def _reserve(self, prompt_bytes):
@@ -107,17 +119,18 @@ class Gemini:
     def generate(self, system, prompt, images=(), *, tag=None):
         """`images`: PNG bytes sent after the text (e.g. a render of the previous attempt).
 
-        One retry, only after a 5xx, after RETRY_WAIT_SECONDS; the retry is reserved as its own ledger entry.
+        One retry, only after a 5xx or a request timeout, after RETRY_WAIT_SECONDS; the retry is reserved as its own ledger entry.
         A failed retry, a 429 or any other error raises at once. `tag` (e.g. {"for": repo}) is written into
         each ledger entry this call reserves.
         """
         try:
             return self._generate_once(system, prompt, images, tag)
         except ProviderError as error:
-            if not (isinstance(error.status, int) and error.status >= 500):
+            if not retryable(error):
                 raise
             self.wait(RETRY_WAIT_SECONDS)
-            return self._generate_once(system, prompt, images, dict(tag or {}, retry=f"after HTTP {error.status}"))
+            reason = "a timeout" if error.status == "timeout" else f"HTTP {error.status}"
+            return self._generate_once(system, prompt, images, dict(tag or {}, retry=f"after {reason}"))
 
     def _tag(self, tag):
         if not tag:

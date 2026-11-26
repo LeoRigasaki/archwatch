@@ -492,7 +492,19 @@ def _ffn_graph(title, t, v):
         names = ("gate", "up", "down")
     act = ACT_NODE.get(v.get("activation"), v.get("activation"))
     down = g.node("down", f"{names[2]}: {_linear(down_w)}")
-    if gate_w and up_w:
+    fused = _find(t, "gate_up_proj.weight")
+    if fused:
+        # One fused projection (e.g. GLM-4): its output is split in two; the activated half gates the other.
+        if fused[0] % 2 or fused[0] // 2 != down_w[1]:
+            raise SpecError("Fused gate/up width is not twice the down projection's input")
+        half = fused[0] // 2
+        split = g.node("split", f"split: 2 x {half}")
+        mul = g.node("mul", "multiply")
+        g.chain(inp, g.node("gate_up", f"gate_up: {_linear(fused)}"), split)
+        g.chain(split, g.node("act", act) if act else None, mul)
+        g.chain(split, mul)
+        g.chain(mul, down, out)
+    elif gate_w and up_w:
         if gate_w != up_w:
             raise SpecError("Gate and up projections disagree")
         mul = g.node("mul", "multiply")
@@ -666,7 +678,17 @@ def _title(repo, v):
     return f"{name} ({_params(v['params_total'], 1)})"
 
 
-def build_spec(record: dict) -> dict:
+# Spec template versions. An approved diagram keeps the template it was drawn from (recorded in its sidecar and
+# the queue state), so changing the wording never requeues it; new or changed specs use CURRENT_TEMPLATE.
+# v1: vocabulary shortened by 1,024 ("148K"); subtitle parameter count rounded differently from the title.
+# v2: vocabulary exact ("151,552"); subtitle parameter count rounded like the title (one decimal).
+TEMPLATES = ("v1", "v2")
+CURRENT_TEMPLATE = "v2"
+
+
+def build_spec(record: dict, template: str = CURRENT_TEMPLATE) -> dict:
+    if template not in TEMPLATES:
+        raise SpecError(f"Unknown spec template {template}")
     try:
         v = render_values(record)
         cache = render_cache(v)
@@ -707,7 +729,7 @@ def build_spec(record: dict) -> dict:
         name=record["id"].split("/", 1)[1],
         title_label=_title(record["id"], v),
         summary_line=", ".join(
-            [f"{_params(v['params_total'])} parameters"]
+            [f"{_params(v['params_total'], 1 if template != 'v1' else None)} parameters"]
             + ([f"{_params(v['params_active'])} active"] if v.get("params_active") else [])
             + [f"{v['num_layers']} layers", f"{_short_count(ctx)} context"]
         ),
@@ -719,7 +741,7 @@ def build_spec(record: dict) -> dict:
         layers=v["num_layers"],
         hidden_size=hidden,
         vocabulary=f"{_commas(vocab)} ({_short_count(vocab)})"
-        if _short_count(vocab) != _commas(vocab)
+        if template == "v1" and _short_count(vocab) != _commas(vocab)
         else _commas(vocab),
         context_length=f"{_short_count(ctx)} tokens ({_commas(ctx)})",
     )
@@ -843,7 +865,7 @@ def build_spec(record: dict) -> dict:
             )
         )
     callouts += [
-        dict(text=f"Vocabulary: {_short_count(vocab)}", beside="embedding"),
+        dict(text=f"Vocabulary: {_short_count(vocab) if template == 'v1' else _commas(vocab)}", beside="embedding"),
         dict(text=f"Embedding dimension: {hidden}", beside="embedding"),
     ]
     grows = cache["grows_per_token_bytes"]

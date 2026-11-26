@@ -17,13 +17,13 @@
       "updated": "2026-11-15"
     },
     "deepseek-ai/DeepSeek-V2-Lite": {
-      "spec_sha256": "a904877f45e72953d34360af74156be062fd84658aa115f68ebad94911abeb33",
-      "status": "withdrawn",
-      "version": null,
-      "folder": null,
+      "spec_sha256": "82bd9f4437ad6b6cede2f2c54c2ae74591cc8fa18a248827218d0a6b627dfd81",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/deepseek-ai__DeepSeek-V2-Lite/82bd9f4437ad",
       "calls": 1,
-      "updated": "2026-11-15",
-      "reason": "Diagram removed before merge: it shows 2.66B active, the record now publishes 2.45B; redraw from the current spec"
+      "updated": "2026-11-18",
+      "recovered_from_run": 44301688691
     },
     "google/gemma-3-1b-pt": {
       "spec_sha256": "db76f8a7a3c26b6c729b40ba5870f5040fb68c7398b7093c0fbe61fcda3aae25",
@@ -40,6 +40,32 @@
       "folder": "data/generated-diagrams/microsoft__Mage-VL/37cb61e38b26",
       "calls": 1,
       "updated": "2026-11-15"
+    },
+    "moonshotai/Kimi-K3": {
+      "spec_sha256": "9990730a83722d18dd811af375fa6d0c5da9c1193846a187d5b144bd2e11a85f",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/moonshotai__Kimi-K3/9990730a8372",
+      "calls": 1,
+      "updated": "2026-11-18",
+      "recovered_from_run": 44301688691
+    },
+    "microsoft/phi-2": {
+      "spec_sha256": "6af406edb65b496bc0ac7dd771d9c0fddd6ca5148e7cc2d62d6777224bd6b468",
+      "status": "passed",
+      "version": 1,
+      "folder": "data/generated-diagrams/microsoft__phi-2/6af406edb65b",
+      "calls": 1,
+      "updated": "2026-11-18",
+      "recovered_from_run": 44301688691
+    },
+    "mistralai/Mistral-7B-v0.1": {
+      "spec_sha256": "504a29fa153534157ba877af37b0fd93df62f3ac83b46ed5488da4ddde4dc1f4",
+      "status": "error",
+      "version": null,
+      "folder": "data/generated-diagrams/mistralai__Mistral-7B-v0.1/504a29fa1535",
+      "calls": 1,
+      "updated": "2026-11-26"
     }
   },
   "runs": [
@@ -81,6 +107,31 @@
       "calls": 5,
       "stopped": null,
       "waiting": []
+    },
+    {
+      "date": "2026-11-26",
+      "processed": [
+        {
+          "model": "mistralai/Mistral-7B-v0.1",
+          "status": "error",
+          "calls": 1,
+          "responses": 0
+        }
+      ],
+      "skipped": [
+        {
+          "model": "LiquidAI/LFM2.5-24B-A2B-Base",
+          "reason": "Published tensor shapes lack self_attn.o_proj.weight / self_attn.dense.weight"
+        }
+      ],
+      "calls": 1,
+      "responses": 0,
+      "queued": 3,
+      "stopped": "provider error: Gemini request failed; credentials and transport details omitted",
+      "waiting": [
+        "Qwen/Qwen3-0.6B-Base",
+        "google/gemma-3-1b-pt"
+      ]
     }
   ]
 }

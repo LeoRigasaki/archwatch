@@ -1,0 +1,33 @@
+{
+  "model": "microsoft/phi-2",
+  "source_commit": "810d367871c1d460086d9f82db8696f2e0a0fcd0",
+  "spec_sha256": "6af406edb65b496bc0ac7dd771d9c0fddd6ca5148e7cc2d62d6777224bd6b468",
+  "svg_sha256": "6b7bdd4765cfc1bdccc4b0183dadde4e32d49d3b493d51989e268922d0e0cdc9",
+  "source": "data/generated-diagrams/microsoft__phi-2/6af406edb65b/v1.svg",
+  "checks_passed": [
+    "callouts_beside_their_part",
+    "callouts_present",
+    "canvas_size",
+    "columns_balanced",
+    "do_not_include",
+    "edges_connect_their_nodes",
+    "fixed_layout_positions",
+    "fixed_layout_sections",
+    "graph_edges_match_spec",
+    "graph_nodes_match_spec",
+    "inside_canvas_with_margin",
+    "labels_from_spec",
+    "layer_bars_match_spec",
+    "layer_sum",
+    "lines_avoid_other_boxes",
+    "no_covered_text",
+    "no_leader_lines",
+    "no_lines_through_text",
+    "no_text_overlap",
+    "numbers_from_spec",
+    "readable_font_sizes",
+    "repeat_counts_once",
+    "svg_valid_and_safe",
+    "zoom_panels_present"
+  ]
+}

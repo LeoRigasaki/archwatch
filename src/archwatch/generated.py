@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 from .diagram_checks import static_checks
-from .diagram_spec import SpecError, build_spec, dump
+from .diagram_spec import TEMPLATES, SpecError, build_spec, dump
 
 ROOT = Path(__file__).resolve().parents[2]
 FOLDER = Path("diagrams/generated")
@@ -35,10 +35,11 @@ def publish(root: Path, record: dict, svg_path: Path) -> dict:
     review = json.loads(svg_path.with_name(svg_path.stem + ".review.json").read_text())
     if not review.get("passed"):
         raise ValueError("Only a diagram that passed every code check can be published")
-    spec = build_spec(record)
     drawn_from = (svg_path.parent / "spec.yaml").read_text()
-    if drawn_from != dump(spec, record):
+    template = next((t for t in TEMPLATES if dump(build_spec(record, t), record) == drawn_from), None)
+    if template is None:
         raise ValueError("The diagram was drawn from a different spec than the record's current one")
+    spec = build_spec(record, template)
     stem = record["id"].replace("/", "__")
     out = root / FOLDER
     out.mkdir(parents=True, exist_ok=True)
@@ -47,6 +48,7 @@ def publish(root: Path, record: dict, svg_path: Path) -> dict:
         model=record["id"],
         source_commit=record["source_commit"],
         spec_sha256=spec_hash(spec, record),
+        spec_template=template,
         svg_sha256=_sha((out / f"{stem}.svg").read_bytes()),
         source=str(svg_path.relative_to(root)),
         checks_passed=sorted(review["checks"]),
@@ -64,7 +66,7 @@ def select(record: dict, root: Path = ROOT) -> tuple[str, dict] | None:
     meta = json.loads(meta_path.read_text())
     svg = svg_path.read_text()
     try:
-        spec = build_spec(record)
+        spec = build_spec(record, meta.get("spec_template", "v1"))  # the template it was drawn from
     except SpecError:
         return None
     if meta.get("spec_sha256") != spec_hash(spec, record) or meta.get("svg_sha256") != _sha(svg.encode()):
