@@ -11,11 +11,11 @@ Columns: **value correct** = claimed value equals our published value (claims wh
 | DeepSeek-V2-Lite | gemini-3.5-flash-lite | repo | no (2024-05-15) | 5 | 2/5 (40%) | 5/5 (100%) | 2/5 (40%) | 3/3 (100%) | 2/5 (40%) | 0 | 2 |
 | LFM3-1.7B-Base | gemini-3.5-flash-lite | repo | yes (2026-10-26) | 12 | 1/11 (9%) | 11/12 (92%) | 2/12 (17%) | 5/7 (71%) | 1/12 (8%) | 0 | 1 |
 | Nemotron-H-8B-Base-8K | gemini-3.5-flash-lite | repo | no (2025-03-19) | 11 | 0/9 (0%) | 11/11 (100%) | 1/11 (9%) | 3/7 (43%) | 1/11 (9%) | 0 | 1 |
-| Llama-3.1-8B | gemini-3.8-flash | transformers v4.43.0 | no (2024-07-14) | error: Configured free daily request cap reached | | | | | | | |
-| Qwen3-0.6B-Base | gemini-3.8-flash | transformers v4.51.0 | no (2025-04-28) | error: Configured free daily request cap reached | | | | | | | |
-| DeepSeek-V2-Lite | gemini-3.8-flash | repo | no (2024-05-15) | error: Configured free daily request cap reached | | | | | | | |
+| Llama-3.1-8B | gemini-3.8-flash | transformers v4.43.0 | no (2024-07-14) | error: Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.) | | | | | | | |
+| Qwen3-0.6B-Base | gemini-3.8-flash | transformers v4.51.0 | no (2025-04-28) | error: Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.) | | | | | | | |
+| DeepSeek-V2-Lite | gemini-3.8-flash | repo | no (2024-05-15) | error: Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.) | | | | | | | |
 | LFM3-1.7B-Base | gemini-3.8-flash | repo | yes (2026-10-26) | 12 | 11/11 (100%) | 12/12 (100%) | 12/12 (100%) | 7/7 (100%) | 12/12 (100%) | 0 | 11 |
-| Nemotron-H-8B-Base-8K | gemini-3.8-flash | repo | no (2025-03-19) | error: Configured free daily request cap reached | | | | | | | |
+| Nemotron-H-8B-Base-8K | gemini-3.8-flash | repo | no (2025-03-19) | error: Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.) | | | | | | | |
 
 - **gemini-3.5-flash-lite, all models** (5 models, 46 claims): value correct 12/42 (29%); citation valid 45/46 (98%); weight check 17/30 (57%); passes all checks 8/46 (17%); wrong but passes 0.
 - **gemini-3.5-flash-lite, released after its cutoff** (1 models, 12 claims): value correct 1/11 (9%); citation valid 11/12 (92%); weight check 5/7 (71%); passes all checks 1/12 (8%); wrong but passes 0.

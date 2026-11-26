@@ -939,7 +939,7 @@
    ],
    "released": "2024-07-14",
    "after_cutoff": false,
-   "error": "Configured free daily request cap reached"
+   "error": "Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.)"
   },
   {
    "repo": "Qwen/Qwen3-0.6B-Base",
@@ -948,7 +948,7 @@
    "flags": [],
    "released": "2025-04-28",
    "after_cutoff": false,
-   "error": "Configured free daily request cap reached"
+   "error": "Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.)"
   },
   {
    "repo": "deepseek-ai/DeepSeek-V2-Lite",
@@ -957,7 +957,7 @@
    "flags": [],
    "released": "2024-05-15",
    "after_cutoff": false,
-   "error": "Configured free daily request cap reached"
+   "error": "Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.)"
   },
   {
    "repo": "LiquidAI/LFM3-1.7B-Base",
@@ -1220,7 +1220,7 @@
    "flags": [],
    "released": "2025-03-19",
    "after_cutoff": false,
-   "error": "Configured free daily request cap reached"
+   "error": "Gemini interaction failed (InternalServerError: Error code: 503 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.)"
   }
  ]
 }
