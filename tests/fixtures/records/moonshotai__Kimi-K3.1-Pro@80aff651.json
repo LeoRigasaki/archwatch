@@ -1,0 +1,509 @@
+{
+  "_note": "pipeline.analyze output for moonshotai/Kimi-K3.1-Pro at the Hub head on 2026-11-26 (tokenizer-only commit after the gold label's pin); id, commit and published values only.",
+  "id": "moonshotai/Kimi-K3.1-Pro",
+  "published": {
+    "activation": "situ",
+    "activation_card_name": "SiTU-GLU",
+    "attention_output_gate": true,
+    "attention_type": "MLA",
+    "attn_res_block_size": 12,
+    "block_shapes": {
+      "ffns": [
+        {
+          "layer_ranges": [
+            [
+              0,
+              0
+            ]
+          ],
+          "tensors": {
+            "mlp.down_proj.weight": [
+              7168,
+              33792
+            ],
+            "mlp.gate_proj.weight": [
+              33792,
+              7168
+            ],
+            "mlp.up_proj.weight": [
+              33792,
+              7168
+            ]
+          }
+        },
+        {
+          "layer_ranges": [
+            [
+              1,
+              92
+            ]
+          ],
+          "tensors": {
+            "block_sparse_moe.gate.e_score_correction_bias": [
+              896
+            ],
+            "block_sparse_moe.gate.weight": [
+              896,
+              7168
+            ],
+            "block_sparse_moe.routed_expert_down_proj.weight": [
+              3584,
+              7168
+            ],
+            "block_sparse_moe.routed_expert_norm.weight": [
+              3584
+            ],
+            "block_sparse_moe.routed_expert_up_proj.weight": [
+              7168,
+              3584
+            ],
+            "block_sparse_moe.shared_experts.down_proj.weight": [
+              7168,
+              6144
+            ],
+            "block_sparse_moe.shared_experts.gate_proj.weight": [
+              6144,
+              7168
+            ],
+            "block_sparse_moe.shared_experts.up_proj.weight": [
+              6144,
+              7168
+            ]
+          }
+        }
+      ],
+      "globals": {
+        "embed_tokens.weight": [
+          163840,
+          7168
+        ],
+        "lm_head.weight": [
+          163840,
+          7168
+        ],
+        "norm.weight": [
+          7168
+        ],
+        "output_attn_res_norm.weight": [
+          7168
+        ],
+        "output_attn_res_proj.weight": [
+          1,
+          7168
+        ]
+      },
+      "mixers": {
+        "gated_dsa_mla": {
+          "layers": 24,
+          "tensors": {
+            "input_layernorm.weight": [
+              7168
+            ],
+            "mlp_res_norm.weight": [
+              7168
+            ],
+            "mlp_res_proj.weight": [
+              1,
+              7168
+            ],
+            "post_attention_layernorm.weight": [
+              7168
+            ],
+            "self_attention_res_norm.weight": [
+              7168
+            ],
+            "self_attention_res_proj.weight": [
+              1,
+              7168
+            ],
+            "self_attn.g_proj.weight": [
+              12288,
+              7168
+            ],
+            "self_attn.indexer.k_norm.bias": [
+              128
+            ],
+            "self_attn.indexer.k_norm.weight": [
+              128
+            ],
+            "self_attn.indexer.weights_proj.weight": [
+              32,
+              7168
+            ],
+            "self_attn.indexer.wk.weight": [
+              128,
+              7168
+            ],
+            "self_attn.indexer.wq_b.weight": [
+              4096,
+              1536
+            ],
+            "self_attn.kv_a_layernorm.weight": [
+              512
+            ],
+            "self_attn.kv_a_proj_with_mqa.weight": [
+              576,
+              7168
+            ],
+            "self_attn.kv_b_proj.weight": [
+              24576,
+              512
+            ],
+            "self_attn.o_proj.weight": [
+              7168,
+              12288
+            ],
+            "self_attn.q_a_layernorm.weight": [
+              1536
+            ],
+            "self_attn.q_a_proj.weight": [
+              1536,
+              7168
+            ],
+            "self_attn.q_b_proj.weight": [
+              18432,
+              1536
+            ]
+          }
+        },
+        "kda_linear": {
+          "layers": 69,
+          "tensors": {
+            "input_layernorm.weight": [
+              7168
+            ],
+            "mlp_res_norm.weight": [
+              7168
+            ],
+            "mlp_res_proj.weight": [
+              1,
+              7168
+            ],
+            "post_attention_layernorm.weight": [
+              7168
+            ],
+            "self_attention_res_norm.weight": [
+              7168
+            ],
+            "self_attention_res_proj.weight": [
+              1,
+              7168
+            ],
+            "self_attn.A_log": [
+              128
+            ],
+            "self_attn.b_proj.weight": [
+              96,
+              7168
+            ],
+            "self_attn.dt_bias": [
+              12288
+            ],
+            "self_attn.f_a_proj.weight": [
+              128,
+              7168
+            ],
+            "self_attn.f_b_proj.weight": [
+              12288,
+              128
+            ],
+            "self_attn.g_proj.weight": [
+              12288,
+              7168
+            ],
+            "self_attn.k_conv1d.weight": [
+              12288,
+              1,
+              4
+            ],
+            "self_attn.k_proj.weight": [
+              12288,
+              7168
+            ],
+            "self_attn.o_norm.weight": [
+              128
+            ],
+            "self_attn.o_proj.weight": [
+              7168,
+              12288
+            ],
+            "self_attn.q_conv1d.weight": [
+              12288,
+              1,
+              4
+            ],
+            "self_attn.q_proj.weight": [
+              12288,
+              7168
+            ],
+            "self_attn.v_conv1d.weight": [
+              12288,
+              1,
+              4
+            ],
+            "self_attn.v_proj.weight": [
+              12288,
+              7168
+            ]
+          }
+        }
+      }
+    },
+    "context_length": 1048576,
+    "decoder_type": "MoE",
+    "dense_ffn_intermediate": 33792,
+    "dense_layers": 1,
+    "dsa_index_head_dim": 128,
+    "dsa_index_key_width": 128,
+    "dsa_index_num_heads": 32,
+    "dsa_index_topk": 2048,
+    "ffn_gated": true,
+    "head_dim": 192,
+    "hidden_size": 7168,
+    "layer_index_base_in_config": 1,
+    "layer_pattern_per_layer": [
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "linear_delta",
+      "linear_delta",
+      "linear_delta",
+      "dsa_mla",
+      "dsa_mla"
+    ],
+    "layer_type_counts": {
+      "gated_dsa_mla": 24,
+      "kda_linear": 69
+    },
+    "layer_types": [
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "kda_linear",
+      "kda_linear",
+      "kda_linear",
+      "gated_dsa_mla",
+      "gated_dsa_mla"
+    ],
+    "linear_attn_conv_kernel": 4,
+    "linear_attn_head_dim": 128,
+    "linear_attn_num_heads": 96,
+    "mla_cached_width_per_token": 576,
+    "mla_kv_lora_rank": 512,
+    "mla_q_lora_rank": 1536,
+    "mla_qk_rope_head_dim": 64,
+    "mla_use_nope": true,
+    "model_type": "kimi_k31",
+    "moe_active_experts": 16,
+    "moe_expert_intermediate": 3072,
+    "moe_latent_dim": 3584,
+    "moe_num_experts": 896,
+    "moe_router": "sigmoid",
+    "moe_shared_expert_intermediate": 6144,
+    "moe_shared_experts": 2,
+    "num_attention_heads": 96,
+    "num_kv_heads": 96,
+    "num_layers": 93,
+    "num_mtp_layers": 0,
+    "parameter_components": {
+      "attention_or_linear_mixer": 36369321216,
+      "attention_residuals": 2680832,
+      "dense_ffn": 726663168,
+      "embedding": 1174405120,
+      "lm_head": 1174405120,
+      "moe_latent_projection": 4727310336,
+      "moe_routed_experts": 2722740830208,
+      "moe_router": 590955008,
+      "moe_shared_experts": 12155092992,
+      "norms": 1340416,
+      "vision": 401214464,
+      "vision_projector": 46144512
+    },
+    "params_active": 104368141056,
+    "params_active_non_embedding": 103193735936,
+    "params_total": 2780110363392,
+    "released_weights_format": "mxfp4-pack-quantized (4-bit)",
+    "tied_embeddings": false,
+    "v_head_dim": 128,
+    "vision_encoder_layers": 27,
+    "vision_hidden_size": 1024,
+    "vision_params": 401214464,
+    "vocab_size": 163840,
+    "weight_header_summary": {
+      "skipped_buffer_tensors": 0,
+      "skipped_scale_tensors": 247296,
+      "tensor_count": 497340
+    }
+  },
+  "source_commit": "80aff651e9b2d2f5b9f70f92a0a7a77054418e16"
+}

@@ -28,15 +28,26 @@ def as_convention(pub: dict, version: int) -> dict:
     return out
 
 
+NEEDS_RELABEL = "changed upstream, needs relabel"
+
+
 def evaluate(gold_dir: Path, records_dir: Path, convention: int | None = None):
+    """Score published values against the labels.
+
+    Not moved (record at the label's pinned commit): every labeled field must match.
+    Moved (the record was rebuilt at a later commit of the same repo): fields are still compared by value. A match
+    counts as correct; a different value is reported as "changed upstream, needs relabel" for that field only and
+    listed in `needs_relabel`. Labels are never edited here. A missing record or an unpublished field always fails.
+    """
     fields = defaultdict(lambda: {"correct": 0, "total": 0, "missing": 0})
-    models = []
+    models, needs_relabel = [], []
     for path in sorted(gold_dir.glob("*.yaml")):
         label = yaml.safe_load(path.read_text())
         record_path = records_dir / (label["id"].replace("/", "__") + ".json")
         record = json.loads(record_path.read_text()) if record_path.exists() else {}
         revision_ok = record.get("source_commit") == label["source_commit"]
-        pub = record.get("published", {}) if revision_ok else {}
+        moved = bool(record) and not revision_ok
+        pub = record.get("published", {})
         if convention is not None:
             pub = as_convention(pub, convention)
         errors, correct = {}, 0
@@ -48,20 +59,34 @@ def evaluate(gold_dir: Path, records_dir: Path, convention: int | None = None):
             fields[field]["missing"] += int(not exists)
             correct += int(passed)
             if not passed:
-                errors[field] = {
-                    "expected": expected,
-                    "actual": pub.get(field),
-                    "reason": "source revision mismatch/missing record"
-                    if not revision_ok
+                reason = (
+                    "missing record"
+                    if not record
                     else "not published"
                     if not exists
-                    else "different value",
-                }
+                    else NEEDS_RELABEL
+                    if moved
+                    else "different value"
+                )
+                errors[field] = {"expected": expected, "actual": pub.get(field), "reason": reason}
+                if reason == NEEDS_RELABEL:
+                    needs_relabel.append(
+                        {
+                            "id": label["id"],
+                            "field": field,
+                            "expected": expected,
+                            "actual": pub[field],
+                            "label_commit": label["source_commit"],
+                            "record_commit": record["source_commit"],
+                        }
+                    )
         models.append(
             {
                 "id": label["id"],
                 "source_commit": label["source_commit"],
+                "record_commit": record.get("source_commit"),
                 "revision_matches": revision_ok,
+                "revision_moved": moved,
                 "correct": correct,
                 "total": len(label["expected"]),
                 "errors": errors,
@@ -74,10 +99,41 @@ def evaluate(gold_dir: Path, records_dir: Path, convention: int | None = None):
         "correct": correct,
         "total": total,
         "exact_match": correct / total if total else None,
+        "needs_relabel": needs_relabel,
         "fields": dict(sorted(fields.items())),
         "models": models,
         "scope": "Ten-model development gold set, manually inspected primary sources; not human-reviewed or a held-out accuracy estimate.",
     }
+
+
+def strict_errors(report) -> list:
+    """Every failing field except those reported as changed upstream: these must be zero."""
+    return [
+        (m["id"], field, e)
+        for m in report["models"]
+        for field, e in m["errors"].items()
+        if e["reason"] != NEEDS_RELABEL
+    ]
+
+
+def relabel_markdown(report) -> str:
+    """Markdown list of fields that changed upstream (for the eval report and the daily PR body); empty if none."""
+    if not report["needs_relabel"]:
+        return ""
+    lines = [
+        "### Gold labels: changed upstream, needs relabel",
+        "",
+        "These records were rebuilt at a newer Hub commit than the gold label is pinned to, and the value differs."
+        " Labels are not edited automatically; relabel by hand after checking the new files.",
+        "",
+        "| Model | Field | Gold label | Now published | Label commit | Record commit |",
+        "|---|---|---|---|---|---|",
+    ]
+    lines += [
+        f"| {r['id']} | `{r['field']}` | `{r['expected']}` | `{r['actual']}` | {r['label_commit'][:8]} | {r['record_commit'][:8]} |"
+        for r in report["needs_relabel"]
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def write_report(report, prefix):
@@ -95,7 +151,14 @@ def write_report(report, prefix):
     ]
     lines += [f"| {k} | {v['correct']} | {v['total']} | {v['missing']} |" for k, v in report["fields"].items()]
     lines += ["", "| Model | Exact matches | Labeled | Revision matches |", "|---|---:|---:|---|"]
-    lines += [f"| {m['id']} | {m['correct']} | {m['total']} | {m['revision_matches']} |" for m in report["models"]]
+    lines += [
+        f"| {m['id']} | {m['correct']} | {m['total']} | "
+        + (f"moved to {m['record_commit'][:8]}" if m["revision_moved"] else str(m["revision_matches"]))
+        + " |"
+        for m in report["models"]
+    ]
+    if report["needs_relabel"]:
+        lines += ["", relabel_markdown(report).rstrip("\n")]
     for model in report["models"]:
         if model["errors"]:
             lines += ["", "## " + model["id"], ""]
@@ -113,6 +176,7 @@ def main():
     parser.add_argument("--output", type=Path, default=ROOT / "results/gold-exact-match")
     parser.add_argument("--scope", help="Explicit evaluation cohort/protocol description for a separate report")
     parser.add_argument("--convention", type=int, help="map records to this counting-convention version first")
+    parser.add_argument("--relabel-md", type=Path, help="also write the needs-relabel list (Markdown) here")
     args = parser.parse_args()
     report = evaluate(args.gold, args.records, args.convention)
     if args.convention is not None:
@@ -120,7 +184,11 @@ def main():
     if args.scope:
         report["scope"] = args.scope
     write_report(report, args.output)
+    if args.relabel_md:
+        args.relabel_md.write_text(relabel_markdown(report))
     print(f"{report['correct']}/{report['total']} published fields match ({report['gold_models']} models)")
+    if report["needs_relabel"]:
+        print(f"{len(report['needs_relabel'])} field(s) changed upstream, needs relabel")
 
 
 if __name__ == "__main__":
