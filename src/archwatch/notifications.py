@@ -92,13 +92,22 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 def notify(report, pr_url="", *, environ=None, opener=None):
     """Send at most once. Missing secrets/no changes are silent; failures are redacted."""
+    if not (os.environ if environ is None else environ).get("DISCORD_WEBHOOK_URL"):
+        return False  # unconfigured: do not even format the report
+    try:
+        content = format_message(report, pr_url)
+    except Exception:
+        LOG.warning(FAILURE_MESSAGE)
+        return False
+    return send_text(content, environ=environ, opener=opener) if content is not None else False
+
+
+def send_text(content, *, environ=None, opener=None):
+    """Post one message to the configured Discord webhook. Missing secret is silent; failures are redacted."""
     webhook = (os.environ if environ is None else environ).get("DISCORD_WEBHOOK_URL")
     if not webhook:
         return False
     try:
-        content = format_message(report, pr_url)
-        if content is None:
-            return False
         parsed = urlsplit(webhook)
         if (
             parsed.scheme != "https"
@@ -110,7 +119,7 @@ def notify(report, pr_url="", *, environ=None, opener=None):
             raise ValueError("Invalid webhook")
         request = urllib.request.Request(
             webhook + "?wait=true",
-            data=json.dumps(dict(content=content, allowed_mentions=dict(parse=[]), flags=4)).encode(),
+            data=json.dumps(dict(content=content[:1900], allowed_mentions=dict(parse=[]), flags=4)).encode(),
             headers={"Content-Type": "application/json", "User-Agent": "ArchWatch"},
             method="POST",
         )

@@ -16,6 +16,7 @@ import datetime as dt
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -71,7 +72,9 @@ def plan(root: Path, state: dict, limits: dict) -> tuple[list, list]:
             continue  # an approved/published generated diagram for this exact spec: never redraw it
         retry = done.get("spec_sha256") == digest  # same spec, failed before: waits behind new work
         queue.append(dict(model=repo, record=record, spec=spec, spec_sha256=digest, retry=retry))
-    queue.sort(key=lambda q: (q["retry"], q["model"]))
+    priority = limits.get("priority") or []
+    rank = {repo: i for i, repo in enumerate(priority)}  # configured order first, then new work, then retries
+    queue.sort(key=lambda q: (rank.get(q["model"], len(priority)), q["retry"], q["model"]))
     return queue[: limits["max_models_per_run"]], skipped
 
 
@@ -100,15 +103,17 @@ def run(root: Path, config: dict, client, *, today=None) -> dict:
             calls=row["calls"],
             updated=(today or dt.date.today()).isoformat(),
         )
-        rows.append(dict(model=item["model"], status=status, calls=row["calls"]))
-        if any("daily" in e for e in row["errors"]):
-            stopped = "daily limit"
+        rows.append(dict(model=item["model"], status=status, calls=row["calls"], responses=row.get("responses", 0)))
+        if row["errors"]:  # a failed retry, a 429, the daily cap or any other provider error: stop the whole run
+            stopped = "daily limit" if "daily" in row["errors"][-1] else "provider error: " + row["errors"][-1]
             break
     summary = dict(
         date=(today or dt.date.today()).isoformat(),
         processed=rows,
         skipped=skipped,
         calls=limits["max_calls_per_run"] - budget,
+        responses=sum(r["responses"] for r in rows),
+        queued=len(queue),
         stopped=stopped,
         waiting=[q["model"] for q in queue if q["model"] not in {r["model"] for r in rows}],
     )
@@ -132,7 +137,26 @@ def main():
 
     local_env(ROOT / ".env")
     client = Gemini(config, ROOT / config["diagram_gen"]["ledger"])
-    print(json.dumps(run(ROOT, config, client), indent=2))
+    summary = run(ROOT, config, client)
+    print(json.dumps(summary, indent=2))
+    failure = failed(summary)
+    if failure:
+        from archwatch.notifications import send_text
+
+        run_url = os.environ.get("ARCHWATCH_RUN_URL", "")
+        send_text(f"ArchWatch diagram run failed: {failure}" + (f"\nRun: <{run_url}>" if run_url else ""))
+        raise SystemExit(f"diagram run failed: {failure}")
+
+
+def failed(summary: dict) -> str | None:
+    """A run succeeds only if at least one diagram attempt got a response, whenever the queue had work."""
+    if not summary["queued"]:
+        return None
+    if summary["calls"] == 0:
+        return f"{summary['queued']} model(s) queued but no call was made ({summary['stopped'] or 'nothing started'})"
+    if summary["responses"] == 0:
+        return f"all {summary['calls']} call(s) failed ({summary['stopped'] or 'no response'})"
+    return None
 
 
 if __name__ == "__main__":

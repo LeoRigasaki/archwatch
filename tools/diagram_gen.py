@@ -35,6 +35,11 @@ def write(path, text):
     path.write_text(text)
 
 
+def _ledger_size(client) -> int:
+    ledger = getattr(client, "ledger", None)
+    return len(json.loads(ledger.read_text())) if ledger is not None and ledger.exists() else 0
+
+
 def run_model(repo, config, client, *, recheck=False, out=None, spec=None, record=None):
     settings = config["diagram_gen"]
     record = record or json.loads((ROOT / "data/models" / (repo.replace("/", "__") + ".json")).read_text())
@@ -48,7 +53,7 @@ def run_model(repo, config, client, *, recheck=False, out=None, spec=None, recor
     ref_svg, ref_png = load(ROOT) if client is not None else ("", b"")
     attempts = []
     svg = None
-    calls = 0
+    calls = responses = 0
     for n in range(1, settings["repairs"] + 2):
         svg_path = folder / f"v{n}.svg"
         if svg_path.exists():
@@ -73,12 +78,16 @@ def run_model(repo, config, client, *, recheck=False, out=None, spec=None, recor
                 images = [(folder / f"v{n - 1}.png").read_bytes(), ref_png]
             write(folder / f"v{n}.prompt.txt", prompt)
             calls += 1  # reserved before transport, so a failed request still counts
+            before = _ledger_size(client)
             try:
-                text, meta = client.generate(system, prompt, images)
-            except Exception as error:  # provider errors are recorded, never retried silently
+                text, meta = client.generate(system, prompt, images, tag={"for": repo, "version": n})
+            except Exception as error:  # provider errors are recorded; the client's one 5xx retry is logged
+                calls += max(0, _ledger_size(client) - before - 1)  # a retry reserved its own ledger entry
                 write(folder / f"v{n}.error.json", json.dumps(dict(error=str(error)), indent=2) + "\n")
                 attempts.append(dict(version=n, error=str(error)))
                 break
+            responses += 1
+            calls += max(0, _ledger_size(client) - before - 1)  # succeeded on the retry
             write(folder / f"v{n}.response.txt", text)
             write(folder / f"v{n}.metadata.json", json.dumps(meta, indent=2) + "\n")
             try:
@@ -97,6 +106,7 @@ def run_model(repo, config, client, *, recheck=False, out=None, spec=None, recor
         model=repo,
         attempts=len(attempts),
         calls=calls,
+        responses=responses,
         final_version=final and final["version"],
         passed=bool(final and final["passed"]),
         remaining_failures=final["failures"] if final else None,

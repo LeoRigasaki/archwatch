@@ -389,5 +389,181 @@
     "outputs_lost": true,
     "time_approximate": true,
     "note": "Recorded after the fact: the run's test step failed before its PR step, so the diagram (PASS) and ledger update were discarded."
+  },
+  {
+    "time": 1795003950.0949228,
+    "day": "2026-11-18",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44301688691,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795004068.3134868,
+    "day": "2026-11-18",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44301688691,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795004172.9768493,
+    "day": "2026-11-18",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44301688691,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795004235.0913868,
+    "day": "2026-11-18",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44301688691,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795004250.091551,
+    "day": "2026-11-18",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44301688691,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795004422.990906,
+    "day": "2026-11-18",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44301688691,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795176486.6023324,
+    "day": "2026-11-20",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44733223773,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795176578.4003823,
+    "day": "2026-11-20",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44733223773,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795176826.244632,
+    "day": "2026-11-20",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44733223773,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795177042.7392282,
+    "day": "2026-11-20",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44733223773,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795177057.7394629,
+    "day": "2026-11-20",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44733223773,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795177120.5474653,
+    "day": "2026-11-20",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 44733223773,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795441004.224895,
+    "day": "2026-11-23",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45185607805,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795441019.2250936,
+    "day": "2026-11-23",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45185607805,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795441034.2252817,
+    "day": "2026-11-23",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45185607805,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795441049.2255063,
+    "day": "2026-11-23",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45185607805,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795441100.8027518,
+    "day": "2026-11-23",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45185607805,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795613264.3005247,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45623762927,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795613279.300701,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45623762927,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795613294.3008697,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45623762927,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795613309.3010619,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45623762927,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795613324.3012218,
+    "day": "2026-11-25",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "run_id": 45623762927,
+    "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
   }
 ]

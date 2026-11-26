@@ -23,12 +23,31 @@ jobs:
         with:
           version: "0.11.8"
       - run: uv sync --locked --python 3.12
+      # create-pull-request rebuilds the PR branch from main on every run. Carry the open review PR's unmerged
+      # ledger entries, queue state and outputs first, so this run extends that PR instead of erasing it.
+      - name: Find the open diagram review PR
+        id: pending
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "open=$(gh pr list --repo "$GITHUB_REPOSITORY" --head diagram-review --state open --json number --jq length)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.pending.outputs.open != '0'
+        with:
+          ref: diagram-review
+          path: pending
+          persist-credentials: false
+      - name: Carry its unmerged state
+        if: steps.pending.outputs.open != '0'
+        run: uv run --frozen python tools/carry_pending.py --source pending && rm -rf pending
       - name: Plan (no calls)
         run: uv run --frozen python tools/diagram_queue.py --plan
       - name: Generate diagrams for changed architectures
         id: generate
+        # Exits non-zero (and posts to Discord) when the queue had work but no call got a response.
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ARCHWATCH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: uv run --frozen python tools/diagram_queue.py
       # Paid-for calls are kept no matter what happens next: the outputs and the call ledger are uploaded
       # and committed to a needs-review PR BEFORE the test suite runs. A failing test marks the run red but
@@ -48,7 +67,7 @@ jobs:
       - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         if: always() && steps.generate.outcome != 'skipped'
         with:
-          branch: diagram-update
+          branch: diagram-review
           title: "ArchWatch diagram run"
           labels: needs-review
           body: |

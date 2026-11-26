@@ -528,7 +528,7 @@ def test_repair_loop_sends_failures_and_stops_on_pass(tmp_path, monkeypatch):
 
         images = []
 
-        def generate(self, system, prompt, images=()):
+        def generate(self, system, prompt, images=(), tag=None):
             self.prompts.append(prompt)
             self.images.append(list(images))
             return (bad if len(self.prompts) == 1 else "```svg\n" + good + "\n```"), {"usage": {}}
@@ -590,7 +590,7 @@ def test_repairs_stop_after_three_calls(tmp_path, monkeypatch):
     class Client:
         calls = 0
 
-        def generate(self, system, prompt, images=()):
+        def generate(self, system, prompt, images=(), tag=None):
             self.calls += 1
             return bad, {"usage": {}}
 
