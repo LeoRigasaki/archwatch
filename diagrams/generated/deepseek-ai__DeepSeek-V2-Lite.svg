@@ -1,0 +1,297 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 1620">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#333333"/>
+    </marker>
+    <style>
+      text { font-family: Helvetica, Arial, sans-serif; fill: #1F2937; }
+      .title { font-size: 34px; font-weight: 700; text-anchor: middle; }
+      .summary { font-size: 16px; fill: #4B5563; text-anchor: middle; }
+      .panel-title { font-size: 18px; font-weight: 700; }
+      .box-label { font-size: 14px; text-anchor: middle; dominant-baseline: central; }
+      .bar-label { font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .repeat-label { font-size: 16px; font-weight: 700; fill: #374151; dominant-baseline: central; }
+      .caption { font-size: 14px; fill: #6B7280; }
+      .callout { font-size: 15px; font-weight: 700; fill: #1F2937; }
+      .edge { fill: none; stroke: #333333; stroke-width: 1.6; }
+      .node-box { fill: #FFFFFF; stroke: #4B5563; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1480" height="1620" fill="#FFFFFF"/>
+
+  <g data-section="title">
+    <text x="740" y="62" class="title">DeepSeek-V2-Lite (15.7B)</text>
+    <text x="740" y="94" class="summary">16B parameters, 2.45B active, 27 layers, 160K context</text>
+  </g>
+
+  <g data-section="stack">
+    <rect x="24" y="130" width="756" height="656" rx="12" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1.5"/>
+
+    <line x1="224" y1="184" x2="224" y2="148" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="lm_head">
+      <rect x="48" y="184" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="206" class="box-label">LM head 2048 -&gt; 102,400</text>
+    </g>
+    <text x="414" y="200" class="caption">LM head is not tied
+      <tspan x="414" dy="18">to the embedding</tspan>
+    </text>
+
+    <line x1="224" y1="268" x2="224" y2="228" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="final_norm">
+      <rect x="48" y="268" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="290" class="box-label">Final norm</text>
+    </g>
+
+    <line x1="224" y1="360" x2="224" y2="312" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="2" data-repeat="26">
+      <rect x="36" y="360" width="376" height="78" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="MLA + MoE" x="48" y="382" width="352" height="34" rx="5" fill="#F4A8A4" stroke="#B84742" stroke-width="1.2"/>
+      <text x="224" y="399" class="bar-label">MLA + MoE</text>
+      <text x="424" y="399" class="repeat-label">26 x</text>
+    </g>
+
+    <line x1="224" y1="494" x2="224" y2="438" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-group="1" data-repeat="1">
+      <rect x="36" y="494" width="376" height="78" rx="8" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+      <rect data-layer="MLA + dense FFN" x="48" y="516" width="352" height="34" rx="5" fill="#F4A8A4" stroke="#B84742" stroke-width="1.2"/>
+      <text x="224" y="533" class="bar-label">MLA + dense FFN</text>
+      <text x="424" y="533" class="repeat-label">1 x</text>
+    </g>
+
+    <path d="M 464 360 C 474 360 474 370 474 382 L 474 454 C 474 462 480 466 486 466 C 480 466 474 470 474 478 L 474 550 C 474 562 474 572 464 572" fill="none" stroke="#4B5563" stroke-width="1.8"/>
+    <text x="492" y="466" class="repeat-label">27 layers</text>
+
+    <line x1="224" y1="632" x2="224" y2="572" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="embedding">
+      <rect x="48" y="632" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="654" class="box-label">Token embedding 102,400 x 2048</text>
+    </g>
+
+    <line x1="224" y1="716" x2="224" y2="676" class="edge" marker-end="url(#arrow)"/>
+
+    <g data-io="text">
+      <rect x="48" y="716" width="352" height="44" rx="8" class="node-box"/>
+      <text x="224" y="738" class="box-label">Tokenized text</text>
+    </g>
+
+    <g data-callout="1">
+      <text x="564" y="346" class="callout">Context length: 160K
+        <tspan x="564" dy="19">tokens</tspan>
+      </text>
+    </g>
+    <g data-callout="3">
+      <text x="564" y="400" class="callout">64 experts, 6 active +
+        <tspan x="564" dy="19">2 shared</tspan>
+      </text>
+    </g>
+    <g data-callout="2">
+      <text x="564" y="496" class="callout">Layer 1 dense FFN;
+        <tspan x="564" dy="19">layers 2-27 MoE</tspan>
+      </text>
+    </g>
+    <g data-callout="5">
+      <text x="564" y="544" class="callout">KV cache: 30.4 KB per
+        <tspan x="564" dy="19">token (vs 270 KB for</tspan>
+        <tspan x="564" dy="19">plain multi-head</tspan>
+        <tspan x="564" dy="19">attention)</tspan>
+      </text>
+    </g>
+    <g data-callout="4">
+      <text x="564" y="654" class="callout" style="dominant-baseline: central;">Vocabulary: 100K</text>
+    </g>
+  </g>
+
+  <g data-section="each-layer">
+    <rect x="24" y="812" width="756" height="780" rx="10" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5"/>
+    <text x="44" y="846" class="panel-title">Each layer</text>
+
+    <g data-node="out">
+      <rect x="440" y="884" width="160" height="44" rx="8" class="node-box"/>
+      <text x="520" y="906" class="box-label">layer output</text>
+    </g>
+    <g data-node="res2">
+      <rect x="440" y="990" width="160" height="44" rx="8" class="node-box"/>
+      <text x="520" y="1012" class="box-label">residual add</text>
+    </g>
+    <g data-node="ffn">
+      <rect x="135" y="1066" width="210" height="44" rx="8" class="node-box"/>
+      <text x="240" y="1088" class="box-label">FFN: dense FFN or MoE</text>
+    </g>
+    <g data-node="pre_ffn_norm">
+      <rect x="155" y="1142" width="170" height="44" rx="8" class="node-box"/>
+      <text x="240" y="1164" class="box-label">norm (pre-FFN)</text>
+    </g>
+    <g data-node="res1">
+      <rect x="440" y="1216" width="160" height="44" rx="8" class="node-box"/>
+      <text x="520" y="1238" class="box-label">residual add</text>
+    </g>
+    <g data-node="mixer">
+      <rect x="150" y="1292" width="180" height="44" rx="8" class="node-box"/>
+      <text x="240" y="1314" class="box-label">token mixer: MLA</text>
+    </g>
+    <g data-node="pre_mixer_norm">
+      <rect x="150" y="1368" width="180" height="44" rx="8" class="node-box"/>
+      <text x="240" y="1390" class="box-label">norm (pre-mixer)</text>
+    </g>
+    <g data-node="in">
+      <rect x="440" y="1442" width="160" height="44" rx="8" class="node-box"/>
+      <text x="520" y="1464" class="box-label">layer input</text>
+    </g>
+
+    <polyline data-edge="in->pre_mixer_norm" points="440,1464 240,1464 240,1412" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="pre_mixer_norm->mixer" x1="240" y1="1368" x2="240" y2="1336" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="mixer->res1" points="240,1292 240,1238 440,1238" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="in->res1" x1="520" y1="1442" x2="520" y2="1260" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="res1->pre_ffn_norm" points="480,1216 480,1200 240,1200 240,1186" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="pre_ffn_norm->ffn" x1="240" y1="1142" x2="240" y2="1110" class="edge" marker-end="url(#arrow)"/>
+    <polyline data-edge="ffn->res2" points="240,1066 240,1012 440,1012" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="res1->res2" x1="540" y1="1216" x2="540" y2="1034" class="edge" marker-end="url(#arrow)"/>
+    <line data-edge="res2->out" x1="520" y1="990" x2="520" y2="928" class="edge" marker-end="url(#arrow)"/>
+
+    <text x="44" y="1558" class="caption">dense FFN: layer 1; MoE: layers 2-27</text>
+  </g>
+
+  <g data-section="zooms">
+    <g data-zoom="mla">
+      <rect x="810" y="130" width="640" height="584" rx="10" fill="#FFFFFF" stroke="#B84742" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="160" class="panel-title" style="fill: #B84742;">Multi-head Latent Attention (MLA), 27 layers</text>
+
+      <g data-node="out">
+        <rect x="1035" y="186" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1110" y="204" class="box-label">output (2048)</text>
+      </g>
+      <g data-node="oproj">
+        <rect x="970" y="250" width="280" height="36" rx="8" class="node-box"/>
+        <text x="1110" y="268" class="box-label">output projection: 2048 -&gt; 2048</text>
+      </g>
+      <g data-node="attn">
+        <rect x="1040" y="314" width="140" height="36" rx="8" class="node-box"/>
+        <text x="1110" y="332" class="box-label">attention</text>
+      </g>
+      <g data-node="kvb">
+        <rect x="1095" y="378" width="280" height="36" rx="8" class="node-box"/>
+        <text x="1235" y="396" class="box-label">Linear 512 -&gt; 16 x (128 + 128)</text>
+      </g>
+      <g data-node="kvnorm">
+        <rect x="1145" y="442" width="180" height="36" rx="8" class="node-box"/>
+        <text x="1235" y="460" class="box-label">norm on 512 latent</text>
+      </g>
+      <g data-node="q">
+        <rect x="835" y="506" width="230" height="36" rx="8" class="node-box"/>
+        <text x="950" y="524" class="box-label">q: Linear 2048 -&gt; 16 x 192</text>
+      </g>
+      <g data-node="kva">
+        <rect x="1130" y="506" width="210" height="36" rx="8" class="node-box"/>
+        <text x="1235" y="524" class="box-label">kv: Linear 2048 -&gt; 576</text>
+      </g>
+      <g data-node="in">
+        <rect x="1035" y="570" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1110" y="588" class="box-label">input (2048)</text>
+      </g>
+
+      <polyline data-edge="in->q" points="1070,570 1070,556 950,556 950,542" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="q->attn" points="950,506 950,364 1075,364 1075,350" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in->kva" points="1150,570 1150,556 1235,556 1235,542" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="kva->kvnorm" x1="1235" y1="506" x2="1235" y2="478" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="kvnorm->kvb" x1="1235" y1="442" x2="1235" y2="414" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="kvb->attn" points="1235,378 1235,364 1115,364 1115,350" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="kva->attn" points="1340,524 1405,524 1405,332 1180,332" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="attn->oproj" x1="1110" y1="314" x2="1110" y2="286" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="oproj->out" x1="1110" y1="250" x2="1110" y2="222" class="edge" marker-end="url(#arrow)"/>
+
+      <text x="830" y="636" class="caption">16 heads; query/key 192 = 128 + 64, value 128
+        <tspan x="830" dy="20">kv: 576 = 512 latent + 64 key dims; the 64 key dims skip the latent norm</tspan>
+        <tspan x="830" dy="20">rotary position encoding on the 64 decoupled key dims, theta 10,000</tspan>
+        <tspan x="830" dy="18">(yarn scaling, factor 40)</tspan>
+      </text>
+    </g>
+
+    <g data-zoom="dense_ffn">
+      <rect x="810" y="738" width="640" height="432" rx="10" fill="#FFFFFF" stroke="#5A6270" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="768" class="panel-title" style="fill: #5A6270;">Dense FFN (layer 1 only)</text>
+
+      <g data-node="out">
+        <rect x="1055" y="790" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="808" class="box-label">output (2048)</text>
+      </g>
+      <g data-node="down">
+        <rect x="1005" y="854" width="250" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="872" class="box-label">down: Linear 10944 -&gt; 2048</text>
+      </g>
+      <g data-node="mul">
+        <rect x="1075" y="918" width="110" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="936" class="box-label">multiply</text>
+      </g>
+      <g data-node="act">
+        <rect x="940" y="982" width="100" height="36" rx="8" class="node-box"/>
+        <text x="990" y="1000" class="box-label">SiLU</text>
+      </g>
+      <g data-node="gate">
+        <rect x="865" y="1046" width="250" height="36" rx="8" class="node-box"/>
+        <text x="990" y="1064" class="box-label">gate: Linear 2048 -&gt; 10944</text>
+      </g>
+      <g data-node="up">
+        <rect x="1145" y="1046" width="250" height="36" rx="8" class="node-box"/>
+        <text x="1270" y="1064" class="box-label">up: Linear 2048 -&gt; 10944</text>
+      </g>
+      <g data-node="in">
+        <rect x="1055" y="1110" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1128" class="box-label">input (2048)</text>
+      </g>
+
+      <polyline data-edge="in->gate" points="1095,1110 1095,1096 990,1096 990,1082" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in->up" points="1165,1110 1165,1096 1270,1096 1270,1082" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="gate->act" x1="990" y1="1046" x2="990" y2="1018" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="act->mul" points="990,982 990,968 1105,968 1105,954" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="up->mul" points="1270,1046 1270,968 1155,968 1155,954" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="mul->down" x1="1130" y1="918" x2="1130" y2="890" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="down->out" x1="1130" y1="854" x2="1130" y2="826" class="edge" marker-end="url(#arrow)"/>
+    </g>
+
+    <g data-zoom="moe">
+      <rect x="810" y="1194" width="640" height="398" rx="10" fill="#FFFFFF" stroke="#5A6270" stroke-width="2" stroke-dasharray="6,5"/>
+      <text x="830" y="1224" class="panel-title" style="fill: #5A6270;">MoE FFN (layers 2-27)</text>
+
+      <g data-node="out">
+        <rect x="1055" y="1246" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1264" class="box-label">output (2048)</text>
+      </g>
+      <g data-node="sum">
+        <rect x="1080" y="1310" width="100" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1328" class="box-label">sum</text>
+      </g>
+      <g data-node="experts">
+        <rect x="840" y="1374" width="290" height="36" rx="8" class="node-box"/>
+        <text x="985" y="1392" class="box-label">6 experts: 2048 -&gt; 1408 -&gt; 2048</text>
+      </g>
+      <g data-node="shared">
+        <rect x="1180" y="1374" width="230" height="36" rx="8" class="node-box"/>
+        <text x="1295" y="1392" class="box-label">2 shared experts (2816)</text>
+      </g>
+      <g data-node="router">
+        <rect x="840" y="1438" width="230" height="36" rx="8" class="node-box"/>
+        <text x="955" y="1456" class="box-label">router: 64 experts, top 6</text>
+      </g>
+      <g data-node="in">
+        <rect x="1055" y="1502" width="150" height="36" rx="8" class="node-box"/>
+        <text x="1130" y="1520" class="box-label">input (2048)</text>
+      </g>
+
+      <polyline data-edge="in->router" points="1085,1502 1085,1488 955,1488 955,1474" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="router->experts" x1="955" y1="1438" x2="955" y2="1410" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="in->experts" x1="1100" y1="1502" x2="1100" y2="1410" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="in->shared" points="1165,1502 1165,1488 1295,1488 1295,1410" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="experts->sum" points="985,1374 985,1360 1105,1360 1105,1346" class="edge" marker-end="url(#arrow)"/>
+      <polyline data-edge="shared->sum" points="1295,1374 1295,1360 1155,1360 1155,1346" class="edge" marker-end="url(#arrow)"/>
+      <line data-edge="sum->out" x1="1130" y1="1310" x2="1130" y2="1282" class="edge" marker-end="url(#arrow)"/>
+
+      <text x="830" y="1568" class="caption">shared experts: combined width 2816, every token, full 2048 space</text>
+    </g>
+  </g>
+</svg>

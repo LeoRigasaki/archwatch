@@ -565,5 +565,13 @@
     "experiment": "diagram-gen-v2",
     "run_id": 45623762927,
     "note": "carried from the run's artifact: create-pull-request rebuilt the diagram PR branch from main on the next run, so this entry never reached main"
+  },
+  {
+    "time": 1795681637.8667657,
+    "day": "2026-11-26",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "for": "mistralai/Mistral-7B-v0.1",
+    "version": 1
   }
 ]
