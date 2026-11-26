@@ -330,6 +330,8 @@ def test_bot_prs_use_bot_pat_only_for_create_pull_request():
             uses_pat = "BOT_PAT" in json.dumps(step)
             if "create-pull-request" in step.get("uses", ""):
                 assert step["with"]["token"] == "${{ secrets.BOT_PAT || github.token }}", name  # falls back if missing
+                bot = "archwatch-bot <41898282+github-actions[bot]@users.noreply.github.com>"
+                assert step["with"]["author"] == step["with"]["committer"] == bot, name
             else:
                 assert not uses_pat, (name, step.get("name") or step.get("uses"))
     for path in (ROOT / ".github/workflows").glob("*.yml"):

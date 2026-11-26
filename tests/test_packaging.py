@@ -6,7 +6,11 @@ import zipfile
 from pathlib import Path
 
 
-def test_source_zip_excludes_environments_caches_and_egg_info(tmp_path):
+def test_source_zip_excludes_environments_caches_and_egg_info(tmp_path, monkeypatch):
+    # Inside a git hook (pre-commit runs this suite) these point at the outer repo's commit; `git add` here would
+    # then write this throwaway repo's files into the real commit's index.
+    for name in ("GIT_DIR", "GIT_INDEX_FILE", "GIT_WORK_TREE", "GIT_OBJECT_DIRECTORY", "GIT_PREFIX"):
+        monkeypatch.delenv(name, raising=False)
     spec = importlib.util.spec_from_file_location(
         "archwatch_packager", Path(__file__).resolve().parents[1] / "tools/package_source.py"
     )

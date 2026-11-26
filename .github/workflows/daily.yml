@@ -69,6 +69,9 @@ jobs:
         with:
           # A fine-grained PAT so the PR's CI runs without manual approval; GITHUB_TOKEN if the secret is missing.
           token: ${{ secrets.BOT_PAT || github.token }}
+          # Automated commits are authored by archwatch-bot, kept apart from the owner's own commits.
+          author: "archwatch-bot <41898282+github-actions[bot]@users.noreply.github.com>"
+          committer: "archwatch-bot <41898282+github-actions[bot]@users.noreply.github.com>"
           branch: daily-update
           title: "ArchWatch daily update (${{ steps.conflicts.outputs.n }} items in review)"
           labels: ${{ steps.conflicts.outputs.n != '0' && 'needs-review' || 'auto-merge' }}
