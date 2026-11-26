@@ -1,0 +1,38 @@
+{
+ "repo": "meituan-longcat/LongCat-Flash-Lite",
+ "commit": "b62b68827ead0b7fef3ba98b57f18484acaaec06",
+ "code_source": "repo",
+ "code_origin": {
+  "configuration_longcat_ngram.py": "https://huggingface.co/meituan-longcat/LongCat-Flash-Lite/blob/b62b68827ead0b7fef3ba98b57f18484acaaec06/configuration_longcat_ngram.py",
+  "modeling_longcat_ngram.py": "https://huggingface.co/meituan-longcat/LongCat-Flash-Lite/blob/b62b68827ead0b7fef3ba98b57f18484acaaec06/modeling_longcat_ngram.py"
+ },
+ "flags": [],
+ "claims": [
+  {
+   "field": "num_layers",
+   "value": "modeling_longcat_ngram.py",
+   "file": "233",
+   "line_start": 235,
+   "line_end": -1,
+   "quote": "self.layers = nn.ModuleList(\n            [LongcatFlashDecoderLayer(config, layer_idx) for layer_idx in range(config.num_layers)]\n        )",
+   "config_keys": [
+    "num_layers"
+   ],
+   "tensor_patterns": [],
+   "problems": [
+    "cites 233, which is not among the fetched files"
+   ],
+   "conflicts": [],
+   "verdict": "review",
+   "model": "gemini-3.5-flash-lite"
+  }
+ ],
+ "fields": {
+  "num_layers": {
+   "verdict": "review",
+   "value": null,
+   "why": "failed a check or conflicts"
+  }
+ },
+ "published": false
+}

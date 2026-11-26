@@ -17,12 +17,16 @@ models:
     rpm: 5
     tpm: 250000
     rpd: 20
+    knowledge_cutoff: "2026-03-31"   # model card: "March 2026 ... in others ... January 2025"
+    knowledge_cutoff_source: https://deepmind.google/models/model-cards/gemini-3-8-flash/
   review:
     id: gemini-3.5-flash-lite
     free: true
     rpm: 15
     tpm: 250000
     rpd: 500
+    knowledge_cutoff: "2026-03-31"   # model card: "March 2026 ... in others ... January 2025"
+    knowledge_cutoff_source: https://deepmind.google/models/model-cards/gemini-3-5-flash-lite/
 diagram_gen:
   # Spec-driven SVG generation with code checks and a repair loop. Manual runs only.
   # One budget: every Gemini call is logged in the shared ledger and counts against
@@ -55,6 +59,40 @@ explainer:
   max_words_base: 60                 # word limit: base + per changed field, capped
   max_words_per_change: 10
   max_words_cap: 220
+code_reader:
+  # LLM code reader, only for architectures the deterministic rules cannot read. Manual runs only.
+  # The model proposes claims (field, value, cited lines, config keys, tensor patterns); code verifies each one.
+  # Failing claims go to review. Nothing here writes data/models or the site.
+  experiment: code-reader-v1
+  ledger: data/gemini-requests.json   # the same one budget as diagrams and the explainer
+  first: review                       # models.review (gemini-3.5-flash-lite) reads every model
+  second_opinion: fallback            # models.fallback (gemini-3.8-flash), only when claims conflict
+  prompt: prompts/code_reader_v1.md   # frozen; its version is in every cache key and ledger entry
+  requests_per_minute: 4
+  max_output_tokens: 16384
+  max_calls_per_run: 6
+  output: results/code-reader
+  models:
+    - Motif-Technologies/Motif-3-Base
+    - meituan-longcat/LongCat-Flash-Lite
+    - NX-AI/xLSTM-7b
+  code_sources:
+    # The authors' own code, pinned to the last commit before the model's Hub release. Never verified (review only).
+    NX-AI/xLSTM-7b:
+      github: NX-AI/xlstm
+      paths: [xlstm/xlstm_large/model.py, xlstm/xlstm_large/components.py]
+  eval:
+    # Published models whose fields the rules already know: scores the reader before it runs on new models.
+    output: results/code-reader-eval
+    report: results/code-reader-eval.md
+    readers: [review, fallback]       # gemini-3.5-flash-lite, gemini-3.8-flash (20/day on the free tier)
+    max_calls_per_run: 10
+    models:
+      - meta-llama/Llama-3.1-8B
+      - Qwen/Qwen3-0.6B-Base
+      - deepseek-ai/DeepSeek-V2-Lite
+      - LiquidAI/LFM3-1.7B-Base
+      - nvidia/Nemotron-H-8B-Base-8K
 schedule:
   # Both crons stay commented out in .github/workflows until the owner approves them.
   daily:
