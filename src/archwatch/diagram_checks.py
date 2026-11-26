@@ -302,6 +302,7 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
             edge_problems.append(f"{where}: edge {e} is drawn but not in the spec")
         for e in sorted({e for e in got if got.count(e) > 1}):
             edge_problems.append(f"{where}: edge {e} is drawn more than once")
+    out["dimensions_connect"] = result(svg_dimension_problems(root))
     out["graph_nodes_match_spec"] = result(node_problems)
     out["graph_edges_match_spec"] = result(edge_problems)
 
@@ -315,6 +316,125 @@ def static_checks(svg: str, spec: dict, settings: dict) -> dict:
             problems.append(f'callout {i} reads "{_group_text(group)}", spec says "{callout["text"]}"')
     out["callouts_present"] = result(problems)
     return out
+
+
+# ---------------------------------------------------------------- dimensions connect
+
+_EXPR = r"[\d(][\d\s+x()*]*"
+
+
+def _width(expr: str) -> int | None:
+    """Evaluate a width written like 4096, 16 x 192 or 96 x (128 + 128)."""
+    text = expr.strip().rstrip(",").replace("x", "*")
+    if not re.fullmatch(r"[\d\s+*()]+", text):
+        return None
+    try:
+        return int(eval(text, {"__builtins__": {}}))  # digits, + * ( ) only, checked above
+    except Exception:
+        return None
+
+
+def node_widths(label: str):
+    """(kind, input width, output width) read from a box label.
+
+    kind "fixed": a projection or an input/output box, whose input must equal what feeds it.
+    kind "part": the box names the part of its input it works on (norm on 512 latent, Conv1d (10240 channels),
+    norm (8192)); it may narrow the width, never widen it. kind "split": an explicit split into k x w.
+    kind "combine": multiply / concat / sum, which explain a width change. kind "pass": width passes through.
+    """
+    low = label.lower().strip()
+    chain = re.search(rf"(?:linear|projection:|experts:)\s*({_EXPR})((?:\s*->\s*{_EXPR})+)", label, re.I)
+    if chain:
+        parts = [chain.group(1)] + re.findall(rf"->\s*({_EXPR})", chain.group(2))
+        a, b = _width(parts[0]), _width(parts[-1])
+        if a and b:
+            return "fixed", a, b
+    io = re.fullmatch(r"(?:input|output)\s*\((\d+)\)", low)
+    if io:
+        return "fixed", int(io.group(1)), int(io.group(1))
+    split = re.match(r"split\b.*?(\d+)\s*x\s*(\d+)", low)
+    if split:
+        return "split", int(split.group(1)) * int(split.group(2)), int(split.group(2))
+    if re.match(r"(multiply|concat|sum)\b", low):
+        return "combine", None, None
+    if re.match(r"(router|select|indexer)\b", low):  # routing weights or chosen positions, not a data width
+        return "control", None, None
+    if "experts" in low:  # "2 shared experts (2816)": the number is the experts' inner width, not this box's
+        return "pass", None, None
+    part = re.search(r"\bon (\d+)\b|\((\d+)(?: channels)?\)", low)
+    if part:
+        width = int(part.group(1) or part.group(2))
+        return "part", width, width
+    return "pass", None, None
+
+
+def dimension_problems(nodes: dict[str, str], edges: list[tuple[str, str]], where: str = "") -> list[str]:
+    """Each box's input width must equal the output width of the boxes feeding it, unless an explicit
+    split / concat / multiply node explains the change. Boxes with no stated width pass widths through."""
+    feeders: dict[str, list[str]] = {n: [] for n in nodes}
+    for a, b in edges:
+        if a in nodes and b in nodes:
+            feeders[b].append(a)
+    out: dict[str, int | None] = {}
+    problems = []
+    visiting = set()
+
+    def width_out(node):
+        if node in out:
+            return out[node]
+        if node in visiting:  # a cycle: no width
+            return None
+        visiting.add(node)
+        kind, a, b = node_widths(nodes[node])
+        widths = [width_out(f) for f in feeders[node]]
+        incoming = sorted({w for w in widths if w is not None})
+        all_known = None not in widths
+        label = f'{where}"{nodes[node]}"'
+        if kind == "fixed":
+            bad = [w for w in incoming if w != a]
+            if bad:
+                problems.append(f"{label} takes {a} but is fed {bad[0]}")
+            result = b
+        elif kind == "split":
+            if incoming and incoming != [a]:
+                problems.append(f"{label} splits {a} but is fed {incoming}")
+            result = b
+        elif kind == "part":
+            if incoming and max(incoming) < a:
+                problems.append(f"{label} works on {a} but is fed only {max(incoming)}")
+            per_head = "norm" in nodes[node].lower() and len(incoming) == 1 and incoming[0] > a and incoming[0] % a == 0
+            result = incoming[0] if per_head and all_known else b  # q norm (128) on 2048 channels keeps 2048
+        elif kind in ("combine", "control"):
+            result = None  # a multiply / concat / sum explains the change; a router carries no data width
+        else:
+            result = incoming[0] if len(incoming) == 1 and all_known else None
+        visiting.discard(node)
+        out[node] = result
+        return result
+
+    for node in nodes:
+        width_out(node)
+    return problems
+
+
+def spec_dimension_problems(spec: dict) -> list[str]:
+    """The same check on the spec itself, so a spec whose widths do not connect never costs a call."""
+    problems = []
+    for (attr, key), graph in graphs(spec).items():
+        nodes = {n["id"]: n["label"] for n in graph["nodes"]}
+        edges = [tuple(part.strip() for part in e.split("->")) for e in graph["edges"]]
+        problems += dimension_problems(nodes, edges, f"{key}: ")
+    return problems
+
+
+def svg_dimension_problems(root) -> list[str]:
+    problems = []
+    for holder in _find_all(root, "data-zoom") + _find_all(root, "data-section", "each-layer"):
+        key = holder.get("data-zoom") or holder.get("data-section")
+        nodes = {n.get("data-node"): _group_text(n) for n in _find_all(holder, "data-node")}
+        edges = [tuple(p.strip() for p in e.get("data-edge").split("->")) for e in _find_all(holder, "data-edge")]
+        problems += dimension_problems(nodes, edges, f"{key}: ")
+    return problems
 
 
 # ---------------------------------------------------------------- browser checks

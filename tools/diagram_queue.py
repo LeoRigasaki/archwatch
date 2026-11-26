@@ -25,7 +25,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from archwatch.diagram_spec import SpecError, build_spec, dump  # noqa: E402
+from archwatch.diagram_checks import spec_dimension_problems  # noqa: E402
+from archwatch.diagram_spec import CURRENT_TEMPLATE, SpecError, build_spec, dump  # noqa: E402
 from archwatch.generated import publish, select  # noqa: E402
 
 
@@ -64,10 +65,20 @@ def plan(root: Path, state: dict, limits: dict) -> tuple[list, list]:
         except SpecError as error:
             skipped.append(dict(model=repo, reason=str(error)))
             continue
+        mismatched = spec_dimension_problems(spec)
+        if mismatched:  # the drawing could never pass "dimensions connect": fix the spec, spend no call
+            skipped.append(dict(model=repo, reason="spec widths do not connect: " + "; ".join(mismatched)))
+            continue
         digest = spec_hash(dump(spec, record))
         done = state["models"].get(repo, {})
-        if done.get("spec_sha256") == digest and done.get("status") == "passed":
-            continue
+        if done.get("status") == "passed":
+            drawn = done.get("template", "v1")  # entries written before templates were versioned are v1
+            try:
+                kept = spec_hash(dump(build_spec(record, drawn), record))
+            except SpecError:
+                kept = None
+            if done.get("spec_sha256") == kept:
+                continue  # approved under its own template: never requeued for a wording change
         if published_for(root, record) is not None:
             continue  # an approved/published generated diagram for this exact spec: never redraw it
         retry = done.get("spec_sha256") == digest  # same spec, failed before: waits behind new work
@@ -97,6 +108,7 @@ def run(root: Path, config: dict, client, *, today=None) -> dict:
             publish(root, item["record"], folder / f"v{row['final_version']}.svg")  # gallery shows it after review
         state["models"][item["model"]] = dict(
             spec_sha256=item["spec_sha256"],
+            template=CURRENT_TEMPLATE,
             status=status,
             version=row["final_version"],
             folder=str(folder.relative_to(root)),

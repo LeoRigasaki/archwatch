@@ -59,15 +59,6 @@
       "updated": "2026-11-18",
       "recovered_from_run": 44301688691
     },
-    "zai-org/GLM-4-9B-0414": {
-      "spec_sha256": "b20a0aec86beb6c051e0a5c868b942e378929ad4cf796978ef36620fc2335809",
-      "status": "passed",
-      "version": 1,
-      "folder": "data/generated-diagrams/zai-org__GLM-4-9B-0414/b20a0aec86be",
-      "calls": 1,
-      "updated": "2026-11-20",
-      "recovered_from_run": 44733223773
-    },
     "mistralai/Mistral-7B-v0.1": {
       "spec_sha256": "504a29fa153534157ba877af37b0fd93df62f3ac83b46ed5488da4ddde4dc1f4",
       "status": "error",
