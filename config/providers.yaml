@@ -63,6 +63,8 @@ schedule:
     days: [monday, wednesday, friday]
     max_models_per_run: 5
     max_calls_per_run: 15       # also bounded by models.diagram.rpd per day
+    priority:                   # drawn first; then other published models without a Gemini diagram
+      - moonshotai/Kimi-K3      # its compare page sits next to Kimi-K3.1-Pro's Gemini diagram
     state: data/diagram-queue.json
     output: data/generated-diagrams
 evidence:

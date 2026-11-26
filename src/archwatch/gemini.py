@@ -17,7 +17,14 @@ IMAGE_TOKEN_ALLOWANCE = 4000
 
 
 class ProviderError(RuntimeError):
-    pass
+    """`status` is the provider's HTTP status when there was one (5xx = server side, 429 = rate limit)."""
+
+    def __init__(self, message, status=None):
+        super().__init__(message)
+        self.status = status
+
+
+RETRY_WAIT_SECONDS = 60  # one retry after a server error, after this pause
 
 
 def local_env(path):
@@ -68,7 +75,9 @@ class Gemini:
                 return json.loads(data)
         except urllib.error.HTTPError as error:
             # Never expose request headers, key-bearing URLs or provider bodies.
-            raise ProviderError(f"Gemini request failed (HTTP {error.code}); no fallback attempted") from None
+            raise ProviderError(
+                f"Gemini request failed (HTTP {error.code}); no fallback attempted", error.code
+            ) from None
         except (OSError, ValueError):
             raise ProviderError("Gemini request failed; credentials and transport details omitted") from None
 
@@ -95,11 +104,33 @@ class Gemini:
         write_if_changed(self.ledger, json.dumps(entries, indent=2) + "\n")
         return now
 
-    def generate(self, system, prompt, images=()):
-        """`images`: PNG bytes sent after the text (e.g. a render of the previous attempt)."""
+    def generate(self, system, prompt, images=(), *, tag=None):
+        """`images`: PNG bytes sent after the text (e.g. a render of the previous attempt).
+
+        One retry, only after a 5xx, after RETRY_WAIT_SECONDS; the retry is reserved as its own ledger entry.
+        A failed retry, a 429 or any other error raises at once. `tag` (e.g. {"for": repo}) is written into
+        each ledger entry this call reserves.
+        """
+        try:
+            return self._generate_once(system, prompt, images, tag)
+        except ProviderError as error:
+            if not (isinstance(error.status, int) and error.status >= 500):
+                raise
+            self.wait(RETRY_WAIT_SECONDS)
+            return self._generate_once(system, prompt, images, dict(tag or {}, retry=f"after HTTP {error.status}"))
+
+    def _tag(self, tag):
+        if not tag:
+            return
+        entries = json.loads(self.ledger.read_text())
+        entries[-1].update(tag)
+        write_if_changed(self.ledger, json.dumps(entries, indent=2) + "\n")
+
+    def _generate_once(self, system, prompt, images, tag):
         model = self.config["models"][self.role]
         # An image costs a bounded number of tokens; count it generously against the per-minute bound.
         started = self._reserve(len(system.encode()) + len(prompt.encode()) + IMAGE_TOKEN_ALLOWANCE * len(images))
+        self._tag(tag)
         parts = [dict(text=prompt)] + [
             dict(inline_data=dict(mime_type="image/png", data=base64.b64encode(png).decode())) for png in images
         ]
