@@ -320,3 +320,18 @@ def test_approved_diagrams_keep_their_template_and_are_not_requeued(monkeypatch)
     )
     approved = {json.loads(m.read_text())["model"] for m in (ROOT / "diagrams/generated").glob("*.json")}
     assert not approved & {q["model"] for q in plan}
+
+
+def test_bot_prs_use_bot_pat_only_for_create_pull_request():
+    for name in ("daily.yml", "diagrams.yml"):
+        workflow = yaml.safe_load((ROOT / ".github/workflows" / name).read_text())
+        steps = [s for job in workflow["jobs"].values() for s in job["steps"]]
+        for step in steps:
+            uses_pat = "BOT_PAT" in json.dumps(step)
+            if "create-pull-request" in step.get("uses", ""):
+                assert step["with"]["token"] == "${{ secrets.BOT_PAT || github.token }}", name  # falls back if missing
+            else:
+                assert not uses_pat, (name, step.get("name") or step.get("uses"))
+    for path in (ROOT / ".github/workflows").glob("*.yml"):
+        if path.name not in ("daily.yml", "diagrams.yml"):
+            assert "BOT_PAT" not in path.read_text(), path.name
