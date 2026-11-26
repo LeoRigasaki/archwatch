@@ -67,6 +67,8 @@ jobs:
       - uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8.1.3
         if: always() && steps.generate.outcome != 'skipped'
         with:
+          # A fine-grained PAT so the PR's CI runs without manual approval; GITHUB_TOKEN if the secret is missing.
+          token: ${{ secrets.BOT_PAT || github.token }}
           branch: diagram-review
           title: "ArchWatch diagram run"
           labels: needs-review
