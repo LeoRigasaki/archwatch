@@ -573,5 +573,30 @@
     "experiment": "diagram-gen-v2",
     "for": "mistralai/Mistral-7B-v0.1",
     "version": 1
+  },
+  {
+    "time": 1795784651.1966681,
+    "day": "2026-11-27",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "for": "Qwen/Qwen3-0.6B-Base",
+    "version": 1
+  },
+  {
+    "time": 1795784766.628262,
+    "day": "2026-11-27",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "for": "google/gemma-3-1b-pt",
+    "version": 1
+  },
+  {
+    "time": 1795784847.165846,
+    "day": "2026-11-27",
+    "model": "gemini-4-hydrogen",
+    "experiment": "diagram-gen-v2",
+    "for": "google/gemma-3-1b-pt",
+    "version": 1,
+    "retry": "after HTTP 503"
   }
 ]
